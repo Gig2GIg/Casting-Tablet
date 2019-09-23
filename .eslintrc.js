@@ -1,11 +1,11 @@
 module.exports = {
   root: true,
   env: {
-    node: true
+    node: true,
   },
   extends: [
     'airbnb-base',
-    'plugin:vue/recommended'
+    'plugin:vue/recommended',
   ],
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
@@ -16,10 +16,10 @@ module.exports = {
       ignorePropertyModificationsFor: [
         'config',
         'state',
-      ]
-    }]
+      ],
+    }],
   },
   parserOptions: {
-    parser: 'babel-eslint'
-  }
-}
+    parser: 'babel-eslint',
+  },
+};
