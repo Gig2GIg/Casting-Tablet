@@ -68,6 +68,19 @@
 </template>
 
 <script>
+import AuditionService from '@/services/AuditionService';
+
 export default {
+  data() {
+    return {
+      upcoming: [],
+      past: [],
+      isLoading: true,
+    };
+  },
+  async created() {
+    const { data } = await AuditionService.all();
+    console.log(data);
+  },
 };
 </script>
