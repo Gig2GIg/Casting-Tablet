@@ -45,7 +45,7 @@ router.beforeEach((to, from, next) => {
 
   // Do not allow user to visit login page or register page if they are logged in
   if (loggedIn && onlyWhenLoggedOut) {
-    return next({ name: 'dashboard' });
+    return next({ name: 'auditions' });
   }
 
   return next();

@@ -1,6 +1,7 @@
 <template>
   <button
-    class="text-white rounded-full shadow-xl w-full overflow-hidden my-2 p-3 text-lg"
+    class="text-white overflow-hidden my-2 p-3 text-lg"
+    :class="[borderClasses, { 'w-full': expanded }]"
     v-bind="$attrs"
     :type="type"
     @click="$emit('click', $event)"
@@ -13,6 +14,11 @@
 export default {
   inheritAttrs: false,
   props: {
+    expanded: Boolean,
+    borderClasses: {
+      type: String,
+      default: 'rounded-full shadow-xl',
+    },
     type: {
       type: String,
       default: 'button',

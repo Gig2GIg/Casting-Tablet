@@ -49,9 +49,9 @@ export default [
   */
 
   {
-    path: '/dashboard',
-    name: 'dashboard',
-    component: () => import(/* webpackChunkName: 'dashboard' */ '@/views/Dashboard'),
+    path: '/auditions',
+    name: 'auditions',
+    component: () => import(/* webpackChunkName: 'auditions' */ '@/views/Auditions'),
   },
 
   /*
