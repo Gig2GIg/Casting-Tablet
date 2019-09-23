@@ -17,7 +17,10 @@
         :message="errors.first('email')"
       />
 
-      <base-button type="submit">
+      <base-button
+        type="submit"
+        expanded
+      >
         Submit
       </base-button>
     </form>

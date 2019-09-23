@@ -29,7 +29,10 @@
         data-vv-as="password"
       />
 
-      <base-button type="submit">
+      <base-button
+        type="submit"
+        expanded
+      >
         Submit
       </base-button>
     </form>

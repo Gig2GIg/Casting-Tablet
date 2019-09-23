@@ -31,7 +31,10 @@
         :message="errors.first('password')"
       />
 
-      <base-button type="submit">
+      <base-button
+        type="submit"
+        expanded
+      >
         Log In
       </base-button>
     </form>

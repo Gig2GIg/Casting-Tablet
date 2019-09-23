@@ -304,6 +304,7 @@
       <base-button
         class="mt-16"
         type="submit"
+        expanded
       >
         Next
       </base-button>
