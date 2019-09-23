@@ -1,9 +1,11 @@
 <template>
   <div class="flex w-full h-screen">
     <sidebar-base />
-    <div class="w-full h-full">
+    <div class="flex flex-col flex-1">
       <nav-bar />
-      <router-view />
+      <div class="h-full w-full overflow-y-auto">
+        <router-view />
+      </div>
     </div>
   </div>
 </template>

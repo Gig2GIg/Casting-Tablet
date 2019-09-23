@@ -17,7 +17,15 @@ class AuthService extends BaseService {
   }
 
   async register(user) {
-    const { data: { data } } = await this.post('/register', user);
+    const { data: { data } } = await this.post('/users/create', {
+      ...user,
+      type: 2,
+      union_member: [
+        {
+          name: 'test1',
+        },
+      ],
+    });
     return data;
   }
 
