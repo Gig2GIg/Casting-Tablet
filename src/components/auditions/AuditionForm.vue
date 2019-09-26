@@ -223,7 +223,6 @@
       </div>
       <div class="managers w-3/5 flex flex-col items-end">
         <button
-
           @click.prevent="manageAppointments = true"
           class="w-2/3 mt-4 py-3 px-4 border-4 border-purple text-purple rounded-full"
         >Manage appointments</button>
@@ -235,7 +234,7 @@
         >Manage Documents</button>
       </div>
     </div>
-    <AppointmentsModal :data="form.slots" v-if="manageAppointments" @modalexit="closeModal"/>
+    <AppointmentsModal :data="form.slots" v-if="manageAppointments" @modalexit="manageAppointments = false"/>
   </form>
 </template>
 
@@ -321,13 +320,9 @@ export default {
     };
   },
   methods: {
-    closeModal() {
-      this.manageAppointments = false;
-    },
     setTags(e, type, multiple = false){
       const { target } = e;
       const text = target.textContent.trim();
-      console.log(text);
       const itemSelected = this[type].find(item => item.name === text);
       if(multiple) {
         if(itemSelected.selected) {

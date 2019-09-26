@@ -43,24 +43,28 @@
           <option value="60">60 minutes</option>
         </select>
         <p class="py-2 pt-5 text-purple">Start time</p>
-        <base-input
-          v-model="appointments.start"
-          @input="makeSlots"
-          class="py-2 h-full max-h-full w-full"
-          type="text"
-          name="time"
-          :time="true"
-          :custom-classes="['py-1', 'w-full', 'border', 'border-purple']"
-        />
+        <div class="py-2 w-full" :class="{ 'h-full': this.appointments.spaces < 10 }">
+          <base-input
+            v-model="appointments.start"
+            @input="makeSlots"
+            class="py-2 h-full max-h-full w-full"
+            type="text"
+            name="time"
+            :time="true"
+            :custom-classes="['py-1', 'w-full', 'border', 'border-purple']"
+          />
+        </div>
         <p class="py-2 pt-5 text-purple">End time</p>
-        <base-input
-          v-model="appointments.end"
-          class="py-2 h-full max-h-full w-full"
-          type="text"
-          name="time"
-          :time="true"
-          :custom-classes="['w-full', 'border', 'border-purple', 'py-1']"
-        />
+        <div class="w-full py-2" :class="{ 'h-full': this.appointments.spaces < 10 }">
+          <base-input
+            v-model="appointments.end"
+            class="py-2 h-full max-h-full w-full"
+            type="text"
+            name="time"
+            :time="true"
+            :custom-classes="['w-full', 'border', 'border-purple', 'py-1']"
+          />
+        </div>
 
         <button class="text-white py-3 mt-5 w-2/3 px-4 border border-purple rounded-full">Done</button>
       </div>
