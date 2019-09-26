@@ -326,7 +326,8 @@ export default {
     },
     setTags(e, type, multiple = false){
       const { target } = e;
-      const text = target.innerHTML.trim();
+      const text = target.textContent.trim();
+      console.log(text);
       const itemSelected = this[type].find(item => item.name === text);
       if(multiple) {
         if(itemSelected.selected) {
