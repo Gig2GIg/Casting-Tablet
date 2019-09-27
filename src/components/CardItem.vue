@@ -24,14 +24,15 @@
         <span class="-mt-2">{{ $dayjs(date).format('MMMM Do') }}</span>
       </div>
     </div>
-
-    <base-button
-      v-if="actionable"
-      class="absolute bottom-0 right-0 mb-0 w-32 text-sm"
-      border-classes="rounded-sm rounded-tl-lg"
-    >
-      Manage
-    </base-button>
+    <router-link :to="{ name: 'auditions/detail', params: {id: navigateTo } }">
+      <base-button
+        v-if="actionable"
+        class="absolute bottom-0 right-0 mb-0 w-32 text-sm"
+        border-classes="rounded-sm rounded-tl-lg"
+      >
+        Manage
+      </base-button>
+    </router-link>
   </div>
 </template>
 
@@ -53,6 +54,9 @@ export default {
     image: {
       type: String,
       required: true,
+    },
+    navigateTo: {
+      type: Number,
     },
     actionable: Boolean,
   },

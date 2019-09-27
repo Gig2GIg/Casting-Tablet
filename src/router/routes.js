@@ -54,6 +54,12 @@ export default [
     component: () => import(/* webpackChunkName: 'auditions' */ '@/views/Auditions'),
   },
 
+  {
+    path: '/auditions/:id',
+    name: 'auditions/detail',
+    component: () => import(/* webpackChunkName: 'auditions' */ '@/views/AuditionsDetail'),
+  },
+
   /*
   |--------------------------------------------------------------------------
   | Error Routes

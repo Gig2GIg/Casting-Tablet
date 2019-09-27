@@ -4,16 +4,16 @@ import TokenService from './core/TokenService';
 
 class AuthService extends BaseService {
   async login(credentials) {
-    const { data: { token } } = await this.post('/admin/login', credentials);
+    const { data: { access_token } } = await this.post('/login', credentials);
 
     // Save token
-    TokenService.setToken(token);
+    TokenService.setToken(access_token);
 
     // Configure HttpClient with the new token
-    HttpService.setAuthorizationHeader(token);
+    HttpService.setAuthorizationHeader(access_token);
     HttpService.mount401Interceptor();
 
-    return token;
+    return access_token;
   }
 
   async register(user) {

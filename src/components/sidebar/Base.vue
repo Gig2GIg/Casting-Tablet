@@ -40,7 +40,7 @@
       />
     </div>
 
-    <sidebar-item
+    <sidebar-item @click.native="signOut"
       text="Sign Out"
       icon="sign_out"
     />
@@ -48,6 +48,7 @@
 </template>
 
 <script>
+import { mapActions, mapState, mapGetters } from "vuex";
 export default {
   props: [],
   data() {
@@ -55,6 +56,12 @@ export default {
   },
   computed: {},
   watch: {},
-  methods: {},
+  methods: {
+    ...mapActions("auth", ["logout"]),
+    signOut(){
+      this.logout();
+      router.push("login");
+    }
+  },
 };
 </script>

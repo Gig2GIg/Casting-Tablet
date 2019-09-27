@@ -1,35 +1,20 @@
 <template>
-  <div class="text-purple pl-6 py-8">
-    <p class="text-3xl">
+  <div class="container text-purple pl-6 py-8">
+    <p class="w-full text-3xl">
       Upcoming
     </p>
     <carousel
-      class="flex mt-4"
+      class="flex mt-4 w-full"
       :per-page="4"
       :pagination-enabled="false"
     >
-      <slide>
+      <slide v-for="data in upcoming" :key="data.id">
         <card-item
-          title="Aladdin the Musical"
-          date="2019-10-22"
-          image="/images/xd.png"
+          :title="data.title"
+          :date="data.date"
+          :image="data.cover"
           actionable
-        />
-      </slide>
-      <slide>
-        <card-item
-          title="Aladdin the Musical"
-          date="2019-10-22"
-          image="/images/xd.png"
-          actionable
-        />
-      </slide>
-      <slide>
-        <card-item
-          title="Aladdin the Musical"
-          date="2019-10-22"
-          image="/images/xd.png"
-          actionable
+          :navigateTo="data.id"
         />
       </slide>
     </carousel>
@@ -38,49 +23,46 @@
       Past
     </p>
     <carousel
-      class="flex mt-4"
+      class="flex mt-4 w-full"
       :per-page="4"
       :pagination-enabled="false"
     >
-      <slide>
+      <slide v-for="data in passed" :key="data.id">
         <card-item
-          title="Aladdin the Musical"
-          date="2019-10-22"
-          image="/images/xd.png"
-        />
-      </slide>
-      <slide>
-        <card-item
-          title="Aladdin the Musical"
-          date="2019-10-22"
-          image="/images/xd.png"
-        />
-      </slide>
-      <slide>
-        <card-item
-          title="Aladdin the Musical"
-          date="2019-10-22"
-          image="/images/xd.png"
+          :title="data.title"
+          :date="data.date"
+          :image="data.cover"
         />
       </slide>
     </carousel>
-  </div>
+    </div>
 </template>
 
 <script>
 import AuditionService from '@/services/AuditionService';
-
+import { mapActions, mapState, mapGetters } from "vuex";
 export default {
   data() {
     return {
-      upcoming: [],
-      past: [],
       isLoading: true,
     };
   },
+  computed:{
+    ...mapState("audition", ["auditions", "upcoming", "passed"])
+  },
   async created() {
-    const { data } = await AuditionService.all();
-    console.log(data);
+    this.fetchUpcoming();
+    this.fetchPassed();
+  },
+  methods:{
+    ...mapActions("audition", ["fetch", "fetchUpcoming", "fetchPassed"])
   },
 };
 </script>
+<style>
+@media (min-width: 1280px){
+  .container {
+      max-width: 1450px;
+  }
+}
+</style>
