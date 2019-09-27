@@ -1,10 +1,10 @@
-<!-- eslint-disable max-len -->
+<!-- eslint-disable -->
 <template>
   <div class="relative">
     <svg
       v-if="type === 'location'"
       xmlns="http://www.w3.org/2000/svg"
-      class="absolute top-0 right-0 bottom-0 my-auto mr-2"
+      class="absolute top-1/2 right-0 bottom-0 my-auto mr-8"
       width="21"
       height="21"
       viewBox="0 0 21.862 32.752"
@@ -15,11 +15,41 @@
       stroke="#4d2545"
       stroke-width="1"
     /></svg>
+  <svg xmlns="http://www.w3.org/2000/svg"
+    v-if="type === 'date'"
+    class="absolute top-1/2 right-0 bottom-0 my-auto mr-8"
+    width="21"
+    height="21"
+    viewBox="0 0 20 20">
+      <path fill="#4d2545" d="M2.131 16.795c0 .524.407.93.931.93h13.679c.524 0 .93-.406.93-.93v-7.95H2.132zM13.608 5.087c0 .313.242.555.555.555a.547.547 0 0 0 .555-.555.547.547 0 0 0-.555-.555.547.547 0 0 0-.555.555zm-8.51 0c0 .313.242.555.555.555a.547.547 0 0 0 .555-.555.547.547 0 0 0-.555-.555.547.547 0 0 0-.555.555zm6.967-2.532a.555.555 0 1 1 0 1.11H8.093a.555.555 0 0 1 0-1.11zm-8.51 0a.575.575 0 0 1 .56.555c0 .293-.267.56-.56.555h-.492a.918.918 0 0 0-.93.931v3.14h15.54v-3.14a.918.918 0 0 0-.931-.93h-.491a.575.575 0 0 1-.56-.556c0-.293.267-.559.56-.555h.49c1.122 0 2.042.92 2.042 2.041v12.199c0 1.12-.92 2.04-2.041 2.04H3.062c-1.12 0-2.04-.92-2.04-2.04V4.596c0-1.12.92-2.04 2.04-2.04zM14.161.832c.307 0 .555.249.555.555V3.52c.644.231 1.11.848 1.11 1.567 0 .913-.752 1.665-1.665 1.665a1.674 1.674 0 0 1-1.665-1.665c0-.719.467-1.336 1.11-1.567V1.387c0-.306.249-.555.555-.555zm-7.955.555V3.52c.644.231 1.11.848 1.11 1.567 0 .913-.752 1.665-1.665 1.665a1.674 1.674 0 0 1-1.665-1.665c0-.719.467-1.336 1.11-1.567V1.387a.555.555 0 0 1 1.11 0z"/>
+      <path fill="none" stroke="#4d2545" stroke-miterlimit="50" stroke-width=".25" d="M2.131 16.795c0 .524.407.93.931.93h13.679c.524 0 .93-.406.93-.93v-7.95H2.132zM13.608 5.087c0 .313.242.555.555.555a.547.547 0 0 0 .555-.555.547.547 0 0 0-.555-.555.547.547 0 0 0-.555.555zm-8.51 0c0 .313.242.555.555.555a.547.547 0 0 0 .555-.555.547.547 0 0 0-.555-.555.547.547 0 0 0-.555.555zm6.967-2.532a.555.555 0 1 1 0 1.11H8.093a.555.555 0 0 1 0-1.11zm-8.51 0a.575.575 0 0 1 .56.555c0 .293-.267.56-.56.555h-.492a.918.918 0 0 0-.93.931v3.14h15.54v-3.14a.918.918 0 0 0-.931-.93h-.491a.575.575 0 0 1-.56-.556c0-.293.267-.559.56-.555h.49c1.122 0 2.042.92 2.042 2.041v12.199c0 1.12-.92 2.04-2.041 2.04H3.062c-1.12 0-2.04-.92-2.04-2.04V4.596c0-1.12.92-2.04 2.04-2.04zM14.161.832c.307 0 .555.249.555.555V3.52c.644.231 1.11.848 1.11 1.567 0 .913-.752 1.665-1.665 1.665a1.674 1.674 0 0 1-1.665-1.665c0-.719.467-1.336 1.11-1.567V1.387c0-.306.249-.555.555-.555zm-7.955.555V3.52c.644.231 1.11.848 1.11 1.567 0 .913-.752 1.665-1.665 1.665a1.674 1.674 0 0 1-1.665-1.665c0-.719.467-1.336 1.11-1.567V1.387a.555.555 0 0 1 1.11 0z"/>
+  </svg>
+
+  <svg xmlns="http://www.w3.org/2000/svg"
+  v-if="time"
+  class="absolute top-1/2 right-0 bottom-0 my-auto mr-8"
+  width="21"
+  height="21"
+  viewBox="0 0 21 21">
+  <defs>
+    <linearGradient id="v0rca" x1="10.18" x2="10.18" y1="-8.03" y2="30.77" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#4d2545"/><stop offset="1" stop-color="#782541"/></linearGradient></defs><path fill="url(#v0rca)" d="M12.497 1.718l-.003.01a8.805 8.805 0 0 0-2.32-.32 8.818 8.818 0 1 0 8.817 8.818c0-.45-.044-.888-.109-1.32l.017-.002a.655.655 0 0 1-.027-.166.678.678 0 0 1 1.356-.03l-.002.027c.072.488.122.983.122 1.49 0 5.62-4.555 10.175-10.174 10.175S0 15.844 0 10.226C0 4.606 4.555.052 10.174.052c.87 0 1.71.122 2.516.329a.68.68 0 0 1 .201.045.678.678 0 0 1-.394 1.292zm-.586 10.864l-2.169-1.774c-.3-.118-.585-.333-.585-.582l.005-.064a.922.922 0 0 1 .02-.273l.314-4.072a.679.679 0 0 1 1.356 0l.284 3.687 1.734 2.12a.678.678 0 1 1-.96.958z"/>
+  </svg>
+
+    <v-date-picker
+      v-if="type === 'date'"
+      :value="value"
+      color="indigo"
+      :input-props="{
+        class: `text-black rounded-full overflow-hidden my-2 w-full h-full py-2 px-6 placeholder-purple ${ customClasses.join(' ') }`,
+        placeholder: $attrs.placeholder ? $attrs.placeholder : '',
+      }"
+    />
 
     <input
+      v-else
       ref="inputTag"
-      class="text-black rounded-full overflow-hidden my-2 w-full h-full py-3 px-6 placeholder-purple"
-      :class="{ 'pr-8': type === 'location' }"
+      class="text-black rounded-full overflow-hidden my-2 w-full h-full py-2 px-6 placeholder-purple"
+      :class="[{ 'pr-8': type === 'location' }, ...customClasses]"
       :value="value"
       :type="type"
       v-bind="$attrs"
@@ -36,6 +66,7 @@
 </template>
 
 <script>
+
 export default {
   inheritAttrs: false,
   $_veeValidate: {
@@ -62,11 +93,21 @@ export default {
         'text',
         'password',
         'location',
+        'date',
+        'number',
       ].indexOf(value) >= 0,
     },
     message: {
       type: String,
       default: null,
+    },
+    customClasses: {
+      type: Array,
+      default: () => [],
+    },
+    time: {
+      type: Boolean,
+      default: false,
     },
   },
   mounted() {
@@ -88,7 +129,19 @@ export default {
 </script>
 
 <style scoped>
-input:focus {
+input:focus,
+input {
   outline: none;
+}
+
+.top-1\/2 {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 </style>
