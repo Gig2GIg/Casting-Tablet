@@ -20,4 +20,5 @@
 nav {
   background-image: linear-gradient(#4D2545, #782541);
 }
+
 </style>

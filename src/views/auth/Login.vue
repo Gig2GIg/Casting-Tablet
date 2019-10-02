@@ -84,7 +84,7 @@ export default {
 
         // Redirect the user to the page he first tried to visit or to the home view
         this.$router.replace(
-          this.$route.query.redirect || { name: 'dashboard' },
+          this.$route.query.redirect || { name: 'auditions' },
         );
       } catch (e) {
         this.$toasted.error(e.response.data.message);

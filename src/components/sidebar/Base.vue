@@ -49,6 +49,7 @@
 
 <script>
 import { mapActions, mapState, mapGetters } from "vuex";
+import router from 'vue-router';
 export default {
   props: [],
   data() {
@@ -58,9 +59,9 @@ export default {
   watch: {},
   methods: {
     ...mapActions("auth", ["logout"]),
-    signOut(){
-      this.logout();
-      router.push("login");
+    async signOut(){
+      await this.logout();
+      await this.$router.push('/login');
     }
   },
 };
