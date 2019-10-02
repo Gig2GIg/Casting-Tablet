@@ -5,30 +5,17 @@
     </p>
     <carousel
       class="flex mt-4"
-      :per-page="4"
+      :per-page="3"
       :pagination-enabled="false"
     >
-      <slide>
+      <slide
+        v-for="audition in upcoming"
+        :key="audition.id"
+      >
         <card-item
-          title="Aladdin the Musical"
-          date="2019-10-22"
-          image="/images/xd.png"
-          actionable
-        />
-      </slide>
-      <slide>
-        <card-item
-          title="Aladdin the Musical"
-          date="2019-10-22"
-          image="/images/xd.png"
-          actionable
-        />
-      </slide>
-      <slide>
-        <card-item
-          title="Aladdin the Musical"
-          date="2019-10-22"
-          image="/images/xd.png"
+          :title="audition.title"
+          :date="audition.date"
+          :image="audition.cover"
           actionable
         />
       </slide>
@@ -39,28 +26,17 @@
     </p>
     <carousel
       class="flex mt-4"
-      :per-page="4"
+      :per-page="3"
       :pagination-enabled="false"
     >
-      <slide>
+      <slide
+        v-for="audition in past"
+        :key="audition.id"
+      >
         <card-item
-          title="Aladdin the Musical"
-          date="2019-10-22"
-          image="/images/xd.png"
-        />
-      </slide>
-      <slide>
-        <card-item
-          title="Aladdin the Musical"
-          date="2019-10-22"
-          image="/images/xd.png"
-        />
-      </slide>
-      <slide>
-        <card-item
-          title="Aladdin the Musical"
-          date="2019-10-22"
-          image="/images/xd.png"
+          :title="audition.title"
+          :date="audition.date"
+          :image="audition.cover"
         />
       </slide>
     </carousel>
@@ -78,9 +54,10 @@ export default {
       isLoading: true,
     };
   },
-  async created() {
-    const { data } = await AuditionService.all();
-    console.log(data);
+  async mounted() {
+    const { data: { data } } = await AuditionService.all();
+    this.upcoming = data.filter(audition => !!audition.status);
+    this.past = data.filter(audition => !audition.status);
   },
 };
 </script>

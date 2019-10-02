@@ -10,7 +10,7 @@
 
     <div class="flex flex-col h-full rounded-lg shadow-md overflow-hidden">
       <img
-        :src="image"
+        :src="image || '/images/xd.png'"
         class="h-48 object-cover"
         alt="Image"
       >
@@ -52,7 +52,7 @@ export default {
     },
     image: {
       type: String,
-      required: true,
+      default: '/images/xd.png',
     },
     actionable: Boolean,
   },

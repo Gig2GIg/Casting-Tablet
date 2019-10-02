@@ -7,10 +7,10 @@ import 'firebase/storage';
 
 class AuthService extends BaseService {
   async login(credentials) {
-    const { data: { access_token } } = await this.post('/login', credentials);
+    const { data: { data: { id }, access_token } } = await this.post('/login', credentials);
 
     // Save token
-    TokenService.setToken(access_token);
+    TokenService.setToken(id, access_token);
 
     // Configure HttpClient with the new token
     HttpService.setAuthorizationHeader(access_token);

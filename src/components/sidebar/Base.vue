@@ -1,5 +1,5 @@
 <template>
-  <section class="flex flex-col items-center h-full w-64 text-purple">
+  <section class="flex flex-col items-center h-full w-1/5 text-purple">
     <img
       src="/images/logo-color.png"
       class="h-12"
