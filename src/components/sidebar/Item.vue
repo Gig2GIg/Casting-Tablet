@@ -14,7 +14,7 @@
         class="h-4"
       >
     </figure>
-    <span class="-mt-1">{{ text }}</span>
+    <span>{{ text }}</span>
   </component>
 </template>
 
