@@ -10,12 +10,11 @@
     >
       <template v-if="step === 1">
         <base-input
-          v-model="form.first_name"
+          v-model="form.name"
           v-validate="'required|max:255'"
-          name="first_name"
+          name="name"
           placeholder="Name"
-          :message="errors.first('first_name')"
-          data-vv-as="name"
+          :message="errors.first('name')"
         />
 
         <base-input
@@ -70,61 +69,64 @@
           <base-select
             key="state-input"
             v-model="form.state"
+            v-validate="'required'"
+            name="state"
             class="w-2/5"
             placeholder="State"
+            :message="errors.first('state')"
           >
-            <option value="AL">
+            <option :value="1">
               Alabama
             </option>
-            <option value="AK">
+            <option :value="2">
               Alaska
             </option>
-            <option value="AZ">
+            <option :value="3">
               Arizona
             </option>
-            <option value="AR">
+            <option :value="4">
               Arkansas
             </option>
-            <option value="CA">
+            <option :value="5">
               California
             </option>
-            <option value="CO">
+            <option :value="6">
               Colorado
             </option>
-            <option value="CT">
+            <option :value="6">
               Connecticut
             </option>
-            <option value="DE">
+            <option :value="7">
               Delaware
             </option>
-            <option value="DC">
+            <option :value="8">
               District Of Columbia
             </option>
-            <option value="FL">
+            <option :value="8">
               Florida
             </option>
-            <option value="GA">
+            <option :value="10">
               Georgia
             </option>
-            <option value="HI">
+            <option :value="11">
               Hawaii
             </option>
-            <option value="ID">
+            <option :value="12">
               Idaho
             </option>
-            <option value="IL">
+            <option :value="13">
               Illinois
             </option>
-            <option value="IN">
+            <option :value="14">
               Indiana
             </option>
-            <option value="IA">
+            <option :value="15">
               Iowa
             </option>
-            <option value="KS">
+            <option :value="16">
               Kansas
             </option>
-            <option value="KY">
+            <!-- <option value="KY">
               Kentucky
             </option>
             <option value="LA">
@@ -225,7 +227,7 @@
             </option>
             <option value="WY">
               Wyoming
-            </option>
+            </option> -->
           </base-select>
           <base-input
             key="zip-input"
@@ -242,9 +244,9 @@
         <base-input
           key="birth-input"
           v-model="form.birth"
-          v-validate="'required|date_format:MM/dd/yyyy'"
-          v-mask="'##/##/####'"
+          v-validate="'required'"
           name="birth"
+          type="date"
           placeholder="Birth Date"
           :message="errors.first('birth')"
           data-vv-as="birth date"
@@ -253,6 +255,7 @@
 
       <template v-else>
         <div
+          v-if="!preview"
           class="flex items-center rounded-full bg-white h-32 w-32 mx-auto mb-6 cursor-pointer"
           @click="$refs.inputFile.click()"
         >
@@ -263,12 +266,20 @@
           >
         </div>
 
+        <img
+          v-else
+          :src="preview"
+          alt="Image"
+          class="rounded-full h-32 w-32 mx-auto mb-6 cursor-pointer"
+          @click="$refs.inputFile.click()"
+        >
+
         <input
           ref="inputFile"
-          accept="application/pdf"
+          accept=".png, .jpg, .jpeg"
           type="file"
           hidden
-          @change="form.image = $event.target.files[0]"
+          @change="handleImage"
         >
 
         <base-input
@@ -321,6 +332,7 @@ export default {
       form: {},
       step: 1,
       isLoading: false,
+      preview: null,
     };
   },
   methods: {
@@ -332,6 +344,13 @@ export default {
 
     handlePlace(place) {
       this.form.location = `${place.geometry.location.lat()}, ${place.geometry.location.lng()}`;
+    },
+
+    handleImage(e) {
+      const file = e.target.files[0];
+
+      this.form.image = file;
+      this.preview = URL.createObjectURL(file);
     },
 
     async handleRegister() {
