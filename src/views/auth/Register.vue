@@ -375,6 +375,7 @@ export default {
 
         await AuthService.register(this.form);
 
+        this.$toasted.show('Account created successfully.');
         this.$router.push({ name: 'login' });
       } catch (e) {
         this.$toasted.error(e.response.data.message);

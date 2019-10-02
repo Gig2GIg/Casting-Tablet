@@ -87,7 +87,9 @@ export default {
           this.$route.query.redirect || { name: 'auditions' },
         );
       } catch (e) {
-        this.$toasted.error(e.response.data.message);
+        if (e.response.status === 401) {
+          this.$toasted.error('These credentials do not match our records.');
+        }
       } finally {
         this.isLoading = false;
       }
