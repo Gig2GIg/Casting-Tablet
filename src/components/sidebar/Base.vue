@@ -43,18 +43,22 @@
     <sidebar-item
       text="Sign Out"
       icon="sign_out"
+      @click.native="handleSignOut"
     />
   </section>
 </template>
 
 <script>
+import { mapActions } from 'vuex';
+
 export default {
-  props: [],
-  data() {
-    return {};
+  methods: {
+    ...mapActions('auth', ['logout']),
+
+    handleSignOut() {
+      this.logout();
+      this.$router.replace('/');
+    },
   },
-  computed: {},
-  watch: {},
-  methods: {},
 };
 </script>
