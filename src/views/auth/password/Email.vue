@@ -48,9 +48,12 @@ export default {
 
         await AuthService.sendPasswordResetNotification(this.email);
 
+        this.$toasted.show('Mail sent successfully.');
         this.$router.push({ name: 'login' });
       } catch (e) {
-        this.$toasted.error(e.response.data.message);
+        if (e.response.status === 404) {
+          this.$toasted.error('Email not found.');
+        }
         this.$setErrorsFromLaravel(e.response.data);
       } finally {
         this.isLoading = false;
