@@ -30,11 +30,6 @@ export default [
       name: 'password.email',
       component: () => import(/* webpackChunkName: 'email' */ '@/views/auth/password/Email'),
     },
-    {
-      path: '/password/reset/:token',
-      name: 'password.reset',
-      component: () => import(/* webpackChunkName: 'reset' */ '@/views/auth/password/Reset'),
-    },
   ]),
 
   /*

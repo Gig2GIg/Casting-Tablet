@@ -1,5 +1,5 @@
 <template>
-  <section class="flex flex-col items-center h-full w-64 text-purple">
+  <section class="flex flex-col items-center h-full w-1/5 text-purple">
     <img
       src="/images/logo-color.png"
       class="h-12"
@@ -40,29 +40,25 @@
       />
     </div>
 
-    <sidebar-item @click.native="signOut"
+    <sidebar-item
       text="Sign Out"
       icon="sign_out"
+      @click.native="handleSignOut"
     />
   </section>
 </template>
 
 <script>
-import { mapActions, mapState, mapGetters } from "vuex";
-import router from 'vue-router';
+import { mapActions } from 'vuex';
+
 export default {
-  props: [],
-  data() {
-    return {};
-  },
-  computed: {},
-  watch: {},
   methods: {
-    ...mapActions("auth", ["logout"]),
-    async signOut(){
-      await this.logout();
-      await this.$router.push('/login');
-    }
+    ...mapActions('auth', ['logout']),
+
+    handleSignOut() {
+      this.logout();
+      this.$router.replace('/');
+    },
   },
 };
 </script>

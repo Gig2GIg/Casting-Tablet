@@ -4,15 +4,18 @@
       Upcoming
     </p>
     <carousel
-      class="flex mt-4 w-full"
-      :per-page="4"
+      class="flex mt-4"
+      :per-page="3"
       :pagination-enabled="false"
     >
-      <slide v-for="data in upcoming" :key="data.id">
+      <slide
+        v-for="audition in upcoming"
+        :key="audition.id"
+      >
         <card-item
-          :title="data.title"
-          :date="data.date"
-          :image="data.cover"
+          :title="audition.title"
+          :date="audition.date"
+          :image="audition.cover"
           actionable
           :navigateTo="data.id"
         />
@@ -23,15 +26,18 @@
       Past
     </p>
     <carousel
-      class="flex mt-4 w-full"
-      :per-page="4"
+      class="flex mt-4"
+      :per-page="3"
       :pagination-enabled="false"
     >
-      <slide v-for="data in passed" :key="data.id">
+      <slide
+        v-for="audition in past"
+        :key="audition.id"
+      >
         <card-item
-          :title="data.title"
-          :date="data.date"
-          :image="data.cover"
+          :title="audition.title"
+          :date="audition.date"
+          :image="audition.cover"
         />
       </slide>
     </carousel>
@@ -47,15 +53,10 @@ export default {
       isLoading: true,
     };
   },
-  computed:{
-    ...mapState("audition", ["auditions", "upcoming", "passed"])
-  },
-  async created() {
-    this.fetchUpcoming();
-    this.fetchPassed();
-  },
-  methods:{
-    ...mapActions("audition", ["fetch", "fetchUpcoming", "fetchPassed"])
+  async mounted() {
+    const { data: { data } } = await AuditionService.all();
+    this.upcoming = data.filter(audition => !!audition.status);
+    this.past = data.filter(audition => !audition.status);
   },
 };
 </script>

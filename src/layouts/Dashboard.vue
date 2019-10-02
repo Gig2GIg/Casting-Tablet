@@ -1,9 +1,9 @@
 <template>
   <div class="flex w-full h-screen">
     <sidebar-base />
-    <div class="flex flex-col flex-1">
+    <div class="flex flex-col w-4/5">
       <nav-bar />
-      <div class="h-full w-full overflow-y-auto">
+      <div class="flex-1 overflow-y-auto">
         <router-view />
       </div>
     </div>

@@ -1,13 +1,16 @@
+import uuid from 'uuid/v1';
+import firebase from 'firebase/app';
 import BaseService from './core/BaseService';
 import HttpService from './core/HttpService';
 import TokenService from './core/TokenService';
+import 'firebase/storage';
 
 class AuthService extends BaseService {
   async login(credentials) {
-    const { data: { access_token } } = await this.post('/login', credentials);
+    const { data: { data: { id }, access_token } } = await this.post('/login', credentials);
 
     // Save token
-    TokenService.setToken(access_token);
+    TokenService.setToken(id, access_token);
 
     // Configure HttpClient with the new token
     HttpService.setAuthorizationHeader(access_token);
@@ -17,25 +20,27 @@ class AuthService extends BaseService {
   }
 
   async register(user) {
+    const userData = user;
+
+    // Upload avatar
+    const imageName = userData.image.name;
+    const snapshot = await firebase.storage()
+      .ref(`profileImage/${uuid()}.${imageName.split('.').pop()}`)
+      .put(userData.image);
+
+    userData.image = await snapshot.ref.getDownloadURL();
+
     const { data: { data } } = await this.post('/users/create', {
-      ...user,
-      type: 2,
-      union_member: [
-        {
-          name: 'test1',
-        },
-      ],
+      ...userData,
+      resource_name: imageName,
+      type: '1',
     });
+
     return data;
   }
 
   async sendPasswordResetNotification(email) {
-    const { data } = await this.post('/password/email', { email });
-    return data;
-  }
-
-  async updatePassword(user) {
-    const { data } = await this.post('/password/reset', user);
+    const { data } = await this.post('/remember', { email });
     return data;
   }
 

@@ -1,11 +1,15 @@
 <template>
-  <nav class="flex justify-center items-center h-12">
+  <router-link
+    tag="nav"
+    to="/"
+    class="flex justify-center items-center h-12 cursor-pointer"
+  >
     <img
       src="/images/logo.png"
       class="h-full"
       alt="Logo"
     >
-  </nav>
+  </router-link>
 </template>
 
 <style scoped>
