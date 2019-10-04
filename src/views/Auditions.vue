@@ -9,13 +9,13 @@
       :pagination-enabled="false"
     >
       <slide
-        v-for="audition in upcoming"
-        :key="audition.id"
+        v-for="data in upcoming"
+        :key="data.id"
       >
         <card-item
-          :title="audition.title"
-          :date="audition.date"
-          :image="audition.cover"
+          :title="data.title"
+          :date="data.date"
+          :image="data.cover"
           actionable
           :navigateTo="data.id"
         />
@@ -26,18 +26,15 @@
       Past
     </p>
     <carousel
-      class="flex mt-4"
-      :per-page="3"
+      class="flex mt-4 w-full"
+      :per-page="4"
       :pagination-enabled="false"
     >
-      <slide
-        v-for="audition in past"
-        :key="audition.id"
-      >
+      <slide v-for="data in passed" :key="data.id">
         <card-item
-          :title="audition.title"
-          :date="audition.date"
-          :image="audition.cover"
+          :title="data.title"
+          :date="data.date"
+          :image="data.cover"
         />
       </slide>
     </carousel>
@@ -45,18 +42,24 @@
 </template>
 
 <script>
-import AuditionService from '@/services/AuditionService';
+
 import { mapActions, mapState, mapGetters } from "vuex";
+
 export default {
   data() {
     return {
       isLoading: true,
     };
   },
-  async mounted() {
-    const { data: { data } } = await AuditionService.all();
-    this.upcoming = data.filter(audition => !!audition.status);
-    this.past = data.filter(audition => !audition.status);
+  computed:{
+    ...mapState("audition", ["auditions", "upcoming", "passed"])
+  },
+  async created() {
+    this.fetchUpcoming();
+    this.fetchPassed();
+  },
+  methods:{
+    ...mapActions("audition", ["fetch", "fetchUpcoming", "fetchPassed"])
   },
 };
 </script>

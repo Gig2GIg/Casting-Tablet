@@ -38,7 +38,6 @@ export default {
     try {
       const {data: { data }} = await axios.get(`/appointments/auditions/${audition}`);
       console.log(data);
-      debugger;
       commit(types.FETCH_USER_LIST_AUDITION_SUCCESS, data);
     } catch (e) {
       commit(types.FETCH_USER_LIST_AUDITION_FAILURE);

@@ -32,6 +32,14 @@ export default [
     },
   ]),
 
+  ...mapRoutes({ layout: 'checkIn'}, [
+    {
+      path: '/auditions/:id/checkin',
+      name: 'auditions/checkin',
+      component: () => import(/* webpackChunkName: 'auditions' */ '@/views/auditions/AuditionCheckIn'),
+    },
+  ]),
+
   /*
   |--------------------------------------------------------------------------
   | Protected Routes
