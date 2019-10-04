@@ -75,159 +75,13 @@
             placeholder="State"
             :message="errors.first('state')"
           >
-            <option :value="1">
-              Alabama
+            <option
+              v-for="state in states"
+              :key="state.value"
+              :value="state.value"
+            >
+              {{ state.label }}
             </option>
-            <option :value="2">
-              Alaska
-            </option>
-            <option :value="3">
-              Arizona
-            </option>
-            <option :value="4">
-              Arkansas
-            </option>
-            <option :value="5">
-              California
-            </option>
-            <option :value="6">
-              Colorado
-            </option>
-            <option :value="6">
-              Connecticut
-            </option>
-            <option :value="7">
-              Delaware
-            </option>
-            <option :value="8">
-              District Of Columbia
-            </option>
-            <option :value="8">
-              Florida
-            </option>
-            <option :value="10">
-              Georgia
-            </option>
-            <option :value="11">
-              Hawaii
-            </option>
-            <option :value="12">
-              Idaho
-            </option>
-            <option :value="13">
-              Illinois
-            </option>
-            <option :value="14">
-              Indiana
-            </option>
-            <option :value="15">
-              Iowa
-            </option>
-            <option :value="16">
-              Kansas
-            </option>
-            <!-- <option value="KY">
-              Kentucky
-            </option>
-            <option value="LA">
-              Louisiana
-            </option>
-            <option value="ME">
-              Maine
-            </option>
-            <option value="MD">
-              Maryland
-            </option>
-            <option value="MA">
-              Massachusetts
-            </option>
-            <option value="MI">
-              Michigan
-            </option>
-            <option value="MN">
-              Minnesota
-            </option>
-            <option value="MS">
-              Mississippi
-            </option>
-            <option value="MO">
-              Missouri
-            </option>
-            <option value="MT">
-              Montana
-            </option>
-            <option value="NE">
-              Nebraska
-            </option>
-            <option value="NV">
-              Nevada
-            </option>
-            <option value="NH">
-              New Hampshire
-            </option>
-            <option value="NJ">
-              New Jersey
-            </option>
-            <option value="NM">
-              New Mexico
-            </option>
-            <option value="NY">
-              New York
-            </option>
-            <option value="NC">
-              North Carolina
-            </option>
-            <option value="ND">
-              North Dakota
-            </option>
-            <option value="OH">
-              Ohio
-            </option>
-            <option value="OK">
-              Oklahoma
-            </option>
-            <option value="OR">
-              Oregon
-            </option>
-            <option value="PA">
-              Pennsylvania
-            </option>
-            <option value="RI">
-              Rhode Island
-            </option>
-            <option value="SC">
-              South Carolina
-            </option>
-            <option value="SD">
-              South Dakota
-            </option>
-            <option value="TN">
-              Tennessee
-            </option>
-            <option value="TX">
-              Texas
-            </option>
-            <option value="UT">
-              Utah
-            </option>
-            <option value="VT">
-              Vermont
-            </option>
-            <option value="VA">
-              Virginia
-            </option>
-            <option value="WA">
-              Washington
-            </option>
-            <option value="WV">
-              West Virginia
-            </option>
-            <option value="WI">
-              Wisconsin
-            </option>
-            <option value="WY">
-              Wyoming
-            </option> -->
           </base-select>
           <base-input
             key="zip-input"
@@ -325,6 +179,7 @@
 
 <script>
 import AuthService from '@/services/AuthService';
+import states from '@/utils/states';
 
 export default {
   data() {
@@ -333,6 +188,7 @@ export default {
       step: 1,
       isLoading: false,
       preview: null,
+      states,
     };
   },
   methods: {
