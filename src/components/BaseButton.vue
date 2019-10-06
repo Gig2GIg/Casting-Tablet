@@ -7,7 +7,7 @@
     :type="type"
     @click="$emit('click', $event)"
   >
-  <slot />
+    <slot />
   </button>
 
   <button
@@ -49,7 +49,7 @@ export default {
 <style scoped>
 .selbutton {
   background-image: linear-gradient(#4D2545, #782541);
-} 
+}
 
 .selbutton:hover {
   background-image: linear-gradient(#331d2f, #5e1d33);

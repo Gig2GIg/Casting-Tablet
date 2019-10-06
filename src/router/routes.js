@@ -32,7 +32,7 @@ export default [
     },
   ]),
 
-  ...mapRoutes({ layout: 'checkIn'}, [
+  ...mapRoutes({ layout: 'checkIn' }, [
     {
       path: '/auditions/:id/checkin',
       name: 'auditions/checkin',

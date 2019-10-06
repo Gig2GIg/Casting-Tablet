@@ -7,6 +7,7 @@ import 'firebase/storage';
 
 class AuthService extends BaseService {
   async login(credentials) {
+    // eslint-disable-next-line camelcase
     const { data: { data: { id }, access_token } } = await this.post('/login', credentials);
 
     // Save token
@@ -16,6 +17,7 @@ class AuthService extends BaseService {
     HttpService.setAuthorizationHeader(access_token);
     HttpService.mount401Interceptor();
 
+    // eslint-disable-next-line camelcase
     return access_token;
   }
 

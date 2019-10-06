@@ -3,7 +3,8 @@
   <div>
     <select
       v-model="computedValue"
-      class="text-black rounded-full overflow-hidden w-full h-full my-2 py-3 px-6 placeholder-purple"
+      class="text-purple rounded-full overflow-hidden w-full h-full my-2 py-3 px-6"
+      :class="[...customClasses]"
       v-bind="$attrs"
     >
       <option
@@ -29,14 +30,6 @@
 <script>
 export default {
   inheritAttrs: false,
-  $_veeValidate: {
-    name() {
-      return this.name;
-    },
-    value() {
-      return this.value;
-    },
-  },
   props: {
     name: {
       type: String,
@@ -53,6 +46,10 @@ export default {
     message: {
       type: String,
       default: null,
+    },
+    customClasses: {
+      type: Array,
+      default: () => [],
     },
   },
   data() {

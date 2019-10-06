@@ -4,11 +4,11 @@ import VueCarousel from 'vue-carousel';
 import VeeValidate from 'vee-validate';
 import VeeValidateLaravel from 'vee-validate-laravel-extended';
 import VueTheMask from 'vue-the-mask';
-import VueQrcodeReader from "vue-qrcode-reader";
+import VueQrcodeReader from 'vue-qrcode-reader';
+import firebase from 'firebase/app';
 import App from '@/App';
 import store from '@/store';
 import router from '@/router';
-import firebase from 'firebase/app';
 
 Vue.use(VueCarousel);
 Vue.use(VeeValidate);
@@ -24,7 +24,7 @@ firebase.initializeApp({
   projectId: 'dd-gig2gig',
   storageBucket: 'dd-gig2gig.appspot.com',
   messagingSenderId: '593196123450',
-  appId: '1:593196123450:web:796a695a5e872524fc3c03'
+  appId: '1:593196123450:web:796a695a5e872524fc3c03',
 });
 
 Vue.config.productionTip = false;

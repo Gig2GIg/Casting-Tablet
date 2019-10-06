@@ -1,6 +1,6 @@
+import axios from 'axios';
 import * as types from '@/store/types';
 import AuditionService from '@/services/AuditionService';
-import axios from "axios";
 
 export default {
   async fetch({ commit }) {
@@ -15,7 +15,7 @@ export default {
 
   async fetchUpcoming({ commit }) {
     try {
-      const {data: { data }}  = await axios.get("/t/auditions/upcoming");
+      const { data: { data } } = await axios.get('/t/auditions/upcoming');
       console.log(data);
       commit(types.FETCH_UPCOMING_AUDITIONS_SUCCESS, data);
     } catch (e) {
@@ -26,7 +26,7 @@ export default {
 
   async fetchPassed({ commit }) {
     try {
-      const {data: { data }} = await axios.get("/t/auditions/passed");
+      const { data: { data } } = await axios.get('/t/auditions/passed');
       console.log(data);
       commit(types.FETCH_PASSED_AUDITIONS_SUCCESS, data);
     } catch (e) {
@@ -36,7 +36,7 @@ export default {
 
   async fetchUserList({ commit }, audition) {
     try {
-      const {data: { data }} = await axios.get(`/appointments/auditions/${audition}`);
+      const { data: { data } } = await axios.get(`/appointments/auditions/${audition}`);
       console.log(data);
       commit(types.FETCH_USER_LIST_AUDITION_SUCCESS, data);
     } catch (e) {
@@ -46,7 +46,7 @@ export default {
 
   async fetchAuditionData({ commit }, audition) {
     try {
-      const {data: { data }} = await axios.get(`/auditions/show/${audition}`);
+      const { data: { data } } = await axios.get(`/auditions/show/${audition}`);
       console.log(data);
       commit(types.FETCH_AUDITION_DATA_SUCCESS, data);
     } catch (e) {

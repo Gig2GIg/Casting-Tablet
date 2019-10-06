@@ -17,7 +17,7 @@
           :date="data.date"
           :image="data.cover"
           actionable
-          :navigateTo="data.id"
+          :navigate-to="data.id"
         />
       </slide>
     </carousel>
@@ -30,7 +30,10 @@
       :per-page="4"
       :pagination-enabled="false"
     >
-      <slide v-for="data in passed" :key="data.id">
+      <slide
+        v-for="data in passed"
+        :key="data.id"
+      >
         <card-item
           :title="data.title"
           :date="data.date"
@@ -38,12 +41,12 @@
         />
       </slide>
     </carousel>
-    </div>
+  </div>
 </template>
 
 <script>
 
-import { mapActions, mapState, mapGetters } from "vuex";
+import { mapActions, mapState, mapGetters } from 'vuex';
 
 export default {
   data() {
@@ -51,15 +54,15 @@ export default {
       isLoading: true,
     };
   },
-  computed:{
-    ...mapState("audition", ["auditions", "upcoming", "passed"])
+  computed: {
+    ...mapState('audition', ['auditions', 'upcoming', 'passed']),
   },
   async created() {
     this.fetchUpcoming();
     this.fetchPassed();
   },
-  methods:{
-    ...mapActions("audition", ["fetch", "fetchUpcoming", "fetchPassed"])
+  methods: {
+    ...mapActions('audition', ['fetch', 'fetchUpcoming', 'fetchPassed']),
   },
 };
 </script>

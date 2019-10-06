@@ -1,78 +1,111 @@
 <template>
   <div class="text-purple pl-6 py-8">
-    <sidebar-detail class="float-right"></sidebar-detail>
+    <sidebar-detail class="float-right" />
     <div class="container flex flex-wrap w-full ml-5">
-      <div v-for="data in userList" :key="data.id">
+      <div
+        v-for="data in userList"
+        :key="data.id"
+      >
         <card-user
           :title="data.name"
           :time="data.time"
           :image="data.image"
         />
       </div>
-      <div v-for="data in userList" :key="data.id">
+      <div
+        v-for="data in userList"
+        :key="data.id"
+      >
         <card-user
           :title="data.name"
           :time="data.time"
           :image="data.image"
         />
       </div>
-      <div v-for="data in userList" :key="data.id">
+      <div
+        v-for="data in userList"
+        :key="data.id"
+      >
         <card-user
           :title="data.name"
           :time="data.time"
           :image="data.image"
         />
       </div>
-      <div v-for="data in userList" :key="data.id">
+      <div
+        v-for="data in userList"
+        :key="data.id"
+      >
         <card-user
           :title="data.name"
           :time="data.time"
           :image="data.image"
         />
       </div>
-      <div v-for="data in userList" :key="data.id">
+      <div
+        v-for="data in userList"
+        :key="data.id"
+      >
         <card-user
           :title="data.name"
           :time="data.time"
           :image="data.image"
         />
       </div>
-      <div v-for="data in userList" :key="data.id">
+      <div
+        v-for="data in userList"
+        :key="data.id"
+      >
         <card-user
           :title="data.name"
           :time="data.time"
           :image="data.image"
         />
       </div>
-      <div v-for="data in userList" :key="data.id">
+      <div
+        v-for="data in userList"
+        :key="data.id"
+      >
         <card-user
           :title="data.name"
           :time="data.time"
           :image="data.image"
         />
       </div>
-      <div v-for="data in userList" :key="data.id">
+      <div
+        v-for="data in userList"
+        :key="data.id"
+      >
         <card-user
           :title="data.name"
           :time="data.time"
           :image="data.image"
         />
       </div>
-      <div v-for="data in userList" :key="data.id">
+      <div
+        v-for="data in userList"
+        :key="data.id"
+      >
         <card-user
           :title="data.name"
           :time="data.time"
           :image="data.image"
         />
       </div>
-      <div v-for="data in userList" :key="data.id">
+      <div
+        v-for="data in userList"
+        :key="data.id"
+      >
         <card-user
           :title="data.name"
           :time="data.time"
           :image="data.image"
         />
       </div>
-      <div v-for="data in userList" :key="data.id">
+      <div
+        v-for="data in userList"
+        :key="data.id"
+      >
         <card-user
           :title="data.name"
           :time="data.time"
@@ -84,22 +117,23 @@
 </template>
 
 <script>
+import { mapActions, mapState, mapGetters } from 'vuex';
 import AuditionService from '@/services/AuditionService';
-import { mapActions, mapState, mapGetters } from "vuex";
+
 export default {
   data() {
     return {
       isLoading: true,
     };
   },
-  computed:{
-    ...mapState("audition", ["userList"])
+  computed: {
+    ...mapState('audition', ['userList']),
   },
   async created() {
     this.fetchUserList(this.$route.params.id);
   },
-  methods:{
-    ...mapActions("audition", ["fetchUserList"])
+  methods: {
+    ...mapActions('audition', ['fetchUserList']),
   },
 };
 </script>
