@@ -1,15 +1,83 @@
 <!-- eslint-disable max-len -->
 <template>
-  <form class="relative">
-    <div class="flex">
+  <form
+    class="relative"
+    data-vv-scope="create"
+    @submit.prevent="handleCreate"
+  >
+    <div class="flex flex-row-reverse mb-4 px-2">
+      <div
+        class="relative flex items-center text-purple cursor-pointer"
+        @click="manageInvitations = !manageInvitations"
+      >
+        <img
+          src="/images/icons/person.png"
+          alt="Icon"
+          class="h-4 mr-2"
+        >
+        <span class="select-none">
+          Add Invitations
+        </span>
+      </div>
+    </div>
+
+    <form
+      v-if="manageInvitations"
+      class="bubble absolute right-0 w-64 -mr-12 z-50 p-3"
+      data-vv-scope="invitation"
+      @submit.prevent="handleInvitation"
+    >
+      <base-button
+        v-if="!invitation.adding"
+        class="pt-2 pb-2"
+        border-classes="rounded-full border border-purple"
+        color="bg-white"
+        :hover="['bg-purple', 'text-white']"
+        text="text-purple"
+        expanded
+        @click="invitation.adding = true"
+      >
+        Add Contributor
+      </base-button>
+
+      <div v-show="invitation.adding">
+        <base-input
+          v-model="invitation.email"
+          v-validate="'required|email'"
+          name="email"
+          placeholder="Email"
+          :custom-classes="['border', 'border-purple']"
+          :message="errors.first('invitation.email')"
+          expanded
+        />
+
+        <base-button
+          class="pt-2 pb-2"
+          type="submit"
+          expanded
+        >
+          Send
+        </base-button>
+      </div>
+
+      <contributor-item
+        v-for="contributor in form.contributors"
+        :key="contributor.email"
+        :contributor="contributor"
+        @destroy="handleDeleteContributor"
+      />
+    </form>
+
+    <div class="w-full">
       <base-input
         v-model="form.title"
         v-validate="'required|max:255'"
         name="title"
-        class="w-2/3 px-2"
+        class="px-2"
         placeholder="Title"
         :custom-classes="['border', 'border-purple']"
-        :message="errors.first('title')"
+        :message="errors.first('create.title')"
+        expanded
       />
       <!-- <base-checkbox
         class="w-1/3 px-2"
@@ -28,7 +96,7 @@
         type="date"
         placeholder="Date"
         :custom-classes="['border', 'border-purple']"
-        :message="errors.first('date')"
+        :message="errors.first('create.date')"
       />
       <base-input
         v-model="form.time"
@@ -39,7 +107,7 @@
         placeholder="Time"
         :time="true"
         :custom-classes="['w-1/4', 'border', 'border-purple']"
-        :message="errors.first('time')"
+        :message="errors.first('create.time')"
       />
       <base-input
         v-model="form.location"
@@ -48,7 +116,7 @@
         class="w-1/3 px-2"
         type="location"
         :custom-classes="['w-1/4', 'border', 'border-purple']"
-        :message="errors.first('location')"
+        :message="errors.first('create.location')"
       />
     </div>
 
@@ -64,7 +132,7 @@
         type="textarea"
         placeholder="Description"
         :custom-classes="['border', 'border-purple', 'mt-0 mb-0']"
-        :message="errors.first('description')"
+        :message="errors.first('create.description')"
       />
       <div class="px-2 py-2 w-1/3">
         <vue2Dropzone
@@ -83,7 +151,7 @@
         type="textarea"
         placeholder="Personnel Information"
         :custom-classes="['border', 'border-purple']"
-        :message="errors.first('personal_information')"
+        :message="errors.first('create.personal_information')"
         data-vv-as="personnel information"
       />
     </div>
@@ -96,7 +164,7 @@
         type="textarea"
         placeholder="Additional Information"
         :custom-classes="['border', 'border-purple']"
-        :message="errors.first('additional_info')"
+        :message="errors.first('create.additional_info')"
         data-vv-as="additional information"
       />
     </div>
@@ -113,7 +181,7 @@
         type="date"
         placeholder="Contract Start Date"
         :custom-classes="['border', 'border-purple']"
-        :message="errors.first('contract_start_date')"
+        :message="errors.first('create.contract_start_date')"
         data-vv-as="start date"
       />
       <base-input
@@ -124,7 +192,7 @@
         type="date"
         placeholder="Contract End Date"
         :custom-classes="['border', 'border-purple']"
-        :message="errors.first('contract_end_date')"
+        :message="errors.first('create.contract_end_date')"
         data-vv-as="end date"
       />
     </div>
@@ -137,7 +205,7 @@
         type="date"
         placeholder="Rehearsal Start Date"
         :custom-classes="['border', 'border-purple']"
-        :message="errors.first('rehearsal_start_date')"
+        :message="errors.first('create.rehearsal_start_date')"
         data-vv-as="start date"
       />
       <base-input
@@ -148,7 +216,7 @@
         type="date"
         placeholder="Rehearsal End Date"
         :custom-classes="['border', 'border-purple']"
-        :message="errors.first('rehearsal_end_date')"
+        :message="errors.first('create.rehearsal_end_date')"
         data-vv-as="end date"
       />
     </div>
@@ -164,7 +232,7 @@
         class="w-full px-2"
         placeholder="Audition URL"
         :custom-classes="['border', 'border-purple']"
-        :message="errors.first('url')"
+        :message="errors.first('create.url')"
       />
     </div>
     <div class="flex">
@@ -175,7 +243,7 @@
         class="w-1/3 px-2"
         placeholder="Phone"
         :custom-classes="['border', 'border-purple']"
-        :message="errors.first('phone')"
+        :message="errors.first('create.phone')"
       />
       <base-input
         v-model="form.email"
@@ -184,7 +252,7 @@
         class="w-1/3 px-2"
         placeholder="Email"
         :custom-classes="['border', 'border-purple']"
-        :message="errors.first('email')"
+        :message="errors.first('create.email')"
       />
       <base-input
         v-model="form.other_info"
@@ -193,7 +261,7 @@
         class="w-1/3 px-2"
         placeholder="Other"
         :custom-classes="['border', 'border-purple']"
-        :message="errors.first('other_info')"
+        :message="errors.first('create.other_info')"
         data-vv-as="other information"
       />
     </div>
@@ -252,18 +320,19 @@
       </div>
       <div class="managers w-3/5 flex flex-col items-end">
         <button
-          class="w-2/3 mt-4 py-3 px-4 border-4 border-purple text-purple rounded-full"
+          class="w-2/3 mt-4 py-3 px-4 border-4 border-purple text-purple rounded-full focus:outline-none"
           @click.prevent="manageAppointments = true"
         >
-          Manage appointments
+          Manage Appointments
         </button>
         <button
-          class="w-2/3 mt-4 py-3 px-4 border-4 border-purple text-purple rounded-full"
+          class="w-2/3 mt-4 py-3 px-4 border-4 border-purple text-purple rounded-full focus:outline-none"
+          @click.prevent="manageRoles = true"
         >
           Edit Roles
         </button>
         <button
-          class="w-2/3 mt-4 py-3 px-4 border-4 border-purple text-purple rounded-full"
+          class="w-2/3 mt-4 py-3 px-4 border-4 border-purple text-purple rounded-full focus:outline-none"
         >
           Manage Documents
         </button>
@@ -271,8 +340,14 @@
     </div>
     <AppointmentsModal
       v-if="manageAppointments"
-      :data="form.slots"
+      :data="form.appointment"
       @modalexit="manageAppointments = false"
+      @change="form.appointment = $event"
+    />
+    <RolesModal
+      v-if="manageRoles"
+      :data="form.slots"
+      @modalexit="manageRoles = false"
     />
   </form>
 </template>
@@ -281,13 +356,21 @@
 import vue2Dropzone from 'vue2-dropzone';
 import 'vue2-dropzone/dist/vue2Dropzone.min.css';
 import AppointmentsModal from './AppointmentsModal.vue';
+import RolesModal from './RolesModal.vue';
+import ContributorItem from './ContributorItem.vue';
 
 export default {
   name: 'AuditionForm',
-  components: { vue2Dropzone, AppointmentsModal },
+  components: { vue2Dropzone, AppointmentsModal, RolesModal, ContributorItem },
   data() {
     return {
       manageAppointments: false,
+      manageInvitations: false,
+      manageRoles: false,
+      invitation: {
+        adding: false,
+        email: '',
+      },
       form: {
         dates: [
           {
@@ -297,14 +380,8 @@ export default {
             type: 2,
           },
         ],
-        slots: {
-          spaces: null,
-          type: 1,
-          length: 10,
-          start: '8:00',
-          end: '',
-          slots: [],
-        },
+        contributors: [],
+        appointment: undefined,
       },
       dropzoneOptions: {
         url: 'https://httpbin.org/post',
@@ -366,6 +443,28 @@ export default {
     };
   },
   methods: {
+    async handleInvitation() {
+      if (
+          !this.invitation.email
+          || this.form.contributors.find(x => x.email === this.invitation.email.toLowerCase())
+          || !await this.$validator.validateAll('invitation')
+        ) {
+        return;
+      }
+
+      this.form.contributors.push({
+        email: this.invitation.email.toLowerCase(),
+      });
+
+      this.invitation.adding = false;
+      this.invitation.email = '';
+    },
+
+    handleDeleteContributor(contributor) {
+      const index = this.form.contributors.indexOf(contributor);
+      this.form.contributors.splice(index, 1);
+    },
+
     handleCreate() {
       try {
 
@@ -377,6 +476,7 @@ export default {
 
       }
     },
+
     setTags({ target }, type, multiple = false) {
       const text = target.textContent.trim();
       const itemSelected = this[type].find(item => item.name === text);
@@ -395,3 +495,11 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.bubble {
+	background: #fff;
+  border-radius: .4em;
+  box-shadow: 0px 0px 6px #B2B2B2;
+}
+</style>

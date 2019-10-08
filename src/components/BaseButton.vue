@@ -1,8 +1,8 @@
 <template>
   <button
     v-if="color && text"
-    class="text-white overflow-hidden my-2 p-3 text-lg"
-    :class="[borderClasses, color, text, { 'w-full': expanded }]"
+    class="text-white overflow-hidden my-2 p-3 text-lg focus:outline-none"
+    :class="[borderClasses, color, text, hover.map(x => `hover:${x}`), { 'w-full': expanded }]"
     v-bind="$attrs"
     :type="type"
     @click="$emit('click', $event)"
@@ -12,7 +12,7 @@
 
   <button
     v-else
-    class="text-white overflow-hidden my-2 p-3 text-lg selbutton"
+    class="text-white overflow-hidden my-2 p-3 text-lg selbutton focus:outline-none"
     :class="[borderClasses, { 'w-full': expanded }]"
     v-bind="$attrs"
     :type="type"
@@ -27,8 +27,18 @@ export default {
   inheritAttrs: false,
   props: {
     expanded: Boolean,
-    color: String,
-    text: String,
+    color: {
+      type: String,
+      default: null,
+    },
+    hover: {
+      type: Array,
+      default: () => [],
+    },
+    text: {
+      type: String,
+      default: null,
+    },
     borderClasses: {
       type: String,
       default: 'rounded-full shadow-xl',
@@ -53,9 +63,5 @@ export default {
 
 .selbutton:hover {
   background-image: linear-gradient(#331d2f, #5e1d33);
-}
-
-.selbutton:focus {
-  outline: none;
 }
 </style>

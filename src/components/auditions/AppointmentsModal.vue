@@ -2,9 +2,9 @@
   <div class="modal-container bg-white w-5/6 rounded-2lg left-1/2 absolute top-1/2 shadow-2xl overflow-hidden max-h-full">
     <div class="flex">
       <div class="w-1/2 max-h-screen overflow-hidden pt-6">
-        <div class="w-full px-10 flex justify-between w-full items-center">
+        <div class="w-full px-8 flex justify-between w-full items-center">
           <p
-            class="text-3xl cursor-pointer pb-10 font-bold leading-none text-purple"
+            class="text-3xl cursor-pointer mb-10 font-bold leading-none text-purple"
             @click="$emit('modalexit')"
           >
             x
@@ -17,31 +17,16 @@
           </p>
         </div>
         <ul class="h-full pb-24 overflow-y-scroll">
-          <li
+          <SlotItem
             v-for="(slot, index) in appointments.slots"
             :key="index"
-          >
-            <div class="flex justify-around px-8">
-              <div class="w-3/4 relative">
-                <input
-                  type="text"
-                  readonly
-                  class="w-full py-2 pl-20 rounded-full border border-purple my-2"
-                >
-                <span class="absolute text-purple left-0 py-2 px-4 my-2 border border-purple rounded-l-full">{{ appointments.type == 1 ? slot.time : slot.number }}</span>
-              </div>
-              <div class="w-1/4 flex justify-center items-center">
-                <input
-                  v-model="slot.is_walk"
-                  type="checkbox"
-                >
-              </div>
-            </div>
-          </li>
+            :data="slot"
+            v-model="slot.is_walk"
+          />
         </ul>
       </div>
       <div class="border-l border-gray-300 w-1/2 flex p-10 max-h-full flex-col justify-center items-center">
-        <p class="py-3 pt-5 text-purple">
+        <p class="py-2 pt-5 text-purple">
           Appointment Slots
         </p>
         <div class="relative w-full">
@@ -55,13 +40,15 @@
             Appointments
           </span>
         </div>
-        <p class="py-4 pt-5 text-purple">
+
+        <p class="pt-5 text-purple">
           Appointment type
         </p>
-        <select
+        <base-select
           v-model="appointments.type"
-          class="w-full text-purple px-3 py-4 border border-purple rounded-full bg-transparent"
-          @change="makeSlots"
+          class="w-full"
+          :custom-classes="['border border-purple']"
+          @input="makeSlots"
         >
           <option value="1">
             Time
@@ -69,14 +56,16 @@
           <option value="2">
             Number
           </option>
-        </select>
-        <p class="py-4 pt-5 text-purple">
+        </base-select>
+
+        <p class="pt-5 text-purple">
           Appointment length
         </p>
-        <select
+        <base-select
           v-model="appointments.length"
-          class="w-full text-purple px-3 py-4 border border-purple rounded-full bg-transparent"
-          @change="makeSlots"
+          class="w-full"
+          :custom-classes="['border border-purple']"
+          @input="makeSlots"
         >
           <option value="10">
             10 minutes
@@ -96,52 +85,52 @@
           <option value="60">
             60 minutes
           </option>
-        </select>
-        <p class="py-2 pt-5 text-purple">
+        </base-select>
+
+        <p class="pt-5 text-purple">
           Start time
         </p>
-        <div
-          class="py-2 w-full"
-          :class="{ 'h-full': this.appointments.spaces < 10 }"
-        >
-          <base-input
-            v-model="appointments.start"
-            class="py-2 h-full max-h-full w-full"
-            type="text"
-            name="time"
-            :time="true"
-            :custom-classes="['py-1', 'w-full', 'border', 'border-purple']"
-            @input="makeSlots"
-          />
-        </div>
-        <p class="py-2 pt-5 text-purple">
+        <base-input
+          v-model="appointments.start"
+          type="text"
+          name="time"
+          :time="true"
+          class="w-full"
+          :custom-classes="['border', 'border-purple']"
+          @input="makeSlots"
+        />
+
+        <p class="pt-5 text-purple">
           End time
         </p>
-        <div
-          class="w-full py-2"
-          :class="{ 'h-full': this.appointments.spaces < 10 }"
-        >
-          <base-input
-            v-model="appointments.end"
-            class="py-2 h-full max-h-full w-full"
-            type="text"
-            name="time"
-            :time="true"
-            :custom-classes="['w-full', 'border', 'border-purple', 'py-1']"
-          />
-        </div>
+        <base-input
+          v-model="appointments.end"
+          class="w-full"
+          type="text"
+          name="time"
+          :time="true"
+          :custom-classes="['border', 'border-purple']"
+          readonly
+        />
 
-        <button class="text-white py-3 mt-5 w-2/3 px-4 border border-purple rounded-full">
+        <base-button
+          class="mt-6"
+          expanded
+          @click="handleDone"
+        >
           Done
-        </button>
+        </base-button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import SlotItem from './SlotItem.vue';
+
 export default {
   name: 'AppointmentsModal',
+  components: { SlotItem },
   props: {
     data: {
       type: Object,
@@ -149,7 +138,7 @@ export default {
         spaces: null,
         type: 1,
         length: 10,
-        start: '8:00',
+        start: '08:00',
         end: '',
         slots: [],
       }),
@@ -171,50 +160,48 @@ export default {
   },
   methods: {
     makeSlots() {
-      if (!this.appointments.spaces) {
-        this.appointments.slots = [];
+      if (!(/^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/.test(this.appointments.start))) {
+        return;
       }
 
-      if (this.appointments.type == 1) {
-        const validate = /([0-1][0-9]|2[0-3]):[0-5][0-9]/;
-        if ((validate).test(this.appointments.start)) {
-          return;
-        }
-      }
-      if (this.appointments.spaces > 0 && (this.appointments.type == 1 ? this.appointments.start : true)) {
-        this.appointments.slots = [];
-        let counter = this.appointments.type == 1 ? this.appointments.start : 0;
-        for (let i = 0; i <= this.appointments.spaces; i++) {
-          this.appointments.slots.push({
-            time: this.appointments.type == 1 ? counter : null,
-            number: this.appointments.type == 1 ? null : counter,
-            status: false,
-            is_walk: false,
-          });
+      const spaces = parseInt(this.appointments.spaces);
+      let counter = this.appointments.start;
 
-          if (this.appointments.type == 1) {
-            const pivot = counter.split(':');
-            let hour = parseInt(pivot[0], 10);
-            let minutes = parseInt(pivot[1], 10);
-            minutes += parseInt(this.appointments.length, 10);
-            if (minutes >= 60) {
-              hour += 1;
-              if (hour >= 24) {
-                hour = '0';
-              }
-              minutes = minutes === 60 ? 0 : (minutes - 60);
-            }
+      this.appointments.slots = [];
 
-            counter = `${hour < 10 ? `0${hour}` : hour}:${minutes < 10 ? `0${minutes}` : minutes}`;
-          } else {
-            counter += 1;
+      for (let i = 0; i < spaces; i++) {
+        this.appointments.slots.push({
+          time: this.appointments.type == 1 ? counter : null,
+          number: this.appointments.type == 1 ? null : i + 1,
+          status: false,
+          is_walk: false,
+        });
+
+        const pivot = counter.split(':');
+        let hour = parseInt(pivot[0], 10);
+        let minutes = parseInt(pivot[1], 10);
+        minutes += parseInt(this.appointments.length, 10);
+        if (minutes >= 60) {
+          hour += 1;
+          if (hour >= 24) {
+            hour = '0';
           }
+          minutes = minutes === 60 ? 0 : (minutes - 60);
         }
 
-        if (this.appointments.slots && this.appointments.type == 1) {
-          this.appointments.end = this.appointments.slots[this.appointments.slots.length - 1].time;
-        }
+        counter = `${hour < 10 ? `0${hour}` : hour}:${minutes < 10 ? `0${minutes}` : minutes}`;
       }
+
+      this.appointments.end = this.appointments.slots.length ? counter : '';
+    },
+
+    handleDone() {
+      if (!parseInt(this.appointments.spaces)) {
+        return;
+      }
+
+      this.$emit('change', this.appointments);
+      this.$emit('modalexit');
     },
   },
 };
@@ -228,7 +215,7 @@ export default {
   top: 50%;
   transform: translateY(-50%);
 }
-.top-1\/2 {
+.left-1\/2 {
   left: 50%;
   transform: translateX(-50%);
 }
