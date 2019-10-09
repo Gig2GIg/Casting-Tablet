@@ -4,7 +4,7 @@
     <div class="flex items-center justify-around px-8">
       <div class="w-3/4 relative">
         <input
-          class="w-full py-2 pl-20 rounded-full border border-purple my-2"
+          class="w-full py-2 pl-20 rounded-full border border-purple my-2 focus:outline-none"
           type="text"
           readonly
         >

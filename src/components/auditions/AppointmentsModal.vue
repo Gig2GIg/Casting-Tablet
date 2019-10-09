@@ -1,18 +1,21 @@
 <template>
   <div class="modal-container bg-white w-5/6 rounded-2lg left-1/2 absolute top-1/2 shadow-2xl overflow-hidden max-h-full">
+    <svg
+      class="absolute left-0 ml-5 mt-5 cursor-pointer"
+      xmlns="http://www.w3.org/2000/svg"
+      width="16.16"
+      height="16.165"
+      viewBox="0 0 16.16 16.165"
+      @click="$emit('close')"
+    >
+      <path id="Path_31" data-name="Path 31" d="M11.609,9.822,17.532,3.9a1.264,1.264,0,0,0-1.787-1.787L9.822,8.035,3.9,2.112A1.264,1.264,0,0,0,2.112,3.9L8.035,9.822,2.112,15.745A1.268,1.268,0,0,0,3,17.907a1.2,1.2,0,0,0,.885-.374l5.94-5.923,5.923,5.923a1.266,1.266,0,0,0,.885.374,1.2,1.2,0,0,0,.885-.374,1.263,1.263,0,0,0,0-1.787Z" transform="translate(-1.742 -1.742)" fill="#4d2545"/>
+    </svg>
+
     <div class="flex">
-      <div class="w-1/2 max-h-screen overflow-hidden pt-6">
-        <div class="w-full px-8 flex justify-between w-full items-center">
-          <p
-            class="text-3xl cursor-pointer mb-10 font-bold leading-none text-purple"
-            @click="$emit('modalexit')"
-          >
-            x
-          </p>
-          <p
-            v-if="appointments.slots.length"
-            class="text-purple text-xs w-1/3 text-center self-end"
-          >
+      <div class="w-1/2 max-h-screen overflow-hidden pt-16">
+        <div class="w-full flex w-full items-center px-8">
+          <div class="w-3/4"></div>
+          <p class="text-purple text-xs w-24 text-center ml-2">
             Mark as Walk-In Appointment
           </p>
         </div>
@@ -201,7 +204,7 @@ export default {
       }
 
       this.$emit('change', this.appointments);
-      this.$emit('modalexit');
+      this.$emit('close');
     },
   },
 };

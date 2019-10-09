@@ -12,7 +12,7 @@
 
   <button
     v-else
-    class="text-white overflow-hidden my-2 p-3 text-lg selbutton focus:outline-none"
+    class="bg-purple-gradient text-white overflow-hidden my-2 p-3 text-lg focus:outline-none"
     :class="[borderClasses, { 'w-full': expanded }]"
     v-bind="$attrs"
     :type="type"
@@ -55,13 +55,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.selbutton {
-  background-image: linear-gradient(#4D2545, #782541);
-}
-
-.selbutton:hover {
-  background-image: linear-gradient(#331d2f, #5e1d33);
-}
-</style>

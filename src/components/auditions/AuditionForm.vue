@@ -63,6 +63,7 @@
       <contributor-item
         v-for="contributor in form.contributors"
         :key="contributor.email"
+        class="-mx-3"
         :contributor="contributor"
         @destroy="handleDeleteContributor"
       />
@@ -325,29 +326,104 @@
         >
           Manage Appointments
         </button>
+
+        <div
+          v-if="!!form.roles.length"
+          class="flex flex-col items-center my-5 w-2/3"
+        >
+          <p class="text-purple text-lg mb-4">
+            Roles
+          </p>
+
+          <carousel
+            class="flex-none w-full"
+            :per-page="innerWidth < 1920 ? 2 : 4"
+            :pagination-enabled="false"
+          >
+            <slide
+              v-for="(role, index) in form.roles"
+              :key="index"
+              :data-index="index"
+              @slide-click="openRole"
+            >
+              <div class="flex flex-col items-center cursor-pointer">
+                <div class="bg-purple-gradient flex items-center justify-center rounded-full h-12 w-12">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="19.486" height="21.574" viewBox="0 0 19.486 21.574">
+                    <path id="Path_3" data-name="Path 3" d="M24.98,19.435a14.3,14.3,0,0,0-6.919-2.814A.872.872,0,0,0,17.24,17a.925.925,0,0,0-.141.352.846.846,0,0,0,.727.938,12.611,12.611,0,0,1,5.793,2.275v2.064H7.554v-2.04a12.431,12.431,0,0,1,5.77-2.275.859.859,0,0,0,.751-.844V15.589a4.318,4.318,0,0,0,.774.07h1.478a4.664,4.664,0,0,0,4.667-4.667V7.4A4.654,4.654,0,0,0,16.349,2.76H14.871A4.659,4.659,0,0,0,10.2,7.4v3.588a4.63,4.63,0,0,0,2.181,3.94v1.782a15.084,15.084,0,0,0-6.168,2.721.824.824,0,0,0-.352.68v3.354a.841.841,0,0,0,.844.844H24.487a.841.841,0,0,0,.844-.844v-3.33A.836.836,0,0,0,24.98,19.435ZM11.893,7.4a2.958,2.958,0,0,1,2.955-2.955h1.478A2.958,2.958,0,0,1,19.28,7.4v3.588a2.958,2.958,0,0,1-2.955,2.955H14.848a2.958,2.958,0,0,1-2.955-2.955V7.4Z" transform="translate(-5.855 -2.75)" fill="#fff" stroke="#d6d6d6" stroke-width="0.02"/>
+                  </svg>
+                </div>
+                <span class="text-purple font-medium mt-2">
+                  {{ role.name }}
+                </span>
+              </div>
+            </slide>
+          </carousel>
+        </div>
+
         <button
           class="w-2/3 mt-4 py-3 px-4 border-4 border-purple text-purple rounded-full focus:outline-none"
           @click.prevent="manageRoles = true"
         >
-          Edit Roles
+          {{ form.roles.length ? 'Add' : 'Edit' }} Roles
         </button>
+
+        <div
+          v-if="!!form.media.length"
+          class="flex flex-col items-center my-5 w-2/3"
+        >
+          <p class="text-purple text-lg mb-4">
+            Documents
+          </p>
+
+          <carousel
+            class="flex-none w-full"
+            :per-page="innerWidth < 1920 ? 1 : 2"
+            :pagination-enabled="false"
+          >
+            <slide
+              v-for="(media, index) in form.media"
+              :key="index"
+            >
+              <DocumentItem
+                :media="media"
+                @destroy="handleDeleteDocument"
+              />
+            </slide>
+          </carousel>
+        </div>
+
+        <input
+          ref="inputFile"
+          accept=".png, .jpg, .jpeg"
+          type="file"
+          multiple
+          hidden
+          @change="handleFile"
+        >
+
         <button
-          class="w-2/3 mt-4 py-3 px-4 border-4 border-purple text-purple rounded-full focus:outline-none"
+          class="w-2/3 py-3 px-4 border-4 border-purple text-purple rounded-full focus:outline-none"
+          :class="{ 'mt-4': !form.media.length }"
+          @click="$refs.inputFile.click()"
         >
           Manage Documents
         </button>
       </div>
     </div>
+
     <AppointmentsModal
       v-if="manageAppointments"
       :data="form.appointment"
-      @modalexit="manageAppointments = false"
       @change="form.appointment = $event"
+      @close="manageAppointments = false"
     />
+
     <RolesModal
       v-if="manageRoles"
-      :data="form.slots"
-      @modalexit="manageRoles = false"
+      :data="selectedRole"
+      @save="handleSaveRole"
+      @destroy="handleDeleteRole"
+      @close="manageRoles = false"
     />
   </form>
 </template>
@@ -358,15 +434,18 @@ import 'vue2-dropzone/dist/vue2Dropzone.min.css';
 import AppointmentsModal from './AppointmentsModal.vue';
 import RolesModal from './RolesModal.vue';
 import ContributorItem from './ContributorItem.vue';
+import DocumentItem from './DocumentItem.vue';
 
 export default {
   name: 'AuditionForm',
-  components: { vue2Dropzone, AppointmentsModal, RolesModal, ContributorItem },
+  components: { vue2Dropzone, AppointmentsModal, RolesModal, ContributorItem, DocumentItem },
   data() {
     return {
+      innerWidth: window.innerWidth,
       manageAppointments: false,
       manageInvitations: false,
       manageRoles: false,
+      selectedRole: null,
       invitation: {
         adding: false,
         email: '',
@@ -380,8 +459,10 @@ export default {
             type: 2,
           },
         ],
-        contributors: [],
+        roles: [],
         appointment: undefined,
+        contributors: [],
+        media: [],
       },
       dropzoneOptions: {
         url: 'https://httpbin.org/post',
@@ -442,7 +523,21 @@ export default {
       ],
     };
   },
+  watch: {
+    manageRoles(value) {
+      if (!value) {
+        this.selectedRole = null;
+      }
+    },
+  },
+  created() {
+    window.addEventListener('resize', this.onResize);
+  },
   methods: {
+    onResize() {
+      this.innerWidth = window.innerWidth;
+    },
+
     async handleInvitation() {
       if (
           !this.invitation.email
@@ -463,6 +558,48 @@ export default {
     handleDeleteContributor(contributor) {
       const index = this.form.contributors.indexOf(contributor);
       this.form.contributors.splice(index, 1);
+    },
+
+    openRole(dataset) {
+      this.selectedRole = this.form.roles[dataset.index];
+      this.manageRoles = true;
+    },
+
+    handleSaveRole(role) {
+      const index = this.form.roles.findIndex(x => x.id === role.id);
+
+      if (index !== -1) {
+        this.$set(this.form.roles, index, role);
+      } else {
+        this.form.roles.push(role);
+      }
+    },
+
+    handleDeleteRole(role) {
+      const index = this.form.roles.findIndex(x => x.id === role.id);
+      this.form.roles.splice(index, 1);
+    },
+
+    handleFile(e) {
+      const files = Array.from(e.target.files);
+
+      files
+        .filter(file => !this.form.media.some(x => x.name === file.name))
+        .forEach((file) => {
+          const extension = file.name.split('.').pop();
+          this.form.media.push({
+            name: file.name,
+            type: extension.toUpperCase(),
+            file,
+          });
+        });
+
+      this.$refs.inputFile.value = '';
+    },
+
+    handleDeleteDocument(media) {
+      const index = this.form.media.indexOf(media);
+      this.form.media.splice(index, 1);
     },
 
     handleCreate() {

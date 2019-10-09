@@ -144,6 +144,11 @@ export default {
       });
     }
   },
+  methods: {
+    focus() {
+      this.$refs.inputTag.focus();
+    }
+  },
 };
 </script>
 
