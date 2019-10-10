@@ -49,7 +49,7 @@
       <qrcode-stream v-if="cam" @decode="onDecode" @init="onInit" />
       <qrcode-drop-zone class="w-full" v-if="image" @detect="onDetect" @dragover="onDragOver" @init="logErrors">
       <div class="drop-area" :class="{ 'dragover': dragover }">
-        DROP SOME IMAGES HERE
+        DROP SOME IMAGES HERE 
       </div>
     </qrcode-drop-zone>
     </div>

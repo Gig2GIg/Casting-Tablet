@@ -1,11 +1,22 @@
+<!-- eslint-disable max-len -->
 <template>
   <section class=" bg-gray-100 flex flex-col items-center h-full w-4/12 -mt-16">
     <div class="flex w-full mt-10 ">
       <div class="w-1/2 text-center border-b-4 border-gray-600 border-purple">
-        <h4 class="font-bold" @click="changeInfo()">Info</h4>
+        <h4
+          class="font-bold"
+          @click="changeInfo()"
+        >
+          Info
+        </h4>
       </div>
       <div class="w-1/2 container text-center border-b-2 border-gray-400 text-gray-500">
-        <h4 class="font-bold" @click="changeManage()" >Manage</h4>
+        <h4
+          class="font-bold"
+          @click="changeManage()"
+        >
+          Manage
+        </h4>
       </div>
     </div>
   <transition name="fade">
@@ -219,7 +230,7 @@ export default {
       this.info = true;
       this.manage = false;
     },
-    changeManage(){
+    changeManage() {
       this.info = false;
       this.manage = true;
     },

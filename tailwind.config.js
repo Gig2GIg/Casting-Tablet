@@ -3,6 +3,9 @@ const { colors } = require('tailwindcss/defaultTheme');
 module.exports = {
   theme: {
     extend: {
+      borderRadius: {
+        large: '1.5rem',
+      },
       colors: {
         primary: colors.purple,
         purple: '#4D2545',

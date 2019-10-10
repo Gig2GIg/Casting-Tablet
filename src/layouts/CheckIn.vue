@@ -1,9 +1,10 @@
 <template>
   <div class="flex flex-col min-h-full cover h-full">
     <div
-    class="flex justify-center items-center h-12 cursor-pointer text-gray-200 font-light tracking-wider h-10 bg-purple">
-    Check In
-  </div>
+      class="flex justify-center items-center h-12 cursor-pointer text-gray-200 font-light tracking-wider h-10 bg-purple"
+    >
+      Check In
+    </div>
 
     <transition
       name="page"

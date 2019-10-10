@@ -1,7 +1,10 @@
-<!-- eslint-disable -->
+<!-- eslint-disable max-len -->
 <template>
-  <div>
-    <div class="relative">
+  <div class="flex flex-col">
+    <div
+      v-if="type !== 'textarea'"
+      class="relative h-12 my-2"
+    >
       <svg
         v-if="type === 'location'"
         xmlns="http://www.w3.org/2000/svg"
@@ -20,7 +23,7 @@
       <svg
         v-else-if="type === 'date'"
         xmlns="http://www.w3.org/2000/svg"
-        class="absolute top-0 right-0 bottom-0 my-auto mr-2"
+        class="absolute top-0 right-0 bottom-0 my-auto mr-3"
         width="21"
         height="21"
         viewBox="0 0 20 20"
@@ -48,7 +51,7 @@
         :value="value"
         color="indigo"
         :input-props="{
-          class: `text-black rounded-full overflow-hidden my-2 w-full h-full py-3 px-6 placeholder-purple focus:outline-none ${ customClasses.join(' ') }`,
+          class: `text-black rounded-full overflow-hidden w-full h-full py-3 pl-6 pr-10 placeholder-purple focus:outline-none ${ customClasses.join(' ') }`,
           placeholder: $attrs.placeholder ? $attrs.placeholder : '',
         }"
         @input="$emit('input', $event)"
@@ -57,13 +60,26 @@
       <input
         v-else
         ref="inputTag"
-        class="text-black rounded-full overflow-hidden my-2 w-full h-full py-3 px-6 placeholder-purple focus:outline-none"
+        class="text-black rounded-full overflow-hidden w-full h-full py-3 px-6 placeholder-purple focus:outline-none"
         :class="[{ 'pr-8': type === 'location' }, ...customClasses]"
         :value="value"
         :type="type"
         v-bind="$attrs"
         @input="$emit('input', $event.target.value)"
       >
+    </div>
+
+    <div
+      v-else
+      class="flex-1 my-2 rounded-large w-full h-full overflow-hidden"
+      :class="customClasses"
+    >
+      <textarea
+        class="text-black w-full h-full py-3 px-6 placeholder-purple focus:outline-none resize-none"
+        :value="value"
+        v-bind="$attrs"
+        @input="$emit('input', $event.target.value)"
+      />
     </div>
 
     <p
@@ -79,14 +95,6 @@
 
 export default {
   inheritAttrs: false,
-  $_veeValidate: {
-    name() {
-      return this.name;
-    },
-    value() {
-      return this.value;
-    },
-  },
   props: {
     name: {
       type: String,
@@ -105,6 +113,7 @@ export default {
         'location',
         'date',
         'number',
+        'textarea',
       ].indexOf(value) >= 0,
     },
     message: {
@@ -133,6 +142,11 @@ export default {
         this.$emit('input', place.formatted_address);
         this.$emit('place', place);
       });
+    }
+  },
+  methods: {
+    focus() {
+      this.$refs.inputTag.focus();
     }
   },
 };

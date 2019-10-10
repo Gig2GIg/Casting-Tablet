@@ -24,6 +24,14 @@ export default {
 @tailwind components;
 @tailwind utilities;
 
+.bg-purple-gradient {
+  background-image: linear-gradient(#4D2545, #782541);
+}
+
+.bg-purple-gradient:hover {
+  background-image: linear-gradient(#331d2f, #5e1d33);
+}
+
 body, html {
   height: 100%;
 }
