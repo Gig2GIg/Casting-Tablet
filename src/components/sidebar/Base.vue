@@ -62,3 +62,18 @@ export default {
   },
 };
 </script>
+<style scoped>
+::-webkit-scrollbar {
+    width: 0.5em;
+}
+ 
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+}
+ 
+::-webkit-scrollbar-thumb {
+  background-image: linear-gradient(#4D2545, #782541);
+  outline: 1px solid slategrey;
+  border-radius: 12px;
+}
+</style>

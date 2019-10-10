@@ -21,6 +21,7 @@
     "vee-validate-laravel-extended": "^1.0.0",
     "vue": "^2.6.10",
     "vue-carousel": "^0.18.0",
+    "vue-dropdowns": "^1.0.6",
     "vue-qrcode-reader": "^2.1.0",
     "vue-router": "^3.0.7",
     "vue-the-mask": "^0.11.1",

@@ -9,7 +9,10 @@
     <p v-if="scan" class="text-xl tracking-wider font-bold">
       Scan Your QR code to Sign In
     </p>
-
+    
+    <!-- <p v-if="scan" class="text-xl tracking-wider font-bold">
+      You've Checked-In Successfully!
+    </p> -->
     <div
       v-if="init"
       class="flex w-full max-w-xl mt-16"
@@ -35,13 +38,31 @@
         I'm a Walk In
       </base-button>
     </div>
+    <p  v-if="scan" class="decode-result" @click="changeScanner">Change method <b>{{ result }}</b></p>
 
     <div
       v-if="scan"
       class="flex w-full max-w-xl mt-16"
     >
-      <qrcode-stream @decode="onDecode" @init="onInit" />
+
+    <p v-if="error !== null" class="drop-error">{{ error }}</p>
+      <qrcode-stream v-if="cam" @decode="onDecode" @init="onInit" />
+      <qrcode-drop-zone class="w-full" v-if="image" @detect="onDetect" @dragover="onDragOver" @init="logErrors">
+      <div class="drop-area" :class="{ 'dragover': dragover }">
+        DROP SOME IMAGES HERE
+      </div>
+    </qrcode-drop-zone>
     </div>
+    <!-- <div
+      v-if="scan"
+      class="flex justify-center w-full max-w-xl mt-16 bg-white"
+    >
+
+    <p v-if="error !== null" class="drop-error">{{ error }}</p>
+      <div class="bg-white">
+        <p>Data</p>
+      </div>
+    </div> -->
   </div>
   <section v-if="scan" class=" bg-gray-100 flex flex-col items-center h-full w-1/5 overflow-scroll">
     <div class="flex w-full mt-10 ">
@@ -49,12 +70,14 @@
         Audition <br> Appointments
       </div>
     </div>
-    <div v-for="index in 10" :key="index" class="container flex w-full -mb-5">
-      <div class="w-1/2 text-center m-8 float-left">
-        <h4 class="text-left text-sm font-semibold text-indigo-300">Name</h4>
-      </div>
-      <div class="w-1/2 text-center m-8 float-right">
-        <h4 class="text-right text-sm font-bold text-purple">Time</h4>
+    <div v-for="data in appointments" :key="data.id" class="w-full">
+      <div class="flex w-full -mb-5">
+        <div class="w-1/2 text-center m-8 float-left">
+          <h4 class="text-left text-sm  text-purple">{{data.name}}</h4>
+        </div>
+        <div class="w-1/2 text-center m-8 float-right">
+          <h4 class="text-right text-sm font-bold text-purple">{{data.time}}</h4>
+        </div>
       </div>
       <div class="w-full border border-gray-300"></div>
     </div>
@@ -65,8 +88,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
-
+import { mapActions, mapState, mapGetters } from "vuex";
 export default {
   data() {
     return {
@@ -75,16 +97,23 @@ export default {
       init:true,
       scan:false,
       isLoading: false,
+      result: null,
+      error: null,
+      dragover: false,
+      cam: true,
+      image:false
     };
   },
-  mounted(){
-    console.log("XD");
+  computed:{
+    ...mapState("appointment", ["appointments"])
   },
+  mounted(){},
   methods: {
+    ...mapActions("appointment", ["fetch"]),
     useScanner(){
         this.init = false;
         this.scan = true;
-        console.log("XD");
+        this.fetch(this.$route.params.id);
     },
     async onInit (promise) {
       try {
@@ -108,11 +137,63 @@ export default {
     onDecode (result) {
       this.result = result
     },
+    changeScanner(){
+      if(this.cam){
+        this.cam = false;
+        this.image = true;
+      }
+      else{
+        this.cam = true;
+        this.image = false;
+      }
+    },
+    async onDetect (promise) {
+      try {
+        const { content } = await promise
+
+        this.result = content
+        this.error = null
+      } catch (error) {
+        if (error.name === 'DropImageFetchError') {
+          this.error = 'Sorry, you can\'t load cross-origin images :/'
+        } else if (error.name === 'DropImageDecodeError') {
+          this.error = 'Ok, that\'s not an image. That can\'t be decoded.'
+        } else {
+          this.error = 'Ups, what kind of error is this?! ' + error.message
+        }
+      }
+    },
+
+    logErrors (promise) {
+      promise.catch(console.error)
+    },
+
+    onDragOver (isDraggingOver) {
+      this.dragover = isDraggingOver
+    }
   },
 };
 </script>
 <style scoped>
 body, html {
     height: 100%;
+}
+.drop-area {
+  height: 300px;
+  color: #fff;
+  text-align: center;
+  font-weight: bold;
+  padding: 10px;
+
+  background-color: rgba(0,0,0,.5);
+}
+
+.dragover {
+  background-color: rgba(0,0,0,.8);
+}
+
+.drop-error {
+  color: red;
+  font-weight: bold;
 }
 </style>

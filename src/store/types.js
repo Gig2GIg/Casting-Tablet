@@ -14,3 +14,7 @@ export const FETCH_USER_LIST_AUDITION_SUCCESS = 'Fetch User List Audition Succes
 export const FETCH_USER_LIST_AUDITION_FAILURE = 'Fetch User List Audition Failed';
 export const FETCH_AUDITION_DATA_SUCCESS = 'Fetch Audition data Successful';
 export const FETCH_AUDITION_DATA_FAILURE = 'Fetch Audition data Failed';
+export const FETCH_APPOINTMENTS_SUCCESS = 'Fetch Appointments Successful';
+export const FETCH_APPOINTMENTS_FAILURE = 'Fetch Appointments Failed';
+export const FETCH_ROUNDS_SUCCESS = 'Fetch Rounds Successful';
+export const FETCH_ROUNDS_FAILURE = 'Fetch Rounds Failed';
