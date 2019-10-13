@@ -9238,6 +9238,11 @@ vue-carousel@^0.18.0:
     regenerator-runtime "^0.12.1"
     vue "^2.5.17"
 
+vue-dropdowns@^1.0.6:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/vue-dropdowns/-/vue-dropdowns-1.1.0.tgz#72eaecde3ac033cfeb02646029692f26b4a8fb53"
+  integrity sha512-EFcmc9zdaAG5mmRcrrUlW5/vlx98NxA/5R1EWjHC5WwQ/8VI5PnIhbhKn7IMLOdx4AgmaP/zPIdBgIkP+420Qw==
+
 vue-eslint-parser@^2.0.3:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/vue-eslint-parser/-/vue-eslint-parser-2.0.3.tgz#c268c96c6d94cfe3d938a5f7593959b0ca3360d1"
@@ -9330,6 +9335,11 @@ vue2-dropzone@^3.6.0:
   integrity sha512-YXC1nCWIZvfa98e/i6h+EshZCkFSxFEh0Sxr9ODfThAPPDVhAzLLlz/4XIx0NGO1QeSy6htwSstte47R7vVhLQ==
   dependencies:
     dropzone "^5.5.1"
+
+vue2-timepicker@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/vue2-timepicker/-/vue2-timepicker-1.0.1.tgz#67f449471791275731396db57844a83593100513"
+  integrity sha512-kmyPsEjV1NWUStRdtQ5xtwiJ+Cg9L5wnWAFaLAHVrFVrJNynWTsXypRVkdI8ICvl2jaQDaQE0Aojna5yVgB4qw==
 
 vue@^2.5.17, vue@^2.6.10:
   version "2.6.10"
