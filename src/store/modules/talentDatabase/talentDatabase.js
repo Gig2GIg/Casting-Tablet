@@ -3,9 +3,7 @@ import actions from './actions';
 import getters from './getters';
 
 const state = {
-  appointments: [],
-  userAppointment:{},
-  appointmentNotWalk:[],
+  talentList: [],
 };
 
 export default {

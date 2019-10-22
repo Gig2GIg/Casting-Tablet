@@ -1,107 +1,7 @@
 <template>
   <div class="text-purple pl-6 py-8">
-    <sidebar-detail class="float-right" />
-    <div class="container flex flex-wrap w-full ml-5">
-      <div
-        v-for="data in userList"
-        :key="data.id"
-      >
-        <card-user
-          :title="data.name"
-          :time="data.time"
-          :image="data.image"
-        />
-      </div>
-      <div
-        v-for="data in userList"
-        :key="data.id"
-      >
-        <card-user
-          :title="data.name"
-          :time="data.time"
-          :image="data.image"
-        />
-      </div>
-      <div
-        v-for="data in userList"
-        :key="data.id"
-      >
-        <card-user
-          :title="data.name"
-          :time="data.time"
-          :image="data.image"
-        />
-      </div>
-      <div
-        v-for="data in userList"
-        :key="data.id"
-      >
-        <card-user
-          :title="data.name"
-          :time="data.time"
-          :image="data.image"
-        />
-      </div>
-      <div
-        v-for="data in userList"
-        :key="data.id"
-      >
-        <card-user
-          :title="data.name"
-          :time="data.time"
-          :image="data.image"
-        />
-      </div>
-      <div
-        v-for="data in userList"
-        :key="data.id"
-      >
-        <card-user
-          :title="data.name"
-          :time="data.time"
-          :image="data.image"
-        />
-      </div>
-      <div
-        v-for="data in userList"
-        :key="data.id"
-      >
-        <card-user
-          :title="data.name"
-          :time="data.time"
-          :image="data.image"
-        />
-      </div>
-      <div
-        v-for="data in userList"
-        :key="data.id"
-      >
-        <card-user
-          :title="data.name"
-          :time="data.time"
-          :image="data.image"
-        />
-      </div>
-      <div
-        v-for="data in userList"
-        :key="data.id"
-      >
-        <card-user
-          :title="data.name"
-          :time="data.time"
-          :image="data.image"
-        />
-      </div>
-      <div
-        v-for="data in userList"
-        :key="data.id"
-      >
-        <card-user
-          :title="data.name"
-          :time="data.time"
-          :image="data.image"
-        />
-      </div>
+    <sidebar-detail @selected="chargeUsers" class="float-right" />
+    <div class=" flex flex-wrap ml-5">
       <div
         v-for="data in userList"
         :key="data.id"
@@ -130,10 +30,13 @@ export default {
     ...mapState('audition', ['userList']),
   },
   async created() {
-    this.fetchUserList(this.$route.params.id);
+    
   },
   methods: {
     ...mapActions('audition', ['fetchUserList']),
+    async chargeUsers(value){
+      await this.fetchUserList(value.id);
+    }
   },
 };
 </script>

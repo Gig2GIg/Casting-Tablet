@@ -3,7 +3,7 @@
   <div>
     <select
       v-model="computedValue"
-      class="text-purple rounded-full overflow-hidden w-full h-full my-2 py-3 px-6"
+      class="text-purple font-bold tracking-wide rounded-full overflow-hidden w-full h-full my-2 py-3 px-6"
       :class="[...customClasses]"
       v-bind="$attrs"
     >

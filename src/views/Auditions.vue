@@ -25,7 +25,7 @@
     <p class="text-3xl mt-6">
       Past
     </p>
-    <carousel
+    <!-- <carousel
       class="flex mt-4 w-full"
       :per-page="4"
       :pagination-enabled="false"
@@ -40,7 +40,7 @@
           :image="data.cover"
         />
       </slide>
-    </carousel>
+    </carousel> -->
   </div>
 </template>
 
@@ -59,7 +59,7 @@ export default {
   },
   async created() {
     this.fetchUpcoming();
-    this.fetchPassed();
+    // this.fetchPassed();
   },
   methods: {
     ...mapActions('audition', ['fetch', 'fetchUpcoming', 'fetchPassed']),

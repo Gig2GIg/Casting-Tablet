@@ -55,3 +55,8 @@ export default {
   },
 };
 </script>
+<style scoped>
+.button-detail{
+  background-image: linear-gradient(#4D2545, #782541);
+}
+</style>

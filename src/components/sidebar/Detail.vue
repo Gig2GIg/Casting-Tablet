@@ -100,8 +100,8 @@
             </carousel>
           </div>
         </div>
-        <div class="w-11/12 border border-gray-300 mt-3"></div>
-        <div class="container flex w-full mt-3">
+        <!-- <div class="w-11/12 border border-gray-300 mt-3"></div> -->
+        <!-- <div class="container flex w-full mt-3">
           <div class="container flex w-full mt-3">
           <div class="flex w-full text-center justify-center flex-wrap">
             <div v-for="data in audition.media" :key="data.id" class="flex m-3 content-center rounded-lg w-64 h-16 flex justify-center">
@@ -118,7 +118,7 @@
             </div>
           </div> 
         </div>
-        </div>
+        </div> -->
         <div class="w-11/12 border border-gray-300 mt-3"></div>
         <div class="container flex w-full mt-3">
           <div v-for="data in audition.contributors" :key="data.id" class="flex justify-center w-full ">
@@ -143,11 +143,10 @@
     </div>
   </transition>
   <transition name="fade">
-    <div v-if="manage">
+    <div v-show="manage">
       <div class="flex w-full content-center text-center justify-center flex-wrap">
         <dropdown 
             class="text-red-600 bg-white"
-            :options="rounds" 
             :selected="object" 
             @setOption="methodToRunOnSelect"
             v-on:updateOption="methodToRunOnSelect" 
@@ -156,8 +155,8 @@
       </div>
       <router-link :to="{ name: 'auditions/checkin', params: {id: roundActive.id } }">
         <div class="flex w-full content-center text-center justify-center flex-wrap">
-            <button disabled class="m-3 content-center flex items-center flex m-3 content-center border-2 rounded-sm border-gray-600 w-48 h-10">
-                <p class="flex-1 text-gray-600 text-sm font-semibold content-center tracking-tighter flex-1">Enter Check-In Mode</p>
+            <button  class="m-3 content-center flex items-center flex m-3 content-center border-2 rounded-sm border-purple w-48 h-10">
+                <p class="flex-1 light-purple text-sm font-semibold content-center tracking-tighter flex-1">Enter Check-In Mode</p>
             </button>
         </div>
       </router-link>
@@ -219,9 +218,8 @@ export default {
     ...mapState("audition", ["audition"]),
     ...mapState("round", ["rounds"])
   },
-  async created() {
-    this.fetchAuditionData(this.$route.params.id);
-    this.fetch(this.$route.params.id);
+  async beforeMount() {
+      this.fetchAuditionData(this.$route.params.id);
   },
   methods:{
     ...mapActions("audition", ["fetchAuditionData"]),
@@ -234,7 +232,17 @@ export default {
       this.info = false;
       this.manage = true;
     },
-    methodToRunOnSelect(payload) {
+    async methodToRunOnSelect(payload) {
+      this.fetch(this.$route.params.id);
+      if(payload == "create"){
+        this.$router.push({
+            name: 'auditions.round', 
+            params: { id: this.$route.params.id }
+        });
+      }
+      else{
+        await this.$emit('selected', payload)
+      }
       this.roundActive = payload;
     }
   },

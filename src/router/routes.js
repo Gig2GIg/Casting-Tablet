@@ -40,6 +40,14 @@ export default [
     },
   ]),
 
+  ...mapRoutes({ layout: 'talent' }, [
+    {
+      path: '/auditions/talent-database',
+      name: 'talents',
+      component: () => import(/* webpackChunkName: 'auditions' */ '@/views/TalentDatabase'),
+    },
+  ]),
+
   /*
   |--------------------------------------------------------------------------
   | Protected Routes
@@ -61,11 +69,10 @@ export default [
     name: 'auditions.create',
     component: () => import(/* webpackChunkName: 'auditions.create' */ '@/views/auditions/CreateAudition'),
   },
-
   {
-    path: '/auditions/:id',
-    name: 'auditions/detail',
-    component: () => import(/* webpackChunkName: 'auditions' */ '@/views/AuditionsDetail'),
+    path: '/auditions/round/:id/create',
+    name: 'auditions.round',
+    component: () => import(/* webpackChunkName: 'auditions.create' */ '@/views/auditions/CreateRound'),
   },
 
   /*
