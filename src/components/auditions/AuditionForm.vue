@@ -69,24 +69,25 @@
       />
     </form>
 
-    <div class="w-full">
+    <div class="flex">
       <base-input
         v-model="form.title"
         v-validate="'required|max:255'"
         name="title"
-        class="px-2"
+        class="w-2/3 px-2"
         placeholder="Title"
         :custom-classes="['border', 'border-purple']"
         :message="errors.first('create.title')"
         expanded
       />
-      <!-- <base-checkbox
+      <base-checkbox
+        v-model="form.status"
         class="w-1/3 px-2"
         :custom-classes="['border', 'border-purple']"
         name="title"
       >
         Online submition
-      </base-checkbox> -->
+      </base-checkbox>
     </div>
     <div class="flex">
       <base-input
@@ -117,6 +118,7 @@
         type="location"
         :custom-classes="['w-1/4', 'border', 'border-purple']"
         :message="errors.first('create.location')"
+        @place="handleLocation"
       />
     </div>
 
@@ -496,6 +498,7 @@ export default {
       manageInvitations: false,
       manageRoles: false,
       selectedRole: null,
+      selectedLocation: null,
       previewCover: null,
       isLoading: false,
       invitation: {
@@ -629,8 +632,9 @@ export default {
           const extension = file.name.split('.').pop();
           this.form.media.push({
             name: file.name,
-            type: extension.toUpperCase(),
+            type: 1,
             url: file,
+            share: true,
           });
         });
 
@@ -652,6 +656,10 @@ export default {
       this.form.media.splice(index, 1);
     },
 
+    handleLocation(place) {
+      this.selectedLocation = place;
+    },
+
     async handleCreate() {
       let coverSnapshot = null,
           rolesSnapshots = [],
@@ -669,9 +677,14 @@ export default {
 
         const data = Object.assign({}, this.form);
 
-        data.union = this.union_status.find(x => x.selected);
-        data.contract = this.contract_types.find(x => x.selected);
+        data.union = this.union_status.find(x => x.selected).value;
+        data.contract = this.contract_types.find(x => x.selected).key;
         data.production = this.production_types.filter(x => x.selected).map(x => x.key).join(', ');
+
+        data.location = {
+          latitude: this.selectedLocation.geometry.location.lat(),
+          longitude: this.selectedLocation.geometry.location.lng(),
+        };
 
         // Upload cover
         coverSnapshot = await firebase.storage()
