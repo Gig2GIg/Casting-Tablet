@@ -105,7 +105,7 @@ export default [
   |
   */
 
-  ...mapRoutes({ layout: 'landing', public: true }, [
+  ...mapRoutes({ layout: 'authentication', public: true }, [
     {
       path: '*',
       name: '404',

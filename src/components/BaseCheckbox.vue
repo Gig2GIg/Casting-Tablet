@@ -6,7 +6,7 @@
       @click="$emit('input', !value)"
     >
       <div
-        class="flex items-center justify-between text-black rounded-full overflow-hidden w-full h-full pl-6 pr-2 cursor-pointer"
+        class="flex items-center justify-between text-purple rounded-full overflow-hidden w-full h-full pl-6 pr-2 cursor-pointer select-none"
         :class="[...customClasses]"
         v-bind="$attrs"
       >

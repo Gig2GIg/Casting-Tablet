@@ -69,19 +69,19 @@
       />
     </form>
 
-    <div class="w-full flex">
+    <div class="flex">
       <base-input
         v-model="form.title"
         v-validate="'required|max:255'"
         name="title"
-        class="w-1/2 px-2"
+        class="w-2/3 px-2"
         placeholder="Title"
         :custom-classes="['border', 'border-purple']"
         :message="errors.first('create.title')"
         expanded
       />
       <base-checkbox
-        class="w-1/2 px-2"
+        class="w-1/3 px-2"
         v-model="form.online"
         :custom-classes="['border', 'border-purple']"
         name="title"
@@ -120,6 +120,7 @@
         type="location"
         :custom-classes="['w-1/4', 'border', 'border-purple']"
         :message="errors.first('create.location')"
+        @place="handleLocation"
       />
     </div>
 
@@ -504,6 +505,7 @@ export default {
       manageInvitations: false,
       manageRoles: false,
       selectedRole: null,
+      selectedLocation: null,
       previewCover: null,
       isLoading: false,
       invitation: {
@@ -637,7 +639,7 @@ export default {
           const extension = file.name.split('.').pop();
           this.form.media.push({
             name: file.name,
-            type: extension.toUpperCase(),
+            type: 1,
             url: file,
             share: 'yes',
           });
@@ -661,6 +663,10 @@ export default {
       this.form.media.splice(index, 1);
     },
 
+    handleLocation(place) {
+      this.selectedLocation = place;
+    },
+
     async handleCreate() {
       let coverSnapshot = null,
           rolesSnapshots = [],
@@ -676,11 +682,25 @@ export default {
           return;
         }
 
+        this.form.appointment = this.form.online ? {
+            "spaces": 10,
+            "type": 1,
+            "length": "20",
+            "start": "10:00",
+            "end": "18:00",
+            "slots": null
+        } : this.form.appointment;
         const data = Object.assign({}, this.form);
 
-        data.union = this.union_status.find(x => x.selected);
-        data.contract = this.contract_types.find(x => x.selected);
+        data.union = this.union_status.find(x => x.selected).value;
+        data.contract = this.contract_types.find(x => x.selected).key;
         data.production = this.production_types.filter(x => x.selected).map(x => x.key).join(', ');
+        data.location = {
+          latitude: this.selectedLocation.geometry.location.lat(),
+          longitude: this.selectedLocation.geometry.location.lng(),
+          latitudeDelta: parseFloat(this.selectedLocation.geometry.viewport.ka.g) - parseFloat(this.selectedLocation.geometry.viewport.oa.g),
+          longitudeDelta: parseFloat(this.selectedLocation.geometry.viewport.ka.h) - parseFloat(this.selectedLocation.geometry.viewport.oa.h)
+        };
 
         // Upload cover
         coverSnapshot = await firebase.storage()
