@@ -2,7 +2,7 @@
   <div>
     <img
       src="/images/logo.png"
-      class="mt-auto max-w-xs"
+      class="max-w-xs"
       alt="Logo"
     >
 

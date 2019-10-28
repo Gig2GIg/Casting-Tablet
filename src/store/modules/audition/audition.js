@@ -8,6 +8,7 @@ const state = {
   passed: [],
   userList: [],
   audition: [],
+  teamFeedback:[],
 };
 
 export default {

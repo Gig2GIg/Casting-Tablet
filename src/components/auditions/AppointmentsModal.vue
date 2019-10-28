@@ -8,13 +8,19 @@
       viewBox="0 0 16.16 16.165"
       @click="$emit('close')"
     >
-      <path id="Path_31" data-name="Path 31" d="M11.609,9.822,17.532,3.9a1.264,1.264,0,0,0-1.787-1.787L9.822,8.035,3.9,2.112A1.264,1.264,0,0,0,2.112,3.9L8.035,9.822,2.112,15.745A1.268,1.268,0,0,0,3,17.907a1.2,1.2,0,0,0,.885-.374l5.94-5.923,5.923,5.923a1.266,1.266,0,0,0,.885.374,1.2,1.2,0,0,0,.885-.374,1.263,1.263,0,0,0,0-1.787Z" transform="translate(-1.742 -1.742)" fill="#4d2545"/>
+      <path
+        id="Path_31"
+        data-name="Path 31"
+        d="M11.609,9.822,17.532,3.9a1.264,1.264,0,0,0-1.787-1.787L9.822,8.035,3.9,2.112A1.264,1.264,0,0,0,2.112,3.9L8.035,9.822,2.112,15.745A1.268,1.268,0,0,0,3,17.907a1.2,1.2,0,0,0,.885-.374l5.94-5.923,5.923,5.923a1.266,1.266,0,0,0,.885.374,1.2,1.2,0,0,0,.885-.374,1.263,1.263,0,0,0,0-1.787Z"
+        transform="translate(-1.742 -1.742)"
+        fill="#4d2545"
+      />
     </svg>
 
     <div class="flex">
       <div class="w-1/2 max-h-screen overflow-hidden pt-16">
         <div class="w-full flex w-full items-center px-8">
-          <div class="w-3/4"></div>
+          <div class="w-3/4" />
           <p class="text-purple text-xs w-24 text-center ml-2">
             Mark as Walk-In Appointment
           </p>
@@ -23,8 +29,8 @@
           <SlotItem
             v-for="(slot, index) in appointments.slots"
             :key="index"
-            :data="slot"
             v-model="slot.is_walk"
+            :data="slot"
           />
         </ul>
       </div>
@@ -95,9 +101,8 @@
         </p>
         <base-input
           v-model="appointments.start"
-          type="text"
+          type="time"
           name="time"
-          :time="true"
           class="w-full"
           :custom-classes="['border', 'border-purple']"
           @input="makeSlots"
@@ -109,9 +114,8 @@
         <base-input
           v-model="appointments.end"
           class="w-full"
-          type="text"
+          type="time"
           name="time"
-          :time="true"
           :custom-classes="['border', 'border-purple']"
           readonly
         />
@@ -152,14 +156,9 @@ export default {
       appointments: {},
     };
   },
-  watch: {
-    data(data) {
-      this.appointments = Object.assign({}, data);
-    },
-  },
   created() {
     this.appointments = Object.assign({}, this.data);
-    this.$emit('input', this.appointments);
+    this.appointments.status = true;
   },
   methods: {
     makeSlots() {

@@ -53,4 +53,34 @@ export default {
       commit(types.FETCH_AUDITION_DATA_FAILURE);
     }
   },
+
+  async openAudition({ commit }, audition) {
+    try {
+      const { data: { data } } = await axios.put(`/t/auditions/open/${audition}`);
+      debugger;
+      commit(types.OPEN_AUDITION_SUCCESS, data);
+    } catch (e) {
+      commit(types.OPEN_AUDITION_FAILURE);
+    }
+  },
+
+  async closeAudition({ commit }, audition) {
+    try {
+      const { data: { data } } = await axios.put(`/t/auditions/close/${audition}`);
+      debugger;
+      commit(types.OPEN_AUDITION_SUCCESS, data);
+    } catch (e) {
+      commit(types.OPEN_AUDITION_FAILURE);
+    }
+  },
+
+  async fetchTeamFeedback({ commit }, audition) {
+    try {
+      const { data: { data } } = await axios.get(`/t/feedbacks/list?appointment_id=${audition.appointment_id}&performer=${audition.performer}`);
+      debugger;
+      commit(types.FETCH_TEAM_FEEDBACK_SUCCESS, data);
+    } catch (e) {
+      commit(types.FETCH_TEAM_FEEDBACK_FAILURE);
+    }
+  },
 };

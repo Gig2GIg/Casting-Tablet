@@ -1,8 +1,12 @@
 <template>
-  <div class="container text-purple pl-6 py-8">
+<div>
+  <div class="container text-purple pl-6 py-8 h-84">
     <p class="w-full text-3xl">
       Upcoming
     </p>
+    <div class="flex flex-wrap items-center justify-center w-full h-84" v-if="upcoming == ''">
+      <p class="text-purple font-bold tracking-wide text-lg">No auditions found</p>
+    </div>
     <carousel
       class="flex mt-4"
       :per-page="3"
@@ -14,18 +18,22 @@
       >
         <card-item
           :title="data.title"
-          :date="data.date"
+          :date="data.online == 1 ? '' : data.date"
           :image="data.cover"
           actionable
           :navigate-to="data.id"
         />
       </slide>
     </carousel>
-
+  </div>
+  <div class="container text-purple pl-6 py-8 w-full h-84">
     <p class="text-3xl mt-6">
       Past
     </p>
-    <!-- <carousel
+    <div class="flex flex-wrap items-center justify-center w-full h-84" v-if="passed == ''">
+      <p class="text-purple font-bold tracking-wide text-lg">No auditions found</p>
+    </div>
+    <carousel
       class="flex mt-4 w-full"
       :per-page="4"
       :pagination-enabled="false"
@@ -36,11 +44,12 @@
       >
         <card-item
           :title="data.title"
-          :date="data.date"
+          :date="data.online == 1 ? '' : data.date"
           :image="data.cover"
         />
       </slide>
-    </carousel> -->
+    </carousel>
+  </div>
   </div>
 </template>
 

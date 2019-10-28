@@ -153,17 +153,19 @@
           :message="errors.first('profesion')"
           data-vv-as="job title"
         />
-
-        <base-input
-          v-model="form.location_formatted"
-          v-validate="'required'"
-          name="location_formatted"
-          type="location"
-          placeholder="Location"
-          :message="errors.first('location_formatted')"
-          data-vv-as="location"
-          @place="handlePlace"
-        />
+        <base-select
+            key="gender-input"
+            v-model="form.gender"
+            v-validate="'required'"
+            name="gender"
+            class="w-2/5"
+            placeholder="Gender"
+            :message="errors.first('gender')"
+          >
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+          </base-select>
       </template>
 
       <base-button

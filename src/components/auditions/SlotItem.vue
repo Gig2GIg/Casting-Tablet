@@ -17,8 +17,22 @@
         :class="{ 'bg-purple': value }"
         @click="$emit('input', !value)"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" width="21.182" height="15.893" viewBox="0 0 21.182 15.893">
-          <path id="Path_3054" data-name="Path 3054" d="M17717.283,10215.319l6.916,6.856,10.027-11.582" transform="translate(-17715.162 -10208.479)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="3"/>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="21.182"
+          height="15.893"
+          viewBox="0 0 21.182 15.893"
+        >
+          <path
+            id="Path_3054"
+            data-name="Path 3054"
+            d="M17717.283,10215.319l6.916,6.856,10.027-11.582"
+            transform="translate(-17715.162 -10208.479)"
+            fill="none"
+            stroke="#fff"
+            stroke-linecap="round"
+            stroke-width="3"
+          />
         </svg>
       </div>
     </div>

@@ -6,6 +6,7 @@ export default {
   async fetch ({ commit }) {
     try {
       const { data: { data } } = await axios.get('/t/performers/list');
+      debugger;
       commit(types.FETCH_TALENT_DATABASE_LIST_SUCCESS, data);
     } catch (e) {
       console.log(e);

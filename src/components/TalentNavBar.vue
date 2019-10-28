@@ -32,15 +32,22 @@
   </nav>
 </template> 
 <script>
+import { mapActions, mapState, mapGetters } from 'vuex';
 export default {
   data() {
     return {
       search: '',
     };
   },
-  computed:{},
-  mounted(){},
-  methods: {},
+  computed:{
+    ...mapState('audition', ['userList']),
+  },
+  mounted(){
+    this.fetchUserList()
+  },
+  methods: {
+    ...mapActions('audition', ['fetchUserList']),
+  },
 };
 </script>
 <style scoped>

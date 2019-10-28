@@ -69,30 +69,33 @@
       />
     </form>
 
-    <div class="w-full">
+    <div class="w-full flex">
       <base-input
         v-model="form.title"
         v-validate="'required|max:255'"
         name="title"
-        class="px-2"
+        class="w-1/2 px-2"
         placeholder="Title"
         :custom-classes="['border', 'border-purple']"
         :message="errors.first('create.title')"
         expanded
       />
-      <!-- <base-checkbox
-        class="w-1/3 px-2"
+      <base-checkbox
+        class="w-1/2 px-2"
+        v-model="form.online"
         :custom-classes="['border', 'border-purple']"
         name="title"
+        :value="form.online"
       >
-        Online submition
-      </base-checkbox> -->
+        {{form.online}}Online submition
+      </base-checkbox>
     </div>
-    <div class="flex">
+    <div class="flex" v-if="!form.online">
       <base-input
         v-model="form.date"
         v-validate="'required'"
         name="date"
+        :min-date="new Date()"
         class="w-1/3 px-2"
         type="date"
         placeholder="Date"
@@ -104,10 +107,9 @@
         v-validate="'required'"
         name="time"
         class="w-1/3 px-2"
-        type="number"
+        type="time"
         placeholder="Time"
-        :time="true"
-        :custom-classes="['w-1/4', 'border', 'border-purple']"
+        :custom-classes="['border', 'border-purple']"
         :message="errors.first('create.time')"
       />
       <base-input
@@ -132,15 +134,39 @@
         class="px-2 py-2 w-2/3"
         type="textarea"
         placeholder="Description"
-        :custom-classes="['border', 'border-purple', 'mt-0 mb-0']"
+        :custom-classes="['border', 'border-purple', 'mt-0', { 'mb-0': !errors.has('create.description') }]"
         :message="errors.first('create.description')"
       />
       <div class="px-2 py-2 w-1/3">
-        <vue2Dropzone
-          id="dropzone"
-          class="flex rounded-large h-40 items-center border border-purple cursor pointer justify-center bg-grey-500"
-          :options="dropzoneOptions"
-        />
+        <div
+          class="flex rounded-large h-40 items-center border border-purple cursor-pointer justify-center bg-grey-500 overflow-hidden"
+          @click="$refs.coverFile.click()"
+        >
+          <div
+            v-if="!previewCover"
+            class="flex flex-col flex-no-wrap justify-between"
+          >
+            <p class="pb-6 text-purple">
+              Cover photo
+            </p>
+            <img src="/images/icons/file.svg">
+          </div>
+
+          <img
+            v-else
+            :src="previewCover"
+            alt="Cover"
+            class="w-full h-full object-cover"
+          >
+        </div>
+
+        <input
+          ref="coverFile"
+          accept=".png, .jpg, .jpeg"
+          type="file"
+          hidden
+          @change="handleCoverFile"
+        >
       </div>
     </div>
     <div class="flex w-full">
@@ -180,6 +206,7 @@
         name="contract_start_date"
         class="w-1/2 px-2"
         type="date"
+        :min-date="new Date()"
         placeholder="Contract Start Date"
         :custom-classes="['border', 'border-purple']"
         :message="errors.first('create.contract_start_date')"
@@ -191,6 +218,7 @@
         name="contract_end_date"
         class="w-1/2 px-2"
         type="date"
+        :min-date="form.dates[0].from"
         placeholder="Contract End Date"
         :custom-classes="['border', 'border-purple']"
         :message="errors.first('create.contract_end_date')"
@@ -200,6 +228,7 @@
     <div class="flex w-full">
       <base-input
         v-model="form.dates[1].from"
+        :min-date="new Date()"
         v-validate="'required'"
         name="rehearsal_start_date"
         class="w-1/2 px-2"
@@ -210,7 +239,8 @@
         data-vv-as="start date"
       />
       <base-input
-        v-model="form.dates[1].from"
+        v-model="form.dates[1].to"
+        :min-date="form.dates[1].from"
         v-validate="'required'"
         name="rehearsal_end_date"
         class="w-1/2 px-2"
@@ -321,7 +351,9 @@
       </div>
       <div class="managers w-3/5 flex flex-col items-end">
         <button
+          v-if="!form.online"
           class="w-2/3 mt-4 py-3 px-4 border-4 border-purple text-purple rounded-full focus:outline-none"
+          type="button"
           @click.prevent="manageAppointments = true"
         >
           Manage Appointments
@@ -348,8 +380,21 @@
             >
               <div class="flex flex-col items-center cursor-pointer">
                 <div class="bg-purple-gradient flex items-center justify-center rounded-full h-12 w-12">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="19.486" height="21.574" viewBox="0 0 19.486 21.574">
-                    <path id="Path_3" data-name="Path 3" d="M24.98,19.435a14.3,14.3,0,0,0-6.919-2.814A.872.872,0,0,0,17.24,17a.925.925,0,0,0-.141.352.846.846,0,0,0,.727.938,12.611,12.611,0,0,1,5.793,2.275v2.064H7.554v-2.04a12.431,12.431,0,0,1,5.77-2.275.859.859,0,0,0,.751-.844V15.589a4.318,4.318,0,0,0,.774.07h1.478a4.664,4.664,0,0,0,4.667-4.667V7.4A4.654,4.654,0,0,0,16.349,2.76H14.871A4.659,4.659,0,0,0,10.2,7.4v3.588a4.63,4.63,0,0,0,2.181,3.94v1.782a15.084,15.084,0,0,0-6.168,2.721.824.824,0,0,0-.352.68v3.354a.841.841,0,0,0,.844.844H24.487a.841.841,0,0,0,.844-.844v-3.33A.836.836,0,0,0,24.98,19.435ZM11.893,7.4a2.958,2.958,0,0,1,2.955-2.955h1.478A2.958,2.958,0,0,1,19.28,7.4v3.588a2.958,2.958,0,0,1-2.955,2.955H14.848a2.958,2.958,0,0,1-2.955-2.955V7.4Z" transform="translate(-5.855 -2.75)" fill="#fff" stroke="#d6d6d6" stroke-width="0.02"/>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="19.486"
+                    height="21.574"
+                    viewBox="0 0 19.486 21.574"
+                  >
+                    <path
+                      id="Path_3"
+                      data-name="Path 3"
+                      d="M24.98,19.435a14.3,14.3,0,0,0-6.919-2.814A.872.872,0,0,0,17.24,17a.925.925,0,0,0-.141.352.846.846,0,0,0,.727.938,12.611,12.611,0,0,1,5.793,2.275v2.064H7.554v-2.04a12.431,12.431,0,0,1,5.77-2.275.859.859,0,0,0,.751-.844V15.589a4.318,4.318,0,0,0,.774.07h1.478a4.664,4.664,0,0,0,4.667-4.667V7.4A4.654,4.654,0,0,0,16.349,2.76H14.871A4.659,4.659,0,0,0,10.2,7.4v3.588a4.63,4.63,0,0,0,2.181,3.94v1.782a15.084,15.084,0,0,0-6.168,2.721.824.824,0,0,0-.352.68v3.354a.841.841,0,0,0,.844.844H24.487a.841.841,0,0,0,.844-.844v-3.33A.836.836,0,0,0,24.98,19.435ZM11.893,7.4a2.958,2.958,0,0,1,2.955-2.955h1.478A2.958,2.958,0,0,1,19.28,7.4v3.588a2.958,2.958,0,0,1-2.955,2.955H14.848a2.958,2.958,0,0,1-2.955-2.955V7.4Z"
+                      transform="translate(-5.855 -2.75)"
+                      fill="#fff"
+                      stroke="#d6d6d6"
+                      stroke-width="0.02"
+                    />
                   </svg>
                 </div>
                 <span class="text-purple font-medium mt-2">
@@ -362,6 +407,7 @@
 
         <button
           class="w-2/3 mt-4 py-3 px-4 border-4 border-purple text-purple rounded-full focus:outline-none"
+          type="button"
           @click.prevent="manageRoles = true"
         >
           {{ form.roles.length ? 'Add' : 'Edit' }} Roles
@@ -402,12 +448,20 @@
         >
 
         <button
-          class="w-2/3 py-3 px-4 border-4 border-purple text-purple rounded-full focus:outline-none"
+          class="w-2/3 py-3 px-4 border-4 border-purple text-purple rounded-full focus:outline-none mb-4"
+          type="button"
           :class="{ 'mt-4': !form.media.length }"
           @click="$refs.inputFile.click()"
         >
           Manage Documents
         </button>
+
+        <base-button
+          class="mt-auto w-2/3 mb-12"
+          type="submit"
+        >
+          Create Audition
+        </base-button>
       </div>
     </div>
 
@@ -429,16 +483,20 @@
 </template>
 
 <script>
-import vue2Dropzone from 'vue2-dropzone';
-import 'vue2-dropzone/dist/vue2Dropzone.min.css';
+import uuid from 'uuid/v1';
+import firebase from 'firebase/app';
+import axios from 'axios';
 import AppointmentsModal from './AppointmentsModal.vue';
 import RolesModal from './RolesModal.vue';
 import ContributorItem from './ContributorItem.vue';
 import DocumentItem from './DocumentItem.vue';
+import 'firebase/storage';
 
 export default {
   name: 'AuditionForm',
-  components: { vue2Dropzone, AppointmentsModal, RolesModal, ContributorItem, DocumentItem },
+  components: {
+    AppointmentsModal, RolesModal, ContributorItem, DocumentItem,
+  },
   data() {
     return {
       innerWidth: window.innerWidth,
@@ -446,6 +504,8 @@ export default {
       manageInvitations: false,
       manageRoles: false,
       selectedRole: null,
+      previewCover: null,
+      isLoading: false,
       invitation: {
         adding: false,
         email: '',
@@ -463,18 +523,6 @@ export default {
         appointment: undefined,
         contributors: [],
         media: [],
-      },
-      dropzoneOptions: {
-        url: 'https://httpbin.org/post',
-        thumbnailHeight: 150,
-        maxFilesize: 15,
-        maxFiles: 1,
-        clickable: true,
-        uploadMultiple: false,
-        addRemoveLinks: true,
-        headers: { 'My-Awesome-Header': 'header value' },
-        // eslint-disable-next-line
-        dictDefaultMessage: `<div class="flex flex-col flex-no-wrap justify-between"><p class="pb-8 text-purple">Cover photo</p> <img src="/images/icons/file.svg"/></div>`,
       },
       union_status: [
         {
@@ -540,10 +588,10 @@ export default {
 
     async handleInvitation() {
       if (
-          !this.invitation.email
+        !this.invitation.email
           || this.form.contributors.find(x => x.email === this.invitation.email.toLowerCase())
           || !await this.$validator.validateAll('invitation')
-        ) {
+      ) {
         return;
       }
 
@@ -590,11 +638,22 @@ export default {
           this.form.media.push({
             name: file.name,
             type: extension.toUpperCase(),
-            file,
+            url: file,
+            share: 'yes',
           });
         });
 
       this.$refs.inputFile.value = '';
+    },
+
+    handleCoverFile(e) {
+      const file = e.target.files[0];
+
+      this.previewCover = URL.createObjectURL(file);
+      this.form.cover = file;
+      this.form.cover_name = file.name;
+
+      this.$refs.coverFile.value = '';
     },
 
     handleDeleteDocument(media) {
@@ -602,15 +661,63 @@ export default {
       this.form.media.splice(index, 1);
     },
 
-    handleCreate() {
+    async handleCreate() {
+      let coverSnapshot = null,
+          rolesSnapshots = [],
+          filesSnaphosts = [];
+
       try {
+        if (this.isLoading || !await this.$validator.validateAll('create')) {
+          return;
+        }
 
-        this.form.union = this.union_status.find(x => x.selected);
-        this.form.contract = this.contract_types.find(x => x.selected);
-        this.form.production = this.production_types.filter(x => x.selected).map(x => x.key).join(', ');
+        if (!this.form.cover) {
+          this.$toasted.error('The cover field is required.');
+          return;
+        }
 
+        const data = Object.assign({}, this.form);
+
+        data.union = this.union_status.find(x => x.selected);
+        data.contract = this.contract_types.find(x => x.selected);
+        data.production = this.production_types.filter(x => x.selected).map(x => x.key).join(', ');
+
+        // Upload cover
+        coverSnapshot = await firebase.storage()
+          .ref(`temp/${uuid()}.${data.cover_name.split('.').pop()}`)
+          .put(data.cover);
+
+        data.cover = await coverSnapshot.ref.getDownloadURL();
+
+        // Upload roles
+        await Promise.all(data.roles.map(async (role) => {
+          const snapshot = await firebase.storage()
+            .ref(`temp/${uuid()}.${role.name_cover.split('.').pop()}`)
+            .put(role.cover);
+
+          role.cover = await snapshot.ref.getDownloadURL();
+
+          rolesSnapshots.push(snapshot);
+        }));
+
+        // Upload files
+        await Promise.all(data.media.map(async (media) => {
+          const snapshot = await firebase.storage()
+            .ref(`temp/${uuid()}.${media.name.split('.').pop()}`)
+            .put(media.url);
+
+          media.url = await snapshot.ref.getDownloadURL();
+
+          filesSnaphosts.push(snapshot);
+        }));
+        console.log(data);
+        debugger;
+        await axios.post('/t/auditions/create', data);
       } catch (e) {
-
+        console.log(e);
+        coverSnapshot && coverSnapshot.ref.delete();
+        await Promise.all(rolesSnapshots.map(role => role.ref.delete()));
+        await Promise.all(filesSnaphosts.map(file => file.ref.delete()));
       }
     },
 

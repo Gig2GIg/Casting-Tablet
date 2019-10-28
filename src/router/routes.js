@@ -46,6 +46,11 @@ export default [
       name: 'talents',
       component: () => import(/* webpackChunkName: 'auditions' */ '@/views/TalentDatabase'),
     },
+    {
+      path: '/news-and-updates',
+      name: 'news-and-updates',
+      component: () => import(/* webpackChunkName: 'auditions.user' */ '@/views/newsAndUpdates'),
+    },
   ]),
 
   /*
@@ -70,9 +75,24 @@ export default [
     component: () => import(/* webpackChunkName: 'auditions.create' */ '@/views/auditions/CreateAudition'),
   },
   {
+    path: '/auditions/detail/:id',
+    name: 'auditions/detail',
+    component: () => import(/* webpackChunkName: 'auditions.create' */ '@/views/AuditionsDetail'),
+  },
+  {
     path: '/auditions/round/:id/create',
     name: 'auditions.round',
     component: () => import(/* webpackChunkName: 'auditions.create' */ '@/views/auditions/CreateRound'),
+  },
+  {
+    path: '/auditions/:audition/round/:round/user/:id/',
+    name: 'auditions/user',
+    component: () => import(/* webpackChunkName: 'auditions.user' */ '@/views/user/userAudition'),
+  },
+  {
+    path: '/notifications ',
+    name: 'notifications',
+    component: () => import(/* webpackChunkName: 'auditions.user' */ '@/views/Notification'),
   },
 
   /*

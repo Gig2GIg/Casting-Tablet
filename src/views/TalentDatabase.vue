@@ -153,15 +153,17 @@ export default {
     ...mapState('talentDatabase', ['talentList']),
   },
   async created() {},
-  async mounted() {},
+  async mounted() {
+    this.fetch();
+  },
   watch: {
-    search: function () {
-      this.currentFilter = this.search.trim();
-      if(this.currentFilter != "" && this.flag == ""){
-          this.flag = this.talentList;
-          this.talentList = this.talentList.filter(word => word == "");
-      }
-    }
+    // search: function () {
+    //   this.currentFilter = this.search.trim();
+    //   if(this.currentFilter != "" && this.flag == ""){
+    //       this.flag = this.talentList;
+    //       this.talentList = this.talentList.filter(word => word == "");
+    //   }
+    // }
   },
   methods: {
     ...mapActions('talentDatabase', ['fetch']),

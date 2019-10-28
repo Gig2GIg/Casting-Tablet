@@ -40,4 +40,13 @@ export default {
   [types.FETCH_AUDITION_DATA_FAILURE](state) {
     state.passed = {};
   },
+  [types.OPEN_AUDITION_SUCCESS](state, data){
+    debugger;
+    state.audition.status = data.status
+  },
+  [types.OPEN_AUDITION_FAILURE](state, audition){},
+
+  [types.FETCH_TEAM_FEEDBACK_SUCCESS](state, data){
+    state.teamFeedback = data
+  },
 };

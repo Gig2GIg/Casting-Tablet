@@ -21,7 +21,8 @@
         <span class="font-medium text-lg truncate">
           {{ title }}
         </span>
-        <span class="-mt-2">{{ $dayjs(date).format('MMMM Do') }}</span>
+        <span v-if="date != ''" class="-mt-2">{{ $dayjs(date).format('MMMM Do') }}</span>
+        <span v-else class="-mt-2 text-white">.</span>
       </div>
     </div>
     <router-link :to="{ name: 'auditions/detail', params: {id: navigateTo } }">
@@ -30,7 +31,7 @@
         class="absolute bottom-0 right-0 mb-0 w-32 text-sm"
         border-classes="rounded-sm rounded-tl-lg"
       >
-        Manage
+        Manage {{navigateTo}}
       </base-button>
     </router-link>
   </div>
