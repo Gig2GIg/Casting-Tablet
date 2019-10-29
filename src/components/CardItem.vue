@@ -9,6 +9,15 @@
     </div>
 
     <div class="flex flex-col h-full rounded-lg shadow-md overflow-hidden">
+      <button
+        class="bg-white text-white overflow-hidden my-2 p-3 text-lg focus:outline-none text-purple"
+        :class="[borderClasses, { 'w-full': expanded }]"
+        v-bind="$attrs"
+        :type="type"
+        @click="$emit('click', $event)"
+      >
+        Manager
+      </button>
       <img
         :src="image || '/images/xd.png'"
         class="h-48 object-cover"

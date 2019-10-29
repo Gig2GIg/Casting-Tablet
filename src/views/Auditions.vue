@@ -18,7 +18,7 @@
       >
         <card-item
           :title="data.title"
-          :date="data.online == 1 ? '' : data.date"
+          :date="data.online == 0 ? '' : data.date"
           :image="data.cover"
           actionable
           :navigate-to="data.id"
@@ -44,7 +44,7 @@
       >
         <card-item
           :title="data.title"
-          :date="data.online == 1 ? '' : data.date"
+          :date="data.online == 0 ? '' : data.date"
           :image="data.cover"
         />
       </slide>

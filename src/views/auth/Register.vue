@@ -158,7 +158,7 @@
             v-model="form.gender"
             v-validate="'required'"
             name="gender"
-            class="w-2/5"
+            class="w-full"
             placeholder="Gender"
             :message="errors.first('gender')"
           >
@@ -224,10 +224,10 @@ export default {
         }
 
         // Validate location
-        if (!this.form.location) {
-          this.$toasted.error('The location selected is invalid.');
-          return;
-        }
+        // if (!this.form.location) {
+        //   this.$toasted.error('The location selected is invalid.');
+        //   return;
+        // }
 
         this.isLoading = true;
 

@@ -695,12 +695,14 @@ export default {
         data.union = this.union_status.find(x => x.selected).value;
         data.contract = this.contract_types.find(x => x.selected).key;
         data.production = this.production_types.filter(x => x.selected).map(x => x.key).join(', ');
-        data.location = {
-          latitude: this.selectedLocation.geometry.location.lat(),
-          longitude: this.selectedLocation.geometry.location.lng(),
-          latitudeDelta: parseFloat(this.selectedLocation.geometry.viewport.ka.g) - parseFloat(this.selectedLocation.geometry.viewport.oa.g),
-          longitudeDelta: parseFloat(this.selectedLocation.geometry.viewport.ka.h) - parseFloat(this.selectedLocation.geometry.viewport.oa.h)
-        };
+        if(this.selectedLocation){
+          data.location = {
+            latitude: this.selectedLocation.geometry.location.lat(),
+            longitude: this.selectedLocation.geometry.location.lng(),
+            latitudeDelta: parseFloat(this.selectedLocation.geometry.viewport.ka.g) - parseFloat(this.selectedLocation.geometry.viewport.oa.g),
+            longitudeDelta: parseFloat(this.selectedLocation.geometry.viewport.ka.h) - parseFloat(this.selectedLocation.geometry.viewport.oa.h)
+          }; 
+        }
 
         // Upload cover
         coverSnapshot = await firebase.storage()
