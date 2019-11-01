@@ -1,7 +1,7 @@
 <template>
- <multipane class="custom-resizer h-full" layout="vertical">
-  <div class="pane bg-white" :style="{ minWidth: '80%', width: '100%', maxWidth: '100%' }">
-  <div class="flex flex-wrap overflow-scroll">
+ <multipane class="custom-resizer h-full " layout="vertical">
+  <div class="pane bg-white overflow-scroll" :style="{ minWidth: '80%', width: '100%', maxWidth: '100%' }">
+  <div class="flex flex-wrap  h-full">
     <div class="flex w-full">
       <div class="w-1/4 flex flex-wrap content-center justify-center calendar shadow-lg">
         <p class="text-center text-2xl text-purple font-bold">Availability</p>
@@ -40,7 +40,7 @@
             <div
               v-for="data in teamFeedback"
               :key="data.id"
-              class="text-center w-1/2 flex justify-center"
+              class="text-center w-full flex justify-center"
             >
             <div>
               <div class="m-3 rounded-full flex items-center w-full h-12 ">
@@ -73,74 +73,112 @@
           </div>
       </div>
     </div>
-    <div class="flex w-full">
-      <div class="w-1/3 shadow-lg">
+    <div class="flex w-full h-96 mt-16">
+      <div class="w-1/2 shadow-lg border border-gray-300">
         <p class="text-center text-2xl text-purple font-bold">Instant Feedback</p>
-        <div class="flex flex-wrap justify-center">
-            <div
-              v-for="data in teamFeedback"
-              :key="data.id"
-              class="text-center w-1/2 flex justify-center"
-            >
+        <div class="flex flex-wrap justify-center w-full">
+            <div class="text-center w-full flex flex-wrap justify-center">
             <div>
-              <div class="m-3 rounded-full flex flex-wrap items-center w-full h-12 ">
-                <div class="flex w-full">
-                  <figure class="flex justify-center flex-wrap content-center w-8 h-8 border-2 border-purple rounded-sm">
+              <div class="rounded-full flex flex-wrap justify-center content-center w-full h-12 mt-32">
+                <div class="flex flex-wrap justify-center w-full">
+                  <figure :class="{'border-2 border-purple': emoji==1}" class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg m-3" @click="emoji=1">
                     <img
                       :src="'/images/icons/5.png'"
                       alt="Icon"
-                      class="content-center h-4"
+                      class="content-center h-8"
                     >
                   </figure>
 
-                  <figure class="flex justify-center flex-wrap content-center w-8 h-8 border-2 border-purple rounded-sm">                  
+                  <figure :class="{'border-2 border-purple': emoji==2}" class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg m-3" @click="emoji=2">
                     <img
                       :src="'/images/icons/2.png'"
                       alt="Icon"
-                      class="content-center h-4"
+                      class="content-center h-8"
                     >
                   </figure>
 
-                  <figure class="flex justify-center flex-wrap content-center w-8 h-8 border-2 border-purple rounded-sm">                  
+                  <figure :class="{'border-2 border-purple': emoji==3}" class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg m-3" @click="emoji=3">
                     <img
                       :src="'/images/icons/3.png'"
                       alt="Icon"
-                      class="content-center h-4"
+                      class="content-center h-8"
                     >
                   </figure>
 
-                  <figure class="flex justify-center flex-wrap content-center w-8 h-8 border-2 border-purple rounded-sm">                  
+                  <figure :class="{'border-2 border-purple': emoji==4}" class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg m-3" @click="emoji=4">
                     <img
                       :src="'/images/icons/4.png'"
                       alt="Icon"
-                      class="content-center h-4"
+                      class="content-center h-8"
                     >
                   </figure>
 
-                  <figure class="flex justify-center flex-wrap content-center w-8 h-8 border-2 border-purple rounded-sm">                  
+                  <figure :class="{'border-2 border-purple': emoji==5}" class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg m-3" @click="emoji=5">
                     <img
                       :src="'/images/icons/5.png'"
                       alt="Icon"
-                      class="content-center h-4"
+                      class="content-center h-8"
                     >
                   </figure>
                 </div>
-                <p class="text-purple text-xs justify-center w-16 font-bold tracking-tighter flex-1 w-full">
-                  Call Back
-                </p>
-                
-                <p class="text-purple text-xs justify-center w-16 font-bold tracking-tighter flex-1 w-full">
-                  Work On
-                </p>
-                <div
-                  class="py-1 px-5 border text-xs border-purple button-detail text-white font-bold uppercase mr-2 rounded-full cursor-pointer"
-                >
-                  {{ data.work }}
+                <div class="flex flex-wrap justify-center content-center w-full">
+                  <p class="text-purple justify-center w-16 font-bold tracking-tighter flex-1 w-full text-xl font-bold tracking-wider">
+                    Call Back
+                  </p>
+                  <div class="flex flex-wrap justify-center content-center w-1/2">
+                    <div class="container flex w-1/2 mt-3" @click="callback = 1">
+                      <div class="flex w-full text-center justify-center flex-wrap">
+                        <div :class="{'button-detail': callback == 1}" class="m-3 bg-white content-center border border-purple rounded-full w-32 h-10 flex items-center">
+                          <p :class="{'text-white': callback == 1, 'text-purple': callback != 1}" class="text-white text-sm font-bold content-center tracking-tighter flex-1">
+                            Yes
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="container flex w-1/2 mt-3">
+                      <div class="flex w-full text-center justify-center flex-wrap" @click="callback = 2">
+                        <div :class="{'button-detail': callback == 2}" class="m-3 content-center rounded-full border border-purple bg-white w-32 h-10 flex items-center">
+                          <p :class="{'text-white': callback == 2, 'text-purple': callback != 2}" class=" text-sm font-bold content-center tracking-tighter flex-1">
+                            No
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div
-                  class="py-1 px-5 border text-xs border-purple button-detail text-white font-bold uppercase mr-2 rounded-full cursor-pointer"
-                >
-                  {{ data.callback == 1? 'Yes' :  'No' }}
+                <div class="flex flex-wrap justify-center content-center w-full">
+                  <p class="text-purple justify-center w-16 font-bold tracking-tighter flex-1 w-full text-xl font-bold tracking-wider">
+                    Work On
+                  </p>
+                  <div class="flex flex-wrap justify-center content-center w-full">
+                    <div class="container flex w-1/3 mt-3">
+                      <div class="flex w-full text-center justify-center flex-wrap">
+                        <div class="m-3 content-center rounded-full red-light w-40 h-10 flex items-center button-detail">
+                          <p class="text-white text-sm font-bold content-center tracking-tighter flex-1">
+                            Vocals
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="container flex w-1/3 mt-3">
+                      <div class="flexw-full text-center justify-center flex-wrap">
+                        <div class="m-3 content-center rounded-full border border-purple bg-white w-40 h-10 flex items-center">
+                          <p class="text-purple text-sm font-bold content-center tracking-tighter flex-1">
+                            Acting
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="container flex w-1/3 mt-3">
+                      <div class="flexw-full text-center justify-center flex-wrap">
+                        <div class="m-3 content-center rounded-full border border-purple bg-white w-40 h-10 flex items-center">
+                          <p class="text-purple text-sm font-bold content-center tracking-tighter flex-1">
+                            Dancing
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -217,7 +255,11 @@ export default {
   data() {
     return {
       isLoading: true,
-      rol:''
+      rol:'',
+      emoji:'',
+      callback: 1,
+      workon:1,
+      currentUser:[],
     };
   },
   computed: {

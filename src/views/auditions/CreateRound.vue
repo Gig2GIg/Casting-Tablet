@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col justify-center container bg-white w-full  max-h-full">
+  <div class="flex flex-col justify-center  bg-white w-full  max-h-full">
     <!-- <svg
       class="absolute left-0 ml-5 mt-5 cursor-pointer"
       xmlns="http://www.w3.org/2000/svg"
@@ -11,15 +11,16 @@
       <!-- <path id="Path_31" data-name="Path 31" d="M11.609,9.822,17.532,3.9a1.264,1.264,0,0,0-1.787-1.787L9.822,8.035,3.9,2.112A1.264,1.264,0,0,0,2.112,3.9L8.035,9.822,2.112,15.745A1.268,1.268,0,0,0,3,17.907a1.2,1.2,0,0,0,.885-.374l5.94-5.923,5.923,5.923a1.266,1.266,0,0,0,.885.374,1.2,1.2,0,0,0,.885-.374,1.263,1.263,0,0,0,0-1.787Z" transform="translate(-1.742 -1.742)" fill="#4d2545"/>
     </svg> -->
   <form
-    class="relative mt-32 flex flex-col justify-center"
+    class="relative flex flex-col justify-center"
     data-vv-scope="create"
     @submit.prevent="handleCreate"
   >
-    <div class="flex">
+    <div class="flex mb-10">
       <base-input
-        v-model="form.date"
+        v-model="appointments.date"
         v-validate="'required'"
         name="date"
+        :min-date="new Date()"
         class="w-1/3 px-2"
         type="date"
         placeholder="Date"
@@ -27,24 +28,24 @@
         :message="errors.first('create.date')"
       />
       <base-input
-        v-model="form.time"
+        v-model="appointments.time"
         v-validate="'required'"
         name="time"
         class="w-1/3 px-2"
-        type="number"
+        type="time"
         placeholder="Time"
-        :time="true"
-        :custom-classes="['w-1/4', 'border', 'border-purple']"
+        :custom-classes="['border', 'border-purple']"
         :message="errors.first('create.time')"
       />
       <base-input
-        v-model="form.location"
+        v-model="appointments.location"
         v-validate="'required'"
         name="location"
         class="w-1/3 px-2"
         type="location"
         :custom-classes="['w-1/4', 'border', 'border-purple']"
         :message="errors.first('create.location')"
+        @place="handleLocation"
       />
     </div>
 
@@ -70,7 +71,7 @@
           />
         </ul>
       </div>
-      <div class="border-l border-gray-300 w-1/2 flex p-10 max-h-full flex-col justify-center items-center">
+      <div class="border-l border-gray-300 w-1/2 flex p-10 max-h-full flex-col ">
         <p class="py-2 pt-5 text-purple">
           Appointment Slots
         </p>
@@ -161,7 +162,7 @@
         <base-button
           class="mt-6"
           expanded
-          @click="saveRound"
+          @click="handleCreate"
         >
           Done
         </base-button>
@@ -171,8 +172,12 @@
 </template>
 
 <script>
+import { mapActions, mapState, mapGetters } from "vuex";
 import SlotItem from '@/components/auditions/SlotItem.vue';
 import AuditionForm from '@/components/auditions/AuditionForm.vue';
+import uuid from 'uuid/v1';
+import firebase from 'firebase/app';
+import axios from 'axios';
 
 export default {
   name: 'AppointmentsModal',
@@ -193,6 +198,7 @@ export default {
   data() {
     return {
       appointments: {},
+      selectedLocation: null,
       form: {
         dates: [
           {
@@ -218,7 +224,11 @@ export default {
     this.appointments = Object.assign({}, this.data);
     this.$emit('input', this.appointments);
   },
+  computed:{
+    ...mapState('round', ['rounds']),
+  },
   methods: {
+    ...mapActions('round', ['fetch']),
     makeSlots() {
       if (!(/^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/.test(this.appointments.start))) {
         return;
@@ -254,19 +264,62 @@ export default {
 
       this.appointments.end = this.appointments.slots.length ? counter : '';
     },
-
-    handleDone() {
-      if (!parseInt(this.appointments.spaces)) {
-        return;
-      }
-
-      this.$emit('change', this.appointments);
-      this.$emit('close');
+    handleLocation(place) {
+      this.selectedLocation = place;
     },
-    saveRound(){
-      console.log(this.form);
-      debugger;
-    }
+    async handleCreate() {
+      let coverSnapshot = null,
+          rolesSnapshots = [],
+          filesSnaphosts = [];
+
+      try {
+        if (this.isLoading || !await this.$validator.validateAll('create')) {
+          return;
+        }
+
+        // if (!this.form.cover) {
+        //   this.$toasted.error('The cover field is required.');
+        //   return;
+        // }
+
+        this.appointments.appointment = this.appointments.online ? {
+            "spaces": 10,
+            "type": 1,
+            "length": "20",
+            "start": "10:00",
+            "end": "18:00",
+            "slots": null
+        } : this.appointments.appointment;
+
+        this.appointments.status = true;
+        this.appointments.number_slots = this.appointments.spaces;
+        this.appointments.round = 3;
+        await this.fetch(this.$route.params.id);
+        let lastRound = this.rounds.slice(-1);
+        if(lastRound.length>0){
+          this.appointments.round = parseInt(lastRound[0].round) + 1;
+        }
+        const data = Object.assign({}, this.appointments);
+
+        if(this.selectedLocation){
+          data.location = {
+            latitude: this.selectedLocation.geometry.location.lat(),
+            longitude: this.selectedLocation.geometry.location.lng(),
+            latitudeDelta: 0.0043,
+            longitudeDelta: 0.0043
+          }; 
+        }
+
+        console.log(data);
+        debugger;
+        await axios.post(`/t/appointment/${this.$route.params.id}/rounds`, data);
+      } catch (e) {
+        console.log(e);
+        coverSnapshot && coverSnapshot.ref.delete();
+        await Promise.all(rolesSnapshots.map(role => role.ref.delete()));
+        await Promise.all(filesSnaphosts.map(file => file.ref.delete()));
+      }
+    },
   },
 };
 </script>

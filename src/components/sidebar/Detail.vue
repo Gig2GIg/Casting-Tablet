@@ -214,12 +214,13 @@
                 :selected="object" 
                 @setOption="methodToRunOnSelect"
                 v-on:updateOption="methodToRunOnSelect" 
+                :state.sync="statusChild"
                 :placeholder="'Select an Item'">
             </dropdown>
           </div>
         </div>
-        <div v-if="roundActive.status != 0 && audition.status == 1" class="w-full border border-gray-300 mt-6 mb-6" /> 
-        <router-link v-if="roundActive.status != 0 && audition.status == 1" :to="{ name: 'auditions/checkin', params: {id: roundActive.id } }">
+        <div v-if="roundActive.status != 0 && audition.status == 1 && roundActive.status > 0" class="w-full border border-gray-300 mt-6 mb-6" /> 
+        <router-link v-if="roundActive.status != 0 && audition.status == 1 && roundActive.status > 0" :to="{ name: 'auditions/checkin', params: {id: roundActive.id } }">
           <div class="flex w-full content-center text-center justify-center flex-wrap cursor-pointer">
             <button
               class="m-3 content-center flex items-center flex m-3 content-center border-2 rounded-sm border-purple w-48 h-10"
@@ -230,8 +231,8 @@
             </button>
           </div>
         </router-link>
-        <div v-if="roundActive.status != 0 && audition.status == 1" class="w-full border border-gray-300 mt-6 mb-6" />
-        <div v-if="roundActive.status != 0 && audition.status == 1" class="flex w-full content-center text-center justify-center flex-wrap cursor-pointer">
+        <div v-if="roundActive.status != 0 && audition.status == 1 && roundActive.status > 0" class="w-full border border-gray-300 mt-6 mb-6" />
+        <div v-if="roundActive.status != 0 && audition.status == 1 && roundActive.status > 0" class="flex w-full content-center text-center justify-center flex-wrap cursor-pointer">
           <div class="m-3 content-center flex items-center flex m-3 content-center border-2 rounded-sm border-purple w-48 h-10">
             <p class="flex-1 light-purple text-sm font-semibold content-center tracking-tighter flex-1">
               Enter Monitor Mode
@@ -246,8 +247,8 @@
             </p>
           </div>
         </div>
-        <div v-if="audition.status == 1 && roundActive.status != 0" class="w-full border border-gray-300 mt-6 mb-6" />
-        <div v-if="audition.status == 1 && roundActive.status != 0" class="flex w-full content-center text-center justify-center flex-wrap cursor-pointer">
+        <div v-if="audition.status == 1 && roundActive.status > 0" class="w-full border border-gray-300 mt-6 mb-6" />
+        <div v-if="audition.status == 1 && roundActive.status > 0" class="flex w-full content-center text-center justify-center flex-wrap cursor-pointer" @click="closeRounds">
           <div class="m-3 content-center flex items-center flex m-3 content-center border-2 rounded-sm border-purple w-48 h-10">
             <p class="flex-1 light-purple text-sm font-semibold content-center tracking-tighter flex-1">
               Close Round
@@ -263,7 +264,7 @@
           </div>
         </div>
         <div v-if="audition.status == 2" class="w-full border border-gray-300 mt-6 mb-6" />
-        <div v-if="audition.status == 2" class="flex w-full content-center text-center justify-center flex-wrap cursor-pointer">
+        <div v-if="audition.status == 2" class="flex w-full content-center text-center justify-center flex-wrap cursor-pointer" @click="emmitFinalCast()">
           <div class="m-3 content-center flex items-center flex m-3 content-center border-2 rounded-sm border-purple w-48 h-10">
             <p class="flex-1 light-purple text-sm font-semibold content-center tracking-tighter flex-1">
               Final Cast List
@@ -347,6 +348,7 @@ export default {
     return {
       info: true,
       manage: false,
+      statusChild:1,
       roundActive: false,
       videoSection: false,
       arrayOfObjects: [
@@ -370,7 +372,7 @@ export default {
   },
   methods: {
     ...mapActions('audition', ['fetchAuditionData', 'openAudition', 'closeAudition']),
-    ...mapActions('round', ['fetch']),
+    ...mapActions('round', ['fetch', 'closeRound']),
     changeInfo() {
       this.manage = false;
       this.info = true;
@@ -379,10 +381,21 @@ export default {
         this.info = false;
         this.manage = true;
     },
+    async emmitFinalCast(){
+      await this.$emit('handleFinalCast', 'true');
+    },
     auditionVideo(){
         this.info = false;
         this.manage = false;
         this.videoSection = true;
+    },
+    sendDataToChild(data){
+      this.statusChild = data;
+    },
+    async closeRounds(){
+      await this.closeRound(this.roundActive.id);
+      this.roundActive.status = 0;
+      this.sendDataToChild(0)
     },
     resetOptions(){
       this.info = true;
@@ -398,7 +411,6 @@ export default {
       await this.$emit('statusSet', this.audition.status);
     },
     async methodToRunOnSelect(payload) {
-      await this.fetch(this.$route.params.id);
       if(payload == "create"){
         this.$router.push({
             name: 'auditions.round', 
@@ -408,7 +420,7 @@ export default {
       else{
         await this.$emit('selected', payload)
       }
-      this.roundActive = payload;
+        this.roundActive = payload;
     },
   },
 };

@@ -29,10 +29,18 @@ export const FETCH_APPOINTMENT_NOT_WALK_FAILURE = 'Fetch Appointment Not Walk Fa
 export const FETCH_TALENT_DATABASE_LIST_SUCCESS = 'Fetch Talent database list Successful';
 export const FETCH_TALENT_DATABASE_LIST_FAILURE = 'Fetch Talent database list Failed';
 
-export const OPEN_AUDITION_SUCCESS = "Open audition successfully"
-export const OPEN_AUDITION_FAILURE = "Open audition failed"
+export const OPEN_AUDITION_SUCCESS = "Open audition successfully";
+export const OPEN_AUDITION_FAILURE = "Open audition failed";
 
-export const FETCH_TEAM_FEEDBACK_SUCCESS = "fetch feedback successfully"
-export const FETCH_TEAM_FEEDBACK_FAILURE = "fetch feedback failed"
+export const FETCH_TEAM_FEEDBACK_SUCCESS = "fetch feedback successfully";
+export const FETCH_TEAM_FEEDBACK_FAILURE = "fetch feedback failed";
+
+export const FETCH_FINAL_CAST_LIST_AUDITION_SUCCESS = "fetch final cast list successfully";
+export const FETCH_FINAL_CAST_LIST_AUDITION_FAILURE = "fetch final cast list failed";
+
+export const ADD_FINAL_CAST_PERFORMER_SUCCESS = "Add final cast performer list successfully";
+export const ADD_FINAL_CAST_PERFORMER_FAILURE = "Add final cast performer failed";
+export const DELETE_FINAL_CAST_PERFORMER_SUCCESS = "Delete final cast performer successfully";
+export const DELETE_FINAL_CAST_PERFORMER_FAILURE = "Delete final cast performer failed";
 
 

@@ -44,10 +44,23 @@ export default {
     }
   },
 
+  async fetchFinalCastList({ commit }, audition) {
+    try {
+      const { data: { data } } = await axios.get(`/t/finalcast/${audition}/audition`);
+      console.log(data);
+      commit(types.FETCH_FINAL_CAST_LIST_AUDITION_SUCCESS, data);
+    } catch (e) {
+      commit(types.FETCH_FINAL_CAST_LIST_AUDITION_FAILURE);
+    }
+  },
+
+  
+
   async fetchAuditionData({ commit }, audition) {
     try {
       const { data: { data } } = await axios.get(`/auditions/show/${audition}`);
       console.log(data);
+
       commit(types.FETCH_AUDITION_DATA_SUCCESS, data);
     } catch (e) {
       commit(types.FETCH_AUDITION_DATA_FAILURE);
@@ -57,7 +70,6 @@ export default {
   async openAudition({ commit }, audition) {
     try {
       const { data: { data } } = await axios.put(`/t/auditions/open/${audition}`);
-      debugger;
       commit(types.OPEN_AUDITION_SUCCESS, data);
     } catch (e) {
       commit(types.OPEN_AUDITION_FAILURE);
@@ -67,7 +79,6 @@ export default {
   async closeAudition({ commit }, audition) {
     try {
       const { data: { data } } = await axios.put(`/t/auditions/close/${audition}`);
-      debugger;
       commit(types.OPEN_AUDITION_SUCCESS, data);
     } catch (e) {
       commit(types.OPEN_AUDITION_FAILURE);
@@ -77,10 +88,27 @@ export default {
   async fetchTeamFeedback({ commit }, audition) {
     try {
       const { data: { data } } = await axios.get(`/t/feedbacks/list?appointment_id=${audition.appointment_id}&performer=${audition.performer}`);
-      debugger;
       commit(types.FETCH_TEAM_FEEDBACK_SUCCESS, data);
     } catch (e) {
       commit(types.FETCH_TEAM_FEEDBACK_FAILURE);
+    }
+  },
+  async addPerformer({ commit }, performer) {
+    debugger;
+    try {
+      const { data: { data } } = await axios.post('/t/finalcast', performer);
+      debugger;
+      commit(types.ADD_FINAL_CAST_PERFORMER_SUCCESS, data);
+    } catch (e) {
+      commit(types.ADD_FINAL_CAST_PERFORMER_FAILURE);
+    }
+  },
+  async removePerformer({ commit }, performer) {
+    try {
+      const { data: { data } } = await axios.delete(`/t/finalcast/${performer}`);
+      commit(types.DELETE_FINAL_CAST_PERFORMER_SUCCESS, data);
+    } catch (e) {
+      commit(types.DELETE_FINAL_CAST_PERFORMER_FAILURE);
     }
   },
 };

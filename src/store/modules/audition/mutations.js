@@ -49,4 +49,13 @@ export default {
   [types.FETCH_TEAM_FEEDBACK_SUCCESS](state, data){
     state.teamFeedback = data
   },
+
+  [types.FETCH_FINAL_CAST_LIST_AUDITION_SUCCESS](state, finalCast) {
+    state.finalCast = finalCast;
+  },
+
+  [types.FETCH_FINAL_CAST_LIST_AUDITION_FAILURE](state) {
+    state.finalCast = {};
+  },
+  
 };

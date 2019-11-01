@@ -16,7 +16,7 @@
                     Round {{ option.round }}
                 </a>
             </li>
-            <li>
+            <li v-if="create || state == 0">
                 <a href="javascript:void(0)" class="text-purple" @click="emitCreate()">
                     + Create Round
                 </a>
@@ -26,6 +26,7 @@
 </template>
 
 <script>
+import { mapActions, mapState, mapGetters } from 'vuex';
     export default {
         data() {
             return {
@@ -33,6 +34,7 @@
                   name: '',
                 },
                 showMenu: false,
+                create: true,
                 placeholderText: 'Please select an item',
             }
         },
@@ -42,16 +44,28 @@
             },
             selected: {},
             placeholder: [String],
+            state:[Number],
             closeOnOutsideClick: {
               type: [Boolean],
               default: true,
             },
         },
+        computed:{
+          ...mapState('round', ['rounds']),
 
-        mounted() {
+        },
+        async mounted() {
+         await  this.fetch(this.$route.params.id);
+          this.options = this.rounds;
           if(this.options != ""){
             this.selectedOption = this.options.filter(option => option.status == 1);
+            if(this.selectedOption.length>0){
+              this.create = false;
+            }
+            this.selectedOption = this.selectedOption.length > 0 ? this.selectedOption[0] : this.selectedOption;
+            this.$emit('setOption', this.selectedOption)
           }
+
             if (this.placeholder)
             {
                 this.placeholderText = this.placeholder;
@@ -68,6 +82,7 @@
         },
 
         methods: {
+          ...mapActions('round', ['fetch']),
             updateOption(option) {
                 this.selectedOption = option;
                 this.showMenu = false;

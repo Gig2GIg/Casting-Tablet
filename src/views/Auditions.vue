@@ -19,9 +19,11 @@
         <card-item
           :title="data.title"
           :date="data.online == 0 ? '' : data.date"
+          :contributor="data.user_id == userId  ? false : true"
           :image="data.cover"
           actionable
           :navigate-to="data.id"
+          state="upcoming"
         />
       </slide>
     </carousel>
@@ -35,7 +37,7 @@
     </div>
     <carousel
       class="flex mt-4 w-full"
-      :per-page="4"
+      :per-page="3"
       :pagination-enabled="false"
     >
       <slide
@@ -46,6 +48,9 @@
           :title="data.title"
           :date="data.online == 0 ? '' : data.date"
           :image="data.cover"
+          actionable
+          :navigate-to="data.id"
+          state="passed"
         />
       </slide>
     </carousel>
@@ -56,22 +61,30 @@
 <script>
 
 import { mapActions, mapState, mapGetters } from 'vuex';
+import TokenService from '../services/core/TokenService';
 
 export default {
   data() {
     return {
       isLoading: true,
+      userId:'',
     };
   },
   computed: {
     ...mapState('audition', ['auditions', 'upcoming', 'passed']),
+    ...mapState('profile', ['user']),
   },
   async created() {
     this.fetchUpcoming();
-    // this.fetchPassed();
+    this.fetchPassed();
+    this.fetch();
+  },
+  async mounted(){
+    this.userId = TokenService.getUserId()
   },
   methods: {
-    ...mapActions('audition', ['fetch', 'fetchUpcoming', 'fetchPassed']),
+    ...mapActions('audition', ['fetchUpcoming', 'fetchPassed']),
+    ...mapActions('profile', ['fetch']),
   },
 };
 </script>

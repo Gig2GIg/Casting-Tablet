@@ -12,4 +12,14 @@ export default {
       commit(types.FETCH_ROUNDS_FAILURE);
     }
   },
+
+  
+  async closeRound({ commit }, closeRound) {
+    try {
+      const { data: { data } } = await axios.put(`/t/appointment/${closeRound}/rounds`, {"status": false});
+      // commit(types.CLOSE_ROUND_SUCCESS, data);
+    } catch (e) {
+      // commit(types.CLOSE_ROUND_FAILURE);
+    }
+  },
 };

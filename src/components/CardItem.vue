@@ -10,13 +10,14 @@
 
     <div class="flex flex-col h-full rounded-lg shadow-md overflow-hidden">
       <button
-        class="bg-white text-white overflow-hidden my-2 p-3 text-lg focus:outline-none text-purple"
+        v-if="state == 'upcoming'"
+        class="absolute top-0 right-0 rounded-b-lg shadow-xl mb-0 w-32 text-sm bg-white text-white overflow-hidden my-2 p-3 text-lg focus:outline-none text-purple"
         :class="[borderClasses, { 'w-full': expanded }]"
         v-bind="$attrs"
         :type="type"
         @click="$emit('click', $event)"
       >
-        Manager
+        {{contributor == true ?'Contributor':'Manager'}}
       </button>
       <img
         :src="image || '/images/xd.png'"
@@ -40,7 +41,7 @@
         class="absolute bottom-0 right-0 mb-0 w-32 text-sm"
         border-classes="rounded-sm rounded-tl-lg"
       >
-        Manage {{navigateTo}}
+        Manage
       </base-button>
     </router-link>
   </div>
@@ -61,6 +62,10 @@ export default {
       type: String,
       default: null,
     },
+    state: {
+      type: String,
+      default: null,
+    },
     image: {
       type: String,
       default: '/images/xd.png',
@@ -69,6 +74,7 @@ export default {
       type: Number,
     },
     actionable: Boolean,
+    contributor: Boolean,
   },
   data() {
     return {};

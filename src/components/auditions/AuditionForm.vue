@@ -699,11 +699,11 @@ export default {
           data.location = {
             latitude: this.selectedLocation.geometry.location.lat(),
             longitude: this.selectedLocation.geometry.location.lng(),
-            latitudeDelta: parseFloat(this.selectedLocation.geometry.viewport.ka.g) - parseFloat(this.selectedLocation.geometry.viewport.oa.g),
-            longitudeDelta: parseFloat(this.selectedLocation.geometry.viewport.ka.h) - parseFloat(this.selectedLocation.geometry.viewport.oa.h)
+            latitudeDelta: 0.0043,
+            longitudeDelta: 0.0043
           }; 
         }
-
+        debugger;
         // Upload cover
         coverSnapshot = await firebase.storage()
           .ref(`temp/${uuid()}.${data.cover_name.split('.').pop()}`)

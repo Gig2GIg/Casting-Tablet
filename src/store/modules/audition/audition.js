@@ -9,6 +9,7 @@ const state = {
   userList: [],
   audition: [],
   teamFeedback:[],
+  finalCast:[],
 };
 
 export default {

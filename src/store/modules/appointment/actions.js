@@ -15,7 +15,7 @@ export default {
 
   async fetchUserAudition({ commit }, appointment) {
     try {
-      const {data: { data }} = await axios.get(`t/appointments/auditions?user=${appointment.userId}&role_id=${appointment.rolId}`);
+      const {data: { data }} = await axios.get(`t/appointments/auditions?user=${appointment.userId}&role_id=${appointment.rolId}&appointment_id=${appointment.appointmentId}`);
       console.log(data);
       commit(types.FETCH_USER_APPOINTMENT_SUCCESS, data);
     } catch (e) {
@@ -34,7 +34,6 @@ export default {
   },
 
   async saveCheckIn({ commit }, userData) {
-    debugger;
     try {
       const {data: { data }} = await axios.post("appointments/auditions", userData);
       console.log(data);
