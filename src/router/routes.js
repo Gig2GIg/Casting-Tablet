@@ -53,6 +53,21 @@ export default [
     },
   ]),
 
+  ...mapRoutes({ layout: 'detail' }, [
+    {
+      path: '/auditions/:audition/round/:round/user/:id/',
+      name: 'auditions/user',
+      component: () => import(/* webpackChunkName: 'auditions.user' */ '@/views/user/userAudition'),
+    },
+
+    {
+      path: '/talent/:id/',
+      name: 'talent/user',
+      component: () => import(/* webpackChunkName: 'auditions.user' */ '@/views/user/userTalent'),
+      props: true,
+    },
+  ]),
+
   /*
   |--------------------------------------------------------------------------
   | Protected Routes
@@ -83,11 +98,6 @@ export default [
     path: '/auditions/round/:id/create',
     name: 'auditions.round',
     component: () => import(/* webpackChunkName: 'auditions.create' */ '@/views/auditions/CreateRound'),
-  },
-  {
-    path: '/auditions/:audition/round/:round/user/:id/',
-    name: 'auditions/user',
-    component: () => import(/* webpackChunkName: 'auditions.user' */ '@/views/user/userAudition'),
   },
   {
     path: '/notifications ',

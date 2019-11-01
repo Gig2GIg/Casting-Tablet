@@ -1,10 +1,15 @@
 <!-- eslint-disable max-len -->
 <template>
+
   <form
     class="relative"
     data-vv-scope="create"
     @submit.prevent="handleCreate"
   >
+  <loading :active.sync="isLoading" 
+        :can-cancel="true" 
+        :on-cancel="onCancel"
+        :is-full-page="fullPage"></loading>
     <div class="flex flex-row-reverse mb-4 px-2">
       <div
         class="relative flex items-center text-purple cursor-pointer"
@@ -484,6 +489,7 @@
 </template>
 
 <script>
+import Vue from 'vue';
 import uuid from 'uuid/v1';
 import firebase from 'firebase/app';
 import axios from 'axios';
@@ -492,11 +498,15 @@ import RolesModal from './RolesModal.vue';
 import ContributorItem from './ContributorItem.vue';
 import DocumentItem from './DocumentItem.vue';
 import 'firebase/storage';
-
+// Import component
+import Loading from 'vue-loading-overlay';
+// Import stylesheet
+import 'vue-loading-overlay/dist/vue-loading.css';
+Vue.use(Loading);
 export default {
   name: 'AuditionForm',
   components: {
-    AppointmentsModal, RolesModal, ContributorItem, DocumentItem,
+    AppointmentsModal, RolesModal, ContributorItem, DocumentItem, Loading
   },
   data() {
     return {
@@ -508,6 +518,7 @@ export default {
       selectedLocation: null,
       previewCover: null,
       isLoading: false,
+      fullPage: true,
       invitation: {
         adding: false,
         email: '',
@@ -658,6 +669,10 @@ export default {
       this.$refs.coverFile.value = '';
     },
 
+    onCancel() {
+      console.log('User cancelled the loader.')
+    },
+
     handleDeleteDocument(media) {
       const index = this.form.media.indexOf(media);
       this.form.media.splice(index, 1);
@@ -667,6 +682,7 @@ export default {
       this.selectedLocation = place;
     },
 
+      
     async handleCreate() {
       let coverSnapshot = null,
           rolesSnapshots = [],
@@ -703,7 +719,6 @@ export default {
             longitudeDelta: 0.0043
           }; 
         }
-        debugger;
         // Upload cover
         coverSnapshot = await firebase.storage()
           .ref(`temp/${uuid()}.${data.cover_name.split('.').pop()}`)
@@ -732,9 +747,13 @@ export default {
 
           filesSnaphosts.push(snapshot);
         }));
-        console.log(data);
-        debugger;
+        
         await axios.post('/t/auditions/create', data);
+        this.isLoading = true;
+        setTimeout(() => {
+          this.isLoading = false
+        },5000)
+        this.$toasted.success('The audition has created successfully.');
       } catch (e) {
         console.log(e);
         coverSnapshot && coverSnapshot.ref.delete();

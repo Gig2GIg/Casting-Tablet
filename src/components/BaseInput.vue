@@ -20,6 +20,13 @@
         stroke-width="1"
       /></svg>
 
+      <img
+        v-if="type === 'add'"
+        :src="'/images/icons/new.png'"
+        alt="Icon"
+        class="absolute top-0 right-0 bottom-0 my-auto mr-3 content-center h-6"
+      />
+
       <svg
         v-else-if="type === 'date'"
         xmlns="http://www.w3.org/2000/svg"
@@ -158,6 +165,7 @@ export default {
         'number',
         'textarea',
         'time',
+        'add'
       ].indexOf(value) >= 0,
     },
     message: {

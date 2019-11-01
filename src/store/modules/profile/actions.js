@@ -13,4 +13,14 @@ export default {
       commit(types.FETCH_PROFILE_FAILURE);
     }
   },
+
+  async fetchData({ commit }, id) {
+    try {
+      const { data: { data } } = await axios.get(`/t/auditions/profile/user/${id}`);
+      debugger;
+      commit(types.FETCH_PROFILE_SUCCESS, data);
+    } catch (e) {
+      commit(types.FETCH_PROFILE_FAILURE);
+    }
+  },
 };

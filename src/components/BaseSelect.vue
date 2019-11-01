@@ -10,8 +10,6 @@
       <option
         v-if="computedValue == null"
         :value="null"
-        disabled
-        hidden
       >
         {{ placeholder }}
       </option>

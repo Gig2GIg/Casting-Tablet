@@ -91,6 +91,7 @@
     <div v-if="prechecked" class="flex justify-center w-full mt-16">
       <div class="w-1/4 flex justify-center">
           <base-button
+          @click="reset"
           text="text-white"
           color="button-detail"
           type="submit"
@@ -118,6 +119,12 @@
           @input="makeSlots"
           placeholder="Select Appointment"
         >
+        <option 
+        :value="''"
+        disabled
+        hidden>
+          Select Appointment
+        </option>
         <option v-for="(item, index) in appointmentNotWalk.slots" :value="item.id" :key="index">
           {{ item.time }}
         </option>
@@ -128,7 +135,7 @@
 
     <div v-if="showAppointments" class="flex justify-center w-full">
       <div class="w-1/4 flex justify-center">
-          <base-button
+        <base-button
           @click.native="updateCheckIn"
           text="text-white"
           color="button-detail"
@@ -190,6 +197,7 @@ export default {
       showAppointments:false,
       cam: true,
       image: false,
+      data:{},
     };
   },
   computed:{
@@ -198,6 +206,15 @@ export default {
   mounted() {},
   methods: {
     ...mapActions("appointment", ["fetch", "fetchUserAudition", "saveCheckIn", "fetchAppointmentNotWalk"]),
+    async reset(){
+        let stateCheckin = await this.saveCheckIn(this.data);
+        this.$toasted.success('The check-in has been successfully');
+        this.data={};
+        this.init = true;
+        this.scan = false;
+        this.prechecked = false;
+        this.appointment_id=""
+    },
     useScanner(){
         this.init = false;
         this.scan = true;
@@ -226,14 +243,14 @@ export default {
       this.result = JSON.parse(result);
       if(this.result.hour !== null){
         await this.fetchUserAudition(this.result);
-        let data = {"slot": this.userAppointment.slot_id, "user": this.result.userId, "auditions": this.result.auditionId, "rol": this.result.rolId, "appointment_id": this.result.appointmentId}
-        let stateCheckin = await this.saveCheckIn(data);
+        this.data = {"slot": this.userAppointment.slot_id, "user": this.result.userId, "auditions": this.result.auditionId, "rol": this.result.rolId, "appointment_id": this.result.appointmentId}
+
         if(stateCheckin){
           this.scan = false;
           this.prechecked = true;
         }
         else{
-          console.log("Invalid Data Given");
+          this.$toasted.error('Invalid Data Given');
         }
       }
       else{
@@ -275,6 +292,7 @@ export default {
           await this.fetchUserAudition(this.result);
           let data = {"slot": this.userAppointment.slot_id, "user": this.result.userId, "auditions": this.result.auditionId, "rol": this.result.rolId, "appointment_id": this.result.appointmentId}
           let stateCheckin = await this.saveCheckIn(data);
+
           if(stateCheckin){
             this.scan = false;
             this.prechecked = true;

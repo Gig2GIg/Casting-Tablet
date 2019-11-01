@@ -5,7 +5,6 @@
         <div class="flex m-5">
           <img class="h-5 px-1 mt-1" src="/images/icons/auditions.png" alt="Sunset in the mountains">
           <p class="px-1"> Filter</p>
-          {{search}}
         </div>
         <div class="px-6 py-4">
           <div class="font-bold text-sm mb-2 py-2">Union Status</div>
@@ -51,61 +50,13 @@
           v-for="item in talentList"
           :key="item.id"
           >
+          <router-link :to="{ name: 'talent/user', params: {id: item.details.id, image: item.image, code:item.share_code} }">
             <card-user
               :title="item.details.first_name +' '+ item.details.last_name"
               time=""
               :image="item.image"
             />
-        </div>
-        <div
-          v-for="item in talentList"
-          :key="item.id"
-          >
-            <card-user
-              :title="item.details.first_name +' '+ item.details.last_name"
-              time=""
-              :image="item.image"
-            />
-        </div>
-        <div
-          v-for="item in talentList"
-          :key="item.id"
-          >
-            <card-user
-              :title="item.details.first_name +' '+ item.details.last_name"
-              time=""
-              :image="item.image"
-            />
-        </div>
-        <div
-          v-for="item in talentList"
-          :key="item.id"
-          >
-            <card-user
-              :title="item.details.first_name +' '+ item.details.last_name"
-              time=""
-              :image="item.image"
-            />
-        </div>
-        <div
-          v-for="item in talentList"
-          :key="item.id"
-          >
-            <card-user
-              :title="item.details.first_name +' '+ item.details.last_name"
-              time=""
-              :image="item.image"
-            />
-        </div>
-        <div
-          v-for="item in talentList"
-          :key="item.id"
-          >
-            <card-user
-              :title="item.details.first_name +' '+ item.details.last_name"
-              time=""
-              :image="item.image"
-            />
+          </router-link>
         </div>
       </div>
     </div>

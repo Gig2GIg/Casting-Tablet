@@ -25,6 +25,7 @@
     "vue-draggable": "^2.0.2",
     "vue-dropdowns": "^1.0.6",
     "vue-global-var": "^1.0.0",
+    "vue-loading-overlay": "^3.2.0",
     "vue-multipane": "^0.9.5",
     "vue-qrcode-reader": "^2.1.0",
     "vue-router": "^3.0.7",
