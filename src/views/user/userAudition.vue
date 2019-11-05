@@ -216,11 +216,13 @@
         <p class="text-center text-2xl text-purple font-bold">Tags</p>
         <div class="flex flex-wrap justify-center w-full">
             <base-input
+                v-model="tag"
                 name="tag"
                 class="w-full px-2"
                 type="add"
                 placeholder="Add Tags"
                 :custom-classes="['border-2', 'border-purple']"
+                @added="setTags"
               />
         </div>
       </div>
@@ -327,6 +329,7 @@ export default {
       callback: 1,
       favorite:0,
       slot:'',
+      tag:'',
       workon:1,
       currentUser:[],
       form:{}
@@ -345,6 +348,7 @@ export default {
       user:this.$route.params.id,
       round:this.$route.params.round
     };
+
     await this.fetchUserFeedback(feedback);
     if(this.feedback != ''){
        this.workon = this.feedback.work == 'vocals' ? 1 :this.feedback.work == 'acting' ? 2 : 3;
@@ -366,7 +370,7 @@ export default {
     ...mapActions('user', ['fetch']),
     ...mapActions('audition', ['fetchAuditionData', 'fetchUserList', 'fetchTeamFeedback']),
     ...mapActions('profile', {fetchProfile: "fetch"}),
-    ...mapActions('feedback', ['fetchUserFeedback']),
+    ...mapActions('feedback', ['fetchUserFeedback', 'addTags']),
     goToday() {
       this.$refs.calendar.goToday()
     },
@@ -383,6 +387,23 @@ export default {
       let status = await axios.post('/t/feedbacks/add', this.form);
       this.$toasted.success('Feedback Created');
       debugger;
+    },
+    async setTags(){
+      if(this.tag !== ''){
+        let data = {
+          "title": this.tag,
+          "id": null,
+          "audition_id": this.$route.params.audition,
+          "user_id": this.$route.params.id,
+        }
+        try{
+          let status = await axios.post('/t/feedbacks/add', this.form);
+          this.$toasted.success('Tag Created');
+        }catch(e){
+          this.$toasted.error('Tag not created, try later');
+        }
+         this.tag = '';
+      }
     }
   },
 };

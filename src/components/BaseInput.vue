@@ -24,6 +24,7 @@
         v-if="type === 'add'"
         :src="'/images/icons/new.png'"
         alt="Icon"
+        @click="$emit('added', 'set')"
         class="absolute top-0 right-0 bottom-0 my-auto mr-3 content-center h-6"
       />
 

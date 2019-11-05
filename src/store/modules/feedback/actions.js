@@ -13,6 +13,15 @@ export default {
     }
   },
 
+  async addTags({ commit }, audition){
+    try {
+      const { data: { data } } = await axios.put(`/t/auditions/${audition.round}/feedbacks/user/tags`, audition);
+      // commit(types.ADD_TAGS_SUCCESS, data);
+    } catch (e) {
+      // commit(types.ADD_TAGS_FAILURE);
+    }
+  },
+
   
   async closeRound({ commit }, closeRound) {
     try {
