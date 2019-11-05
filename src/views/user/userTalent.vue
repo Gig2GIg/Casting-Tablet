@@ -11,13 +11,14 @@
           :custom-classes="['border', 'border-purple']"
           :message="errors.first('invitation.email')"
           expanded
+          @change="sendDataPorfavor"
         />
 
         <base-button
           class="pt-2 pb-2"
           type="submit"
           expanded
-          @click.native="sendCode"
+          @click.native="sendDataPorfavor"
         >
           Send
         </base-button>
@@ -39,94 +40,64 @@
       
     </div>
   </nav>
-  <div class="flex" :style="{ minWidth: '80%', width: '100%', maxWidth: '100%' }">
-  <div class="flex flex-wrap  w-1/3">
-      <img
-        :src="image"
-        alt="Icon"
-      >
-      <p class="text-purple text-xl font-bold mt-4 w-full">{{profile.details.first_name}} {{profile.details.last_name}}</p>
-      <p class="text-purple text-m font-bold mt-2 w-full">{{profile.details.city}}</p>
-      <div class="flex w-full justify-start mt-12">
-        <img
-          :src="'/images/icons/person.png'"
-          alt="Icon"
-          class="content-center h-8"
-        >
-        <p class="text-purple text-m text-left ml-4 tracking-wide font-semibold w-1/2">Test City</p>
+  <div class="flex p-5">
+  <div class="flex flex-wrap justify-center content-start w-1/2 shadow-2xl rounded-lg">
+      <div class="h-56 w-full bg-cover rounded-t-lg" :style="{ backgroundImage: 'url(' + image + ')' }">
       </div>
-      <div class="flex w-full justify-start mt-12">
-        <img
-          :src="'/images/icons/icon.png'"
-          alt="Icon"
-          class="content-center h-8"
-        >
-        <p class="text-purple text-m text-left ml-4 tracking-wide font-semibold w-1/2">Credit</p>
+      <p class="text-purple text-xl font-bold mt-4 text-center w-full">{{profile.details.first_name}} {{profile.details.last_name}}</p>
+      <p class="text-purple text-m font-bold mt-2 text-center w-full">{{profile.details.city}}</p>
+      <div class="w-full m-8">
+        <div class="flex w-full justify-start mt-2">
+          <img
+            :src="'/images/icons/person.png'"
+            alt="Icon"
+            class="content-center h-8"
+          >
+          <p class="text-purple text-m text-left ml-4 tracking-wide w-1/2">Info</p>
+        </div>
+        <div class="flex w-full justify-start mt-12">
+          <img
+            :src="'/images/icons/icon.png'"
+            alt="Icon"
+            class="content-center h-8"
+          >
+          <p class="text-purple text-m text-left ml-4 tracking-wide w-1/2">Credit</p>
+        </div>
+        <div class="flex w-full justify-start mt-12">
+          <img
+            :src="'/images/icons/book.png'"
+            alt="Icon"
+            class="content-center h-8"
+          >
+          <p class="text-purple text-m text-left ml-4 tracking-wide w-1/2">Education & Training</p>
+        </div>
+        <div class="flex w-full justify-start mt-12">
+          <img
+            :src="'/images/icons/12-layers.png'"
+            alt="Icon"
+            class="content-center h-8"
+          >
+          <p class="text-purple text-m text-left ml-4 tracking-wide w-1/2">Appearance</p>
+        </div>
       </div>
-      <div class="flex w-full justify-start mt-12">
-        <img
-          :src="'/images/icons/book.png'"
-          alt="Icon"
-          class="content-center h-8"
-        >
-        <p class="text-purple text-m text-left ml-4 tracking-wide font-semibold w-1/2">Education & Training</p>
-      </div>
-      <div class="flex w-full justify-start mt-12">
-        <img
-          :src="'/images/icons/12-layers.png'"
-          alt="Icon"
-          class="content-center h-8"
-        >
-        <p class="text-purple text-m text-left ml-4 tracking-wide font-semibold w-1/2">Appearance</p>
-      </div>
-    </div>
-  <div class="flex flex-wrap w-full  h-full">
+  </div>
+  <div class="flex flex-wrap px-10 w-full h-full">
     <div class="flex w-full">
-      <div class="w-1/43flex flex-wrap content-center justify-center calendar shadow-lg">
-        <p class="text-center text-2xl text-purple font-bold">Availability</p>
-          <v-calendar :rows="2"/>
+      <div class="w-1/3 ml-5 flex flex-wrap content-center justify-center calendar shadow-lg">
+        <div>
+          <p class="text-center text-2xl text-purple">Availability</p>
+          <v-calendar class="border-none" :rows="2"/>
+        </div>
       </div>
-      <div class="w-1/12"></div>
-      <div class="w-full shadow-lg">
+      <div class="w-full ml-5 shadow-lg">
         <p class="text-center text-2xl text-purple font-bold">Contract Information</p>
         <div class="flex flex-wrap justify-center">
-            <div v-for="data in audition.roles" :key="data.id" class="text-center w-1/2 flex justify-center">
-              <div>
-                <div class="m-3 rounded-full flex items-center w-12 h-12 " :class="{'button-detail': data.id == rol, 'bg-gray-400': data.id != rol}">
-                  <figure class="flex w-full justify-center">
-                    <img
-                      :src="`/images/icons/user.png`"
-                      alt="Icon"
-                      class="content-center h-4"
-                    >
-                  </figure>
-                </div>
-                <p class="text-purple text-xs justify-center w-16 font-bold tracking-tighter flex-1 ">
-                  {{ data.name }}
-                </p>
-              </div>
-            </div>
-            <div v-for="data in audition.roles" :key="data.id" class="text-center w-1/2 flex justify-center">
-              <div>
-                <div class="m-3 rounded-full flex items-center w-12 h-12 " :class="{'button-detail': data.id == rol, 'bg-gray-400': data.id != rol}">
-                  <figure class="flex w-full justify-center">
-                    <img
-                      :src="`/images/icons/user.png`"
-                      alt="Icon"
-                      class="content-center h-4"
-                    >
-                  </figure>
-                </div>
-                <p class="text-purple text-xs justify-center w-16 font-bold tracking-tighter flex-1 ">
-                  {{ data.name }}
-                </p>
-              </div>
-            </div>
+          <p class="text-purple font-bold">No informaton added yet.</p>
         </div>
       </div>
     </div>
     <div class="flex w-full h-96 mt-16">
-      <div class="w-1/2 shadow-lg border border-gray-300">
+      <div class="w-1/2 ml-5 px-10 shadow-lg border border-gray-300">
         <p class="text-center text-2xl text-purple font-bold">Tags</p>
         <div class="flex flex-wrap justify-center w-full">
             <base-input
@@ -138,8 +109,7 @@
               />
         </div>
       </div>
-      <div class="w-1/12"></div>
-      <div class="w-1/2 shadow-lg border border-gray-300">
+      <div class="w-1/2 ml-5 shadow-lg border border-gray-300">
         <p class="text-center text-2xl text-purple font-bold">Recommendation</p>
         <div class="flex flex-wrap justify-center w-full">
             <div class="flex flex-wrap justify-center w-full">
@@ -209,7 +179,7 @@ export default {
     goToday() {
       this.$refs.calendar.goToday()
     },
-    async sendCode(){
+    async sendDataPorfavor(){
       debugger;
 
       let data={
