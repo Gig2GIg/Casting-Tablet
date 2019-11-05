@@ -43,4 +43,7 @@ export const ADD_FINAL_CAST_PERFORMER_FAILURE = "Add final cast performer failed
 export const DELETE_FINAL_CAST_PERFORMER_SUCCESS = "Delete final cast performer successfully";
 export const DELETE_FINAL_CAST_PERFORMER_FAILURE = "Delete final cast performer failed";
 
+export const FETCH_USER_FEEDBACK_SUCCESS = "Fetch User Feedback Success"
+export const FETCH_USER_FEEDBACK_FAILURE = "Fetch User Feedback Failure"
+
 

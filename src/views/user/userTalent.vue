@@ -1,27 +1,30 @@
 <template>
 <div>
   <nav class="flex items-center h-12">
-      <img :src="'/images/icons/12-layers@3x.png'" class="h-10  ml-auto" alt="star" @click="invitation.adding = true">
-      <div v-show="invitation.adding" class="mt-64">
-        <base-input
-          v-model="invitation.email"
-          v-validate="'required|email'"
-          name="email"
-          placeholder="Email"
-          :custom-classes="['border', 'border-purple']"
-          :message="errors.first('invitation.email')"
-          expanded
-          @change="sendDataPorfavor"
-        />
+    <div class="w-full flex flex-col">
+      <div class=" w-1/2 z-40">
+          <div v-show="invitation.adding" class="mt-16 mr-32 shadow-lg bg-white absolute right-0 top-0 z-40">
+            <base-input
+              v-model="invitation.email"
+              v-validate="'required|email'"
+              name="email"
+              placeholder="Email"
+              :custom-classes="['border', 'border-purple']"
+              :message="errors.first('invitation.email')"
+              expanded
+            />
 
-        <base-button
-          class="pt-2 pb-2"
-          type="submit"
-          expanded
-          @click.native="sendDataPorfavor"
-        >
-          Send
-        </base-button>
+            <base-button
+              class="pt-2 pb-2"
+              type="submit"
+              expanded
+              @click.native="sendData"
+            >
+              Send
+            </base-button>
+          </div>
+      </div>
+      <img :src="'/images/icons/12-layers@3x.png'" class="h-10  ml-auto mr-5" alt="star" @click="invitation.adding =invitation.adding == true?false:true">
       </div>
     <div class="flex items-center border-l border-white text-white float-right cursor-pointer">
       <span class="mx-4">
@@ -179,7 +182,7 @@ export default {
     goToday() {
       this.$refs.calendar.goToday()
     },
-    async sendDataPorfavor(){
+    async sendData(){
       debugger;
 
       let data={

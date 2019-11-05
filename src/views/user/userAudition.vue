@@ -46,22 +46,6 @@
                 </p>
               </div>
             </div>
-            <div v-for="data in audition.roles" :key="data.id" class="text-center w-1/2 flex justify-center">
-              <div>
-                <div class="m-3 rounded-full flex items-center w-12 h-12 " :class="{'button-detail': data.id == rol, 'bg-gray-400': data.id != rol}">
-                  <figure class="flex w-full justify-center">
-                    <img
-                      :src="`/images/icons/user.png`"
-                      alt="Icon"
-                      class="content-center h-4"
-                    >
-                  </figure>
-                </div>
-                <p class="text-purple text-xs justify-center w-16 font-bold tracking-tighter flex-1 ">
-                  {{ data.name }}
-                </p>
-              </div>
-            </div>
         </div>
       </div>
       <div class="w-1/12"></div>
@@ -352,10 +336,24 @@ export default {
     ...mapState('audition', ['audition', 'userList', 'teamFeedback']),
     ...mapState('user', ['user']),
     ...mapState('profile', {profile:'user'}),
+    ...mapState('feedback', ['feedback']),
   },
   async mounted() {
     await this.fetchAuditionData(this.$route.params.audition);
     await this.fetchUserList(this.$route.params.round);
+    let feedback = { 
+      user:this.$route.params.id,
+      round:this.$route.params.round
+    };
+    await this.fetchUserFeedback(feedback);
+    if(this.feedback != ''){
+       this.workon = this.feedback.work == 'vocals' ? 1 :this.feedback.work == 'acting' ? 2 : 3;
+       this.favorite = this.feedback.favorite;
+       this.emoji = this.feedback.evaluation
+       this.callback = this.feedback.callback == 1 ?true:false;
+       this.form.comment = this.feedback.comment;
+    }
+
     this.currentUser = this.userList.filter(userList => userList.user_id == this.$route.params.id);
     if(this.currentUser != ""){
       this.slot = this.currentUser[0].slot_id;
@@ -368,6 +366,7 @@ export default {
     ...mapActions('user', ['fetch']),
     ...mapActions('audition', ['fetchAuditionData', 'fetchUserList', 'fetchTeamFeedback']),
     ...mapActions('profile', {fetchProfile: "fetch"}),
+    ...mapActions('feedback', ['fetchUserFeedback']),
     goToday() {
       this.$refs.calendar.goToday()
     },

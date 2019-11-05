@@ -115,10 +115,17 @@
                 :key="data.id"
                 class="text-center"
               >
-                <div class="m-3 rounded-full red-light flex items-center w-12 h-12 button-detail">
+                <div class="m-3 rounded-full red-light flex items-center w-12 h-12 button-detail bg-cover" :style="{ backgroundImage: 'url(' + data.image.url + ')' }">
                   <figure class="flex w-full justify-center">
                     <img
+                      v-if="data.image.url == ''"
                       :src="`/images/icons/person.png`"
+                      alt="Icon"
+                      class="content-center h-4"
+                    >
+                    <img
+                      v-else
+                      :src="data.image.url"
                       alt="Icon"
                       class="content-center h-4"
                     >
