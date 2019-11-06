@@ -9,6 +9,9 @@ import firebase from 'firebase/app';
 import App from '@/App';
 import store from '@/store';
 import router from '@/router';
+import VModal from 'vue-js-modal'
+ 
+Vue.use(VModal)
 
 Vue.use(VueCarousel);
 Vue.use(VeeValidate);

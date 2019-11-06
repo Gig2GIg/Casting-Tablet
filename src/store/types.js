@@ -46,4 +46,12 @@ export const DELETE_FINAL_CAST_PERFORMER_FAILURE = "Delete final cast performer 
 export const FETCH_USER_FEEDBACK_SUCCESS = "Fetch User Feedback Success"
 export const FETCH_USER_FEEDBACK_FAILURE = "Fetch User Feedback Failure"
 
+export const FETCH_TAGS_SUCCESS = "Fetch Tags Success"
+export const FETCH_TAGS_FAILURE = "Fetch Tags Failure"
+
+export const SEARCH_MARKETPLACE_SUCCESS = "Fetch marketplace Success"
+export const SEARCH_MARKETPLACE_FAILURE = "Fetch marketplace Failure"
+
+export const FETCH_RECOMMENDATION_SUCCESS = "Fetch recommendation Success"
+export const FETCH_RECOMMENDATION_FAILURE = "Fetch recommendation Failure"
 

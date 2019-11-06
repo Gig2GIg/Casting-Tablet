@@ -18,13 +18,39 @@
       > -->
     </div>
   </nav>
+  <modal name="marketplace" :scrollable="true" height="auto">
+    <div class="w-full shadow-lg border border-gray-300">
+        <p class="text-center text-2xl text-purple font-bold" @click="show">Marketplaces</p>
+        <div class="flex flex-wrap justify-center w-full">
+            <div class="flex flex-wrap justify-center w-full">
+              <base-input
+                v-model="marketplaceSearch"
+                name="marketplace"
+                class="w-full px-2"
+                type="add"
+                placeholder="Search marketplaces"
+                :custom-classes="['border-2', 'border-purple']"
+                @input="filterMarketplaces"
+              />
+          </div>    
+        </div>
+        <div class="m-4 cursor-pointer">
+          <div v-for="data in marketplace" :key="data.id" :class="{'bg-purple': currentMarketplace.id == data.id}" class="flex flex-wrap justify-center text-left content-center w-full rounded-sm border-b-2 border-gray-500 mb-4" @click="selectMarketplace(data)">
+            <p :class="{'text-white': currentMarketplace.id == data.id, 'text-purple': currentMarketplace.id != data.id}" class="w-1/2">{{data.title}}</p>
+            <div class="flex flex-wrap justify-end w-1/2">
+              <!-- <img src="/images/icons/garbage@3x.png" alt="Icon" class="h-6" @click="deleteTag(data)"> -->
+            </div>
+          </div>
+        </div>
+      </div>
+  </modal>
  <multipane class="custom-resizer h-full " layout="vertical">
   <div class="pane bg-white overflow-scroll" :style="{ minWidth: '80%', width: '100%', maxWidth: '100%' }">
   <div class="flex flex-wrap  h-full">
     <div class="flex w-full">
       <div class="w-1/4 flex flex-wrap content-center justify-center calendar shadow-lg">
         <p class="text-center text-2xl text-purple font-bold">Availability</p>
-          <v-calendar :rows="2"/>
+          <v-calendar class="border-none" :rows="2"/>
       </div>
       <div class="w-1/12"></div>
       <div class="w-1/4 shadow-lg">
@@ -212,7 +238,7 @@
           </div>
       </div>
       <div class="w-1/12"></div>
-      <div class="w-1/4 shadow-lg border border-gray-300">
+      <div class="w-1/4 shadow-lg border border-gray-300 overflow-auto">
         <p class="text-center text-2xl text-purple font-bold">Tags</p>
         <div class="flex flex-wrap justify-center w-full">
             <base-input
@@ -225,20 +251,38 @@
                 @added="setTags"
               />
         </div>
+        <div class="m-4">
+          <div v-for="data in tags" :key="data.id" class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
+            <p class="text-purple w-1/2">{{data.title}}</p>
+            <div class="flex flex-wrap justify-end w-1/2">
+              <img src="/images/icons/garbage@3x.png" alt="Icon" class="h-6" @click="deleteTag(data)">
+            </div>
+          </div>
+        </div>
       </div>
       <div class="w-1/12"></div>
-      <div class="w-1/4 shadow-lg border border-gray-300">
-        <p class="text-center text-2xl text-purple font-bold">Recommendation</p>
+      <div class="w-1/4 shadow-lg border border-gray-300 overflow-auto">
+        <p class="text-center text-2xl text-purple font-bold" @click="show">Recommendation</p>
         <div class="flex flex-wrap justify-center w-full">
             <div class="flex flex-wrap justify-center w-full">
               <base-input
+                v-model="recommendation"
                 name="recommendation"
                 class="w-full px-2"
                 type="add"
                 placeholder="Add Recommendations"
                 :custom-classes="['border-2', 'border-purple']"
+                @added="setRecommendations"
               />
           </div>    
+        </div>
+        <div class="m-4">
+          <div v-for="data in recommendations" :key="data.id" class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
+            <p class="text-purple w-1/2">{{data.markeplace.title}}</p>
+            <div class="flex flex-wrap justify-end w-1/2">
+              <img src="/images/icons/garbage@3x.png" alt="Icon" class="h-6" @click="deleteRecommended(data)">
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -330,7 +374,10 @@ export default {
       favorite:0,
       slot:'',
       tag:'',
+      recommendation:'',
       workon:1,
+      currentMarketplace:'',
+      marketplaceSearch:'',
       currentUser:[],
       form:{}
     };
@@ -339,11 +386,13 @@ export default {
     ...mapState('audition', ['audition', 'userList', 'teamFeedback']),
     ...mapState('user', ['user']),
     ...mapState('profile', {profile:'user'}),
-    ...mapState('feedback', ['feedback']),
+    ...mapState('feedback', ['feedback', 'tags', 'marketplace', 'recommendations']),
   },
   async mounted() {
     await this.fetchAuditionData(this.$route.params.audition);
     await this.fetchUserList(this.$route.params.round);
+    await this.fetchTags({"round": this.$route.params.round, "user": this.$route.params.id,})
+    await this.fetchRecommendation({"round": this.$route.params.round, "user": this.$route.params.id,})
     let feedback = { 
       user:this.$route.params.id,
       round:this.$route.params.round
@@ -368,9 +417,9 @@ export default {
   },
   methods: {
     ...mapActions('user', ['fetch']),
-    ...mapActions('audition', ['fetchAuditionData', 'fetchUserList', 'fetchTeamFeedback']),
+    ...mapActions('audition', ['fetchAuditionData', 'fetchUserList', 'fetchTeamFeedback', 'searchMarketplace']),
     ...mapActions('profile', {fetchProfile: "fetch"}),
-    ...mapActions('feedback', ['fetchUserFeedback', 'addTags']),
+    ...mapActions('feedback', ['fetchUserFeedback', 'storeTag', 'storeRecommendation', 'fetchTags', 'fetchRecommendation', 'delete', 'searchMarketplace', 'setRecommendations', 'deleteRecommendation']),
     goToday() {
       this.$refs.calendar.goToday()
     },
@@ -386,26 +435,80 @@ export default {
       this.form.evaluator = this.profile.details.id;
       let status = await axios.post('/t/feedbacks/add', this.form);
       this.$toasted.success('Feedback Created');
-      debugger;
     },
     async setTags(){
       if(this.tag !== ''){
-        let data = {
+        let data ={
           "title": this.tag,
           "id": null,
-          "audition_id": this.$route.params.audition,
+          "appointment_id": this.$route.params.round,
           "user_id": this.$route.params.id,
         }
-        try{
-          let status = await axios.post('/t/feedbacks/add', this.form);
-          this.$toasted.success('Tag Created');
-        }catch(e){
+        
+        if( await this.storeTag(data))
+          this.$toasted.success('Tag created successfully');
+          await this.fetchTags({"round": this.$route.params.round, "user": this.$route.params.id,})
+        }
+        else{
           this.$toasted.error('Tag not created, try later');
         }
          this.tag = '';
+      }, 
+      async setRecommendations(){
+        if(this.recommendation !== '' && this.currentMarketplace!==''){
+          let data ={
+            "title": this.recommendation,
+            "marketplace_id": this.currentMarketplace.id,
+            "audition_id": this.$route.params.round,
+            "user_id": this.$route.params.id,
+          }
+          if (await this.storeRecommendation(data))
+            this.$toasted.success('Recommendation created successfully');
+            await this.fetchRecommendation({"round": this.$route.params.round, "user": this.$route.params.id,})
+          }
+          else{
+            this.$toasted.error('Recommendation not created, select a Marketplace or try later');
+          }
+          this.recommendation = '';
+      },
+
+      async filterMarketplaces(){
+        await this.searchMarketplace(this.marketplaceSearch);
+      },
+
+      selectMarketplace(item){
+        this.currentMarketplace = item;
+      },
+      
+      async deleteTag(item){
+          try{
+            await this.delete(item);
+            this.$toasted.success('Tag deleted successfully');
+            await this.fetchTags({"round": this.$route.params.round, "user": this.$route.params.id,})
+          }catch(e){
+            this.$toasted.error('Tag not deleted, try later');
+          }
+      },
+
+      async deleteRecommended(item){
+          try{
+            await this.deleteRecommendation(item);
+            this.$toasted.success('Recommendation deleted successfully');
+            await this.fetchRecommendation({"round": this.$route.params.round, "user": this.$route.params.id,})
+          }catch(e){
+            console.log(e);
+            this.$toasted.error('Recommendation not deleted, try later');
+          }
+      },
+
+      
+      show () {
+        this.$modal.show('marketplace');
+      },
+      hide () {
+        this.$modal.hide('marketplace');
       }
-    }
-  },
+    },
 };
 </script>
 <style lang="scss">

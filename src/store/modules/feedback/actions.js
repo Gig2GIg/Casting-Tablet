@@ -13,19 +13,71 @@ export default {
     }
   },
 
-  async addTags({ commit }, audition){
+  async storeTag({ commit }, audition){
     try {
-      const { data: { data } } = await axios.put(`/t/auditions/${audition.round}/feedbacks/user/tags`, audition);
+      const { data: { data } } = await axios.post(`/t/auditions/feedbacks/tags`, audition);
+      return true;
       // commit(types.ADD_TAGS_SUCCESS, data);
     } catch (e) {
+      return false;
       // commit(types.ADD_TAGS_FAILURE);
     }
   },
 
-  
-  async closeRound({ commit }, closeRound) {
+  async storeRecommendation({ commit }, audition){
     try {
-      const { data: { data } } = await axios.put(`/t/appointment/${closeRound}/rounds`, {"status": false});
+      const { data: { data } } = await axios.post(`/t/auditions/feeback/recommendations-marketplaces`, audition);
+      return true;
+      // commit(types.ADD_TAGS_SUCCESS, data);
+    } catch (e) {
+      return false;
+      // commit(types.ADD_TAGS_FAILURE);
+    }
+  },
+
+  async fetchTags({ commit }, audition) {
+    try {
+      const { data: { data } } = await axios.get(`/t/auditions/${audition.round}/user/tags?user_id=${audition.user}`);
+      console.log(data);
+      commit(types.FETCH_TAGS_SUCCESS, data);
+    } catch (e) {
+      commit(types.FETCH_TAGS_FAILURE);
+    }
+  },
+
+  async fetchRecommendation({ commit }, audition) {
+    try {
+      const { data: { data } } = await axios.get(`/t/auditions/${audition.round}/feeback/recommendations-marketplaces-by-user?user_id=${audition.user}`);
+      commit(types.FETCH_RECOMMENDATION_SUCCESS, data);
+    } catch (e) {
+      commit(types.FETCH_RECOMMENDATION_FAILURE);
+    }
+  },
+
+  async searchMarketplace({ commit }, search) {
+    try {
+      const { data: { data } } = await axios.get(`/t/marketplaces/search?value=${search}`);
+      console.log(data);
+      commit(types.SEARCH_MARKETPLACE_SUCCESS, data);
+    } catch (e) {
+      commit(types.SEARCH_MARKETPLACE_FAILURE);
+    }
+  },
+
+  
+  
+  async delete({ commit }, tag) {
+    try {
+      const { data: { data } } = await axios.delete(`/t/auditions/feedbacks/tags/${tag.id}/delete`);
+      // commit(types.CLOSE_ROUND_SUCCESS, data);
+    } catch (e) {
+      // commit(types.CLOSE_ROUND_FAILURE);
+    }
+  },
+
+  async deleteRecommendation({ commit }, recommendation) {
+    try {
+      const { data: { data } } = await axios.delete(`/t/auditions/feeback/recommendations-marketplaces/${recommendation.id}/delete`);
       // commit(types.CLOSE_ROUND_SUCCESS, data);
     } catch (e) {
       // commit(types.CLOSE_ROUND_FAILURE);

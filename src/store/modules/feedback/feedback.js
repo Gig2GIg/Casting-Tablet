@@ -4,6 +4,9 @@ import getters from './getters';
 
 const state = {
   feedback: [],
+  tags:[],
+  marketplace:[],
+  recommendations:[]
 };
 
 export default {
