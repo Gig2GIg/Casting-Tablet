@@ -89,41 +89,83 @@
       <div class="w-1/3 ml-5 flex flex-wrap content-center justify-center calendar shadow-lg">
         <div>
           <p class="text-center text-2xl text-purple">Availability</p>
-          <v-calendar class="border-none" :rows="2"/>
+          <v-date-picker class="border-none" :select-attribute='selectAttribute' locale="en" mode='range' v-model="dates" show-caps is-inline  :rows="2" />
         </div>
       </div>
       <div class="w-full ml-5 shadow-lg">
         <p class="text-center text-2xl text-purple font-bold">Contract Information</p>
         <div class="flex flex-wrap justify-center">
-          <p class="text-purple font-bold">No informaton added yet.</p>
+          <div class="container flex w-full mt-3">
+          <div class="flex w-full text-center justify-center flex-wrap">
+            <div class="container flex w-full mt-3">
+              <div class="container flex w-full mt-3">
+                <div class="flex w-full text-center justify-center flex-wrap">
+                  <div
+                    v-for="data in contract"
+                    :key="data.id"
+                    class="flex m-3 content-center w-full h-16 flex justify-center"
+                  >
+                    <div class="flex justify-center w-9/12 button-detail rounded-lg shadow-lg">
+                      <div class="flex justify-center content-center flex-wrap w-1/2 h-full">
+                        <img
+                          v-if="data.type == 'audio'"
+                          src="/images/icons/mp4Icon@3x.png"
+                          alt="Icon"
+                          class="h-10"
+                        >
+                        <img
+                          v-else-if="data.type == 'video'"
+                          src="/images/icons/mp3-icon@3x.png"
+                          alt="Icon"
+                          class="h-10"
+                        >
+                        <img
+                          v-else-if="data.type == 'doc'"
+                          src="/images/icons/pdf-icon@3x.png"
+                          alt="Icon"
+                          class="h-10"
+                        >
+                      </div>
+                      <div class="flex content-center relative flex-wrap w-full h-full bg-white">
+                        <span class="text-center text-purple font-bold w-full">{{ data.name }}</span>
+                        <img
+                          src="/images/icons/more-icon@3x.png"
+                          alt="Icon"
+                          class="h-6 absolute right-0 bottom-0"
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div> 
+            </div>
+          </div>
+        </div>
+          <p v-if="contract==''" class="text-purple font-bold">No informaton added yet.</p>
         </div>
       </div>
     </div>
     <div class="flex w-full h-96 mt-16">
-      <div class="w-1/2 ml-5 px-10 shadow-lg border border-gray-300">
+      <div class="w-1/2 shadow-lg ml-5 border border-gray-300 overflow-auto">
         <p class="text-center text-2xl text-purple font-bold">Tags</p>
-        <div class="flex flex-wrap justify-center w-full">
-            <base-input
-                name="tag"
-                class="w-full px-2"
-                type="add"
-                placeholder="Add Tags"
-                :custom-classes="['border-2', 'border-purple']"
-              />
+        <div class="m-4">
+          <div v-for="data in tags" :key="data.id" class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
+            <p class="text-purple w-1/2">{{data.title}}</p>
+            <div class="flex flex-wrap justify-end w-1/2">
+              <!-- <img src="/images/icons/garbage@3x.png" alt="Icon" class="h-6" @click="deleteTag(data)"> -->
+            </div>
+          </div>
         </div>
       </div>
-      <div class="w-1/2 ml-5 shadow-lg border border-gray-300">
-        <p class="text-center text-2xl text-purple font-bold">Recommendation</p>
-        <div class="flex flex-wrap justify-center w-full">
-            <div class="flex flex-wrap justify-center w-full">
-              <base-input
-                name="recommendation"
-                class="w-full px-2"
-                type="add"
-                placeholder="Add Recommendations"
-                :custom-classes="['border-2', 'border-purple']"
-              />
-          </div>    
+      <div class="w-1/2 shadow-lg ml-5 border border-gray-300 overflow-auto">
+        <p class="text-center text-2xl text-purple font-bold">Comments</p>
+        <div class="m-4">
+          <!-- <div v-for="data in recommendations" :key="data.id" class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
+            <p class="text-purple w-1/2">{{data.markeplace.title}}</p>
+            <div class="flex flex-wrap justify-end w-1/2">
+              <img src="/images/icons/garbage@3x.png" alt="Icon" class="h-6" @click="deleteRecommended(data)">
+            </div>
+          </div> -->
         </div>
       </div>
     </div>
@@ -138,6 +180,7 @@ import { mapActions, mapState, mapGetters } from 'vuex';
 import { Multipane, MultipaneResizer } from 'vue-multipane';
 import { Calendar } from 'vue-sweet-calendar'
 import axios from 'axios';
+import moment from "moment";
 import 'vue-sweet-calendar/dist/SweetCalendar.css'
 
 export default {
@@ -156,7 +199,13 @@ export default {
       callback: 1,
       favorite:0,
       slot:'',
+      dates:[],
+      selectAttribute: {
+        bar: true,
+        color: 'red'
+      },
       workon:1,
+      tags:[],
       currentUser:[],
       form:{},
       invitation: {
@@ -168,19 +217,40 @@ export default {
   computed: {
     ...mapState('audition', ['audition', 'userList', 'teamFeedback']),
     ...mapState('user', ['user']),
-    ...mapState('profile', {profile:'user'}),
+    ...mapState('profile', {profile:'user', calendar:'calendar', contract:'contract'}),
   },
   async mounted() {
     this.image;
-    
-    this.fetchData(this.$route.params.id);
+    let { data: { data } } = await axios.get(`/t/performers/tags?user=${this.$route.params.id}`);
+    this.tags = data;
+    await this.fetchContract(this.$route.params.id);
+    await this.fetchData(this.$route.params.id);
+    await this.myCalendar(this.$route.params.id);
+    this.asignEvents();
+    debugger;
   },
   methods: {
     ...mapActions('user', ['fetch']),
     ...mapActions('audition', ['fetchAuditionData', 'fetchUserList', 'fetchTeamFeedback']),
-    ...mapActions('profile', ["fetchData"]),
+    ...mapActions('profile', ["fetchData", 'myCalendar', 'fetchContract']),
     goToday() {
       this.$refs.calendar.goToday()
+    },
+    asignEvents(){
+        var finalList = new Array();
+        this.calendar.map(function(value) {
+          if (moment().format("YYYY-MM") === moment(String(value.start_date)).format("YYYY-MM")) {
+              let splitInitDate = value.start_date.split("-");
+              let splitFinalDate = value.end_date.split("-");
+              finalList = {
+                  start: new Date(splitInitDate[0], splitInitDate[1] - 1, splitInitDate[2]),
+                  end: new Date(splitFinalDate[0], splitFinalDate[1] - 1, splitFinalDate[2])
+              }
+          }
+
+      });
+      this.dates = finalList
+      debugger
     },
     async sendData(){
       debugger;
@@ -190,7 +260,6 @@ export default {
         "email": this.invitation.email,
       }
 
-      debugger;
       await axios.post(`/t/performers/code`, data);
     },
     async saveFeedback(){

@@ -37,7 +37,7 @@
             </div>
           </div>
         </div>
-        <div class="container flex w-full mt-3 flex-grow h-96">
+        <div class="container flex w-full mt-3 flex-grow h-96 cursor-pointer" @click="filterData">
           <div class="flex w-full text-center justify-center content-center flex-wrap">
             <div class="m-3 content-center rounded-full red-light w-40 h-10 flex items-center button-detail">
                 <p class="text-white text-sm font-bold content-center tracking-tighter flex-1">Search</p>
@@ -73,26 +73,32 @@ export default {
       flag:"",
       isLoading: true,
       currentFilter:this.search,
+      selectedGender:{
+          key: 'male', name: 'male', selected: true,
+      },
+      selectedUnion:{
+          value: '1', name: 'UNION', selected: true,
+      },
       union_status: [
         {
-          value: 'any', name: 'Any', selected: false,
+          value: '0', name: 'ANY', selected: false,
         },
         {
-          value: 'union', name: 'Union', selected: true,
+          value: '1', name: 'UNION', selected: true,
         },
         {
-          value: 'nounion', name: 'Nounion', selected: false,
+          value: '2', name: 'NOUNION', selected: false,
         },
       ],
       gender_list: [
         {
-          key: 'any', name: 'Any', selected: false,
+          key: 'ANY', name: 'any', selected: false,
         },
         {
-          key: 'male', name: 'Male', selected: true,
+          key: 'male', name: 'male', selected: true,
         },
         {
-          key: 'female', name: 'Female', selected: false,
+          key: 'female', name: 'female', selected: false,
         },
       ],
     };
@@ -117,7 +123,7 @@ export default {
     // }
   },
   methods: {
-    ...mapActions('talentDatabase', ['fetch']),
+    ...mapActions('talentDatabase', ['fetch', 'filter']),
     setTags({ target }, type, multiple = false) {
       const text = target.textContent.trim();
       const itemSelected = this[type].find(item => item.name === text);
@@ -132,7 +138,21 @@ export default {
 
       this[type].forEach(item => item.selected = false);
       itemSelected.selected = true;
+      if(type == 'gender_list'){
+        this.selectedGender = itemSelected;
+        return;
+      }
+      this.selectedUnion = itemSelected;
+      return;
     },
+    async filterData(){
+      let data = {
+        base: this.search,
+        union: this.selectedUnion.value,
+        gender: this.selectedGender.key,
+      }
+      await this.filter(data);
+    }
   },
 };
 </script>

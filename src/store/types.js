@@ -55,3 +55,14 @@ export const SEARCH_MARKETPLACE_FAILURE = "Fetch marketplace Failure"
 export const FETCH_RECOMMENDATION_SUCCESS = "Fetch recommendation Success"
 export const FETCH_RECOMMENDATION_FAILURE = "Fetch recommendation Failure"
 
+export const FETCH_MY_CALENDAR_SUCCESS = "Fetch my calendar Success"
+export const FETCH_MY_CALENDAR_FAILURE = "Fetch my calendar Failure"
+
+export const FETCH_CONTRACT_SUCCESS = "Fetch contract Success"
+export const FETCH_CONTRACT_FAILURE = "Fetch contract Failure"
+
+export const FETCH_AUDITION_VIDEOS_SUCCESS = "Fetch audition videos Success"
+export const FETCH_AUDITION_VIDEOS_FAILURE = "Fetch audition videos Failure"
+
+
+

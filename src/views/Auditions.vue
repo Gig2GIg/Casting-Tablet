@@ -18,7 +18,7 @@
       >
         <card-item
           :title="data.title"
-          :date="data.online == 0 ? '' : data.date"
+          :date="data.online == 1 ? '' : data.date"
           :contributor="data.user_id == userId  ? false : true"
           :image="data.cover"
           actionable
@@ -46,7 +46,7 @@
       >
         <card-item
           :title="data.title"
-          :date="data.online == 0 ? '' : data.date"
+          :date="data.online == 1 ? '' : data.date"
           :image="data.cover"
           actionable
           :navigate-to="data.id"

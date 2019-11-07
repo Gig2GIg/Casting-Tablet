@@ -13,4 +13,16 @@ export default {
       commit(types.FETCH_TALENT_DATABASE_LIST_FAILURE);
     }
   },
+
+  async filter ({ commit }, item) {
+    try {
+      const { data: { data } } = await axios.post('/t/performers/filter', item);
+      debugger;
+      commit(types.FETCH_TALENT_DATABASE_LIST_SUCCESS, data);
+    } catch (e) {
+      console.log(e);
+      commit(types.FETCH_TALENT_DATABASE_LIST_FAILURE);
+    }
+  },
+  
 };

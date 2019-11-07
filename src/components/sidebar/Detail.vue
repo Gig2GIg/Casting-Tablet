@@ -195,7 +195,7 @@
                 class="h-6"
               >
             </figure>
-            <span class="font-bold text-lg">{{ data.contributor_info.details.first_name }} {{ data.contributor_info.details.last_name }}</span>
+            <span class="font-bold text-lg">{{ data.contributor_info.details.first_name }}</span>
           </div>
         </div>
         <div class="w-10/12 border border-gray-300 mt-3" />
@@ -213,7 +213,7 @@
   
   <transition name="fade">
       <div v-show="manage" :class="{'hidden': !manage}">
-        <div v-show="manage && audition.status == 1">
+        <div v-show="manage && (audition.status == 1||audition.status == 2)">
           <div class="flex w-full content-center text-center justify-center flex-wrap">
             <dropdown 
                 class="text-red-600 bg-white"
@@ -240,11 +240,13 @@
         </router-link>
         <div v-if="roundActive.status != 0 && audition.status == 1 && roundActive.status > 0" class="w-full border border-gray-300 mt-6 mb-6" />
         <div v-if="roundActive.status != 0 && audition.status == 1 && roundActive.status > 0" class="flex w-full content-center text-center justify-center flex-wrap cursor-pointer">
+          <router-link :to="{ name: 'monitor-update', params: {id: roundActive.id } }">
           <div class="m-3 content-center flex items-center flex m-3 content-center border-2 rounded-sm border-purple w-48 h-10">
             <p class="flex-1 light-purple text-sm font-semibold content-center tracking-tighter flex-1">
               Enter Monitor Mode
             </p>
           </div>
+          </router-link>
         </div>
         <div v-if="audition.status == 0" class="w-full border border-gray-300 mt-6 mb-6" />
         <div v-if="audition.status == 0" class="flex w-full content-center text-center justify-center flex-wrap cursor-pointer">
@@ -301,26 +303,13 @@
               </div>
               <div class="w-full border border-gray-300 mt-1 mb-6" />
               <div
-                v-for="data in audition.media"
+                v-for="data in videos"
                 :key="data.id"
                 class="flex m-3 content-center w-full h-16 flex justify-center"
               >
                 <div class="flex justify-center w-9/12 button-detail rounded-lg">
                   <div class="flex justify-center content-center flex-wrap w-1/2 h-full">
                     <img
-                      v-if="data.type == 'audio'"
-                      src="/images/icons/mp4Icon@3x.png"
-                      alt="Icon"
-                      class="h-10"
-                    >
-                    <img
-                      v-else-if="data.type == 'video'"
-                      src="/images/icons/mp4Icon@3x.png"
-                      alt="Icon"
-                      class="h-10"
-                    >
-                    <img
-                      v-else-if="data.type == 'doc'"
                       src="/images/icons/mp4Icon@3x.png"
                       alt="Icon"
                       class="h-10"
@@ -328,11 +317,11 @@
                   </div>
                   <div class="flex content-center relative flex-wrap w-full h-full bg-white">
                     <span class="text-center text-purple font-bold w-full">{{ data.name }}</span>
-                    <img
+                    <a :href="data.url" target="_blank"><img
                       src="/images/icons/more-icon@3x.png"
                       alt="Icon"
                       class="h-6 absolute right-0 bottom-0"
-                    >
+                    ></a>
                   </div>
                 </div>
               </div>
@@ -370,7 +359,7 @@ export default {
     };
   },
   computed: {
-    ...mapState('audition', ['audition']),
+    ...mapState('audition', ['audition', 'videos']),
     ...mapState('round', ['rounds']),
   },
   async beforeMount() {
@@ -378,12 +367,13 @@ export default {
       this.$emit('statusSet', this.audition.status);
   },
   methods: {
-    ...mapActions('audition', ['fetchAuditionData', 'openAudition', 'closeAudition']),
+    ...mapActions('audition', ['fetchAuditionData', 'openAudition', 'closeAudition', 'listVideos']),
     ...mapActions('round', ['fetch', 'closeRound']),
     changeInfo() {
       this.manage = false;
       this.info = true;
     },
+    
     changeManage() {
         this.info = false;
         this.manage = true;
@@ -391,7 +381,8 @@ export default {
     async emmitFinalCast(){
       await this.$emit('handleFinalCast', 'true');
     },
-    auditionVideo(){
+    async auditionVideo(){
+        await this.listVideos(this.roundActive.id);
         this.info = false;
         this.manage = false;
         this.videoSection = true;

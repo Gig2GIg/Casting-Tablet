@@ -15,32 +15,7 @@
       >
       </div>
     </div>
-    <div class="w-7/12 text-center">Talent Database</div>
-    <div class="w-1/2 flex flex-col">
-      <div class="w-1/2 z-40">
-          <div v-show="invitation.adding" class="mt-16 mr-32 shadow-lg bg-white absolute right-0 top-0 z-40">
-            <base-input
-              v-model="invitation.code"
-              v-validate="'required'"
-              name="code"
-              placeholder="code"
-              :custom-classes="['border', 'border-purple']"
-              :message="errors.first('invitation.code')"
-              expanded
-            />
-
-            <base-button
-              class="pt-2 pb-2"
-              type="submit"
-              expanded
-              @click.native="sendData"
-            >
-              Send
-            </base-button>
-          </div>
-      </div>
-      <img :src="'/images/icons/Path_31@3x.png'" class="h-6  ml-auto mr-5" alt="star" @click="invitation.adding = invitation.adding == true?false:true">
-      </div>
+    <div class="w-7/12 text-center">News & Updates</div>
     <div class="flex items-center border-l border-white text-white ml-auto cursor-pointer">
       <span class="mx-4">
         {{user.details.first_name}} {{user.details.last_name}}

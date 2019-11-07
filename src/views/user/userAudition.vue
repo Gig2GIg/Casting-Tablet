@@ -1,7 +1,12 @@
 <template>
 <div>
   <nav class="flex items-center h-12">
-      <img :src="'/images/icons/8-layers.png'" class="h-10  ml-auto" alt="star">
+      <div class="w-1/5 flex flex-wrap justify-center content-center h-10 border-2 ml-auto border-white rounded-sm cursor-pointer" @click="$refs.inputFile.click()">
+        <div class="w-full flex">
+            <div class="w-1/4 flex justify-center"><img :src="'/images/icons/camera.png'" class="h-6 ml-auto" alt="star"></div>
+            <p class="w-full text-white tracking-wide text-lg ml-5 tracking-tight truncate">{{file.name}}</p>
+        </div>
+      </div>
       <img v-if="favorite==0" :src="'/images/icons/4-layers.png'" class="w-6 m-6" alt="star" @click="favorite=1">
       <img v-else :src="'/images/icons/Path_56@2x.png'" class="w-6 m-6" alt="star" @click="favorite=0">
     <div class="flex items-center border-l border-white text-white float-right cursor-pointer">
@@ -18,6 +23,13 @@
       > -->
     </div>
   </nav>
+  <input
+    ref="inputFile"
+    accept=".mp4"
+    type="file"
+    hidden
+    @change="handleFile"
+  >
   <modal name="marketplace" :scrollable="true" height="auto">
     <div class="w-full shadow-lg border border-gray-300">
         <p class="text-center text-2xl text-purple font-bold" @click="show">Marketplaces</p>
@@ -50,7 +62,7 @@
     <div class="flex w-full">
       <div class="w-1/4 flex flex-wrap content-center justify-center calendar shadow-lg">
         <p class="text-center text-2xl text-purple font-bold">Availability</p>
-          <v-calendar class="border-none" :rows="2"/>
+          <v-date-picker class="border-none" :select-attribute='selectAttribute' locale="en" mode='range' v-model="dates" show-caps is-inline  :rows="2" />
       </div>
       <div class="w-1/12"></div>
       <div class="w-1/4 shadow-lg">
@@ -356,6 +368,10 @@ import { mapActions, mapState, mapGetters } from 'vuex';
 import { Multipane, MultipaneResizer } from 'vue-multipane';
 import { Calendar } from 'vue-sweet-calendar'
 import axios from 'axios';
+import moment from "moment";
+import firebase from 'firebase/app';
+import 'firebase/storage';
+import uuid from 'uuid/v1';
 import 'vue-sweet-calendar/dist/SweetCalendar.css'
 
 export default {
@@ -379,20 +395,28 @@ export default {
       currentMarketplace:'',
       marketplaceSearch:'',
       currentUser:[],
-      form:{}
+      form:{},
+      dates:{},
+      file:{
+        name:'Record Audition',
+      },
+      selectAttribute: {
+        bar: true,
+        color: 'red'
+      },
     };
   },
   computed: {
     ...mapState('audition', ['audition', 'userList', 'teamFeedback']),
     ...mapState('user', ['user']),
-    ...mapState('profile', {profile:'user'}),
     ...mapState('feedback', ['feedback', 'tags', 'marketplace', 'recommendations']),
+    ...mapState('profile', {profile:'user', calendar:'calendar', contract:'contract'}),
   },
   async mounted() {
     await this.fetchAuditionData(this.$route.params.audition);
     await this.fetchUserList(this.$route.params.round);
-    await this.fetchTags({"round": this.$route.params.round, "user": this.$route.params.id,})
-    await this.fetchRecommendation({"round": this.$route.params.round, "user": this.$route.params.id,})
+    await this.fetchTags({"round": this.$route.params.round, "user": this.$route.params.id,});
+    await this.fetchRecommendation({"round": this.$route.params.round, "user": this.$route.params.id,});
     let feedback = { 
       user:this.$route.params.id,
       round:this.$route.params.round
@@ -414,16 +438,36 @@ export default {
     }
     let data = {"appointment_id": this.$route.params.round, "performer": this.$route.params.id}
     await this.fetchTeamFeedback(data);
+    await this.myCalendar(this.$route.params.id);
+    this.asignEvents();
   },
   methods: {
     ...mapActions('user', ['fetch']),
     ...mapActions('audition', ['fetchAuditionData', 'fetchUserList', 'fetchTeamFeedback', 'searchMarketplace']),
     ...mapActions('profile', {fetchProfile: "fetch"}),
+    ...mapActions('profile', {fetchProfile: "fetch", fetchData:"fetchData", myCalendar:'myCalendar', fetchContract:'fetchContract'}),
     ...mapActions('feedback', ['fetchUserFeedback', 'storeTag', 'storeRecommendation', 'fetchTags', 'fetchRecommendation', 'delete', 'searchMarketplace', 'setRecommendations', 'deleteRecommendation']),
     goToday() {
       this.$refs.calendar.goToday()
     },
     async saveFeedback(){
+      let file = await firebase.storage()
+        .ref(`temp/${uuid()}.${this.file.name.split('.').pop()}`)
+        .put(this.form.file);
+
+      let url = await file.ref.getDownloadURL();
+      let audition_record={
+        "url":url,
+        "appointment_id":this.$route.params.round,
+        "performer":this.$route.params.id,
+        "slot_id":this.slot
+      };
+      try{
+        let files = await axios.post('/t/auditions/video/save', audition_record);
+        this.$toasted.success('Audition record saved');
+      }catch(e){
+        this.$toasted.error('There was an error saving the audition record, try later');
+      }
       this.form.callback = this.callback == 1 ?true:false;
       this.form.data = this.$route.params.audition;
       this.form.appointment_id = this.$route.params.round;
@@ -433,8 +477,45 @@ export default {
       this.form.evaluation = this.emoji;
       this.form.slot_id = this.slot;
       this.form.evaluator = this.profile.details.id;
-      let status = await axios.post('/t/feedbacks/add', this.form);
-      this.$toasted.success('Feedback Created');
+      let data = {"appointment_id": this.$route.params.round, "performer": this.$route.params.id}
+      console.log(Object.keys(this.feedback).length);
+      console.log(this.feedback.length);
+      console.log(this.feedback.length==0);
+      debugger;
+      if(Object.keys(this.feedback).length==0){
+        let status = await axios.post('/t/feedbacks/add', this.form);
+        this.$toasted.success('Feedback Created');
+        await this.fetchTeamFeedback(data);
+        return;
+      }
+      this.form.user_id = this.$route.params.id;
+        let status = await axios.put(`/t/auditions/${this.$route.params.round}/feedbacks/update`, this.form);
+        this.$toasted.success('Feedback Updated');
+        await this.fetchTeamFeedback(data);
+        return;
+    },
+    handleFile(e) {
+      const file = e.target.files[0];
+
+      this.form.file = file;
+      this.file.name = file.name;
+      
+      // this.preview = URL.createObjectURL(file);
+    },
+    asignEvents(){
+        var finalList = new Array();
+        this.calendar.map(function(value) {
+          if (moment().format("YYYY-MM") === moment(String(value.start_date)).format("YYYY-MM")) {
+              let splitInitDate = value.start_date.split("-");
+              let splitFinalDate = value.end_date.split("-");
+              finalList = {
+                  start: new Date(splitInitDate[0], splitInitDate[1] - 1, splitInitDate[2]),
+                  end: new Date(splitFinalDate[0], splitFinalDate[1] - 1, splitFinalDate[2])
+              }
+          }
+
+      });
+      this.dates = finalList
     },
     async setTags(){
       if(this.tag !== ''){
@@ -459,12 +540,12 @@ export default {
           let data ={
             "title": this.recommendation,
             "marketplace_id": this.currentMarketplace.id,
-            "audition_id": this.$route.params.round,
+            "audition_id": this.$route.params.audition,
             "user_id": this.$route.params.id,
           }
           if (await this.storeRecommendation(data))
             this.$toasted.success('Recommendation created successfully');
-            await this.fetchRecommendation({"round": this.$route.params.round, "user": this.$route.params.id,})
+            await this.fetchRecommendation({"round": this.$route.params.audition, "user": this.$route.params.id,})
           }
           else{
             this.$toasted.error('Recommendation not created, select a Marketplace or try later');

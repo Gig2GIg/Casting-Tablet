@@ -10,6 +10,7 @@ const state = {
   audition: [],
   teamFeedback:[],
   finalCast:[],
+  videos:[],
 };
 
 export default {

@@ -46,12 +46,23 @@ export default [
       name: 'talents',
       component: () => import(/* webpackChunkName: 'auditions' */ '@/views/TalentDatabase'),
     },
+    
+  ]),
+
+  ...mapRoutes({ layout: 'news' }, [
     {
       path: '/news-and-updates',
       name: 'news-and-updates',
       component: () => import(/* webpackChunkName: 'auditions.user' */ '@/views/newsAndUpdates'),
     },
+    {
+      path: '/news-and-updates/view',
+      name: 'view.news',
+      component: () => import(/* webpackChunkName: 'view.news' */ '@/views/ViewNews'),
+    },
+    
   ]),
+  
 
   ...mapRoutes({ layout: 'detail' }, [
     {
@@ -100,9 +111,14 @@ export default [
     component: () => import(/* webpackChunkName: 'auditions.create' */ '@/views/auditions/CreateRound'),
   },
   {
-    path: '/notifications ',
+    path: '/auditions/:id/monitor-mode',
+    name: 'monitor-update',
+    component: () => import(/* webpackChunkName: 'auditions.user' */ '@/views/auditions/MonitorMode'),
+  },
+  {
+    path: '/notifications',
     name: 'notifications',
-    component: () => import(/* webpackChunkName: 'auditions.user' */ '@/views/Notification'),
+    component: () => import(/* webpackChunkName: 'mysettings' */ '@/views/MyNotifications'),
   },
 
   /*

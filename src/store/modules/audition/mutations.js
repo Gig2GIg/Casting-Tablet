@@ -41,7 +41,6 @@ export default {
     state.passed = {};
   },
   [types.OPEN_AUDITION_SUCCESS](state, data){
-    debugger;
     state.audition.status = data.status
   },
   [types.OPEN_AUDITION_FAILURE](state, audition){},
@@ -56,6 +55,15 @@ export default {
 
   [types.FETCH_FINAL_CAST_LIST_AUDITION_FAILURE](state) {
     state.finalCast = {};
+  },
+
+  [types.FETCH_AUDITION_VIDEOS_SUCCESS](state, videos) {
+    state.videos = videos;
+    debugger;
+  },
+
+  [types.FETCH_AUDITION_VIDEOS_FAILURE](state) {
+    state.videos = {};
   },
   
 };

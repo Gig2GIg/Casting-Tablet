@@ -2,7 +2,7 @@
   <div class="flex w-full h-screen">
     <sidebar-base />
     <div class="flex flex-col w-4/5">
-      <talent-nav-bar @onSearch="sendDataToChild" @onAdd="sendDataToChild"/>
+      <news @onSearch="sendDataToChild" @onAdd="sendDataToChild"/>
       <div class="flex-1 overflow-y-auto">
         <router-view :search.sync="search"/>
       </div>

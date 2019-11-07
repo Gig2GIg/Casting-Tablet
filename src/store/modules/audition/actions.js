@@ -54,8 +54,6 @@ export default {
     }
   },
 
-  
-
   async fetchAuditionData({ commit }, audition) {
     try {
       const { data: { data } } = await axios.get(`/auditions/show/${audition}`);
@@ -64,6 +62,17 @@ export default {
       commit(types.FETCH_AUDITION_DATA_SUCCESS, data);
     } catch (e) {
       commit(types.FETCH_AUDITION_DATA_FAILURE);
+    }
+  },
+
+  async listVideos({ commit }, audition) {
+    try {
+      const { data: { data } } = await axios.get(`/t/auditions/video/list/${audition}`);
+      console.log(data);
+
+      commit(types.FETCH_AUDITION_VIDEOS_SUCCESS, data);
+    } catch (e) {
+      commit(types.FETCH_AUDITION_VIDEOS_FAILURE);
     }
   },
 
@@ -94,10 +103,8 @@ export default {
     }
   },
   async addPerformer({ commit }, performer) {
-    debugger;
     try {
       const { data: { data } } = await axios.post('/t/finalcast', performer);
-      debugger;
       commit(types.ADD_FINAL_CAST_PERFORMER_SUCCESS, data);
     } catch (e) {
       commit(types.ADD_FINAL_CAST_PERFORMER_FAILURE);
