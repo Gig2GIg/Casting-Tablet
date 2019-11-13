@@ -64,5 +64,8 @@ export const FETCH_CONTRACT_FAILURE = "Fetch contract Failure"
 export const FETCH_AUDITION_VIDEOS_SUCCESS = "Fetch audition videos Success"
 export const FETCH_AUDITION_VIDEOS_FAILURE = "Fetch audition videos Failure"
 
+export const FETCH_ONLINE_MEDIA_SUCCESS = "Fetch online media success"
+export const FETCH_ONLINE_MEDIA_FAILURE = "Fetch online media failure"
+
 
 

@@ -11,6 +11,7 @@ const state = {
   teamFeedback:[],
   finalCast:[],
   videos:[],
+  onlineMedia:[]
 };
 
 export default {

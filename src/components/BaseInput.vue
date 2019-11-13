@@ -84,6 +84,7 @@
         v-if="type === 'date'"
         :value="value"
         color="indigo"
+        :min-date="mindate"
         :input-props="{
           class: `text-black rounded-full overflow-hidden w-full h-full py-3 pl-6 pr-10 placeholder-purple focus:outline-none ${ customClasses.join(' ') }`,
           placeholder: $attrs.placeholder ? $attrs.placeholder : '',
@@ -149,6 +150,10 @@ export default {
   props: {
     name: {
       type: String,
+      default: null,
+    },
+    mindate: {
+      type: Date,
       default: null,
     },
     value: {

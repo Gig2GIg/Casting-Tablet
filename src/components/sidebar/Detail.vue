@@ -199,15 +199,17 @@
           </div>
         </div>
         <div class="w-10/12 border border-gray-300 mt-3" />
-        <div class="container flex w-full mt-3">
-          <div class="flex w-full text-center justify-center flex-wrap">
-            <div class="m-3 content-center rounded-full red-light w-40 h-10 flex items-center button-detail">
-              <p class="text-white text-sm font-bold content-center tracking-tighter flex-1">
-                Edit
-              </p>
+        <router-link class="w-full" v-if="audition.status == 0 " :to="{ name: 'auditions.update', params: {id: audition.id } }">
+        <div class="container flex w-full mt-3 cursor-pointer">
+            <div class="flex w-full text-center justify-center flex-wrap">
+              <div class="m-3 content-center rounded-full red-light w-40 h-10 flex items-center button-detail">
+                <p class="text-white text-sm font-bold content-center tracking-tighter flex-1">
+                  Edit
+                </p>
+              </div>
             </div>
-          </div>
         </div>
+        </router-link>
     </div>
   </transition>
   
@@ -222,12 +224,13 @@
                 @setOption="methodToRunOnSelect"
                 v-on:updateOption="methodToRunOnSelect" 
                 :state.sync="statusChild"
+                :online="audition.online"
                 :placeholder="'Select an Item'">
             </dropdown>
           </div>
         </div>
-        <div v-if="roundActive.status != 0 && audition.status == 1 && roundActive.status > 0" class="w-full border border-gray-300 mt-6 mb-6" /> 
-        <router-link v-if="roundActive.status != 0 && audition.status == 1 && roundActive.status > 0" :to="{ name: 'auditions/checkin', params: {id: roundActive.id } }">
+        <div v-if="roundActive.status != 0 && audition.status == 1 && roundActive.status > 0 && audition.online == 0" class="w-full border border-gray-300 mt-6 mb-6" /> 
+        <router-link v-if="roundActive.status != 0 && audition.status == 1 && roundActive.status > 0 && audition.online == 0" :to="{ name: 'auditions/checkin', params: {id: roundActive.id } }">
           <div class="flex w-full content-center text-center justify-center flex-wrap cursor-pointer">
             <button
               class="m-3 content-center flex items-center flex m-3 content-center border-2 rounded-sm border-purple w-48 h-10"
@@ -238,8 +241,8 @@
             </button>
           </div>
         </router-link>
-        <div v-if="roundActive.status != 0 && audition.status == 1 && roundActive.status > 0" class="w-full border border-gray-300 mt-6 mb-6" />
-        <div v-if="roundActive.status != 0 && audition.status == 1 && roundActive.status > 0" class="flex w-full content-center text-center justify-center flex-wrap cursor-pointer">
+        <div v-if="roundActive.status != 0 && audition.status == 1 && roundActive.status > 0 && audition.online == 0" class="w-full border border-gray-300 mt-6 mb-6" />
+        <div v-if="roundActive.status != 0 && audition.status == 1 && roundActive.status > 0 && audition.online == 0" class="flex w-full content-center text-center justify-center flex-wrap cursor-pointer">
           <router-link :to="{ name: 'monitor-update', params: {id: roundActive.id } }">
           <div class="m-3 content-center flex items-center flex m-3 content-center border-2 rounded-sm border-purple w-48 h-10">
             <p class="flex-1 light-purple text-sm font-semibold content-center tracking-tighter flex-1">

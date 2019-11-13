@@ -128,7 +128,6 @@
         fill="#4d2545"
       />
     </svg>
-
     <div class="rounded-full h-24 w-24 overflow-hidden m-8">
       <img
         :src="preview"
@@ -187,7 +186,14 @@ export default {
         if (value) {
           this.editMode = false;
           this.form = Object.assign({}, value);
-          this.preview = URL.createObjectURL(this.form.cover);
+          if(this.form.cover){
+            this.preview = URL.createObjectURL(this.form.cover);
+            this.form.preview = this.preview;
+          }
+          else{
+            this.preview = this.form.preview;
+            console.log(this.preview);
+          }
         }
       },
     },
@@ -227,6 +233,7 @@ export default {
       this.form.cover = file;
       this.form.name_cover = file.name;
       this.preview = URL.createObjectURL(file);
+      this.form.preview = this.preview;
     },
 
     handleDelete() {

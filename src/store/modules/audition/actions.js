@@ -64,6 +64,17 @@ export default {
       commit(types.FETCH_AUDITION_DATA_FAILURE);
     }
   },
+  
+  async fetchOnlineMedia({ commit }, item) {
+    try {
+      const { data: { data } } = await axios.get(`/media/online?appointment_id=${item.round}&performer_id=${item.user}`);
+      console.log(data);
+      commit(types.FETCH_ONLINE_MEDIA_SUCCESS, data);
+    } catch (e) {
+      console.log(e);
+      commit(types.FETCH_ONLINE_MEDIA_FAILURE);
+    }
+  },
 
   async listVideos({ commit }, audition) {
     try {

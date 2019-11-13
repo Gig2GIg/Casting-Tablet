@@ -104,7 +104,8 @@ export default {
     };
   },
   props: {
-      search: [String]
+      search: [String],
+      reload: [Number],  
   },
   computed: {
     ...mapState('talentDatabase', ['talentList']),
@@ -114,13 +115,9 @@ export default {
     this.fetch();
   },
   watch: {
-    // search: function () {
-    //   this.currentFilter = this.search.trim();
-    //   if(this.currentFilter != "" && this.flag == ""){
-    //       this.flag = this.talentList;
-    //       this.talentList = this.talentList.filter(word => word == "");
-    //   }
-    // }
+    reload: function () {
+      this.fetch();
+    }
   },
   methods: {
     ...mapActions('talentDatabase', ['fetch', 'filter']),

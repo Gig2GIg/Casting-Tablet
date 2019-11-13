@@ -461,10 +461,10 @@
       </div>
     </div>
 
-    <AppointmentsModal
+    <AppointmentsUpdModal
       v-if="manageAppointments"
       :data="form.appointment"
-      @change="form.appointment = $event"
+      @change="updatedata($event)"
       @close="manageAppointments = false"
     />
 
@@ -483,20 +483,22 @@ import Vue from 'vue';
 import uuid from 'uuid/v1';
 import firebase from 'firebase/app';
 import axios from 'axios';
-import AppointmentsModal from './AppointmentsModal.vue';
+import AppointmentsUpdModal from './AppointmentsModal.vue';
 import RolesModal from './RolesModal.vue';
 import ContributorItem from './ContributorItem.vue';
 import DocumentItem from './DocumentItem.vue';
+import { mapActions, mapState, mapGetters } from 'vuex';
 import 'firebase/storage';
 // Import component
 import Loading from 'vue-loading-overlay';
 // Import stylesheet
 import 'vue-loading-overlay/dist/vue-loading.css';
+import undefined from 'firebase/storage';
 Vue.use(Loading);
 export default {
   name: 'AuditionForm',
   components: {
-    AppointmentsModal, RolesModal, ContributorItem, DocumentItem, Loading
+    AppointmentsUpdModal, RolesModal, ContributorItem, DocumentItem, Loading
   },
   data() {
     return {
@@ -581,10 +583,77 @@ export default {
       }
     },
   },
+  computed:{
+    ...mapState('audition', ['audition']),
+  },
   created() {
     window.addEventListener('resize', this.onResize);
   },
+  async mounted(){
+    await this.fetchAuditionData(this.$route.params.id);
+    this.form.title = this.audition.title;
+    let date = new Date(this.audition.date);
+    date.setDate(date.getDate() + 1);
+    this.form.date = date;
+    this.form.time = this.audition.time;
+    this.form.description = this.audition.description;
+    this.form.personal_information = this.audition.personal_information;
+    this.form.additional_info = this.audition.additional_info;
+    this.form.phone = this.audition.phone;
+    this.form.email = this.audition.email;
+    this.form.other_info = this.audition.other_info;
+    this.form.url = this.audition.url;
+    this.form.dates = this.audition.dates;
+    this.form.online = this.audition.online;
+    this.form.appointment = this.audition.apointment.general;
+    this.form.appointment.type = this.form.appointment.type == "time"?1:2;
+    this.form.appointment.spaces = this.form.appointment.slots;
+    this.union_status.map((items) =>{
+        if(items.value == this.audition.union){
+          items.selected = true;
+        }
+        else{
+          items.selected = false;
+        }
+    });
+    this.contract_types.map((items) =>{
+        if(items.key == this.audition.contract){
+          items.selected = true;
+        }
+        else{
+          items.selected = false;
+        }
+    });
+    this.audition.production.map((value) =>{
+        this.production_types.map((items) =>{
+            console.log(items.key == value.trim());
+            if(items.key == value.trim()){
+              items.selected = true;
+            }
+        });
+    });
+    this.form.contract = this.audition.contract;
+    this.form.production = this.audition.production;
+    this.form.dates.map(function (values){
+      let start = new Date(values.from);
+      start.setDate(start.getDate() + 1);
+      values.from = start;
+
+      let end = new Date(values.to);
+      end.setDate(end.getDate() + 1);
+      values.to = end;
+    });
+    this.form.media = this.audition.media;
+    this.form.roles = this.audition.roles;
+    this.form.contributors = this.audition.contributors;
+    this.form.roles.map((items) =>{
+        items.preview = items.image.url;
+    });
+    this.previewCover = this.audition.cover;
+    debugger;
+  },
   methods: {
+    ...mapActions('audition', ['fetchAuditionData']),
     onResize() {
       this.innerWidth = window.innerWidth;
     },
@@ -648,6 +717,16 @@ export default {
 
       this.$refs.inputFile.value = '';
     },
+    updatedata(item){
+      var appoint = item.slots;
+      item.slots = appoint.length;
+      item.type = item.type == 1?"time":"numeric";
+      this.form.appointment = [{
+        general: item,
+        slots: appoint,
+      }];
+      debugger;
+    },
 
     handleCoverFile(e) {
       const file = e.target.files[0];
@@ -683,23 +762,14 @@ export default {
         if (this.isLoading || !await this.$validator.validateAll('create')) {
           return;
         }
-
-        if (!this.form.cover) {
-          this.$toasted.error('The cover field is required.');
-          return;
-        }
         this.form.location = this.form.online ? null : this.form.location ;
-        this.form.appointment = this.form.online ? {
-            "spaces": 10,
-            "type": 1,
-            "length": "20",
-            "start": "10:00",
-            "end": "18:00",
-            "slots": null
-        } : this.form.appointment;
-        const data = Object.assign({}, this.form);        
+        
+        // this.form.appointment = this.form.online ? this.audition.apointment : this.form.appointment;
+        let data = Object.assign({}, this.form);        
         this.isLoading = true;
         data.union = this.union_status.find(x => x.selected).value;
+        data.appointment = this.audition.apointment;
+        debugger;
         data.contract = this.contract_types.find(x => x.selected).key;
         data.production = this.production_types.filter(x => x.selected).map(x => x.key).join(', ');
         if(this.selectedLocation){
@@ -711,37 +781,41 @@ export default {
           }; 
         }
         // Upload cover
-        coverSnapshot = await firebase.storage()
+        if(data.cover != undefined){
+          coverSnapshot = await firebase.storage()
           .ref(`temp/${uuid()}.${data.cover_name.split('.').pop()}`)
           .put(data.cover);
 
         data.cover = await coverSnapshot.ref.getDownloadURL();
 
-        // Upload roles
-        await Promise.all(data.roles.map(async (role) => {
-          const snapshot = await firebase.storage()
-            .ref(`temp/${uuid()}.${role.name_cover.split('.').pop()}`)
-            .put(role.cover);
+        }
+        else{
+          data.cover = this.audition.cover;
+        }
+        // // Upload roles
+        // await Promise.all(data.roles.map(async (role) => {
+        //   const snapshot = await firebase.storage()
+        //     .ref(`temp/${uuid()}.${role.name_cover.split('.').pop()}`)
+        //     .put(role.cover);
 
-          role.cover = await snapshot.ref.getDownloadURL();
+        //   role.cover = await snapshot.ref.getDownloadURL();
 
-          rolesSnapshots.push(snapshot);
-        }));
+        //   rolesSnapshots.push(snapshot);
+        // }));
 
-        // Upload files
-        await Promise.all(data.media.map(async (media) => {
-          const snapshot = await firebase.storage()
-            .ref(`temp/${uuid()}.${media.name.split('.').pop()}`)
-            .put(media.url);
+        // // Upload files
+        // await Promise.all(data.media.map(async (media) => {
+        //   const snapshot = await firebase.storage()
+        //     .ref(`temp/${uuid()}.${media.name.split('.').pop()}`)
+        //     .put(media.url);
 
-          media.url = await snapshot.ref.getDownloadURL();
+        //   media.url = await snapshot.ref.getDownloadURL();
 
-          filesSnaphosts.push(snapshot);
-        }));
-        
-        let action = await axios.post('/t/auditions/create', data);
+        //   filesSnaphosts.push(snapshot);
+        // }));
+        let action = await axios.put(`/t/auditions/update/${this.$route.params.id}`, this.audition);
         this.isLoading = false;
-        this.$toasted.success('The audition has created successfully.');
+        this.$toasted.success('The audition has updated successfully.');
         this.$router.push({
             name: 'auditions/detail', 
             params: {id: action.data.data.data.id }
@@ -749,7 +823,7 @@ export default {
       } catch (e) {
         console.log(e);
         this.isLoading = false;
-        this.$toasted.error('Audition not created, try later.');
+        this.$toasted.error('Audition not updated, try later.');
         coverSnapshot && coverSnapshot.ref.delete();
         await Promise.all(rolesSnapshots.map(role => role.ref.delete()));
         await Promise.all(filesSnaphosts.map(file => file.ref.delete()));

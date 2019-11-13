@@ -7,8 +7,8 @@
             <p class="w-full text-white tracking-wide text-lg ml-5 tracking-tight truncate">{{file.name}}</p>
         </div>
       </div>
-      <img v-if="favorite==0" :src="'/images/icons/4-layers.png'" class="w-6 m-6" alt="star" @click="favorite=1">
-      <img v-else :src="'/images/icons/Path_56@2x.png'" class="w-6 m-6" alt="star" @click="favorite=0">
+      <img v-if="favorite == 0" :src="'/images/icons/4-layers.png'" class="w-6 m-6" alt="star" @click="favorite=1">
+      <img v-else  :src="'/images/icons/Path_56@2x.png'" class="w-6 m-6" alt="star" @click="favorite=0">
     <div class="flex items-center border-l border-white text-white float-right cursor-pointer">
       <span class="mx-4">
         {{profile.details.first_name}} {{profile.details.last_name}}
@@ -62,7 +62,7 @@
     <div class="flex w-full">
       <div class="w-1/4 flex flex-wrap content-center justify-center calendar shadow-lg">
         <p class="text-center text-2xl text-purple font-bold">Availability</p>
-          <v-date-picker class="border-none" :select-attribute='selectAttribute' locale="en" mode='range' v-model="dates" show-caps is-inline  :rows="2" />
+          <v-date-picker :attributes="attrs" class="border-none" :select-attribute='selectAttribute' locale="en" mode='range' v-model="dates" show-caps is-inline  :rows="2" />
       </div>
       <div class="w-1/12"></div>
       <div class="w-1/4 shadow-lg">
@@ -70,14 +70,8 @@
         <div class="flex flex-wrap justify-center">
             <div v-for="data in audition.roles" :key="data.id" class="text-center w-1/2 flex justify-center">
               <div>
-                <div class="m-3 rounded-full flex items-center w-12 h-12 " :class="{'button-detail': data.id == rol, 'bg-gray-400': data.id != rol}">
-                  <figure class="flex w-full justify-center">
-                    <img
-                      :src="`/images/icons/user.png`"
-                      alt="Icon"
-                      class="content-center h-4"
-                    >
-                  </figure>
+                <div class="m-3 rounded-full flex items-center w-12 h-12 bg-cover" :class="{'button-detail': data.id == rol, 'bg-gray-400': data.id != rol}" :style="{ backgroundImage: 'url(' + data.image.url + ')' }">
+                  
                 </div>
                 <p class="text-purple text-xs justify-center w-16 font-bold tracking-tighter flex-1 ">
                   {{ data.name }}
@@ -87,7 +81,7 @@
         </div>
       </div>
       <div class="w-1/12"></div>
-      <div class="w-1/3 shadow-lg">
+      <div v-if="audition.online == 0" class="w-1/3 shadow-lg">
         <p class="text-center text-2xl text-purple font-bold">Team Feedback</p>
         <div class="flex flex-wrap justify-center">
             <div v-if="teamFeedback.length  == 0" class="text-purple font-bold h-full"> Not records created yet</div>
@@ -126,6 +120,52 @@
             </div>
           </div>
       </div>
+      <div v-if="audition.online == 1" class="w-1/3 shadow-lg">
+        <p class="text-center text-2xl text-purple font-bold">Audition Documents</p>
+        <div class="flex flex-wrap justify-center">
+            <div v-if="onlineMedia.length  == 0" class="text-purple font-bold h-full"> Not media added yet</div>
+            <carousel
+              class="flex flex-col mt-4 w-full"
+              :per-page="1"
+              :pagination-enabled="false"
+            >
+              <slide
+              class="flex flex-wrap justify-center content-center mt-4 w-full p-3"
+              v-for="data in onlineMedia" :key="data.id"
+              >
+                <div v-if="data.type == 'video'" class="container w-full rounded-lg shadow-lg overflow-hidden mb-3 shadow-lg ">
+                  <div class="flex-col">
+                      <video class="w-full" controls><source :src="data.url" type="video/mp4"></video>
+                  </div>
+                  <div class="p-2 bg-purple">
+                      <span class="text-base truncate mb-3 text-white uppercase">{{ data.name }}</span>
+                  </div>
+                </div>
+                <div v-if="data.type == 'doc'" class="flex m-3 content-center w-full h-16 flex justify-center">
+                    <div class="flex justify-center w-9/12 button-detail rounded-lg  shadow-lg">
+                      <div class="flex justify-center content-center flex-wrap w-1/2 h-full">
+                        <img
+                          src="/images/icons/pdf-icon@3x.png"
+                          alt="Icon"
+                          class="h-10"
+                        >
+                      </div>
+                      <div class="flex content-center relative flex-wrap w-full h-full bg-white truncate">
+                        <span class="text-center text-purple font-bold w-full truncate">{{ data.name }}</span>
+                        <a target="_blank" :href="data.url">
+                        <img
+                          src="/images/icons/more-icon@3x.png"
+                          alt="Icon"
+                          class="h-6 absolute right-0 bottom-0"
+                        >
+                        </a>
+                      </div>
+                    </div>
+                </div>
+            </slide>
+          </carousel>
+            </div>
+      </div>
     </div>
     <div class="flex w-full h-96 mt-16">
       <div class="w-1/3 shadow-lg border border-gray-300">
@@ -135,14 +175,14 @@
             <div>
               <div class="rounded-full flex flex-wrap justify-center content-center w-full h-12 mt-40">
                 <div class="flex flex-wrap justify-center w-full">
-                  <figure :class="{'border-2 border-purple': emoji==5}" class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg m-3" @click="emoji=5">
+                  <figure :class="{'border-2 border-purple': emoji==5}" class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg mt-3" @click="emoji=5">
                     <img
                       :src="'/images/icons/5.png'"
                       alt="Icon"
                       class="content-center h-8"
                     >
                   </figure>
-                  <figure :class="{'border-2 border-purple': emoji==4}" class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg m-3" @click="emoji=4">
+                  <figure :class="{'border-2 border-purple': emoji==4}" class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg mt-3" @click="emoji=4">
                     <img
                       :src="'/images/icons/4.png'"
                       alt="Icon"
@@ -150,7 +190,7 @@
                     >
                   </figure>
 
-                  <figure :class="{'border-2 border-purple': emoji==3}" class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg m-3" @click="emoji=3">
+                  <figure :class="{'border-2 border-purple': emoji==3}" class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg mt-3" @click="emoji=3">
                     <img
                       :src="'/images/icons/3.png'"
                       alt="Icon"
@@ -158,7 +198,7 @@
                     >
                   </figure>
                   
-                  <figure :class="{'border-2 border-purple': emoji==2}" class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg m-3" @click="emoji=2">
+                  <figure :class="{'border-2 border-purple': emoji==2}" class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg mt-3" @click="emoji=2">
                     <img
                       :src="'/images/icons/2.png'"
                       alt="Icon"
@@ -166,7 +206,7 @@
                     >
                   </figure>
                   
-                  <figure :class="{'border-2 border-purple': emoji==1}" class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg m-3" @click="emoji=1">
+                  <figure :class="{'border-2 border-purple': emoji==1}" class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg mt-3" @click="emoji=1">
                     <img
                       :src="'/images/icons/1.png'"
                       alt="Icon"
@@ -343,7 +383,7 @@
         >
         <p class="text-purple text-m text-left ml-4 tracking-wide font-semibold w-1/2">Appearance</p>
       </div>
-      <div class="flex flex-wrap justify-center mt-12 w-full">
+      <div class="flex flex-wrap justify-center mt-12 w-full cursor-pointer">
         <div class="flex w-1/2" @click="saveFeedback">
           <div class="flex w-full text-center justify-center flex-wrap">
             <div class="m-3 button-detail content-center border border-purple rounded-full w-32 h-10 flex items-center">
@@ -388,6 +428,7 @@ export default {
       emoji:3,
       callback: 1,
       favorite:0,
+      attrs: [],
       slot:'',
       tag:'',
       recommendation:'',
@@ -407,7 +448,7 @@ export default {
     };
   },
   computed: {
-    ...mapState('audition', ['audition', 'userList', 'teamFeedback']),
+    ...mapState('audition', ['audition', 'userList', 'teamFeedback', 'onlineMedia']),
     ...mapState('user', ['user']),
     ...mapState('feedback', ['feedback', 'tags', 'marketplace', 'recommendations']),
     ...mapState('profile', {profile:'user', calendar:'calendar', contract:'contract'}),
@@ -417,13 +458,14 @@ export default {
     await this.fetchUserList(this.$route.params.round);
     await this.fetchTags({"round": this.$route.params.round, "user": this.$route.params.id,});
     await this.fetchRecommendation({"round": this.$route.params.round, "user": this.$route.params.id,});
+    await this.fetchOnlineMedia({"round": this.$route.params.round, "user": this.$route.params.id,});
     let feedback = { 
       user:this.$route.params.id,
       round:this.$route.params.round
     };
 
     await this.fetchUserFeedback(feedback);
-    if(this.feedback != ''){
+    if(Object.keys(this.feedback).length>0){
        this.workon = this.feedback.work == 'vocals' ? 1 :this.feedback.work == 'acting' ? 2 : 3;
        this.favorite = this.feedback.favorite;
        this.emoji = this.feedback.evaluation
@@ -443,7 +485,7 @@ export default {
   },
   methods: {
     ...mapActions('user', ['fetch']),
-    ...mapActions('audition', ['fetchAuditionData', 'fetchUserList', 'fetchTeamFeedback', 'searchMarketplace']),
+    ...mapActions('audition', ['fetchAuditionData', 'fetchUserList', 'fetchTeamFeedback', 'searchMarketplace', 'fetchOnlineMedia']),
     ...mapActions('profile', {fetchProfile: "fetch"}),
     ...mapActions('profile', {fetchProfile: "fetch", fetchData:"fetchData", myCalendar:'myCalendar', fetchContract:'fetchContract'}),
     ...mapActions('feedback', ['fetchUserFeedback', 'storeTag', 'storeRecommendation', 'fetchTags', 'fetchRecommendation', 'delete', 'searchMarketplace', 'setRecommendations', 'deleteRecommendation']),
@@ -451,20 +493,22 @@ export default {
       this.$refs.calendar.goToday()
     },
     async saveFeedback(){
-      let file = await firebase.storage()
+      try{
+        if(this.file.name !='Record Audition'){
+          let file = await firebase.storage()
         .ref(`temp/${uuid()}.${this.file.name.split('.').pop()}`)
         .put(this.form.file);
 
-      let url = await file.ref.getDownloadURL();
-      let audition_record={
-        "url":url,
-        "appointment_id":this.$route.params.round,
-        "performer":this.$route.params.id,
-        "slot_id":this.slot
-      };
-      try{
+        let url = await file.ref.getDownloadURL();
+        let audition_record={
+          "url":url,
+          "appointment_id":this.$route.params.round,
+          "performer":this.$route.params.id,
+          "slot_id":this.slot
+        };
         let files = await axios.post('/t/auditions/video/save', audition_record);
         this.$toasted.success('Audition record saved');
+        }
       }catch(e){
         this.$toasted.error('There was an error saving the audition record, try later');
       }
@@ -478,10 +522,7 @@ export default {
       this.form.slot_id = this.slot;
       this.form.evaluator = this.profile.details.id;
       let data = {"appointment_id": this.$route.params.round, "performer": this.$route.params.id}
-      console.log(Object.keys(this.feedback).length);
-      console.log(this.feedback.length);
-      console.log(this.feedback.length==0);
-      debugger;
+      
       if(Object.keys(this.feedback).length==0){
         let status = await axios.post('/t/feedbacks/add', this.form);
         this.$toasted.success('Feedback Created');
@@ -503,19 +544,25 @@ export default {
       // this.preview = URL.createObjectURL(file);
     },
     asignEvents(){
-        var finalList = new Array();
+      var finalList = new Array();
         this.calendar.map(function(value) {
-          if (moment().format("YYYY-MM") === moment(String(value.start_date)).format("YYYY-MM")) {
-              let splitInitDate = value.start_date.split("-");
-              let splitFinalDate = value.end_date.split("-");
-              finalList = {
-                  start: new Date(splitInitDate[0], splitInitDate[1] - 1, splitInitDate[2]),
-                  end: new Date(splitFinalDate[0], splitFinalDate[1] - 1, splitFinalDate[2])
-              }
-          }
-
+          let splitInitDate = value.start_date.split("-");
+          let splitFinalDate = value.end_date.split("-");
+          finalList.push({ 
+              start: new Date(splitInitDate[0], splitInitDate[1] - 1, splitInitDate[2]),
+              end: new Date(splitFinalDate[0], splitFinalDate[1] - 1, splitFinalDate[2])
+          });
       });
-      this.dates = finalList
+      this.attrs = [
+        {
+          bar: {
+            color: 'yellow',
+            class: 'my-dot-class',
+          },
+          key: 'today',
+          dates: finalList,
+        },
+      ];
     },
     async setTags(){
       if(this.tag !== ''){

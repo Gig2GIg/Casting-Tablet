@@ -64,6 +64,7 @@ export default {
   data() {
     return {
       search: '',
+      counter: 0,
       invitation:{
         adding:false,
         code:'',
@@ -85,8 +86,19 @@ export default {
       let data = {
         "code": this.invitation.code,
       }
-      await axios.post(`/t/performers/add`, data);
-      $emit('onAdd', '1')
+      try{
+        let code = await axios.post(`/t/performers/add`, data);
+        if(code.data.data == "This user exits in your data base"){
+          this.$toasted.error(code.data.data);
+        }
+        else{
+          this.$toasted.success('Performer added successfully');
+        }
+      }
+      catch(e){
+        this.$toasted.error(e);
+      }
+      this.$emit('onAdd', this.counter++);
       // this.fetchUserList();
     },
   },

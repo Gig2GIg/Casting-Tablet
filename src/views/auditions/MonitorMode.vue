@@ -19,6 +19,7 @@
           </div>
         </div>
         <div class="container flex flex-wrap justify-center w-1/2 h-96 overflow-y-auto overflow-x-hidden">
+        <p class="text-purple font-medium tracking-wide" v-if="Object.keys(updates).length>0 == 0">Updates to this audition have not yet been sent</p>
           <div class="w-full h-32" v-for="data in updates" :key="data.id">
             <p class="w-full font-bold text-purple text-lg m-3">Updates</p>
             <p class="w-full text-purple text-base m-3">{{data.title}}</p>
@@ -26,12 +27,15 @@
           </div>
         </div>
     </div>
-  <section class=" bg-gray-100 flex flex-col items-center h-full w-1/5 overflow-scroll">
+  <section class=" bg-white flex flex-col items-center h-full w-1/5 overflow-scroll">
     <div class="flex w-full mt-10 ">
       <div class="w-full text-center font-bold text-purple text-xl">
         Audition <br> Appointments
       </div>
     </div>
+      <div v-if="appointments.length == 0" class="mt-10">
+        <p class="text-purple font-medium tracking-wide">Appointments not added yet</p>
+      </div>
       <div
         v-for="data in appointments"
         :key="data.id"
@@ -88,7 +92,6 @@ export default {
     this.fetch(this.$route.params.id);
     let { data: { data } } = await axios.get(`/monitor/show/${this.$route.params.id}`);
     this.updates = data;
-    debugger;
   },
   methods: {
     ...mapActions("appointment", ["fetch", "fetchUserAudition", "saveCheckIn", "fetchAppointmentNotWalk"]),
@@ -102,16 +105,18 @@ export default {
         this.appointment_id=""
     },
     async sendUpdate(){
-      let data = {
-        "appointment":this.$route.params.id,
-        "title": this.updateText,
-        "time": moment().format("hh:mm"),
-      }
       try {
-        await axios.post('t/monitor/updates', data);
+        let body = {
+          "appointment":this.$route.params.id,
+          "title": this.updateText,
+          "time": moment().format("hh:mm"),
+        }
+        await axios.post('t/monitor/updates', body);
         this.$toasted.success('Update send successfully');
+        let { data: { data } } = await axios.get(`/monitor/show/${this.$route.params.id}`);
+        this.updates = data;
       } catch (error) {
-        this.$toasted.error('A error has ocurred, try later');
+        this.$toasted.error(e);
       }
     },
     useScanner(){
@@ -171,48 +176,6 @@ export default {
       }
       else{
         console.log("Invalid Data Given");
-      }
-    },
-    changeScanner() {
-      if (this.cam) {
-        this.cam = false;
-        this.image = true;
-      } else {
-        this.cam = true;
-        this.image = false;
-      }
-    },
-    async onDetect(promise) {
-      try {
-        const { content } = await promise;
-
-        this.result = JSON.parse(content);
-        if(this.result.hour !== null){
-          await this.fetchUserAudition(this.result);
-          let data = {"slot": this.userAppointment.slot_id, "user": this.result.userId, "auditions": this.result.auditionId, "rol": this.result.rolId, "appointment_id": this.result.appointmentId}
-          let stateCheckin = await this.saveCheckIn(data);
-
-          if(stateCheckin){
-            this.scan = false;
-            this.prechecked = true;
-          }
-          else{
-            console.log("Invalid Data Given");
-          }
-        }
-        else{
-          await this.fetchAppointmentNotWalk(this.$route.params.id);
-          this.scan = false;
-          this.showAppointments = true;
-        }
-      } catch (error) {
-        if (error.name === 'DropImageFetchError') {
-          this.error = 'Sorry, you can\'t load cross-origin images :/';
-        } else if (error.name === 'DropImageDecodeError') {
-          this.error = 'Ok, that\'s not an image. That can\'t be decoded.';
-        } else {
-          this.error = `Ups, what kind of error is this?! ${error.message}`;
-        }
       }
     },
 

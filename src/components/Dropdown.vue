@@ -27,6 +27,8 @@
 
 <script>
 import { mapActions, mapState, mapGetters } from 'vuex';
+import axios from 'axios';
+
     export default {
         data() {
             return {
@@ -45,6 +47,7 @@ import { mapActions, mapState, mapGetters } from 'vuex';
             selected: {},
             placeholder: [String],
             state:[Number],
+            online:[Boolean],
             closeOnOutsideClick: {
               type: [Boolean],
               default: true,
@@ -89,8 +92,58 @@ import { mapActions, mapState, mapGetters } from 'vuex';
                 this.$emit('updateOption', this.selectedOption);
             },
 
-            emitCreate(){
-              this.$emit('updateOption', "create");
+           async emitCreate(){
+              if(this.online == 0){
+                this.$emit('updateOption', "create");
+              }
+              else{
+                let data = {
+                  date: '',
+                  time: '0',
+                  location: {
+                      latitude: '0',
+                      latitudeDelta: '0',
+                      longitude: '0',
+                      longitudeDelta: '0'
+                  },
+                  number_slots: 0,
+                  type: 1,
+                  online: true,
+                  length: 0,
+                  start: '0',
+                  end: '0',
+                  round: this.rounds.length + 1,
+                  status: true
+                };
+                try{
+                  await axios.post(`/t/appointment/${this.$route.params.id}/rounds`, data);
+                  this.$toasted.success('The round has created successfully.');
+                  await  this.fetch(this.$route.params.id);
+                  this.options = this.rounds;
+                  if(this.options != ""){
+                    this.selectedOption = this.options.filter(option => option.status == 1);
+                    if(this.selectedOption.length>0){
+                      this.create = false;
+                    }
+                    this.selectedOption = this.selectedOption.length > 0 ? this.selectedOption[0] : this.selectedOption;
+                    this.$emit('setOption', this.selectedOption)
+                  }
+
+                    if (this.placeholder)
+                    {
+                        this.placeholderText = this.placeholder;
+                        this.$emit('setOption', this.selectedOption);
+                    }
+
+                    if (this.closeOnOutsideClick) {
+                      document.addEventListener('click', this.clickHandler);
+                    }
+                }
+                catch(e){
+                  this.$toasted.error(e);
+                }
+              }
+              
             },
 
             toggleMenu() {

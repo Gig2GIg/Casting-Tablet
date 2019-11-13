@@ -89,7 +89,7 @@
       <div class="w-1/3 ml-5 flex flex-wrap content-center justify-center calendar shadow-lg">
         <div>
           <p class="text-center text-2xl text-purple">Availability</p>
-          <v-date-picker class="border-none" :select-attribute='selectAttribute' locale="en" mode='range' v-model="dates" show-caps is-inline  :rows="2" />
+          <v-date-picker class="border-none" :select-attribute='selectAttribute' :attributes="attrs" locale="en" mode='range' v-model="dates" show-caps is-inline  :rows="2" />
         </div>
       </div>
       <div class="w-full ml-5 shadow-lg">
@@ -196,6 +196,7 @@ export default {
       isLoading: true,
       rol:'',
       emoji:3,
+      attrs: [],
       callback: 1,
       favorite:0,
       slot:'',
@@ -239,18 +240,25 @@ export default {
     asignEvents(){
         var finalList = new Array();
         this.calendar.map(function(value) {
-          if (moment().format("YYYY-MM") === moment(String(value.start_date)).format("YYYY-MM")) {
-              let splitInitDate = value.start_date.split("-");
-              let splitFinalDate = value.end_date.split("-");
-              finalList = {
-                  start: new Date(splitInitDate[0], splitInitDate[1] - 1, splitInitDate[2]),
-                  end: new Date(splitFinalDate[0], splitFinalDate[1] - 1, splitFinalDate[2])
-              }
-          }
-
+          let splitInitDate = value.start_date.split("-");
+          let splitFinalDate = value.end_date.split("-");
+          finalList.push({ 
+              start: new Date(splitInitDate[0], splitInitDate[1] - 1, splitInitDate[2]),
+              end: new Date(splitFinalDate[0], splitFinalDate[1] - 1, splitFinalDate[2])
+          });
       });
-      this.dates = finalList
-      debugger
+      finalList;
+      debugger;
+      this.attrs = [
+        {
+          bar: {
+            color: 'yellow',
+            class: 'my-dot-class',
+          },
+          key: 'today',
+          dates: finalList,
+        },
+      ];
     },
     async sendData(){
       debugger;
@@ -261,6 +269,9 @@ export default {
       }
 
       await axios.post(`/t/performers/code`, data);
+      this.$toasted.success('The user code has been shared successfully');
+      this.invitation.email = "";
+
     },
     async saveFeedback(){
       this.form.callback = this.callback == 1 ?true:false;

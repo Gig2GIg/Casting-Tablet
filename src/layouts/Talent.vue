@@ -2,9 +2,9 @@
   <div class="flex w-full h-screen">
     <sidebar-base />
     <div class="flex flex-col w-4/5">
-      <talent-nav-bar @onSearch="sendDataToChild" @onAdd="sendDataToChild"/>
+      <talent-nav-bar @onSearch="sendDataToChild" @onAdd="reloadData"/>
       <div class="flex-1 overflow-y-auto">
-        <router-view :search.sync="search"/>
+        <router-view :search.sync="search" :reload.sync="reload"/>
       </div>
     </div>
   </div>
@@ -15,6 +15,7 @@ export default {
   data() {
     return {
       search: '',
+      reload: 0,
     };
   },
   computed:{},
@@ -22,7 +23,9 @@ export default {
   methods: {
     sendDataToChild(data){
       this.search = data;
-      console.log(this.search);
+    },
+    reloadData(data){
+      this.reload = data;
     },
   },
 };

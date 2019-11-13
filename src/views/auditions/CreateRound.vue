@@ -1,15 +1,8 @@
 <template>
   <div class="flex flex-col justify-center  bg-white w-full  max-h-full">
-    <!-- <svg
-      class="absolute left-0 ml-5 mt-5 cursor-pointer"
-      xmlns="http://www.w3.org/2000/svg"
-      width="16.16"
-      height="16.165"
-      viewBox="0 0 16.16 16.165"
-      @click="$emit('close')"
-    > -->
-      <!-- <path id="Path_31" data-name="Path 31" d="M11.609,9.822,17.532,3.9a1.264,1.264,0,0,0-1.787-1.787L9.822,8.035,3.9,2.112A1.264,1.264,0,0,0,2.112,3.9L8.035,9.822,2.112,15.745A1.268,1.268,0,0,0,3,17.907a1.2,1.2,0,0,0,.885-.374l5.94-5.923,5.923,5.923a1.266,1.266,0,0,0,.885.374,1.2,1.2,0,0,0,.885-.374,1.263,1.263,0,0,0,0-1.787Z" transform="translate(-1.742 -1.742)" fill="#4d2545"/>
-    </svg> -->
+    <loading :active.sync="isLoading" 
+        :can-cancel="true" 
+        :is-full-page="fullPage"></loading>
   <form
     class="relative flex flex-col justify-center"
     data-vv-scope="create"
@@ -20,7 +13,7 @@
         v-model="appointments.date"
         v-validate="'required'"
         name="date"
-        :min-date="new Date()"
+        :mindate="new Date()"
         class="w-1/3 px-2"
         type="date"
         placeholder="Date"
@@ -43,6 +36,7 @@
         name="location"
         class="w-1/3 px-2"
         type="location"
+        placeholder="Select a ubication"
         :custom-classes="['w-1/4', 'border', 'border-purple']"
         :message="errors.first('create.location')"
         @place="handleLocation"
@@ -81,6 +75,7 @@
             type="number"
             class="w-full slots-input py-3 px-4 text-xl text-purple font-bold rounded-full border border-purple "
             @input="makeSlots"
+            placeholder="0"
           >
           <span class="appointment-label w-2/3 text-center right-0 absolute text-white rounded-r-full py-3 text-xl px-4 border border-transparent">
             Appointments
@@ -100,7 +95,7 @@
             Time
           </option>
           <option value="2">
-            Number
+            Numeric
           </option>
         </base-select>
 
@@ -178,10 +173,11 @@ import AuditionForm from '@/components/auditions/AuditionForm.vue';
 import uuid from 'uuid/v1';
 import firebase from 'firebase/app';
 import axios from 'axios';
-
+import Loading from 'vue-loading-overlay';
+import 'vue-loading-overlay/dist/vue-loading.css'
 export default {
   name: 'AppointmentsModal',
-  components: { SlotItem },
+  components: { SlotItem, Loading },
   props: {
     data: {
       type: Object,
@@ -199,6 +195,7 @@ export default {
     return {
       appointments: {},
       selectedLocation: null,
+      isLoading: false,
       form: {
         dates: [
           {
@@ -276,6 +273,7 @@ export default {
         if (this.isLoading || !await this.$validator.validateAll('create')) {
           return;
         }
+        this.isLoading = true;
 
         // if (!this.form.cover) {
         //   this.$toasted.error('The cover field is required.');
@@ -309,11 +307,11 @@ export default {
             longitudeDelta: 0.0043
           }; 
         }
-
-        console.log(data);
-        debugger;
         await axios.post(`/t/appointment/${this.$route.params.id}/rounds`, data);
+        this.isLoading = false;
+        this.$toasted.success('The round has created successfully.');
       } catch (e) {
+        this.$toasted.error('Audition not created, try later.');
         console.log(e);
         coverSnapshot && coverSnapshot.ref.delete();
         await Promise.all(rolesSnapshots.map(role => role.ref.delete()));

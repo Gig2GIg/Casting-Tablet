@@ -59,11 +59,18 @@ export default {
 
   [types.FETCH_AUDITION_VIDEOS_SUCCESS](state, videos) {
     state.videos = videos;
-    debugger;
   },
 
   [types.FETCH_AUDITION_VIDEOS_FAILURE](state) {
     state.videos = {};
+  },
+
+  [types.FETCH_ONLINE_MEDIA_SUCCESS](state, onlineMedia) {
+    state.onlineMedia = onlineMedia;
+  },
+
+  [types.FETCH_ONLINE_MEDIA_FAILURE](state) {
+    state.onlineMedia = {};
   },
   
 };

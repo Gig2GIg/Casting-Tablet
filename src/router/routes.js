@@ -101,24 +101,29 @@ export default [
     component: () => import(/* webpackChunkName: 'auditions.create' */ '@/views/auditions/CreateAudition'),
   },
   {
+    path: '/auditions/update/:id',
+    name: 'auditions.update',
+    component: () => import(/* webpackChunkName: 'auditions.update' */ '@/views/auditions/UpdateAudition'),
+  },
+  {
     path: '/auditions/detail/:id',
     name: 'auditions/detail',
-    component: () => import(/* webpackChunkName: 'auditions.create' */ '@/views/AuditionsDetail'),
+    component: () => import(/* webpackChunkName: 'auditions.detail' */ '@/views/AuditionsDetail'),
   },
   {
     path: '/auditions/round/:id/create',
     name: 'auditions.round',
-    component: () => import(/* webpackChunkName: 'auditions.create' */ '@/views/auditions/CreateRound'),
+    component: () => import(/* webpackChunkName: 'auditions.round' */ '@/views/auditions/CreateRound'),
   },
   {
     path: '/auditions/:id/monitor-mode',
     name: 'monitor-update',
-    component: () => import(/* webpackChunkName: 'auditions.user' */ '@/views/auditions/MonitorMode'),
+    component: () => import(/* webpackChunkName: 'monitor-update' */ '@/views/auditions/MonitorMode'),
   },
   {
     path: '/notifications',
     name: 'notifications',
-    component: () => import(/* webpackChunkName: 'mysettings' */ '@/views/MyNotifications'),
+    component: () => import(/* webpackChunkName: 'notifications' */ '@/views/MyNotifications'),
   },
 
   /*

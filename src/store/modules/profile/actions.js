@@ -25,8 +25,6 @@ export default {
   async myCalendar({ commit }, id) {
     try {
       const { data: { data } } = await axios.get(`/t/user/${id}/calendar`);
-      console.log(data);
-      debugger;
       commit(types.FETCH_MY_CALENDAR_SUCCESS, data);
     } catch (e) {
       commit(types.FETCH_MY_CALENDAR_FAILURE);
@@ -36,8 +34,6 @@ export default {
   async fetchContract({ commit }, id) {
     try {
       const { data: { data } } = await axios.get(`t/performers/contracts?user=${id}`);
-      console.log(data);
-      debugger;
       commit(types.FETCH_CONTRACT_SUCCESS, data);
     } catch (e) {
       commit(types.FETCH_CONTRACT_FAILURE);
