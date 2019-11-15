@@ -120,14 +120,6 @@
           :custom-classes="['border', 'border-purple']"
           readonly
         />
-
-        <base-button
-          class="mt-6"
-          expanded
-          @click="handleDone"
-        >
-          Done
-        </base-button>
       </div>
     </div>
   </div>

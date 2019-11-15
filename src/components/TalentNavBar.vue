@@ -35,7 +35,7 @@
               expanded
               @click.native="sendData"
             >
-              Send
+              Add Performer
             </base-button>
           </div>
       </div>

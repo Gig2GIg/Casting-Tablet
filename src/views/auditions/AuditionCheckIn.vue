@@ -243,8 +243,8 @@ export default {
       this.result = JSON.parse(result);
       if(this.result.hour !== null){
         await this.fetchUserAudition(this.result);
-        this.data = {"slot": this.userAppointment.slot_id, "user": this.result.userId, "auditions": this.result.auditionId, "rol": this.result.rolId, "appointment_id": this.result.appointmentId}
-
+        let data = {"slot": this.userAppointment.slot_id, "user": this.result.userId, "auditions": this.result.auditionId, "rol": this.result.rolId, "appointment_id": this.result.appointmentId}
+        let stateCheckin = await this.saveCheckIn(data);
         if(stateCheckin){
           this.scan = false;
           this.prechecked = true;

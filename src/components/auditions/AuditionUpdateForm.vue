@@ -400,14 +400,14 @@
             </slide>
           </carousel>
         </div>
-
+<!-- 
         <button
           class="w-2/3 mt-4 py-3 px-4 border-4 border-purple text-purple rounded-full focus:outline-none"
           type="button"
           @click.prevent="manageRoles = true"
         >
           {{ form.roles.length ? 'Add' : 'Edit' }} Roles
-        </button>
+        </button> -->
 
         <div
           v-if="!!form.media.length"
@@ -428,35 +428,35 @@
             >
               <DocumentItem
                 :media="media"
-                @destroy="handleDeleteDocument"
+                @destroy="true"
               />
             </slide>
           </carousel>
         </div>
 
-        <input
+        <!-- <input
           ref="inputFile"
           accept=".png, .jpg, .jpeg"
           type="file"
           multiple
           hidden
           @change="handleFile"
-        >
+        > -->
 
-        <button
+        <!-- <button
           class="w-2/3 py-3 px-4 border-4 border-purple text-purple rounded-full focus:outline-none mb-4"
           type="button"
           :class="{ 'mt-4': !form.media.length }"
           @click="$refs.inputFile.click()"
         >
           Manage Documents
-        </button>
+        </button> -->
 
         <base-button
           class="mt-auto w-2/3 mb-12"
           type="submit"
         >
-          Create Audition
+          Update Audition
         </base-button>
       </div>
     </div>
@@ -468,13 +468,14 @@
       @close="manageAppointments = false"
     />
 
-    <RolesModal
+    <RolesUpdModal
       v-if="manageRoles"
       :data="selectedRole"
       @save="handleSaveRole"
       @destroy="handleDeleteRole"
       @close="manageRoles = false"
     />
+
   </form>
 </template>
 
@@ -483,8 +484,8 @@ import Vue from 'vue';
 import uuid from 'uuid/v1';
 import firebase from 'firebase/app';
 import axios from 'axios';
-import AppointmentsUpdModal from './AppointmentsModal.vue';
-import RolesModal from './RolesModal.vue';
+import AppointmentsUpdModal from './AppointmentsUpdModal.vue';
+import RolesUpdModal from './RolesUpdModal.vue';
 import ContributorItem from './ContributorItem.vue';
 import DocumentItem from './DocumentItem.vue';
 import { mapActions, mapState, mapGetters } from 'vuex';
@@ -498,7 +499,7 @@ Vue.use(Loading);
 export default {
   name: 'AuditionForm',
   components: {
-    AppointmentsUpdModal, RolesModal, ContributorItem, DocumentItem, Loading
+    AppointmentsUpdModal, RolesUpdModal, ContributorItem, DocumentItem, Loading
   },
   data() {
     return {
@@ -768,10 +769,10 @@ export default {
         let data = Object.assign({}, this.form);        
         this.isLoading = true;
         data.union = this.union_status.find(x => x.selected).value;
-        data.appointment = this.audition.apointment;
-        debugger;
         data.contract = this.contract_types.find(x => x.selected).key;
         data.production = this.production_types.filter(x => x.selected).map(x => x.key).join(', ');
+        data.appointment = [this.audition.apointment];
+        debugger;
         if(this.selectedLocation){
           data.location = {
             latitude: this.selectedLocation.geometry.location.lat(),
@@ -792,16 +793,21 @@ export default {
         else{
           data.cover = this.audition.cover;
         }
-        // // Upload roles
-        // await Promise.all(data.roles.map(async (role) => {
-        //   const snapshot = await firebase.storage()
-        //     .ref(`temp/${uuid()}.${role.name_cover.split('.').pop()}`)
-        //     .put(role.cover);
+        // Upload roles
+          await Promise.all(data.roles.map(async (role) => {
+            if(role.cover != undefined){
+              const snapshot = await firebase.storage()
+                .ref(`temp/${uuid()}.${role.name_cover.split('.').pop()}`)
+                .put(role.cover);
 
-        //   role.cover = await snapshot.ref.getDownloadURL();
+              role.cover = await snapshot.ref.getDownloadURL();
 
-        //   rolesSnapshots.push(snapshot);
-        // }));
+              rolesSnapshots.push(snapshot);
+            }
+            else{
+              role.cover = role.image.url;
+            }
+          }));
 
         // // Upload files
         // await Promise.all(data.media.map(async (media) => {
@@ -813,7 +819,8 @@ export default {
 
         //   filesSnaphosts.push(snapshot);
         // }));
-        let action = await axios.put(`/t/auditions/update/${this.$route.params.id}`, this.audition);
+        debugger;
+        let action = await axios.put(`/t/auditions/update/${this.$route.params.id}`, data);
         this.isLoading = false;
         this.$toasted.success('The audition has updated successfully.');
         this.$router.push({

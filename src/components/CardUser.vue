@@ -13,6 +13,9 @@
         <span class="font-medium text-xs truncate">
           {{ title }}
         </span>
+        <span class="font-medium text-xs truncate">
+          {{ rol }}
+        </span>
         <!-- <span class="-mt-2">{{ $dayjs(time).format('MMMM Do') }}</span> -->
         <span class="text-xs">{{ time }}</span>
       </div>
@@ -41,6 +44,9 @@ export default {
     },
     navigateTo: {
       type: Number,
+    },
+    rol: {
+      type: String,
     },
     actionable: Boolean,
   },

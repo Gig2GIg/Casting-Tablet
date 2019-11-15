@@ -116,20 +116,6 @@
                 class="text-center"
               >
                 <div class="m-3 rounded-full red-light flex items-center w-12 h-12 button-detail bg-cover" :style="{ backgroundImage: 'url(' + data.image.url + ')' }">
-                  <figure class="flex w-full justify-center">
-                    <img
-                      v-if="data.image.url == ''"
-                      :src="`/images/icons/person.png`"
-                      alt="Icon"
-                      class="content-center h-4"
-                    >
-                    <img
-                      v-else
-                      :src="data.image.url"
-                      alt="Icon"
-                      class="content-center h-4"
-                    >
-                  </figure>
                 </div>
                 <p class="text-purple text-xs justify-center w-16 font-bold tracking-tighter flex-1 ">
                   {{ data.name }}
@@ -145,7 +131,7 @@
               <div
                 v-for="data in audition.media"
                 :key="data.id"
-                class="flex m-3 content-center w-full h-16 flex justify-center"
+                class="flex m-3 content-center w-full h-16 flex justify-center truncate"
               >
                 <div class="flex justify-center w-9/12 button-detail rounded-lg">
                   <div class="flex justify-center content-center flex-wrap w-1/2 h-full">
@@ -168,8 +154,8 @@
                       class="h-10"
                     >
                   </div>
-                  <div class="flex content-center relative flex-wrap w-full h-full bg-white">
-                    <span class="text-center text-purple font-bold w-full">{{ data.name }}</span>
+                  <div class="flex content-center relative flex-wrap w-full h-full bg-white truncate">
+                    <span class="text-center text-purple font-bold w-full truncate">{{ data.name }}</span>
                     <img
                       src="/images/icons/more-icon@3x.png"
                       alt="Icon"
@@ -225,7 +211,8 @@
                 v-on:updateOption="methodToRunOnSelect" 
                 :state.sync="statusChild"
                 :online="audition.online"
-                :placeholder="'Select an Item'">
+                :placeholder="'Select an Item'"
+                :audition="audition.status">
             </dropdown>
           </div>
         </div>
@@ -382,7 +369,7 @@ export default {
         this.manage = true;
     },
     async emmitFinalCast(){
-      await this.$emit('handleFinalCast', 'true');
+      await this.$emit('handleFinalCast', this.audition.roles);
     },
     async auditionVideo(){
         await this.listVideos(this.roundActive.id);

@@ -4,13 +4,13 @@
       <div v-if="status == 0" class="flex items-center flex-wrap ml-5 h-full">
         <h4 class="w-full text-center text-purple font-semibold text-2xl">Check-In has not opened for this audition</h4>
       </div>
-      <div v-if="status == 2 && (userList.length == 0 || finalCastState == false)" class="flex items-center flex-wrap ml-5 h-full">
+      <div v-if="(status == 2 && round.length ==0) && (finalCastState == false)" class="flex items-center flex-wrap ml-5 h-full">
         <h4 class="w-full text-center text-purple font-semibold text-2xl">Auditions has been closed for this audition</h4>
       </div>
       <div v-if="status == 1 && userList.length == 0 " class="flex items-center flex-wrap ml-5 h-full">
         <h4 class="w-full text-center text-purple font-semibold text-2xl">Not performers added yet</h4>
       </div>
-      <div v-if="status == 1 || finalCastState == true" class=" flex flex-wrap ml-5">
+      <div v-if="status == 1 || finalCastState == true || round.length >0" class=" flex flex-wrap ml-5">
         <div class="col-6">
           <draggable
             class="dragArea list-group flex flex-wrap"
@@ -46,28 +46,27 @@
       </div>
       <div class="w-full border border-gray-300 mt-1 mb-6" />
       <draggable
-        class="dragArea list-group flex flex-wrap justify-center content-center w-full h-48"
-        :list="finalCastFilter?finalCastFilter:[]"
+        class="dragArea list-group flex flex-wrap justify-center content-center w-full"
+        :class="{'h-48':mainRoles.length==0}"
+        :list="mainRoles?mainRoles:[]"
         group="people"
         @change="verifyRegisters"
       >
-        <transition-group class="flex flex-wrap w-full justify-center content-center w-full h-24" type="transition" :name="!drag ? 'flip-list' : null">
-          <div
+        <transition-group class="flex flex-wrap w-full justify-center content-center w-full " type="transition" :name="!drag ? 'flip-list' : null">
+        <div
             class="list-group-item"
-            v-for="data in finalCastFilter"
-            :key="data.user_id"
+            v-for="data in mainRoles"
+            :key="data.id"
           >
-              <router-link :to="{ name: 'auditions/user', params: {id: data.user_id, round: round.id, audition:$route.params.id} }">
               <card-user
                 :title="data.name"
-                :time="data.time"
-                :image="data.image"
+                :rol="data.rol"
+                :image="data.image.url"
               />
-              </router-link>
-          </div>
+        </div>
         </transition-group>
       </draggable>
-      <div v-if="finalCastFilter.length == 0" class="text-center h-full">
+      <div v-if="mainRoles.length == 0" class="text-center h-full">
           <p class="text-purple font-bold text-xl">Add a performer to <br/>your final cast list</p>
       </div>
     </section>
@@ -87,6 +86,8 @@ export default {
     return {
       isLoading: true,
       status: 0,
+      roles:[],
+      mainRoles:[],
       round: '',
       drag: false,
       finalCastState: false,
@@ -150,6 +151,16 @@ export default {
           this.finalCast[data].rol_id = filtered_data[j].rol;
         }
       }
+      this.mainRoles = this.roles;
+      this.mainRoles.map((role)=>{
+        this.finalCast.map((user) =>{
+          if(user.rol_id == role.id){
+            role.name = user.name;
+            role.image.url = user.image;
+            role.rol = user.rol_name;
+          }
+        });
+      });
       if(this.finalCast.length > 0){
         this.finalCastFilter = this.finalCast;
       }
@@ -174,7 +185,8 @@ export default {
         console.log(e);
       }
     },
-    async activeFinalCast(){
+    async activeFinalCast(item){
+      this.roles = item;
       await this.fetch(this.$route.params.id);
       let lastRound = this.rounds.slice(-1);
       if(lastRound.length>0){
@@ -190,6 +202,18 @@ export default {
           this.finalCast[data].rol_id = filtered_data[j].rol;
         }
       }
+      this.mainRoles = this.roles;
+      this.mainRoles.map((role)=>{
+        if(this.finalCast.length > 0){
+          this.finalCast.map((user) =>{
+            if(user.rol_id == role.id){
+              role.name = user.name;
+              role.image.url = user.image;
+              role.rol = user.rol_name;
+            }
+          });
+        }
+      });
       if(this.finalCast.length > 0){
         this.finalCastFilter = this.finalCast;
       }

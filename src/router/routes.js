@@ -126,6 +126,12 @@ export default [
     component: () => import(/* webpackChunkName: 'notifications' */ '@/views/MyNotifications'),
   },
 
+  {
+    path: '/my/settings',
+    name: 'my.settings',
+    component: () => import(/* webpackChunkName: 'mysettings' */ '@/views/Settings'),
+  },
+
   /*
   |--------------------------------------------------------------------------
   | Error Routes

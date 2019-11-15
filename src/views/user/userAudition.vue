@@ -465,13 +465,19 @@ export default {
     };
 
     await this.fetchUserFeedback(feedback);
+    let test = Object.keys(this.feedback).length;
     if(Object.keys(this.feedback).length>0){
-       this.workon = this.feedback.work == 'vocals' ? 1 :this.feedback.work == 'acting' ? 2 : 3;
-       this.favorite = this.feedback.favorite;
-       this.emoji = this.feedback.evaluation
-       this.callback = this.feedback.callback == 1 ?true:false;
-       this.form.comment = this.feedback.comment;
-    }
+      debugger;
+      for(data in this.feedback){
+        this.workon = this.feedback[data].work == 'vocals' ? 1 :this.feedback[data].work == 'acting' ? 2 : 3;
+        this.favorite = this.feedback[data].favorite;
+        this.emoji = this.feedback[data].evaluation
+        this.callback = this.feedback[data].callback == 1 ?true:false;
+        this.form.comment = this.feedback[data].comment;
+      }
+      debugger; }
+    debugger;
+
 
     this.currentUser = this.userList.filter(userList => userList.user_id == this.$route.params.id);
     if(this.currentUser != ""){
@@ -510,7 +516,7 @@ export default {
         this.$toasted.success('Audition record saved');
         }
       }catch(e){
-        this.$toasted.error('There was an error saving the audition record, try later');
+        this.$toasted.error('This performer already has a video, try later');
       }
       this.form.callback = this.callback == 1 ?true:false;
       this.form.data = this.$route.params.audition;

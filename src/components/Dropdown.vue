@@ -16,7 +16,7 @@
                     Round {{ option.round }}
                 </a>
             </li>
-            <li v-if="create || state == 0">
+            <li v-if="(create || state == 0) && audition != 2">
                 <a href="javascript:void(0)" class="text-purple" @click="emitCreate()">
                     + Create Round
                 </a>
@@ -48,6 +48,7 @@ import axios from 'axios';
             placeholder: [String],
             state:[Number],
             online:[Boolean],
+            audition:[Number],
             closeOnOutsideClick: {
               type: [Boolean],
               default: true,
