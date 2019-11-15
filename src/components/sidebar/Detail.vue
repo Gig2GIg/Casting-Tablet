@@ -57,17 +57,16 @@
         </div>
 
         <div class="w-10/12 border border-gray-300 mt-3" />
-
         <div class="container flex flex-wrap justify-center w-full mt-3">
           <div class="flex w-10/12 text-center justify-center flex-wrap">
             <div class="m-1 content-center rounded-full purple-back w-16 h-10 flex items-center">
               <p class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide">
-                UNION
+                {{audition.union.toUpperCase()}}
               </p>
             </div>
             <div class="m-1 content-center rounded-full yellow-light w-16 h-10 flex items-center">
               <p class="text-white text-xs font-bold content-center tracking-tighter flex-1 wide">
-                PAID
+                {{audition.contract.toUpperCase()}}
               </p>
             </div>
             <div
@@ -75,7 +74,7 @@
               :key="data.id"
               class="m-1 content-center rounded-full red-light w-24 h-10 flex items-center"
             >
-              <p class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide">
+              <p class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide truncate p-2">
                 {{ data.toUpperCase() }}
               </p>
             </div>
@@ -155,12 +154,14 @@
                     >
                   </div>
                   <div class="flex content-center relative flex-wrap w-full h-full bg-white truncate">
-                    <span class="text-center text-purple font-bold w-full truncate">{{ data.name }}</span>
+                    <span class="text-center text-purple font-bold truncate w-96">{{ data.name }}</span>
+                    <a :href="data.url" target="_blank">
                     <img
                       src="/images/icons/more-icon@3x.png"
                       alt="Icon"
                       class="h-6 absolute right-0 bottom-0"
                     >
+                    </a>
                   </div>
                 </div>
               </div>
