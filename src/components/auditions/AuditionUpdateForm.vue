@@ -119,7 +119,6 @@
       />
       <base-input
         v-model="form.location"
-        v-validate="'required'"
         name="location"
         class="w-1/3 px-2"
         placeholder="Select a ubication"

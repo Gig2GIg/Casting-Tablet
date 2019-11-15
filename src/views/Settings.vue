@@ -465,7 +465,6 @@
                   v-validate="'required'"
                   :custom-classes="['border border-b border-gray-300']"
                   name="state"
-                  class="w-3/5"
                   placeholder="State"
                   :message="errors.first('state')"
                 >
@@ -486,7 +485,7 @@
                   v-mask="'#####'"
                   :custom-classes="['border border-b border-gray-300']"
                   name="zip"
-                  class="w-2/5 ml-4"
+                  class=""
                   placeholder="Zip"
                   :message="errors.first('zip')"
                 />
@@ -514,7 +513,7 @@
             <div class="flex w-full text-center justify-center flex-wrap">
               <div class="m-3 content-center rounded-full red-light w-40 h-10 flex items-center button-detail">
                 <p class="text-white text-sm font-bold content-center tracking-tighter flex-1">
-                  Edit
+                  Update
                 </p>
               </div>
             </div>

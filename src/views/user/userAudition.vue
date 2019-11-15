@@ -341,7 +341,7 @@
     </div>
   </div>    
   </div>
-  <multipane-resizer class="mt-96"></multipane-resizer>
+  <multipane-resizer class="mt-96 bg-purple h-20"></multipane-resizer>
   <div class="pane relative" :style="{ flexGrow: 1 }">
     <div class="absolute" v-for="data in currentUser" :key="data.id">
       <div class="flex flex-wrap content-center justify-center text-center">
@@ -384,7 +384,7 @@
         >
         <p class="text-purple text-m text-left ml-4 tracking-wide font-semibold w-1/2">Appearance</p>
       </div>
-      <div class="flex flex-wrap justify-center mt-12 w-full cursor-pointer">
+      <div class="flex flex-wrap justify-center mt-12 w-full cursor-pointer" v-if="audition.status!=2">
         <div class="flex w-1/2" @click="saveFeedback">
           <div class="flex w-full text-center justify-center flex-wrap">
             <div class="m-3 button-detail content-center border border-purple rounded-full w-32 h-10 flex items-center">
@@ -458,7 +458,7 @@ export default {
     await this.fetchAuditionData(this.$route.params.audition);
     await this.fetchUserList(this.$route.params.round);
     await this.fetchTags({"round": this.$route.params.round, "user": this.$route.params.id,});
-    await this.fetchRecommendation({"round": this.$route.params.round, "user": this.$route.params.id,});
+    await this.fetchRecommendation({"round": this.$route.params.audition, "user": this.$route.params.id,});
     await this.fetchOnlineMedia({"round": this.$route.params.round, "user": this.$route.params.id,});
     let feedback = { 
       user:this.$route.params.id,
@@ -468,7 +468,6 @@ export default {
     await this.fetchUserFeedback(feedback);
     let test = Object.keys(this.feedback).length;
     if(Object.keys(this.feedback).length>0){
-      debugger;
       for(data in this.feedback){
         this.workon = this.feedback[data].work == 'vocals' ? 1 :this.feedback[data].work == 'acting' ? 2 : 3;
         this.favorite = this.feedback[data].favorite;
@@ -476,8 +475,7 @@ export default {
         this.callback = this.feedback[data].callback == 1 ?true:false;
         this.form.comment = this.feedback[data].comment;
       }
-      debugger; }
-    debugger;
+    }
 
 
     this.currentUser = this.userList.filter(userList => userList.user_id == this.$route.params.id);
@@ -611,8 +609,12 @@ export default {
         await this.searchMarketplace(this.marketplaceSearch);
       },
 
-      selectMarketplace(item){
+      async selectMarketplace(item){
         this.currentMarketplace = item;
+        this.recommendation = item.name;
+        await this.setRecommendations();
+        this.currentMarketplace = '';
+        this.recommendation = '';
       },
       
       async deleteTag(item){
@@ -629,7 +631,7 @@ export default {
           try{
             await this.deleteRecommendation(item);
             this.$toasted.success('Recommendation deleted successfully');
-            await this.fetchRecommendation({"round": this.$route.params.round, "user": this.$route.params.id,})
+            await this.fetchRecommendation({"round": this.$route.params.audition, "user": this.$route.params.id,})
           }catch(e){
             console.log(e);
             this.$toasted.error('Recommendation not deleted, try later');

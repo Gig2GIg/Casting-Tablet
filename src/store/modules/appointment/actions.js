@@ -25,7 +25,7 @@ export default {
 
   async fetchAppointmentNotWalk({ commit }, appointment) {
     try {
-      const {data: { data }} = await axios.get(`appointments/show/${appointment}/notwalk`);
+      const {data: { data }} = await axios.get(`appointments/show/${appointment}/walk`);
       console.log(data);
       commit(types.FETCH_APPOINTMENT_NOT_WALK_SUCCESS, data);
     } catch (e) {
