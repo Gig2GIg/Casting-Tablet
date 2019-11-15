@@ -6,10 +6,6 @@
       alt="Logo"
     >
 
-    <p class="text-4xl">
-      CASTING
-    </p>
-
     <form
       class="w-full max-w-xs mt-8"
       @submit.prevent="handleLogin"
