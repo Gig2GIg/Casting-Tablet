@@ -116,7 +116,7 @@ export default {
         let { data: { data } } = await axios.get(`/monitor/show/${this.$route.params.id}`);
         this.updates = data;
       } catch (error) {
-        this.$toasted.error(e);
+        this.$toasted.error("Not performers added to notificate");
       }
     },
     useScanner(){

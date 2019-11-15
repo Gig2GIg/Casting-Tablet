@@ -4,6 +4,7 @@ import getters from './getters';
 
 const state = {
   user: {},
+  tuser:{},
   calendar: [],
   contract:[],
 };

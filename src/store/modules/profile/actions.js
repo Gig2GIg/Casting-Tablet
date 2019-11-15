@@ -6,7 +6,7 @@ import TokenService from '@/services/core/TokenService';
 export default {
   async fetch({ commit }) {
     try {
-      const { data: { data } } = await axios.get(`/t/auditions/profile/user/${TokenService.getUserId()}`);
+      const { data: { data } } = await axios.get(`/t/users/show/${TokenService.getUserId()}`);
       commit(types.FETCH_PROFILE_SUCCESS, data);
     } catch (e) {
       commit(types.FETCH_PROFILE_FAILURE);
@@ -16,9 +16,9 @@ export default {
   async fetchData({ commit }, id) {
     try {
       const { data: { data } } = await axios.get(`/t/auditions/profile/user/${id}`);
-      commit(types.FETCH_PROFILE_SUCCESS, data);
+      commit(types.FETCH_PROFILE_T_SUCCESS, data);
     } catch (e) {
-      commit(types.FETCH_PROFILE_FAILURE);
+      commit(types.FETCH_PROFILE_T_FAILURE);
     }
   },
 

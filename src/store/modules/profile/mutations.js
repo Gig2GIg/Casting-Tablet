@@ -9,6 +9,14 @@ export default {
     state.user = {};
   },
 
+  [types.FETCH_PROFILE_T_SUCCESS](state, tuser) {
+    state.tuser = tuser;
+  },
+
+  [types.FETCH_PROFILE_T_FAILURE](state) {
+    state.tuser = {};
+  },
+
   [types.FETCH_MY_CALENDAR_SUCCESS](state, calendar) {
     state.calendar = calendar;
   },

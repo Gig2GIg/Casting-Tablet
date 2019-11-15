@@ -7,11 +7,11 @@
       <!-- <i class="material-icons mr-4">
         keyboard_arrow_down
       </i> -->
-      <!-- <img
-        src="https://randomuser.me/api/portraits/women/17.jpg"
+      <img
+        :src="user.image.url"
         class="w-12"
         alt="Avatar"
-      > -->
+      >
     </div>
   </nav>
 </template>

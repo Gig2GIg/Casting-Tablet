@@ -34,7 +34,7 @@
         icon="notifications"
       />
       <sidebar-item
-        :to="{ name: 'settings' }"
+        :to="{ name: 'my.settings' }"
         text="Settings"
         icon="settings"
       />

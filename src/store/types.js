@@ -4,6 +4,8 @@ export const SET_TOKEN = 'Set Token';
 // Profile
 export const FETCH_PROFILE_SUCCESS = 'Fetch Profile Successful';
 export const FETCH_PROFILE_FAILURE = 'Fetch Profile Failed';
+export const FETCH_PROFILE_T_SUCCESS = 'Fetch Profile t Successful';
+export const FETCH_PROFILE_T_FAILURE = 'Fetch Profile t Failed';
 export const FETCH_AUDITIONS_SUCCESS = 'Fetch Audition Successful';
 export const FETCH_AUDITIONS_FAILURE = 'Fetch Audition Failed';
 export const FETCH_UPCOMING_AUDITIONS_SUCCESS = 'Fetch Upcoming Audition Successful';

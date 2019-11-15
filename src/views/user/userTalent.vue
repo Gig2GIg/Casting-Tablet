@@ -35,7 +35,7 @@
       </i> -->
       <div >
       <img
-        :src="image"
+        :src="profile.image.url"
         class="h-10"
         alt="Avatar"
       >
@@ -47,8 +47,8 @@
   <div class="flex flex-wrap justify-center content-start w-1/2 shadow-2xl rounded-lg">
       <div class="h-56 w-full bg-cover rounded-t-lg" :style="{ backgroundImage: 'url(' + image + ')' }">
       </div>
-      <p class="text-purple text-xl font-bold mt-4 text-center w-full">{{profile.details.first_name}} {{profile.details.last_name}}</p>
-      <p class="text-purple text-m font-bold mt-2 text-center w-full">{{profile.details.city}}</p>
+      <p class="text-purple text-xl font-bold mt-4 text-center w-full">{{tuser.details.first_name}} {{tuser.details.last_name}}</p>
+      <p class="text-purple text-m font-bold mt-2 text-center w-full">{{tuser.details.city}}</p>
       <div class="w-full m-8">
         <div class="flex w-full justify-start mt-2">
           <img
@@ -218,7 +218,7 @@ export default {
   computed: {
     ...mapState('audition', ['audition', 'userList', 'teamFeedback']),
     ...mapState('user', ['user']),
-    ...mapState('profile', {profile:'user', calendar:'calendar', contract:'contract'}),
+    ...mapState('profile', {profile:'user', tuser:'tuser', calendar:'calendar', contract:'contract'}),
   },
   async mounted() {
     this.image;
@@ -226,6 +226,7 @@ export default {
     this.tags = data;
     await this.fetchContract(this.$route.params.id);
     await this.fetchData(this.$route.params.id);
+    await this.fetchProfile();
     await this.myCalendar(this.$route.params.id);
     this.asignEvents();
     debugger;
@@ -233,7 +234,7 @@ export default {
   methods: {
     ...mapActions('user', ['fetch']),
     ...mapActions('audition', ['fetchAuditionData', 'fetchUserList', 'fetchTeamFeedback']),
-    ...mapActions('profile', ["fetchData", 'myCalendar', 'fetchContract']),
+    ...mapActions('profile', {fetchProfile: "fetch", fetchData:"fetchData", myCalendar:'myCalendar', fetchContract:'fetchContract'}),
     goToday() {
       this.$refs.calendar.goToday()
     },

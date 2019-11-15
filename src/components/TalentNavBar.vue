@@ -15,7 +15,7 @@
       >
       </div>
     </div>
-    <div class="w-7/12 text-center">Talent Database</div>
+    <div class="w-2/12 text-center ml-72 -mr-72">Talent Database</div>
     <div class="w-1/2 flex flex-col">
       <div class="w-1/2 z-40">
           <div v-show="invitation.adding" class="mt-16 mr-32 shadow-lg bg-white absolute right-0 top-0 z-40">
@@ -47,12 +47,12 @@
       </span>
       <!-- <i class="material-icons mr-4">
         keyboard_arrow_down
-      </i>
+      </i>-->
       <img
-        src="https://randomuser.me/api/portraits/women/17.jpg"
+        :src="user.image.url"
         class="w-12"
         alt="Avatar"
-      > -->
+      >
     </div>
   </nav>
 </template> 

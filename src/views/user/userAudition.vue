@@ -16,11 +16,11 @@
       <!-- <i class="material-icons mr-4">
         keyboard_arrow_down
       </i> -->
-      <!-- <img
-        src="https://randomuser.me/api/portraits/women/17.jpg"
+      <img
+        :src="profile.image.url"
         class="w-12"
         alt="Avatar"
-      > -->
+      >
     </div>
   </nav>
   <input
@@ -314,17 +314,18 @@
       </div>
       <div class="w-1/12"></div>
       <div class="w-1/4 shadow-lg border border-gray-300 overflow-auto">
-        <p class="text-center text-2xl text-purple font-bold" @click="show">Recommendation</p>
+        <p class="text-center text-2xl text-purple font-bold">Recommendation</p>
         <div class="flex flex-wrap justify-center w-full">
             <div class="flex flex-wrap justify-center w-full">
               <base-input
-                v-model="recommendation"
-                name="recommendation"
+                v-model="marketplaceSearch"
+                name="marketplace"
                 class="w-full px-2"
                 type="add"
-                placeholder="Add Recommendations"
+                @click.native="show"
+                placeholder="Search marketplaces"
                 :custom-classes="['border-2', 'border-purple']"
-                @added="setRecommendations"
+                @input="filterMarketplaces"
               />
           </div>    
         </div>

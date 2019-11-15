@@ -90,17 +90,6 @@
     />
 
     <base-button
-      class="pt-2 pb-2 w-48 mt-6"
-      border-classes="rounded-full border border-purple"
-      color="bg-white"
-      :hover="['bg-purple', 'text-white']"
-      text="text-purple"
-      @click="handleDone(true)"
-    >
-      Add Another Role
-    </base-button>
-
-    <base-button
       class="pt-2 pb-2 w-48"
       border-classes="rounded-full"
       type="submit"
