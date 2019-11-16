@@ -238,7 +238,7 @@ export default {
 
       for (let i = 0; i < spaces; i++) {
         this.appointments.slots.push({
-          time: this.appointments.type == 1 ? counter : null,
+          time: counter,
           number: this.appointments.type == 1 ? null : i + 1,
           status: false,
           is_walk: false,

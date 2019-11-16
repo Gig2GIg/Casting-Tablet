@@ -818,14 +818,9 @@ export default {
 
         //   filesSnaphosts.push(snapshot);
         // }));
-        debugger;
         let action = await axios.put(`/t/auditions/update/${this.$route.params.id}`, data);
         this.isLoading = false;
         this.$toasted.success('The audition has updated successfully.');
-        this.$router.push({
-            name: 'auditions/detail', 
-            params: {id: action.data.data.data.id }
-        });
       } catch (e) {
         console.log(e);
         this.isLoading = false;
