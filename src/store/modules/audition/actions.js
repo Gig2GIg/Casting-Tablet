@@ -64,7 +64,7 @@ export default {
       commit(types.FETCH_AUDITION_DATA_FAILURE);
     }
   },
-  
+
   async fetchOnlineMedia({ commit }, item) {
     try {
       const { data: { data } } = await axios.get(`/media/online?appointment_id=${item.round}&performer_id=${item.user}`);
@@ -73,6 +73,31 @@ export default {
     } catch (e) {
       console.log(e);
       commit(types.FETCH_ONLINE_MEDIA_FAILURE);
+    }
+  },
+
+  async getVideosListByRound({ commit }, audition) {
+    try {
+      // console.log(
+      //   "audition", audition
+      // );
+      const { data: { data } } = await axios.get(`/t/audition/${audition.id}/round/${audition.round}/videos`);
+      console.log(data);
+
+      commit(types.FETCH_AUDITION_VIDEOS_SUCCESS, data);
+    } catch (e) {
+      commit(types.FETCH_AUDITION_VIDEOS_FAILURE);
+    }
+  },
+
+  async deleteVideo({ commit }, id) {
+    try {
+      const { data: { data } } = await axios.delete(`/t/auditions/video/delete/${id}`);
+      // console.log(data);
+
+      commit(types.VIDEO_DELETE_SUCCESS, data);
+    } catch (e) {
+      commit(types.VIDEO_DELETE_FAILURE);
     }
   },
 
