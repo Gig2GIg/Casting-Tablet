@@ -69,5 +69,8 @@ export const FETCH_AUDITION_VIDEOS_FAILURE = "Fetch audition videos Failure"
 export const FETCH_ONLINE_MEDIA_SUCCESS = "Fetch online media success"
 export const FETCH_ONLINE_MEDIA_FAILURE = "Fetch online media failure"
 
+export const VIDEO_DELETE_SUCCESS = "Video delete Success"
+export const VIDEO_DELETE_FAILURE = "Video delete Failure"
+
 
 
