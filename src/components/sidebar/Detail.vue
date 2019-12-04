@@ -328,7 +328,7 @@
         <div class="container flex w-full mt-2">
           <div class="container flex w-full mt-2">
             <div class="flex w-full text-center justify-center flex-wrap">
-              <div class="flex content-start justify-center relative w-1/2">
+              <div class="flex content-around w-100 items-center relative cmb-10">
                 <img
                   src="/images/icons/left_arrow.png"
                   class="absolute left-0"
@@ -342,11 +342,13 @@
                 :key="data.id"
                 class="flex m-3 content-center w-full h-16 flex justify-center"
               >
-                <div class="flex justify-center w-9/12 button-detail rounded-lg">
-                  <div class="flex justify-center content-center flex-wrap w-1/2 h-full">
+                <div class="flex justify-center w-90 h-80 button-detail rounded-lg">
+                  <div class="flex justify-center h-100 content-center flex-wrap w-1/2 h-full">
                     <img src="/images/icons/mp4Icon@3x.png" alt="Icon" class="h-10" />
                   </div>
-                  <div class="flex content-center items-center relative w-full h-full bg-white">
+                  <div
+                    class="flex h-100 content-center items-center relative w-full h-full bg-white mp-box"
+                  >
                     <span class="text-center text-purple font-bold w-full">{{ data.name }}</span>
                     <ul id="navigation">
                       <li>
@@ -639,5 +641,27 @@ ul.submanu-content > li > a {
 .align-content-start {
   display: flex;
   align-content: flex-start;
+}
+.w-100 {
+  width: calc(100% - 30px) !important;
+}
+.content-around {
+  justify-content: space-around !important;
+}
+.mp-box {
+  border-bottom-right-radius: 7px !important;
+  border-top-right-radius: 7px !important;
+}
+.w-90 {
+  width: 90% !important;
+}
+.h-80 {
+  height: 85% !important;
+}
+.h-100 {
+  height: 80% !important;
+}
+.cmb-10 {
+  margin-bottom: 10px !important;
 }
 </style>
