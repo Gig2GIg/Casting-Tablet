@@ -664,4 +664,11 @@ ul.submanu-content > li > a {
 .cmb-10 {
   margin-bottom: 10px !important;
 }
+.mp-box > span {
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    overflow: hidden;
+    width: 170px !important;
+}
 </style>
+
