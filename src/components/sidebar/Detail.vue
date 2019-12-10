@@ -574,8 +574,8 @@ ul#navigation {
   margin-top: 0.55em;
   border-radius: 0.35em;
   background-color: rgba(33, 37, 41, 0.15);
-  visibility: hidden;
-  opacity: 0;
+  /* visibility: hidden;
+  opacity: 0; */
 }
 .dropdown.isOpen {
   visibility: visible;
@@ -665,10 +665,10 @@ ul.submanu-content > li > a {
   margin-bottom: 10px !important;
 }
 .mp-box > span {
-    text-overflow: ellipsis !important;
-    white-space: nowrap !important;
-    overflow: hidden;
-    width: 170px !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  overflow: hidden;
+  width: 170px !important;
 }
 </style>
 
