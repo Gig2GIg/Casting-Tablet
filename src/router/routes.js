@@ -34,7 +34,7 @@ export default [
 
   ...mapRoutes({ layout: 'checkIn' }, [
     {
-      path: '/auditions/:id/checkin',
+      path: '/auditions/:id/checkin/:title/:startTime',
       name: 'auditions/checkin',
       component: () => import(/* webpackChunkName: 'auditions' */ '@/views/auditions/AuditionCheckIn'),
     },
@@ -46,7 +46,7 @@ export default [
       name: 'talents',
       component: () => import(/* webpackChunkName: 'auditions' */ '@/views/TalentDatabase'),
     },
-    
+
   ]),
 
   ...mapRoutes({ layout: 'news' }, [
@@ -60,9 +60,9 @@ export default [
       name: 'view.news',
       component: () => import(/* webpackChunkName: 'view.news' */ '@/views/ViewNews'),
     },
-    
+
   ]),
-  
+
 
   ...mapRoutes({ layout: 'detail' }, [
     {
