@@ -34,7 +34,7 @@ export default [
 
   ...mapRoutes({ layout: 'checkIn' }, [
     {
-      path: '/auditions/:id/checkin/:title/:startTime',
+      path: '/auditions/:id/checkin/:title/:startTime/:auditionId',
       name: 'auditions/checkin',
       component: () => import(/* webpackChunkName: 'auditions' */ '@/views/auditions/AuditionCheckIn'),
     },

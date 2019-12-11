@@ -211,7 +211,7 @@
         />
         <router-link
           v-if="roundActive.status != 0 && audition.status == 1 && roundActive.status > 0 && audition.online == 0"
-          :to="{ name: 'auditions/checkin', params: {id: roundActive.id, title:audition.title, startTime: roundActive.time } }"
+          :to="{ name: 'auditions/checkin', params: {id: roundActive.id, title:audition.title, startTime: roundActive.time, auditionId:audition.id } }"
         >
           <div
             class="flex w-full content-center text-center justify-center flex-wrap cursor-pointer"
