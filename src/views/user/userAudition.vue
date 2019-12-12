@@ -175,14 +175,14 @@
             <div>
               <div class="rounded-full flex flex-wrap justify-center content-center w-full h-12 mt-40">
                 <div class="flex flex-wrap justify-center w-full">
-                  <figure :class="{'border-2 border-purple': emoji==1}" class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg mt-3" @click="emoji=5">
+                  <figure :class="{'border-2 border-purple': emoji==1}" class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg mt-3" @click="emoji=1">
                     <img
                       :src="'/images/icons/5.png'"
                       alt="Icon"
                       class="content-center h-8"
                     >
                   </figure>
-                  <figure :class="{'border-2 border-purple': emoji==2}" class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg mt-3" @click="emoji=4">
+                  <figure :class="{'border-2 border-purple': emoji==2}" class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg mt-3" @click="emoji=2">
                     <img
                       :src="'/images/icons/4.png'"
                       alt="Icon"
@@ -198,7 +198,7 @@
                     >
                   </figure>
 
-                  <figure :class="{'border-2 border-purple': emoji==4}" class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg mt-3" @click="emoji=2">
+                  <figure :class="{'border-2 border-purple': emoji==4}" class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg mt-3" @click="emoji=4">
                     <img
                       :src="'/images/icons/2.png'"
                       alt="Icon"
@@ -206,7 +206,7 @@
                     >
                   </figure>
 
-                  <figure :class="{'border-2 border-purple': emoji==5}" class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg mt-3" @click="emoji=1">
+                  <figure :class="{'border-2 border-purple': emoji==5}" class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg mt-3" @click="emoji=5">
                     <img
                       :src="'/images/icons/1.png'"
                       alt="Icon"
