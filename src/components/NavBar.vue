@@ -2,13 +2,13 @@
   <nav class="flex items-center h-12">
     <div class="flex items-center border-l border-white text-white ml-auto cursor-pointer">
       <span class="mx-4">
-        {{user.details.first_name}} {{user.details.last_name}}
+        {{user.details?user.details.first_name + ' ' +  user.details.last_name:""}}
       </span>
       <!-- <i class="material-icons mr-4">
         keyboard_arrow_down
       </i> -->
       <img
-        :src="user.image.url"
+        :src="user.image?user.image.url:''"
         class="w-12"
         alt="Avatar"
       >
