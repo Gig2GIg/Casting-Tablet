@@ -230,7 +230,7 @@
                       </div>
                     </div>
                     <div class="container flex w-1/2 mt-3">
-                      <div class="flex w-full text-center justify-center flex-wrap" @click="callback = 2">
+                      <div class="flex w-full text-center justify-center flex-wrap" @click="callback = 0">
                         <div :class="{'button-detail': callback == 0}" class="m-3 content-center rounded-full border border-purple bg-white w-32 h-10 flex items-center">
                           <p :class="{'text-white': callback == 0, 'text-purple': callback != 0}" class=" text-sm font-bold content-center tracking-tighter flex-1">
                             No
