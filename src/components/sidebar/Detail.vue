@@ -287,9 +287,9 @@
             >Auditions video</p>
           </div>
         </div>
-        <div v-if="!roundActive.status" class="w-full border border-gray-300 mt-6 mb-6" />
+        <div v-if="audition.status == 2" class="w-full border border-gray-300 mt-6 mb-6" />
         <div
-          v-if="!roundActive.status"
+          v-if="audition.status == 2"
           class="flex w-full content-center text-center justify-center flex-wrap cursor-pointer"
           @click="emmitFinalCast()"
         >
