@@ -508,7 +508,8 @@ export default {
           "url":url,
           "appointment_id":this.$route.params.round,
           "performer":this.$route.params.id,
-          "slot_id":this.slot
+          "slot_id":this.slot,
+          "name": this.file.name || time()+".mp4"
         };
         let files = await axios.post('/t/auditions/video/save', audition_record);
         this.$toasted.success('Audition record saved');

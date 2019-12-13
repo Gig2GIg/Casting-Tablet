@@ -480,7 +480,11 @@ export default {
       // this.videoSection = true;
     },
     async auditionDeleteVideo(id) {
-      await this.deleteVideo(id);
+      let sendDataToAPI = {
+        id:id,
+        audition_id: this.audition.id
+      };
+      await this.deleteVideo(sendDataToAPI);
       await this.getVideosListByRound(this.audition);
       this.info = false;
       this.manage = false;
