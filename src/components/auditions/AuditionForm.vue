@@ -720,7 +720,7 @@
                     filesSnaphosts = [];
 
                 try {
-                    if (this.isLoading || !(await this.$validator.validateAll("create"))) {
+                    if (this.isLoading) {
                         return;
                     }
 
