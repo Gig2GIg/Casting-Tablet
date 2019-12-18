@@ -39,7 +39,7 @@
             </base-button>
           </div>
       </div>
-      <img :src="'/images/icons/Path_31@3x.png'" class="h-6  ml-auto mr-5" alt="star" @click="invitation.adding = invitation.adding == true?false:true">
+      <img :src="'/images/icons/Path_31@3x_1.png'" class="h-6  ml-auto mr-5" alt="star" @click="invitation.adding = invitation.adding == true?false:true">
       </div>
     <div class="flex items-center border-l border-white text-white ml-auto cursor-pointer">
       <span class="mx-4">
@@ -55,7 +55,7 @@
       >
     </div>
   </nav>
-</template> 
+</template>
 <script>
 import { mapActions, mapState, mapGetters } from 'vuex';
 import axios from 'axios';

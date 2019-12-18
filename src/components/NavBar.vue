@@ -2,7 +2,7 @@
   <nav class="flex items-center h-12">
     <div class="flex items-center border-l border-white text-white ml-auto cursor-pointer">
       <span class="mx-4">
-        {{user.details?user.details.first_name + ' ' +  user.details.last_name:""}}
+        {{ user.details?user.details.first_name + ' ' + user.details.last_name:"" }}
       </span>
       <!-- <i class="material-icons mr-4">
         keyboard_arrow_down
@@ -16,14 +16,14 @@
   </nav>
 </template>
 <script>
-import { mapActions, mapState, mapGetters } from 'vuex';
+import { mapActions, mapState } from 'vuex';
 import TokenService from '../services/core/TokenService';
 
 export default {
   data() {
     return {
       isLoading: true,
-      userId:'',
+      userId: '',
     };
   },
   computed: {
@@ -33,8 +33,8 @@ export default {
   async created() {
     this.fetch();
   },
-  async mounted(){
-    this.userId = TokenService.getUserId()
+  async mounted() {
+    this.userId = TokenService.getUserId();
   },
   methods: {
     ...mapActions('audition', ['fetchUpcoming', 'fetchPassed']),
