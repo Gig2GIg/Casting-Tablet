@@ -21,7 +21,7 @@
               </div>
             </div>
           </div>
-          
+
           <div class="font-bold text-sm mb-2 py-2">Gender</div>
           <div class="tags w-2/5">
             <div class="flex">
@@ -105,7 +105,7 @@ export default {
   },
   props: {
       search: [String],
-      reload: [Number],  
+      reload: [Number],
   },
   computed: {
     ...mapState('talentDatabase', ['talentList']),
