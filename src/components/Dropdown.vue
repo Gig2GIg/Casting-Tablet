@@ -47,7 +47,7 @@ import axios from 'axios';
             selected: {},
             placeholder: [String],
             state:[Number],
-            online:[Boolean],
+            online:[Number],
             audition:[Number],
             closeOnOutsideClick: {
               type: [Boolean],
@@ -144,7 +144,7 @@ import axios from 'axios';
                   this.$toasted.error(e);
                 }
               }
-              
+
             },
 
             toggleMenu() {

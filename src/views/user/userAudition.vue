@@ -44,7 +44,7 @@
                 :custom-classes="['border-2', 'border-purple']"
                 @input="filterMarketplaces"
               />
-          </div>    
+          </div>
         </div>
         <div class="m-4 cursor-pointer">
           <div v-for="data in marketplace" :key="data.id" :class="{'bg-purple': currentMarketplace.id == data.id}" class="flex flex-wrap justify-center text-left content-center w-full rounded-sm border-b-2 border-gray-500 mb-4" @click="selectMarketplace(data)">
@@ -71,7 +71,7 @@
             <div v-for="data in audition.roles" :key="data.id" class="text-center w-1/2 flex justify-center">
               <div>
                 <div class="m-3 rounded-full flex items-center w-12 h-12 bg-cover" :class="{'button-detail': data.id == rol, 'bg-gray-400': data.id != rol}" :style="{ backgroundImage: 'url(' + data.image.url + ')' }">
-                  
+
                 </div>
                 <p class="text-purple text-xs justify-center w-16 font-bold tracking-tighter flex-1 ">
                   {{ data.name }}
@@ -175,14 +175,14 @@
             <div>
               <div class="rounded-full flex flex-wrap justify-center content-center w-full h-12 mt-40">
                 <div class="flex flex-wrap justify-center w-full">
-                  <figure :class="{'border-2 border-purple': emoji==5}" class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg mt-3" @click="emoji=5">
+                  <figure :class="{'border-2 border-purple': emoji==1}" class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg mt-3" @click="emoji=1">
                     <img
                       :src="'/images/icons/5.png'"
                       alt="Icon"
                       class="content-center h-8"
                     >
                   </figure>
-                  <figure :class="{'border-2 border-purple': emoji==4}" class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg mt-3" @click="emoji=4">
+                  <figure :class="{'border-2 border-purple': emoji==2}" class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg mt-3" @click="emoji=2">
                     <img
                       :src="'/images/icons/4.png'"
                       alt="Icon"
@@ -197,23 +197,23 @@
                       class="content-center h-8"
                     >
                   </figure>
-                  
-                  <figure :class="{'border-2 border-purple': emoji==2}" class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg mt-3" @click="emoji=2">
+
+                  <figure :class="{'border-2 border-purple': emoji==4}" class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg mt-3" @click="emoji=4">
                     <img
                       :src="'/images/icons/2.png'"
                       alt="Icon"
                       class="content-center h-8"
                     >
                   </figure>
-                  
-                  <figure :class="{'border-2 border-purple': emoji==1}" class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg mt-3" @click="emoji=1">
+
+                  <figure :class="{'border-2 border-purple': emoji==5}" class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg mt-3" @click="emoji=5">
                     <img
                       :src="'/images/icons/1.png'"
                       alt="Icon"
                       class="content-center h-8"
                     >
                   </figure>
-                  
+
                 </div>
                 <div class="flex flex-wrap justify-center content-center w-full">
                   <p class="text-purple justify-center w-16 font-bold tracking-tighter flex-1 w-full text-xl font-bold tracking-wider">
@@ -230,9 +230,9 @@
                       </div>
                     </div>
                     <div class="container flex w-1/2 mt-3">
-                      <div class="flex w-full text-center justify-center flex-wrap" @click="callback = 2">
-                        <div :class="{'button-detail': callback == 2}" class="m-3 content-center rounded-full border border-purple bg-white w-32 h-10 flex items-center">
-                          <p :class="{'text-white': callback == 2, 'text-purple': callback != 2}" class=" text-sm font-bold content-center tracking-tighter flex-1">
+                      <div class="flex w-full text-center justify-center flex-wrap" @click="callback = 0">
+                        <div :class="{'button-detail': callback == 0}" class="m-3 content-center rounded-full border border-purple bg-white w-32 h-10 flex items-center">
+                          <p :class="{'text-white': callback == 0, 'text-purple': callback != 0}" class=" text-sm font-bold content-center tracking-tighter flex-1">
                             No
                           </p>
                         </div>
@@ -327,7 +327,7 @@
                 :custom-classes="['border-2', 'border-purple']"
                 @input="filterMarketplaces"
               />
-          </div>    
+          </div>
         </div>
         <div class="m-4">
           <div v-for="data in recommendations" :key="data.id" class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
@@ -339,7 +339,7 @@
         </div>
       </div>
     </div>
-  </div>    
+  </div>
   </div>
   <multipane-resizer class="mt-96 bg-purple h-20"></multipane-resizer>
   <div class="pane relative" :style="{ flexGrow: 1 }">
@@ -460,20 +460,19 @@ export default {
     await this.fetchTags({"round": this.$route.params.round, "user": this.$route.params.id,});
     await this.fetchRecommendation({"round": this.$route.params.audition, "user": this.$route.params.id,});
     await this.fetchOnlineMedia({"round": this.$route.params.round, "user": this.$route.params.id,});
-    let feedback = { 
+    let feedback = {
       user:this.$route.params.id,
       round:this.$route.params.round
     };
-
     await this.fetchUserFeedback(feedback);
     let test = Object.keys(this.feedback).length;
     if(Object.keys(this.feedback).length>0){
       for(data in this.feedback){
-        this.workon = this.feedback[data].work == 'vocals' ? 1 :this.feedback[data].work == 'acting' ? 2 : 3;
-        this.favorite = this.feedback[data].favorite;
-        this.emoji = this.feedback[data].evaluation
-        this.callback = this.feedback[data].callback == 1 ?true:false;
-        this.form.comment = this.feedback[data].comment;
+        this.workon = this.feedback.work == 'vocals' ? 1 :this.feedback.work == 'acting' ? 2 : 3;
+        this.favorite = this.feedback.favorite;
+        this.emoji = this.feedback.evaluation;
+        this.callback = this.feedback.callback == 1 ?true:false;
+        this.form.comment = this.feedback.comment;
       }
     }
 
@@ -509,7 +508,8 @@ export default {
           "url":url,
           "appointment_id":this.$route.params.round,
           "performer":this.$route.params.id,
-          "slot_id":this.slot
+          "slot_id":this.slot,
+          "name": this.file.name || time()+".mp4"
         };
         let files = await axios.post('/t/auditions/video/save', audition_record);
         this.$toasted.success('Audition record saved');
@@ -527,7 +527,7 @@ export default {
       this.form.slot_id = this.slot;
       this.form.evaluator = this.profile.details.id;
       let data = {"appointment_id": this.$route.params.round, "performer": this.$route.params.id}
-      
+
       if(Object.keys(this.feedback).length==0){
         let status = await axios.post('/t/feedbacks/add', this.form);
         this.$toasted.success('Feedback Created');
@@ -545,7 +545,7 @@ export default {
 
       this.form.file = file;
       this.file.name = file.name;
-      
+
       // this.preview = URL.createObjectURL(file);
     },
     asignEvents(){
@@ -553,7 +553,7 @@ export default {
         this.calendar.map(function(value) {
           let splitInitDate = value.start_date.split("-");
           let splitFinalDate = value.end_date.split("-");
-          finalList.push({ 
+          finalList.push({
               start: new Date(splitInitDate[0], splitInitDate[1] - 1, splitInitDate[2]),
               end: new Date(splitFinalDate[0], splitFinalDate[1] - 1, splitFinalDate[2])
           });
@@ -577,7 +577,7 @@ export default {
           "appointment_id": this.$route.params.round,
           "user_id": this.$route.params.id,
         }
-        
+
         if( await this.storeTag(data))
           this.$toasted.success('Tag created successfully');
           await this.fetchTags({"round": this.$route.params.round, "user": this.$route.params.id,})
@@ -586,7 +586,7 @@ export default {
           this.$toasted.error('Tag not created, try later');
         }
          this.tag = '';
-      }, 
+      },
       async setRecommendations(){
         if(this.recommendation !== '' && this.currentMarketplace!==''){
           let data ={
@@ -616,7 +616,7 @@ export default {
         this.currentMarketplace = '';
         this.recommendation = '';
       },
-      
+
       async deleteTag(item){
           try{
             await this.delete(item);
@@ -638,7 +638,7 @@ export default {
           }
       },
 
-      
+
       show () {
         this.$modal.show('marketplace');
       },

@@ -9,13 +9,19 @@
     </div>
 
     <div class="flex flex-col h-full rounded-lg shadow-md overflow-hidden">
+<!--      <button-->
+<!--        v-if="state == 'upcoming'"-->
+<!--        class="absolute top-0 right-0 rounded-b-lg shadow-xl mb-0 w-32 text-sm bg-white text-white overflow-hidden my-2 p-3 text-lg focus:outline-none text-purple"-->
+<!--        :class="[borderClasses, { 'w-full': expanded }]"-->
+<!--        v-bind="$attrs"-->
+<!--        :type="type"-->
+<!--        @click="$emit('click', $event)"-->
+<!--      >-->
       <button
-        v-if="state == 'upcoming'"
-        class="absolute top-0 right-0 rounded-b-lg shadow-xl mb-0 w-32 text-sm bg-white text-white overflow-hidden my-2 p-3 text-lg focus:outline-none text-purple"
-        :class="[borderClasses, { 'w-full': expanded }]"
-        v-bind="$attrs"
-        :type="type"
-        @click="$emit('click', $event)"
+              v-if="state == 'upcoming'"
+              class="absolute top-0 right-0 rounded-b-lg shadow-xl mb-0 w-32 text-sm bg-white text-white overflow-hidden my-2 p-3 text-lg focus:outline-none text-purple"
+              v-bind="$attrs"
+              @click="$emit('click', $event)"
       >
         {{contributor == true ?'Contributor':'Manager'}}
       </button>

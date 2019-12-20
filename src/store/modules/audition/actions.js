@@ -90,9 +90,9 @@ export default {
     }
   },
 
-  async deleteVideo({ commit }, id) {
+  async deleteVideo({ commit }, params) {
     try {
-      const { data: { data } } = await axios.delete(`/t/auditions/video/delete/${id}`);
+      const { data: { data } } = await axios.delete(`/t/auditions/video/delete/${params.id}/${params.audition_id}`);
       // console.log(data);
 
       commit(types.VIDEO_DELETE_SUCCESS, data);

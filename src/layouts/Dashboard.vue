@@ -9,3 +9,24 @@
     </div>
   </div>
 </template>
+<script>
+  import { mapActions, mapState, mapGetters } from "vuex";
+  export default {
+    data() {
+      return {
+        search: '',
+        reload: 0,
+      };
+    },
+    computed:{},
+    mounted(){},
+    methods: {
+      sendDataToChild(data){
+        this.search = data;
+      },
+      reloadData(data){
+        this.reload = data;
+      },
+    },
+  };
+</script>

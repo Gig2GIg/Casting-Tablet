@@ -46,7 +46,7 @@
           <div class="w-full text-center">
             <h1
               class="font-bold text-l text-left ml-20 tracking-wide purple-light"
-            >{{ audition.apointment.slots.length }} Apointments</h1>
+            >{{ audition.apointment?audition.apointment.slots.length:0 }} Apointments</h1>
           </div>
         </div>
 
@@ -56,12 +56,12 @@
             <div class="m-1 content-center rounded-full purple-back w-16 h-10 flex items-center">
               <p
                 class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide"
-              >{{audition.union.toUpperCase()}}</p>
+              >{{audition.union?audition.union.toUpperCase():""}}</p>
             </div>
             <div class="m-1 content-center rounded-full yellow-light w-16 h-10 flex items-center">
               <p
                 class="text-white text-xs font-bold content-center tracking-tighter flex-1 wide"
-              >{{audition.contract.toUpperCase()}}</p>
+              >{{audition.contract?audition.contract.toUpperCase():""}}</p>
             </div>
             <div
               v-for="data in audition.production"
@@ -211,7 +211,7 @@
         />
         <router-link
           v-if="roundActive.status != 0 && audition.status == 1 && roundActive.status > 0 && audition.online == 0"
-          :to="{ name: 'auditions/checkin', params: {id: roundActive.id } }"
+          :to="{ name: 'auditions/checkin', params: {id: roundActive.id, title:audition.title, startTime: roundActive.time, auditionId:audition.id } }"
         >
           <div
             class="flex w-full content-center text-center justify-center flex-wrap cursor-pointer"
@@ -287,9 +287,9 @@
             >Auditions video</p>
           </div>
         </div>
-        <div v-if="!roundActive.status" class="w-full border border-gray-300 mt-6 mb-6" />
+        <div v-if="audition.status == 2" class="w-full border border-gray-300 mt-6 mb-6" />
         <div
-          v-if="!roundActive.status"
+          v-if="audition.status == 2"
           class="flex w-full content-center text-center justify-center flex-wrap cursor-pointer"
           @click="emmitFinalCast()"
         >
@@ -349,7 +349,7 @@
                   <div
                     class="flex h-100 content-center items-center relative w-full h-full bg-white mp-box"
                   >
-                    <span class="text-center text-purple font-bold w-full">{{ data.name }}</span>
+                    <span class="text-center cus-spn-cls text-purple font-bold w-full">{{ data.name }}</span>
                     <ul id="navigation">
                       <li>
                         <!-- <a href="#" :class="{ active }" @click="isOpen = !isOpen, active = !active"> -->
@@ -365,7 +365,7 @@
                           />
                         </a>
                         <!-- <div class="dropdown submanu" :class="{ isOpen }"> -->
-                        <div class="dropdown submanu" v-bind:class="{ 'isOpen' : openId==data.id}">
+                        <div class="dropdown cus-dropdown submanu" v-bind:class="{ 'isOpen' : openId==data.id}">
                           <ul class="submanu-content">
                             <li>
                               <a :href="data.url" title="Share" target="_blank">Share</a>
@@ -434,6 +434,7 @@ export default {
   },
   async beforeMount() {
     await this.fetchAuditionData(this.$route.params.id);
+    localStorage.setItem("audition_online_status",this.audition.online)
     this.$emit("statusSet", this.audition.status);
   },
   methods: {
@@ -480,7 +481,11 @@ export default {
       // this.videoSection = true;
     },
     async auditionDeleteVideo(id) {
-      await this.deleteVideo(id);
+      let sendDataToAPI = {
+        id:id,
+        audition_id: this.audition.id
+      };
+      await this.deleteVideo(sendDataToAPI);
       await this.getVideosListByRound(this.audition);
       this.info = false;
       this.manage = false;
@@ -574,9 +579,24 @@ ul#navigation {
   margin-top: 0.55em;
   border-radius: 0.35em;
   background-color: rgba(33, 37, 41, 0.15);
+  /*visibility: hidden;
+  opacity: 0;*/
+}
+
+.cus-dropdown {
+  position: absolute;
+  left: 50%;
+  margin-top: 0.55em;
+  border-radius: 0.35em;
+  background-color: rgba(33, 37, 41, 0.15);
   visibility: hidden;
   opacity: 0;
 }
+
+.cus-spn-cls{
+  margin-left: 10px;
+}
+
 .dropdown.isOpen {
   visibility: visible;
   opacity: 1;
@@ -665,10 +685,10 @@ ul.submanu-content > li > a {
   margin-bottom: 10px !important;
 }
 .mp-box > span {
-    text-overflow: ellipsis !important;
-    white-space: nowrap !important;
-    overflow: hidden;
-    width: 170px !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  overflow: hidden;
+  width: 170px !important;
 }
 </style>
 

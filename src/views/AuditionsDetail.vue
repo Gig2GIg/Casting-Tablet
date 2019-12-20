@@ -22,7 +22,7 @@
             <transition-group  class="flex flex-wrap justify-center content-center" type="transition" :name="!drag ? 'flip-list' : null">
               <div
                 class="list-group-item"
-                v-for="data in userList"
+                v-for="(data, index) in userList"
                 :key="data.user_id"
               >
                   <router-link :to="{ name: 'auditions/user', params: {id: data.user_id, round: round.id, audition:$route.params.id} }">
@@ -32,6 +32,15 @@
                     :image="data.image"
                   />
                   </router-link>
+                <div>
+                  <input
+                          type="checkbox"
+                          class="flex items-center justify-between text-purple rounded-full overflow-hidden w-full pl-6 cursor-pointer select-none"
+                          :id="'user_' + data.user_id"
+                          :value="data.user_id"
+                          v-model="checkedNames"
+                  >
+                </div>
               </div>
             </transition-group>
           </draggable>
@@ -77,9 +86,12 @@
 import { mapActions, mapState, mapGetters } from 'vuex';
 import AuditionService from '@/services/AuditionService';
 import draggable from 'vuedraggable'
+import BaseButton from "../components/BaseButton";
 let idGlobal = 8;
+
 export default {
   components: {
+    BaseButton,
       draggable,
   },
   data() {
@@ -92,6 +104,7 @@ export default {
       drag: false,
       finalCastState: false,
       finalCastFilter:[],
+      checkedNames:[],
       list1: [
         { name: "John", id: 1 },
         { name: "Joao", id: 2 },
@@ -118,7 +131,7 @@ export default {
     }
   },
   async mounted() {
-      
+
   },
   methods: {
     ...mapActions('audition', ['fetchUserList', 'fetchFinalCastList', 'removePerformer', 'addPerformer']),
