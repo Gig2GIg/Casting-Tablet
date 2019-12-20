@@ -32,25 +32,15 @@
                     :image="data.image"
                   />
                   </router-link>
-                <!--<div>
-                  <base-checkbox
+                <div>
+                  <input
+                          type="checkbox"
+                          class="flex items-center justify-between text-purple rounded-full overflow-hidden w-full pl-6 cursor-pointer select-none"
                           :id="'user_' + data.user_id"
-                          class="px-1"
-                          v-model="data.user_id"
-                          :custom-classes="['border', 'border-purple']"
-                          :name="'title-'+index"
                           :value="data.user_id"
+                          v-model="checkedNames"
                   >
-                  </base-checkbox>
                 </div>
-                <base-button
-                        type="button"
-                        class="mt-6"
-                        expanded
-                        @click="createGrpBtn"
-                >
-                  Create Group
-                </base-button>-->
               </div>
             </transition-group>
           </draggable>
@@ -98,6 +88,7 @@ import AuditionService from '@/services/AuditionService';
 import draggable from 'vuedraggable'
 import BaseButton from "../components/BaseButton";
 let idGlobal = 8;
+
 export default {
   components: {
     BaseButton,
@@ -113,7 +104,7 @@ export default {
       drag: false,
       finalCastState: false,
       finalCastFilter:[],
-      online:false,
+      checkedNames:[],
       list1: [
         { name: "John", id: 1 },
         { name: "Joao", id: 2 },
@@ -255,9 +246,6 @@ export default {
     },
     log: function(evt) {
       window.console.log(evt);
-    },
-    createGrpBtn(){
-
     }
   },
 };

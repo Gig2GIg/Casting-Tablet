@@ -434,6 +434,7 @@ export default {
   },
   async beforeMount() {
     await this.fetchAuditionData(this.$route.params.id);
+    localStorage.setItem("audition_online_status",this.audition.online)
     this.$emit("statusSet", this.audition.status);
   },
   methods: {
