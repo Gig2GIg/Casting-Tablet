@@ -1,8 +1,7 @@
 <template>
   <nav class="flex items-center h-12">
     <div class="text-white" style="margin-left: 80%">
-      {{enableNewGrpBtn}}===
-      <button v-if="enableNewGrpBtn == true">New Group</button>
+      <button @click="clickNewGrpBtn" v-if="enableNewGrpBtn == true">New Group</button>
     </div>
     <div class="flex items-center border-l border-white text-white ml-auto cursor-pointer">
       <span class="mx-4">
@@ -32,26 +31,22 @@ export default {
     };
   },
   computed: {
-    defaultLayout() {
-      let audition_online_status = localStorage.getItem("audition_online_status");
-      if(audition_online_status == 0){
-        return this.enableNewGrpBtn = true;
-      }else{
-        return this.enableNewGrpBtn = false;
-      }
-    },
     ...mapState('audition', ['auditions', 'upcoming', 'passed']),
     ...mapState('profile', ['user']),
   },
   async created() {
     this.fetch();
   },
-  async beforeMount() {
-    let audition_online_status = localStorage.getItem("audition_online_status");
-    if(audition_online_status == 0){
-      this.enableNewGrpBtn = true;
-    }else{
-      this.enableNewGrpBtn = false;
+  watch:{
+    $route (to, from){
+      setTimeout(()=>{
+        let audition_online_status = localStorage.getItem("audition_online_status");
+        if(to.name == "auditions/detail" && audition_online_status == 0){
+          this.enableNewGrpBtn = true;
+        }else{
+          this.enableNewGrpBtn = false;
+        }
+      },2000)
     }
   },
   async mounted() {
@@ -60,6 +55,9 @@ export default {
   methods: {
     ...mapActions('audition', ['fetchUpcoming', 'fetchPassed']),
     ...mapActions('profile', ['fetch']),
+    clickNewGrpBtn(){
+      alert("NEW GROUP BTN");
+    }
   },
 };
 </script>

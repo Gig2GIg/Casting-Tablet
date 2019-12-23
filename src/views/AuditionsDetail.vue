@@ -32,7 +32,13 @@
                     :image="data.image"
                   />
                   </router-link>
-                <div>
+                <div @click="approveBtn(data.user_id)" class="m-1 content-center rounded-full grren-back h-10 flex items-center">
+                  <button class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide" type="button">1</button>
+                </div>
+                <div @click="rejectBtn" class="m-1 content-center rounded-full red-back h-10 flex items-center">
+                  <button class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide" type="button">2</button>
+                </div>
+                <!--<div>
                   <input
                           type="checkbox"
                           class="flex items-center justify-between text-purple rounded-full overflow-hidden w-full pl-6 cursor-pointer select-none"
@@ -40,10 +46,35 @@
                           :value="data.user_id"
                           v-model="checkedNames"
                   >
-                </div>
+                </div>-->
               </div>
             </transition-group>
           </draggable>
+          <modal :width="500" height="380" :adaptive="true" name="showApproveMdl">
+            <button @click="$modal.hide('showApproveMdl')">
+              <i class="material-icons" style="font-size: 35px;color: black;">clear</i>
+            </button>
+            <form @submit.prevent="handleApprMdlFrm()">
+            <h2 style="text-align: center;" class="text-purple">Instant Feedback</h2>
+            <h2 class="text-purple">Send a Message</h2>
+            <base-input
+                    type="textarea"
+                    v-model="comment"
+                    placeholder="Add a brief message"
+                    class="px-2 py-2 w-2/3"
+                    :custom-classes="['border', 'border-purple', 'mt-0']"
+            />
+            <h2>Recommend an Audition</h2>
+<!--            <base-input-->
+<!--                    type="text"-->
+<!--                    placeholder="Search Auditions"-->
+<!--                    class="px-2 py-2 w-2/3"-->
+<!--                    :custom-classes="['border', 'border-purple', 'mt-0']"-->
+<!--            />-->
+              <v-select label="title" v-model="selectedAudition" :options="options" @search="fetchOptions"/>
+              <base-button type="submit" expanded>Submit</base-button>
+            </form>
+          </modal>
         </div>
       </div>
     </div>
@@ -83,11 +114,17 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import { mapActions, mapState, mapGetters } from 'vuex';
 import AuditionService from '@/services/AuditionService';
 import draggable from 'vuedraggable'
 import BaseButton from "../components/BaseButton";
+import axios from "axios";
+import TokenService from "../services/core/TokenService";
 let idGlobal = 8;
+import vSelect from 'vue-select';
+Vue.component('v-select', vSelect);
+import _ from 'lodash';
 
 export default {
   components: {
@@ -115,7 +152,12 @@ export default {
         { name: "Juan", id: 5 },
         { name: "Edgard", id: 6 },
         { name: "Johnson", id: 7 }
-      ]
+      ],
+      userId: '',
+      performer_id:'',
+      comment:'',
+      options: [],
+      selectedAudition: null
     };
   },
   computed: {
@@ -131,11 +173,56 @@ export default {
     }
   },
   async mounted() {
-
+    this.userId = TokenService.getUserId();
   },
   methods: {
     ...mapActions('audition', ['fetchUserList', 'fetchFinalCastList', 'removePerformer', 'addPerformer']),
     ...mapActions('round', ['fetch']),
+    rejectBtn(){
+      alert("Rejected");
+    },
+    approveBtn(performer_id){
+      this.performer_id = performer_id;
+      this.$modal.show("showApproveMdl");
+    },
+    fetchOptions (search, loading) {
+      loading(true);
+      this.search(loading, search, this);
+    },
+    search: _.debounce(async (loading, search, vm) => {
+      loading(false);
+      if(search.trim().length == 3){
+        let { data: { data } } = await axios.get(`t/auditions/find_by_title?value=${search}`);
+        vm.options = data;
+      }
+    }),
+    async handleApprMdlFrm(){
+      try {
+        let data = {
+          "appointment_id": this.round.id,
+          "user":this.performer_id,
+          "evaluator":this.userId,
+          "comment":this.comment,
+          "accepted":1
+        };
+        if(this.selectedAudition){
+          data.suggested_appointment_id = this.selectedAudition.id
+        }
+        let res = await axios.post(`/t/instantfeedbacks/add`, data);
+        this.$toasted.success(res.data.data);
+        this.$modal.hide("showApproveMdl");
+        this.comment = "";
+        this.selectedAudition = null;
+        this.options = [];
+      } catch (ex) {
+        console.log(ex);
+        this.$toasted.error(ex.response.data.data);
+        this.$modal.hide("showApproveMdl");
+        this.comment = "";
+        this.selectedAudition = null;
+        this.options = [];
+      }
+    },
     async chargeUsers(value){
       this.round = value;
       await this.fetchUserList(value.id);
@@ -272,5 +359,11 @@ export default {
 }
 .list-group-item i {
   cursor: pointer;
+}
+.grren-back{
+  background-color: #159359;
+}
+.red-back{
+  background-color: #93163E;
 }
 </style>
