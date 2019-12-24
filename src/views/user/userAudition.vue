@@ -345,6 +345,28 @@
   <div class="pane relative" :style="{ flexGrow: 1 }">
     <div class="absolute" v-for="data in currentUser" :key="data.id">
       <div class="flex flex-wrap content-center justify-center text-center">
+        <div class="w-1/2 mx-auto py-2">
+          <base-input
+                  v-if="!isAssignedNumber"
+                  v-model="addNumberText"
+                  name="tag"
+                  class="w-full py-2"
+                  type="add"
+                  placeholder="Add Number"
+                  :custom-classes="['border-2', 'border-purple']"
+                  @added="addNumber"
+          />
+          <base-input
+                  v-else
+                  v-model="getAssignNumber"
+                  name="tag"
+                  class="w-full py-2"
+                  type="text"
+                  readonly="true"
+                  placeholder="Add Number"
+                  :custom-classes="['border-2', 'border-purple']"
+          />
+        </div>
       <img
         :src="data.image"
         alt="Icon"
@@ -446,6 +468,8 @@ export default {
         bar: true,
         color: 'red'
       },
+      addNumberText: "",
+      isAssignedNumber:false
     };
   },
   computed: {
@@ -453,6 +477,9 @@ export default {
     ...mapState('user', ['user']),
     ...mapState('feedback', ['feedback', 'tags', 'marketplace', 'recommendations']),
     ...mapState('profile', {profile:'user', calendar:'calendar', contract:'contract'}),
+    getAssignNumber : function() {
+      return this.addNumberText.toString();
+    }
   },
   async mounted() {
     await this.fetchAuditionData(this.$route.params.audition);
@@ -475,8 +502,12 @@ export default {
         this.form.comment = this.feedback.comment;
       }
     }
-
-
+      // Get Assigend Number
+      let getPerformerDetails = await axios.get(`/t/auditions/profile/user/${this.$route.params.id}/appointment/${this.$route.params.round}`);
+      if(getPerformerDetails.data.data.assign_number){
+        this.addNumberText = getPerformerDetails.data.data.assign_number;
+        this.isAssignedNumber = true;
+      }
     this.currentUser = this.userList.filter(userList => userList.user_id == this.$route.params.id);
     if(this.currentUser != ""){
       this.slot = this.currentUser[0].slot_id;
@@ -495,6 +526,38 @@ export default {
     ...mapActions('feedback', ['fetchUserFeedback', 'storeTag', 'storeRecommendation', 'fetchTags', 'fetchRecommendation', 'delete', 'searchMarketplace', 'setRecommendations', 'deleteRecommendation']),
     goToday() {
       this.$refs.calendar.goToday()
+    },
+    async addNumber() {
+      try {
+        if (this.isLoading) {
+          return;
+        }
+        this.$toasted.clear();
+        if (!this.addNumberText) {
+          this.$toasted.error("The field number is required.");
+          return;
+        } else if(isNaN(this.addNumberText)){
+          this.$toasted.error("Please enter valid number.");
+          return;
+        }
+
+        this.isLoading = true;
+        let appointmentId = this.$route.params.round;
+        await axios.post(`/assignNumber`, {
+          user_id: this.$route.params.id,
+          appointment_id: appointmentId,
+          assign_no: this.addNumberText
+        });
+        this.isShowAddNoField = false;
+        this.isAssignedNumber = true;
+        this.$toasted.success("Number assigned successfully.");
+      } catch (error) {
+        console.log(error);
+        this.isAssignedNumber = false;
+        this.$toasted.error(error.response.data.message);
+      } finally {
+        this.isLoading = false;
+      }
     },
     async saveFeedback(){
       try{

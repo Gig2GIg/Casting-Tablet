@@ -35,7 +35,7 @@
                 <div @click="approveBtn(data.user_id)" class="m-1 content-center rounded-full grren-back h-10 flex items-center">
                   <button class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide" type="button">1</button>
                 </div>
-                <div @click="rejectBtn" class="m-1 content-center rounded-full red-back h-10 flex items-center">
+                <div @click="rejectBtn(data.user_id)" class="m-1 content-center rounded-full red-back h-10 flex items-center">
                   <button class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide" type="button">2</button>
                 </div>
                 <!--<div>
@@ -54,7 +54,7 @@
             <button @click="$modal.hide('showApproveMdl')">
               <i class="material-icons" style="font-size: 35px;color: black;">clear</i>
             </button>
-            <form @submit.prevent="handleApprMdlFrm()">
+            <form @submit.prevent="handleApprMdlFrm('approved')">
             <h2 style="text-align: center;" class="text-purple">Instant Feedback</h2>
             <h2 class="text-purple">Send a Message</h2>
             <base-input
@@ -73,6 +73,25 @@
 <!--            />-->
               <v-select label="title" v-model="selectedAudition" :options="options" @search="fetchOptions"/>
               <base-button type="submit" expanded>Submit</base-button>
+            </form>
+          </modal>
+          <modal :width="500" height="380" :adaptive="true" name="showRejectMdl">
+            <button @click="$modal.hide('showRejectMdl')">
+              <i class="material-icons" style="font-size: 35px;color: black;">clear</i>
+            </button>
+            <form @submit.prevent="handleApprMdlFrm('rejected')">
+              <h2 style="text-align: center;" class="text-purple">Instant Feedback</h2>
+              <h2 class="text-purple">Performers who have been hidden will receive the message:</h2>
+              <base-input
+                type="text"
+                v-model="feedbackText"
+                readonly
+                class="w-full px-2"
+                :custom-classes="['border', 'border-purple']"
+              />
+              <h2>To change feedback go to Instant Feedback in Settings.</h2>
+              <base-button type="submit" expanded>Done</base-button>
+              <a href="#">Don’t show me this again</a>
             </form>
           </modal>
         </div>
@@ -125,9 +144,11 @@ let idGlobal = 8;
 import vSelect from 'vue-select';
 Vue.component('v-select', vSelect);
 import _ from 'lodash';
+import BaseInput from "../components/BaseInput";
 
 export default {
   components: {
+    BaseInput,
     BaseButton,
       draggable,
   },
@@ -157,7 +178,8 @@ export default {
       performer_id:'',
       comment:'',
       options: [],
-      selectedAudition: null
+      selectedAudition: null,
+      feedbackText:""
     };
   },
   computed: {
@@ -178,8 +200,11 @@ export default {
   methods: {
     ...mapActions('audition', ['fetchUserList', 'fetchFinalCastList', 'removePerformer', 'addPerformer']),
     ...mapActions('round', ['fetch']),
-    rejectBtn(){
-      alert("Rejected");
+    async rejectBtn(performer_id){
+      this.performer_id = performer_id;
+      let { data: { data } } = await axios.get(`t/instantfeedbacks/defaultFeedback/${this.userId}`);
+      this.feedbackText = data.comment ? data.comment : "Default Feedback Text";
+      this.$modal.show("showRejectMdl");
     },
     approveBtn(performer_id){
       this.performer_id = performer_id;
@@ -196,14 +221,14 @@ export default {
         vm.options = data;
       }
     }),
-    async handleApprMdlFrm(){
+    async handleApprMdlFrm(type){
       try {
         let data = {
           "appointment_id": this.round.id,
           "user":this.performer_id,
           "evaluator":this.userId,
-          "comment":this.comment,
-          "accepted":1
+          "comment":type === "approved" ? this.comment : this.feedbackText,
+          "accepted": type === "approved" ? 1 : 0
         };
         if(this.selectedAudition){
           data.suggested_appointment_id = this.selectedAudition.id
@@ -211,6 +236,7 @@ export default {
         let res = await axios.post(`/t/instantfeedbacks/add`, data);
         this.$toasted.success(res.data.data);
         this.$modal.hide("showApproveMdl");
+        this.$modal.hide("showRejectMdl");
         this.comment = "";
         this.selectedAudition = null;
         this.options = [];
@@ -218,6 +244,7 @@ export default {
         console.log(ex);
         this.$toasted.error(ex.response.data.data);
         this.$modal.hide("showApproveMdl");
+        this.$modal.hide("showRejectMdl");
         this.comment = "";
         this.selectedAudition = null;
         this.options = [];

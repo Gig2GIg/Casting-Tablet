@@ -84,6 +84,33 @@
           </div>
         </div>
         <div
+          class="py-2 flex flex-wrap px-4 border-b-2 border-gray-300   mr-2 cursor-pointer "
+          @click="tabSelected = 'instantFeedback'; hideMenuInfo = true"
+        >
+          <div class="w-10/12">
+            <p class="font-bold">
+              Instant Feedback
+            </p>
+          </div>
+          <div class="w-2/12">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="10.926"
+              height="19.213"
+            >
+              <g data-name="Grupo 1912">
+                <g data-name="Grupo 38">
+                  <path
+                    data-name="Trazado 24"
+                    d="M7.804 9.606L.373 17.037a1.275 1.275 0 101.8 1.8l8.053-8.05a1.26 1.26 0 00.328-.231 1.267 1.267 0 00.372-.95 1.267 1.267 0 00-.369-.95 1.259 1.259 0 00-.328-.231L2.175.373a1.275 1.275 0 00-1.8 1.8z"
+                    fill="#4d2545"
+                  />
+                </g>
+              </g>
+            </svg>
+          </div>
+        </div>
+        <div
           class="mt-4 flex flex-wrap py-2 px-4 border-b-2 border-gray-300 mr-2 cursor-pointer font-bold"
           @click="tabSelected = 'marketplace'; hideMenuInfo = true"
         >
@@ -593,6 +620,69 @@
       </div>
 
       <div
+        v-if="tabSelected === 'instantFeedback'"
+        class="tags w-9/12 shadow-md mx-auto px-3 py-3 mt-6"
+      >
+        <div
+          class="cursor-pointer"
+          @click="hideMenuInfo = false, tabSelected = ''"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="30.049"
+            height="39.187"
+          >
+            <defs>
+              <filter
+                id="a"
+                x="0"
+                y="0"
+                width="30.049"
+                height="39.187"
+                filterUnits="userSpaceOnUse"
+              >
+                <feOffset dy="3" />
+                <feGaussianBlur
+                  stdDeviation="3"
+                  result="blur"
+                />
+                <feFlood flood-opacity=".161" />
+                <feComposite
+                  operator="in"
+                  in2="blur"
+                />
+                <feComposite in="SourceGraphic" />
+              </filter>
+            </defs>
+            <g data-name="Grupo 39">
+              <g
+                filter="url(#a)"
+                data-name="Grupo 38"
+              >
+                <path
+                  data-name="Trazado 24"
+                  d="M12.447 16.594L20.641 8.4a1.406 1.406 0 10-1.988-1.988l-8.88 8.88a1.453 1.453 0 000 2.6l8.88 8.88a1.406 1.406 0 101.988-1.988z"
+                  fill="#4d2545"
+                />
+              </g>
+            </g>
+          </svg>
+        </div>
+        <div class="py-4 px-4  mr-2 font-bold">
+          <form @submit.prevent="updateFeedBackTxt()">
+            <h2 style="text-align: center">Performers who have been hidden will receive the message:</h2>
+            <base-input
+              type="text"
+              v-model="feedbackText"
+              class="w-full px-2"
+              :custom-classes="['border', 'border-purple']"
+            />
+            <base-button type="submit" expanded>Edit</base-button>
+          </form>
+        </div>
+      </div>
+
+      <div
         v-if="tabSelected === 'audition'"
         class="tags w-9/12 shadow-md mx-auto px-3 py-3 mt-6"
       >
@@ -907,6 +997,7 @@ export default {
       mailContactTo: 'info@gig2gig.com',
       listNotificacions: [],
       listAuditionFeedback: [],
+      feedbackText:"",
       states
     };
   },
@@ -929,12 +1020,35 @@ export default {
     this.form.birth = birth;
     debugger;
   },
+  watch:{
+    tabSelected:{
+      immediate:true,
+      async handler(value){
+        if(value == "instantFeedback"){
+          try{
+            let { data: { data } } = await axios.get(`t/instantfeedbacks/defaultFeedback/${this.user.id}`);
+            this.feedbackText = data.comment ? data.comment : "Default Feedback Text";
+          }catch(e){
+            console.log(e);
+          }
+        }
+      }
+    }
+  },
   computed: {
     ...mapState('profile', ['user']),
   },
-
   methods: {
     ...mapActions('profile', ['fetch']),
+    async updateFeedBackTxt(){
+      try{
+        let res = await axios.post(`/t/instantfeedbacks/changeDefault`, {feedback: this.feedbackText});
+        this.$toasted.success("Feedback updated successfully.");
+      }catch(e){
+        console.log(e);
+        this.$toasted.success(e.response.data.data);
+      }
+    },
     async updateData(){
       try{
         let action = await axios.put(`/t/users/update/${this.user.id}`, this.form);

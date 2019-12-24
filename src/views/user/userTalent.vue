@@ -40,7 +40,7 @@
         alt="Avatar"
       >
       </div>
-      
+
     </div>
   </nav>
   <div class="flex p-5">
@@ -137,7 +137,7 @@
                     </div>
                   </div>
                 </div>
-              </div> 
+              </div>
             </div>
           </div>
         </div>
@@ -169,7 +169,27 @@
         </div>
       </div>
     </div>
-  </div>    
+    <div class="flex w-full h-96 mt-16">
+      <div class="w-full shadow-lg ml-5 border border-gray-300 overflow-auto">
+        <p class="text-center text-2xl text-purple font-bold">Audition Videos</p>
+        <div
+                v-for="data in auditionList"
+                :key="data.id"
+                class="flex m-3 content-center w-full h-16 flex justify-center"
+        >
+          <div class="flex justify-center w-90 h-80 button-detail rounded-lg">
+            <div class="flex justify-center h-100 content-center flex-wrap w-4/3 h-full">
+              <img :src="data.cover" alt="Icon" class="h-10" />
+            </div>
+            <div  class="flex h-100 content-center items-center relative w-full h-full bg-white mp-box">
+              <span class="text-center cus-spn-cls text-purple font-bold w-full">{{ data.title }}</span>
+              <span class="text-center cus-spn-cls text-purple font-bold w-full">{{ data.videos }} Videos</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   </div>
 </div>
 </template>
@@ -213,6 +233,7 @@ export default {
         adding: false,
         email: '',
       },
+      auditionList:[]
     };
   },
   computed: {
@@ -224,6 +245,10 @@ export default {
     this.image;
     let { data: { data } } = await axios.get(`/t/performers/tags?user=${this.$route.params.id}`);
     this.tags = data;
+    let getAuditionList = await axios.get(`/t/auditions/list/${this.$route.params.id}`);
+    if(getAuditionList.data.data.length){
+      this.auditionList = getAuditionList.data.data;
+    }
     await this.fetchContract(this.$route.params.id);
     await this.fetchData(this.$route.params.id);
     await this.fetchProfile();
@@ -243,7 +268,7 @@ export default {
         this.calendar.map(function(value) {
           let splitInitDate = value.start_date.split("-");
           let splitFinalDate = value.end_date.split("-");
-          finalList.push({ 
+          finalList.push({
               start: new Date(splitInitDate[0], splitInitDate[1] - 1, splitInitDate[2]),
               end: new Date(splitFinalDate[0], splitFinalDate[1] - 1, splitFinalDate[2])
           });
@@ -286,47 +311,47 @@ export default {
       this.form.evaluator = this.profile.details.id;
       let status = await axios.post('/t/feedbacks/add', this.form);
       this.$toasted.success('Feedback Created');
-      
+
     }
   },
 };
 </script>
 <style lang="scss">
-.custom-resizer {
-  width: 100%;
-  height: 400px;
-}
-.custom-resizer > .pane {
-  text-align: left;
-  padding: 15px;
-  overflow: hidden;
-  background: #eee;
-  border: 1px solid #ccc;
-}
-.custom-resizer > .pane ~ .pane {
-}
-.custom-resizer > .multipane-resizer {
-  margin: 0; left: 0;
-  position: relative;
-  &:before {
-    display: block;
-    content: "";
-    width: 3px;
-    height: 40px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    margin-top: -20px;
-    margin-left: -1.5px;
-    border-left: 1px solid #ccc;
-    border-right: 1px solid #ccc;
+  .custom-resizer {
+    width: 100%;
+    height: 400px;
   }
-  &:hover {
+  .custom-resizer > .pane {
+    text-align: left;
+    padding: 15px;
+    overflow: hidden;
+    background: #eee;
+    border: 1px solid #ccc;
+  }
+  .custom-resizer > .pane ~ .pane {
+  }
+  .custom-resizer > .multipane-resizer {
+    margin: 0; left: 0;
+    position: relative;
     &:before {
-      border-color: #999;
+      display: block;
+      content: "";
+      width: 3px;
+      height: 40px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin-top: -20px;
+      margin-left: -1.5px;
+      border-left: 1px solid #ccc;
+      border-right: 1px solid #ccc;
+    }
+    &:hover {
+      &:before {
+        border-color: #999;
+      }
     }
   }
-}
 nav {
   background-image: linear-gradient(#4D2545, #782541);
 }
