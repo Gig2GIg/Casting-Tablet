@@ -187,7 +187,6 @@
         </router-link>
       </div>
     </transition>
-
     <transition name="fade">
       <div v-show="manage" :class="{'hidden': !manage}">
         <div v-show="manage && (audition.status == 1||audition.status == 2)">
@@ -317,7 +316,7 @@
         </div>
       </div>
     </transition>
-
+<!-- {{audition}} -->
     <transition name="fade">
       <div
         v-show="videoSection"
@@ -404,6 +403,7 @@
 
 <script>
 import { mapActions, mapState, mapGetters } from "vuex";
+import { eventBus } from "../../main";
 
 export default {
   props: [],
@@ -425,19 +425,28 @@ export default {
       },
       isOpen: false,
       openId: "",
-      active: false
+      active: false,
+      isShowManageGroup: false,
     };
   },
   computed: {
     ...mapState("audition", ["audition", "videos"]),
-    ...mapState("round", ["rounds"])
+    ...mapState("round", ["rounds"]),
   },
   async beforeMount() {
     await this.fetchAuditionData(this.$route.params.id);
-    localStorage.setItem("audition_online_status",this.audition.online)
+
     this.$emit("statusSet", this.audition.status);
   },
   methods: {
+    handleNewGroup(round_status){
+      if(this.audition.status == 1 && this.audition.online == 0 && round_status == 1 ){
+        this.isShowManageGroup = true;                
+      } else {
+        this.isShowManageGroup = false;                
+      }      
+      eventBus.$emit('showManageGroup', this.isShowManageGroup);
+    },
     openMenu: function(id) {
       this.isOpen = false;
 
@@ -496,7 +505,8 @@ export default {
       this.statusChild = data;
     },
     async closeRounds() {
-      await this.closeRound(this.roundActive.id);
+      await this.closeRound(this.roundActive.id);      
+      this.handleNewGroup(0);
       this.roundActive.status = 0;
       this.sendDataToChild(0);
     },
@@ -511,9 +521,11 @@ export default {
     },
     async close() {
       await this.closeAudition(this.audition.id);
+      this.handleNewGroup(0);
       await this.$emit("statusSet", this.audition.status);
     },
     async methodToRunOnSelect(payload) {
+      this.handleNewGroup(payload.status);
       if (payload == "create") {
         this.$router.push({
           name: "auditions.round",
@@ -521,7 +533,7 @@ export default {
         });
       } else {
         await this.$emit("selected", payload);
-      }
+      }      
       this.roundActive = payload;
     }
   }

@@ -1,8 +1,5 @@
 <template>
-  <nav class="flex items-center h-12">
-    <div class="text-white" style="margin-left: 80%">
-      <button @click="clickNewGrpBtn" v-if="enableNewGrpBtn == true">New Group</button>
-    </div>
+  <nav class="flex items-center h-12">    
     <div class="flex items-center border-l border-white text-white ml-auto cursor-pointer">
       <span class="mx-4">
         {{ user.details?user.details.first_name + ' ' + user.details.last_name:"" }}
@@ -25,7 +22,6 @@ import TokenService from '../services/core/TokenService';
 export default {
   data() {
     return {
-      enableNewGrpBtn:false,
       isLoading: true,
       userId: '',
     };
@@ -37,27 +33,12 @@ export default {
   async created() {
     this.fetch();
   },
-  watch:{
-    $route (to, from){
-      setTimeout(()=>{
-        let audition_online_status = localStorage.getItem("audition_online_status");
-        if(to.name == "auditions/detail" && audition_online_status == 0){
-          this.enableNewGrpBtn = true;
-        }else{
-          this.enableNewGrpBtn = false;
-        }
-      },2000)
-    }
-  },
   async mounted() {
     this.userId = TokenService.getUserId();
   },
   methods: {
     ...mapActions('audition', ['fetchUpcoming', 'fetchPassed']),
-    ...mapActions('profile', ['fetch']),
-    clickNewGrpBtn(){
-      alert("NEW GROUP BTN");
-    }
+    ...mapActions('profile', ['fetch'])    
   },
 };
 </script>

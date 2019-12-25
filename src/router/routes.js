@@ -79,6 +79,14 @@ export default [
     },
   ]),
 
+  ...mapRoutes({ layout: 'auditiondetails' }, [
+    {
+      path: '/auditions/detail/:id',
+      name: 'auditions/detail',
+      component: () => import(/* webpackChunkName: 'auditions.detail' */ '@/views/AuditionsDetail'),
+    },
+  ]),
+
   /*
   |--------------------------------------------------------------------------
   | Protected Routes
@@ -105,11 +113,11 @@ export default [
     name: 'auditions.update',
     component: () => import(/* webpackChunkName: 'auditions.update' */ '@/views/auditions/UpdateAudition'),
   },
-  {
-    path: '/auditions/detail/:id',
-    name: 'auditions/detail',
-    component: () => import(/* webpackChunkName: 'auditions.detail' */ '@/views/AuditionsDetail'),
-  },
+  // {
+  //   path: '/auditions/detail/:id',
+  //   name: 'auditions/detail',
+  //   component: () => import(/* webpackChunkName: 'auditions.detail' */ '@/views/AuditionsDetail'),
+  // },
   {
     path: '/auditions/round/:id/create',
     name: 'auditions.round',

@@ -12,6 +12,7 @@
       </div>
       <div v-if="status == 1 || finalCastState == true || round.length >0" class=" flex flex-wrap ml-5">
         <div class="col-6">
+          <!-- {{userList}} -->
           <draggable
             class="dragArea list-group flex flex-wrap"
             :list="userList"
@@ -22,9 +23,9 @@
             <transition-group  class="flex flex-wrap justify-center content-center" type="transition" :name="!drag ? 'flip-list' : null">
               <div
                 class="list-group-item"
-                v-for="(data, index) in userList"
+                v-for="(data) in userList"
                 :key="data.user_id"
-              >
+              >              
                   <router-link :to="{ name: 'auditions/user', params: {id: data.user_id, round: round.id, audition:$route.params.id} }">
                   <card-user
                     :title="data.name"
@@ -38,15 +39,16 @@
                 <div @click="rejectBtn(data.user_id)" class="m-1 content-center rounded-full red-back h-10 flex items-center">
                   <button class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide" type="button">2</button>
                 </div>
-                <!--<div>
-                  <input
+                <div>
+                  <input 
+                          v-if="isShowCreateGroup"
                           type="checkbox"
                           class="flex items-center justify-between text-purple rounded-full overflow-hidden w-full pl-6 cursor-pointer select-none"
                           :id="'user_' + data.user_id"
                           :value="data.user_id"
                           v-model="checkedNames"
-                  >
-                </div>-->
+                  >                  
+                </div>
               </div>
             </transition-group>
           </draggable>
@@ -133,36 +135,37 @@
 </template>
 
 <script>
-import Vue from 'vue'
-import { mapActions, mapState, mapGetters } from 'vuex';
-import AuditionService from '@/services/AuditionService';
-import draggable from 'vuedraggable'
+import Vue from "vue";
+import { mapActions, mapState, mapGetters } from "vuex";
+import AuditionService from "@/services/AuditionService";
+import draggable from "vuedraggable";
 import BaseButton from "../components/BaseButton";
 import axios from "axios";
 import TokenService from "../services/core/TokenService";
 let idGlobal = 8;
-import vSelect from 'vue-select';
-Vue.component('v-select', vSelect);
-import _ from 'lodash';
+import vSelect from "vue-select";
+Vue.component("v-select", vSelect);
+import _ from "lodash";
 import BaseInput from "../components/BaseInput";
+import { eventBus } from "../main";
 
 export default {
   components: {
     BaseInput,
     BaseButton,
-      draggable,
+    draggable
   },
   data() {
     return {
       isLoading: true,
       status: 0,
-      roles:[],
-      mainRoles:[],
-      round: '',
+      roles: [],
+      mainRoles: [],
+      round: "",
       drag: false,
       finalCastState: false,
-      finalCastFilter:[],
-      checkedNames:[],
+      finalCastFilter: [],
+      checkedNames: [],
       list1: [
         { name: "John", id: 1 },
         { name: "Joao", id: 2 },
@@ -174,64 +177,128 @@ export default {
         { name: "Edgard", id: 6 },
         { name: "Johnson", id: 7 }
       ],
-      userId: '',
-      performer_id:'',
-      comment:'',
+      userId: "",
+      performer_id: "",
+      comment: "",
       options: [],
       selectedAudition: null,
-      feedbackText:""
+      feedbackText: "",
+      isShowNewGroup: false,
+      isClickCancelGroup: false,
+      isShowCreateGroup: false,
+      isClickCreateGroup: false,
+      isShowRecordGroup: false,
+      isClickRecordGroup: false,
+      isShowCloseGroup: false,
+      isClickCloseGroup: false
     };
   },
+  // props: {
+  //     isNewGroup : [Boolean],
+  //     isCreateGroup: [Boolean],
+  // },
+  watch: {
+    userList: function() {
+      console.log('userList',this.userList)
+      eventBus.$emit("performerCount", this.userList.length);
+    }
+  },
+  created() {
+    eventBus.$on("newGroup", value => {
+      console.log("TCL: newGroup -> value", value);
+      this.isShowNewGroup = value;
+    });
+    eventBus.$on("clickCancelGroup", value => {
+      console.log("TCL: cancelGroup -> value", value);
+      this.isShowNewGroup = true;
+      this.isShowCreateGroup = !this.isShowNewGroup;
+    });
+    eventBus.$on("createGroup", value => {
+      console.log("TCL: createGroup -> value", value);
+      this.isShowCreateGroup = value;
+    });
+    eventBus.$on("recordGroup", value => {
+      console.log("TCL: recordGroup -> value", value);
+    });
+    eventBus.$on("closeGroup", value => {
+      console.log("TCL: closeGroup -> value", value);
+    });
+    eventBus.$on("clickCreateGroup", value => {
+      // console.log("TCL: clickCreateGroup -> value", value);
+      this.createGroupAPI();
+    });
+    eventBus.$on("clickRecordGroup", value => {
+      console.log("TCL: clickRecordGroup -> value", value);
+    });
+    eventBus.$on("clickCloseGroup", value => {
+      console.log("TCL: clickCloseGroup -> value", value);
+    });
+  },
   computed: {
-    ...mapState('audition', ['userList', 'finalCast']),
-    ...mapState('round', ['rounds']),
+    ...mapState("audition", ["userList", "finalCast"]),
+    ...mapState("round", ["rounds"]),
     dragOptions() {
       return {
         animation: 200,
         group: "description",
         disabled: false,
-        ghostClass: "ghost",
+        ghostClass: "ghost"
       };
     }
   },
-  async mounted() {
+  async mounted() {   
     this.userId = TokenService.getUserId();
   },
   methods: {
-    ...mapActions('audition', ['fetchUserList', 'fetchFinalCastList', 'removePerformer', 'addPerformer']),
-    ...mapActions('round', ['fetch']),
-    async rejectBtn(performer_id){
+    ...mapActions("audition", [
+      "fetchUserList",
+      "fetchFinalCastList",
+      "removePerformer",
+      "addPerformer"
+    ]),
+    ...mapActions("round", ["fetch"]),
+    async rejectBtn(performer_id) {
       this.performer_id = performer_id;
-      let { data: { data } } = await axios.get(`t/instantfeedbacks/defaultFeedback/${this.userId}`);
+      let { data: { data } } = await axios.get(
+        `t/instantfeedbacks/defaultFeedback/${this.userId}`
+      );
       this.feedbackText = data.comment ? data.comment : "Default Feedback Text";
       this.$modal.show("showRejectMdl");
     },
-    approveBtn(performer_id){
+    approveBtn(performer_id) {
       this.performer_id = performer_id;
       this.$modal.show("showApproveMdl");
     },
-    fetchOptions (search, loading) {
+    fetchOptions(search, loading) {
       loading(true);
       this.search(loading, search, this);
     },
     search: _.debounce(async (loading, search, vm) => {
       loading(false);
-      if(search.trim().length == 3){
-        let { data: { data } } = await axios.get(`t/auditions/find_by_title?value=${search}`);
+      if (search.trim().length == 3) {
+        let { data: { data } } = await axios.get(
+          `t/auditions/find_by_title?value=${search}`
+        );
         vm.options = data;
       }
     }),
-    async handleApprMdlFrm(type){
+    async createGroupAPI() {
+      this.$emit("createGroup", false);
+      console.log(
+        "TCL: isCreateGroup -> isCreateGroup audition details method"
+      );
+    },
+    async handleApprMdlFrm(type) {
       try {
         let data = {
-          "appointment_id": this.round.id,
-          "user":this.performer_id,
-          "evaluator":this.userId,
-          "comment":type === "approved" ? this.comment : this.feedbackText,
-          "accepted": type === "approved" ? 1 : 0
+          appointment_id: this.round.id,
+          user: this.performer_id,
+          evaluator: this.userId,
+          comment: type === "approved" ? this.comment : this.feedbackText,
+          accepted: type === "approved" ? 1 : 0
         };
-        if(this.selectedAudition){
-          data.suggested_appointment_id = this.selectedAudition.id
+        if (this.selectedAudition) {
+          data.suggested_appointment_id = this.selectedAudition.id;
         }
         let res = await axios.post(`/t/instantfeedbacks/add`, data);
         this.$toasted.success(res.data.data);
@@ -250,28 +317,32 @@ export default {
         this.options = [];
       }
     },
-    async chargeUsers(value){
+    async chargeUsers(value) {
       this.round = value;
       await this.fetchUserList(value.id);
-      await this.fetchFinalCastList(this.$route.params.id)
-      for(let data in this.finalCast){
-        let filtered_data = this.userList.filter(user => user.user_id == this.finalCast[data].user_id );
-        for(let j in filtered_data){
+      await this.fetchFinalCastList(this.$route.params.id);
+      for (let data in this.finalCast) {
+        let filtered_data = this.userList.filter(
+          user => user.user_id == this.finalCast[data].user_id
+        );
+        for (let j in filtered_data) {
           this.finalCast[data].image = filtered_data[j].image;
           this.finalCast[data].name = filtered_data[j].name;
           this.finalCast[data].time = filtered_data[j].time;
           this.finalCast[data].rol_id = filtered_data[j].rol;
         }
       }
-      if(this.finalCast.length > 0){
+      if (this.finalCast.length > 0) {
         this.finalCastFilter = this.finalCast;
       }
     },
-    async chargeFinalCast(){
-      await this.fetchFinalCastList(this.$route.params.id)
-      for(let data in this.finalCast){
-        let filtered_data = this.userList.filter(user => user.user_id == this.finalCast[data].user_id );
-        for(let j in filtered_data){
+    async chargeFinalCast() {
+      await this.fetchFinalCastList(this.$route.params.id);
+      for (let data in this.finalCast) {
+        let filtered_data = this.userList.filter(
+          user => user.user_id == this.finalCast[data].user_id
+        );
+        for (let j in filtered_data) {
           this.finalCast[data].image = filtered_data[j].image;
           this.finalCast[data].name = filtered_data[j].name;
           this.finalCast[data].time = filtered_data[j].time;
@@ -279,50 +350,57 @@ export default {
         }
       }
       this.mainRoles = this.roles;
-      this.mainRoles.map((role)=>{
-        this.finalCast.map((user) =>{
-          if(user.rol_id == role.id){
+      this.mainRoles.map(role => {
+        this.finalCast.map(user => {
+          if (user.rol_id == role.id) {
             role.name = user.name;
             role.image.url = user.image;
             role.rol = user.rol_name;
           }
         });
       });
-      if(this.finalCast.length > 0){
+      if (this.finalCast.length > 0) {
         this.finalCastFilter = this.finalCast;
       }
     },
-    async verifyRegisters(item){
+    async verifyRegisters(item) {
       item.added.element.rol_id = item.added.element.rol;
       let data = {
-        "audition_id":this.$route.params.id,
-        "performer_id":item.added.element.user_id,
-        "rol_id":item.added.element.rol_id,
-      }
+        audition_id: this.$route.params.id,
+        performer_id: item.added.element.user_id,
+        rol_id: item.added.element.rol_id
+      };
       await this.addPerformer(data);
-      try{
-        let filtered_data = this.finalCastFilter.filter(user => user.rol_id == item.added.element.rol && user.user_id!=item.added.element.user_id);
-        if(filtered_data.length > 0){
-          this.finalCastFilter = this.finalCastFilter.filter(user => user.user_id != filtered_data[0].user_id);
+      try {
+        let filtered_data = this.finalCastFilter.filter(
+          user =>
+            user.rol_id == item.added.element.rol &&
+            user.user_id != item.added.element.user_id
+        );
+        if (filtered_data.length > 0) {
+          this.finalCastFilter = this.finalCastFilter.filter(
+            user => user.user_id != filtered_data[0].user_id
+          );
           await this.removePerformer(filtered_data[0].id);
         }
         await this.chargeFinalCast();
-
-      }catch(e){
+      } catch (e) {
         console.log(e);
       }
     },
-    async activeFinalCast(item){
+    async activeFinalCast(item) {
       this.roles = item;
       await this.fetch(this.$route.params.id);
       let lastRound = this.rounds.slice(-1);
-      if(lastRound.length>0){
+      if (lastRound.length > 0) {
         await this.fetchUserList(lastRound[0].id);
         this.round = lastRound[0];
       }
-      for(let data in this.finalCast){
-        let filtered_data = this.userList.filter(user => user.user_id == this.finalCast[data].user_id );
-        for(let j in filtered_data){
+      for (let data in this.finalCast) {
+        let filtered_data = this.userList.filter(
+          user => user.user_id == this.finalCast[data].user_id
+        );
+        for (let j in filtered_data) {
           this.finalCast[data].image = filtered_data[j].image;
           this.finalCast[data].name = filtered_data[j].name;
           this.finalCast[data].time = filtered_data[j].time;
@@ -330,10 +408,10 @@ export default {
         }
       }
       this.mainRoles = this.roles;
-      this.mainRoles.map((role)=>{
-        if(this.finalCast.length > 0){
-          this.finalCast.map((user) =>{
-            if(user.rol_id == role.id){
+      this.mainRoles.map(role => {
+        if (this.finalCast.length > 0) {
+          this.finalCast.map(user => {
+            if (user.rol_id == role.id) {
               role.name = user.name;
               role.image.url = user.image;
               role.rol = user.rol_name;
@@ -341,15 +419,15 @@ export default {
           });
         }
       });
-      if(this.finalCast.length > 0){
+      if (this.finalCast.length > 0) {
         this.finalCastFilter = this.finalCast;
       }
-      this.finalCastState = true
+      this.finalCastState = true;
     },
-    checkMove: function(evt){
-      evt.draggedContext.element.name!=='apple';
+    checkMove: function(evt) {
+      evt.draggedContext.element.name !== "apple";
     },
-    async changeView(status){
+    async changeView(status) {
       this.status = status;
     },
     cloneDog({ id }) {
@@ -361,7 +439,7 @@ export default {
     log: function(evt) {
       window.console.log(evt);
     }
-  },
+  }
 };
 </script>
 <style>
@@ -387,10 +465,10 @@ export default {
 .list-group-item i {
   cursor: pointer;
 }
-.grren-back{
+.grren-back {
   background-color: #159359;
 }
-.red-back{
-  background-color: #93163E;
+.red-back {
+  background-color: #93163e;
 }
 </style>
