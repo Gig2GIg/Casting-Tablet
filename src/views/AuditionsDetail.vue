@@ -12,8 +12,49 @@
       </div>
       <div v-if="status == 1 || finalCastState == true || round.length >0" class=" flex flex-wrap ml-5">
         <div class="col-6">
-          <!-- {{userList}} -->
           <draggable
+            v-if="finalUserList && finalUserList.length > 0"
+            class="dragArea list-group flex flex-wrap"
+            :list="finalUserList"
+            :group="{ name: 'people', pull: 'clone', put: false }"
+            @change="log"
+            :move="checkMove"
+          >
+            <transition-group  class="flex flex-wrap justify-center content-center" type="transition" :name="!drag ? 'flip-list' : null">
+              <div
+
+                class="list-group-item"
+                v-for="(data) in finalUserList"
+                :key="data.user_id"
+              >              
+                  <router-link :to="{ name: 'auditions/user', params: {id: data.user_id, round: round.id, audition:$route.params.id} }">
+                  <card-user
+                    :title="data.name"
+                    :time="data.time"
+                    :image="data.image"
+                  />
+                  </router-link>
+                <div @click="approveBtn(data.user_id)" class="m-1 content-center rounded-full grren-back h-10 flex items-center">
+                  <button class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide" type="button">1</button>
+                </div>
+                <div @click="rejectBtn(data.user_id)" class="m-1 content-center rounded-full red-back h-10 flex items-center">
+                  <button class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide" type="button">2</button>
+                </div>
+                <div>
+                  <input 
+                          v-if="isShowCreateGroup"
+                          type="checkbox"
+                          class="flex items-center justify-between text-purple rounded-full overflow-hidden w-full pl-6 cursor-pointer select-none"
+                          :id="'user_' + data.user_id"
+                          :value="data.user_id"
+                          v-model="checkedNames"
+                  >                  
+                </div>
+              </div>
+            </transition-group>
+          </draggable>
+          <draggable
+            v-else
             class="dragArea list-group flex flex-wrap"
             :list="userList"
             :group="{ name: 'people', pull: 'clone', put: false }"
@@ -22,6 +63,7 @@
           >
             <transition-group  class="flex flex-wrap justify-center content-center" type="transition" :name="!drag ? 'flip-list' : null">
               <div
+
                 class="list-group-item"
                 v-for="(data) in userList"
                 :key="data.user_id"
@@ -67,12 +109,7 @@
                     :custom-classes="['border', 'border-purple', 'mt-0']"
             />
             <h2>Recommend an Audition</h2>
-<!--            <base-input-->
-<!--                    type="text"-->
-<!--                    placeholder="Search Auditions"-->
-<!--                    class="px-2 py-2 w-2/3"-->
-<!--                    :custom-classes="['border', 'border-purple', 'mt-0']"-->
-<!--            />-->
+
               <v-select label="title" v-model="selectedAudition" :options="options" @search="fetchOptions"/>
               <base-button type="submit" expanded>Submit</base-button>
             </form>
@@ -148,6 +185,7 @@ Vue.component("v-select", vSelect);
 import _ from "lodash";
 import BaseInput from "../components/BaseInput";
 import { eventBus } from "../main";
+import { close } from "fs";
 
 export default {
   components: {
@@ -166,6 +204,7 @@ export default {
       finalCastState: false,
       finalCastFilter: [],
       checkedNames: [],
+      openGroupMember: [],
       list1: [
         { name: "John", id: 1 },
         { name: "Joao", id: 2 },
@@ -190,48 +229,37 @@ export default {
       isShowRecordGroup: false,
       isClickRecordGroup: false,
       isShowCloseGroup: false,
-      isClickCloseGroup: false
+      isClickCloseGroup: false,
+      finalUserList: []
     };
   },
-  // props: {
-  //     isNewGroup : [Boolean],
-  //     isCreateGroup: [Boolean],
-  // },
   watch: {
     userList: function() {
-      console.log('userList',this.userList)
       eventBus.$emit("performerCount", this.userList.length);
+    },
+    round: function() {
+      this.getGroupdetails();
     }
   },
   created() {
     eventBus.$on("newGroup", value => {
-      console.log("TCL: newGroup -> value", value);
       this.isShowNewGroup = value;
     });
     eventBus.$on("clickCancelGroup", value => {
-      console.log("TCL: cancelGroup -> value", value);
       this.isShowNewGroup = true;
       this.isShowCreateGroup = !this.isShowNewGroup;
     });
     eventBus.$on("createGroup", value => {
-      console.log("TCL: createGroup -> value", value);
       this.isShowCreateGroup = value;
     });
-    eventBus.$on("recordGroup", value => {
-      console.log("TCL: recordGroup -> value", value);
-    });
-    eventBus.$on("closeGroup", value => {
-      console.log("TCL: closeGroup -> value", value);
-    });
+    eventBus.$on("recordGroup", value => {});
+    eventBus.$on("closeGroup", value => {});
     eventBus.$on("clickCreateGroup", value => {
-      // console.log("TCL: clickCreateGroup -> value", value);
       this.createGroupAPI();
     });
-    eventBus.$on("clickRecordGroup", value => {
-      console.log("TCL: clickRecordGroup -> value", value);
-    });
+    eventBus.$on("clickRecordGroup", value => {});
     eventBus.$on("clickCloseGroup", value => {
-      console.log("TCL: clickCloseGroup -> value", value);
+      this.closeGroupAPI();
     });
   },
   computed: {
@@ -246,7 +274,7 @@ export default {
       };
     }
   },
-  async mounted() {   
+  async mounted() {
     this.userId = TokenService.getUserId();
   },
   methods: {
@@ -283,10 +311,86 @@ export default {
       }
     }),
     async createGroupAPI() {
-      this.$emit("createGroup", false);
-      console.log(
-        "TCL: isCreateGroup -> isCreateGroup audition details method"
-      );
+      this.$toasted.clear();
+
+      if (!this.checkedNames || this.checkedNames.length == 0) {
+        this.$toasted.error("Please select at least one performer.");
+        return false;
+      }
+      try {
+        let data = {
+          appointment_id: this.round.id,
+          user_ids: this.checkedNames
+        };
+        if (this.selectedAudition) {
+          data.suggested_appointment_id = this.selectedAudition.id;
+        }
+        let res = await axios.post(`/t/group`, data);
+        this.$toasted.success(res.data.message);
+        this.showCloseGroup(true);
+        this.getGroupdetails();
+        this.checkedNames = [];
+      } catch (ex) {
+        console.log(ex);
+        this.$toasted.error(ex.response.data.message);
+      }
+    },
+    async closeGroupAPI() {
+      this.$toasted.clear();
+      try {
+        let groupCloseStatusRes = await axios.get(
+          `/t/group/close/${this.round.id}`
+        );
+        this.$toasted.success(groupCloseStatusRes.data.message);
+        this.showNewGroup(true);
+        this.openGroupMember = [];
+        this.finalUserList = [];
+        this.getUserlist();
+      } catch (ex) {
+        console.log(ex);
+        this.$toasted.error(ex.response.data.message);
+      }
+    },
+    async getUserlist() {
+      this.fetchUserList(this.round.id);
+    },
+    async getGroupdetails() {
+      try {
+        let groupStatusRes = await axios.get(
+          `/t/group/status/${this.round.id}`
+        );
+        this.openGroupMember = groupStatusRes.data.data
+          ? groupStatusRes.data.data
+          : [];
+        this.isShowCloseGroup = this.openGroupMember.length > 0 || false;
+        this.showCloseGroup(this.isShowCloseGroup);
+        this.manageSelectedPerformer();
+      } catch (ex) {
+        console.log(ex);
+        this.$toasted.error(ex.response.data.message);
+      }
+    },
+    showCloseGroup(value) {
+      this.isShowCreateGroup = false;
+      eventBus.$emit("showCloseGroup", value);
+    },
+    showCreateGroup(value) {
+      eventBus.$emit("showCreateGroup", value);
+    },
+    showNewGroup(value) {
+      eventBus.$emit("showNewGroup", value);
+    },
+    showCreateGroup(value) {
+      eventBus.$emit("showCreateGroup", value);
+    },
+    manageSelectedPerformer() {
+      this.finalUserList = [];
+      _.each(this.openGroupMember, member => {
+        let entry = _.find(this.userList, user => {
+          return user.user_id == member.id;
+        });
+        if (entry) this.finalUserList.push(entry);
+      });
     },
     async handleApprMdlFrm(type) {
       try {

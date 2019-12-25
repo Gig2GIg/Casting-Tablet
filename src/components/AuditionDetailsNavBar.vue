@@ -1,5 +1,16 @@
 <template>
   <nav class="flex justify-center items-center h-12 text-white">
+      <div
+        v-if="!isShowCreateGroup && isShowCloseGroup"
+        class="w-1/5 flex flex-wrap justify-center content-center h-10 border-2 ml-auto border-white rounded-sm cursor-pointer"
+        @click="$refs.inputFile.click()">
+        <div class="w-full flex">
+          <div class="w-1/4 flex justify-center"><img :src="'/images/icons/camera.png'" class="h-6 ml-auto" alt="star">
+          </div>
+            <p class="w-full text-white tracking-wide text-lg ml-5 tracking-tight truncate">{{file.name}}</p>
+        </div>
+      </div>  
+
     <div class="flex flex-col" v-if="isSearchEnable">
       <div
         class="relative h-12 my-2 ml-5 w-11/12"
@@ -14,8 +25,7 @@
           @change="$emit('onSearch', $event.target.value)"
       >
       </div>
-    </div>
-    <div class="w-2/12 text-center ml-72 -mr-72">Audition Details</div>
+    </div>    
     <div class="w-1/2 flex flex-col" v-if="isShowManageGroup && performerCount && performerCount > 0">             
         <div 
           v-if="isShowNewGroup"
@@ -30,7 +40,7 @@
           class="ml-5"
           @click="createGroup()" >Create Group</button>
         </div>   
-        <div class="text-white h-6 ml-auto mr-5" 
+        <!-- <div class="text-white h-6 ml-auto mr-5" 
           v-if="!isShowCreateGroup && isShowCloseGroup"
           >
           <button 
@@ -38,7 +48,23 @@
           <button 
           class="ml-5"
           @click="closeGroup()" >Close Group</button>
-        </div>   
+        </div>    -->
+
+      <div class="text-white h-6 ml-auto mr-5"
+          v-if="!isShowCreateGroup && isShowCloseGroup"
+          >
+          <input
+          ref="inputFile"
+          accept=".mp4"
+          type="file"
+          hidden
+          @change="recordGroup"
+          >
+          <button
+          class="ml-5"
+          @click="closeGroup()">Close Group
+          </button>
+      </div>
 
       </div>
     <div class="flex items-center border-l border-white text-white ml-auto cursor-pointer">
@@ -55,12 +81,18 @@
         alt="Avatar"
       >
     </div>
+
+
   </nav>
+  
 </template>
+
 <script>
 import { mapActions, mapState, mapGetters } from "vuex";
 import axios from "axios";
 import { eventBus } from "../main";
+import firebase from "firebase/app";
+import uuid from "uuid/v1";
 
 export default {
   data() {
@@ -73,7 +105,7 @@ export default {
       },
       enableNewGrpBtn: "",
       isSearchEnable: false,
-      isShowManageGroup : false,
+      isShowManageGroup: false,
       isShowNewGroup: true,
       isClickCancelGroup: false,
       isShowCreateGroup: false,
@@ -82,7 +114,11 @@ export default {
       isClickRecordGroup: false,
       isShowCloseGroup: false,
       isClickCloseGroup: false,
-      performerCount : 0
+      performerCount: 0,
+      form: {},
+      file: {
+        name: 'Record Group',
+      },
     };
   },
   computed: {
@@ -97,8 +133,22 @@ export default {
     eventBus.$on("showManageGroup", value => {
       this.isShowManageGroup = value;
     });
+    eventBus.$on("showCreateGroup", value => {
+      this.isShowNewGroup = !value;
+      this.isShowCreateGroup = value;
+    });
+    eventBus.$on("showNewGroup", value => {
+      this.isShowNewGroup = value;
+      this.isShowCreateGroup = !value;
+      this.isShowCloseGroup = !value;
+    });
+
     eventBus.$on("performerCount", value => {
       this.performerCount = value;
+    });
+    eventBus.$on("showCloseGroup", value => {
+      this.isShowCloseGroup = value;
+      this.isShowNewGroup = this.isShowCreateGroup = !this.isShowCloseGroup;
     });
   },
   methods: {
@@ -138,16 +188,44 @@ export default {
       eventBus.$emit("recordGroup", this.isShowRecordGroup);
     },
     showCloseGroup() {
-      eventBus.$emit("closeGroup", this.isShowCloseGroup);
+      eventBus.$emit("showCloseGroup", this.isShowCloseGroup);
     },
     createGroup() {
       this.isClickCreateGroup = true;
       eventBus.$emit("clickCreateGroup", this.isClickCreateGroup);
     },
-    recordGroup() {
+    async recordGroup(e) {
       eventBus.$emit("clickRecordGroup", this.isClickRecordGroup);
+      const file = e.target.files[0];
+      this.form.file = file;
+      this.file.name = file.name;
+      try {
+        if (this.file.name != "Record Group") {
+          let file = await firebase
+            .storage()
+            .ref(`temp/${uuid()}.${this.file.name.split(".").pop()}`)
+            .put(this.form.file);
+
+          let url = await file.ref.getDownloadURL();
+          let audition_record = {
+            url: url,
+            appointment_id: this.$route.params.round,
+            performer: "",
+            slot_id: 29,
+            name: this.file.name || time() + ".mp4"
+          };
+          let files = await axios.post(
+            "/t/auditions/video/save",
+            audition_record
+          );
+          this.$toasted.success("Group record saved");
+        }
+      } catch (e) {
+        this.$toasted.error(e.response.data.data);
+      }
     },
     closeGroup() {
+      this.isClickCloseGroup = true;
       eventBus.$emit("clickCloseGroup", this.isClickCloseGroup);
     }
   }
