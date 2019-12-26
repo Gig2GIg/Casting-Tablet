@@ -9,7 +9,7 @@
           </div>
             <p class="w-full text-white tracking-wide text-lg ml-5 tracking-tight truncate">{{file.name}}</p>
         </div>
-      </div>  
+      </div>
 
     <div class="flex flex-col" v-if="isSearchEnable">
       <div
@@ -25,27 +25,27 @@
           @change="$emit('onSearch', $event.target.value)"
       >
       </div>
-    </div>    
-    <div class="w-1/2 flex flex-col" v-if="isShowManageGroup && performerCount && performerCount > 0">             
-        <div 
+    </div>
+    <div class="w-1/2 flex flex-col" v-if="isShowManageGroup && performerCount && performerCount > 0">
+        <div
           v-if="isShowNewGroup"
           class="text-white h-6 ml-auto mr-5" >
           <button @click="showCreateGroup(true)">New Group</button>
-        </div>   
-        <div class="text-white h-6 ml-auto mr-5" 
+        </div>
+        <div class="text-white h-6 ml-auto mr-5"
           v-if="!isShowNewGroup && isShowCreateGroup" >
-          <button 
+          <button
           @click="cancelGroup()" >Cancel Group</button>
-          <button 
+          <button
           class="ml-5"
           @click="createGroup()" >Create Group</button>
-        </div>   
-        <!-- <div class="text-white h-6 ml-auto mr-5" 
+        </div>
+        <!-- <div class="text-white h-6 ml-auto mr-5"
           v-if="!isShowCreateGroup && isShowCloseGroup"
           >
-          <button 
+          <button
           @click="recordGroup()" >Record Group</button>
-          <button 
+          <button
           class="ml-5"
           @click="closeGroup()" >Close Group</button>
         </div>    -->
@@ -84,7 +84,7 @@
 
 
   </nav>
-  
+
 </template>
 
 <script>
@@ -211,7 +211,7 @@ export default {
             url: url,
             appointment_id: this.$route.params.round,
             performer: "",
-            slot_id: 29,
+            slot_id: "",
             name: this.file.name || time() + ".mp4"
           };
           let files = await axios.post(

@@ -441,10 +441,10 @@ export default {
   methods: {
     handleNewGroup(round_status){
       if(this.audition.status == 1 && this.audition.online == 0 && round_status == 1 ){
-        this.isShowManageGroup = true;                
+        this.isShowManageGroup = true;
       } else {
-        this.isShowManageGroup = false;                
-      }      
+        this.isShowManageGroup = false;
+      }
       eventBus.$emit('showManageGroup', this.isShowManageGroup);
     },
     openMenu: function(id) {
@@ -505,7 +505,7 @@ export default {
       this.statusChild = data;
     },
     async closeRounds() {
-      await this.closeRound(this.roundActive.id);      
+      await this.closeRound(this.roundActive.id);
       this.handleNewGroup(0);
       this.roundActive.status = 0;
       this.sendDataToChild(0);
@@ -533,7 +533,7 @@ export default {
         });
       } else {
         await this.$emit("selected", payload);
-      }      
+      }
       this.roundActive = payload;
     }
   }
