@@ -254,7 +254,7 @@ export default {
     await this.fetchProfile();
     await this.myCalendar(this.$route.params.id);
     this.asignEvents();
-    debugger;
+    // debugger;
   },
   methods: {
     ...mapActions('user', ['fetch']),
@@ -274,7 +274,7 @@ export default {
           });
       });
       finalList;
-      debugger;
+      // debugger;
       this.attrs = [
         {
           bar: {
@@ -287,7 +287,7 @@ export default {
       ];
     },
     async sendData(){
-      debugger;
+      // debugger;
 
       let data={
         "code": this.code,

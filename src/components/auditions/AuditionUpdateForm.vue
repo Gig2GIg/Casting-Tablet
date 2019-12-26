@@ -665,7 +665,7 @@ export default {
       items.preview = items.image.url;
     });
     this.previewCover = this.audition.cover;
-    debugger;
+    // debugger;
   },
   methods: {
     ...mapActions("audition", ["fetchAuditionData"]),
@@ -762,7 +762,7 @@ export default {
           slots: appoint
         }
       ];
-      debugger;
+      // debugger;
     },
 
     handleCoverFile(e) {
@@ -809,7 +809,7 @@ export default {
           .map(x => x.key)
           .join(", ");
         data.appointment = [this.audition.apointment];
-        debugger;
+        // debugger;
         if (this.selectedLocation) {
           data.location = {
             latitude: this.selectedLocation.geometry.location.lat(),

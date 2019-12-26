@@ -26,7 +26,7 @@
                 class="list-group-item"
                 v-for="(data) in finalUserList"
                 :key="data.user_id"
-              >              
+              >
                   <router-link :to="{ name: 'auditions/user', params: {id: data.user_id, round: round.id, audition:$route.params.id} }">
                   <card-user
                     :title="data.name"
@@ -34,21 +34,21 @@
                     :image="data.image"
                   />
                   </router-link>
-                <div @click="approveBtn(data.user_id)" class="m-1 content-center rounded-full grren-back h-10 flex items-center">
+                <div @click="approveBtn(data.user_id, data.is_feedback_sent)" class="m-1 content-center rounded-full grren-back h-10 flex items-center">
                   <button class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide" type="button">1</button>
                 </div>
-                <div @click="rejectBtn(data.user_id)" class="m-1 content-center rounded-full red-back h-10 flex items-center">
+                <div @click="rejectBtn(data.user_id, data.is_feedback_sent)" class="m-1 content-center rounded-full red-back h-10 flex items-center">
                   <button class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide" type="button">2</button>
                 </div>
                 <div>
-                  <input 
+                  <input
                           v-if="isShowCreateGroup"
                           type="checkbox"
                           class="flex items-center justify-between text-purple rounded-full overflow-hidden w-full pl-6 cursor-pointer select-none"
                           :id="'user_' + data.user_id"
                           :value="data.user_id"
                           v-model="checkedNames"
-                  >                  
+                  >
                 </div>
               </div>
             </transition-group>
@@ -67,7 +67,7 @@
                 class="list-group-item"
                 v-for="(data) in userList"
                 :key="data.user_id"
-              >              
+              >
                   <router-link :to="{ name: 'auditions/user', params: {id: data.user_id, round: round.id, audition:$route.params.id} }">
                   <card-user
                     :title="data.name"
@@ -75,21 +75,21 @@
                     :image="data.image"
                   />
                   </router-link>
-                <div @click="approveBtn(data.user_id)" class="m-1 content-center rounded-full grren-back h-10 flex items-center">
+                <div @click="approveBtn(data.user_id, data.is_feedback_sent)" class="m-1 content-center rounded-full grren-back h-10 flex items-center">
                   <button class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide" type="button">1</button>
                 </div>
-                <div @click="rejectBtn(data.user_id)" class="m-1 content-center rounded-full red-back h-10 flex items-center">
+                <div @click="rejectBtn(data.user_id, data.is_feedback_sent)" class="m-1 content-center rounded-full red-back h-10 flex items-center">
                   <button class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide" type="button">2</button>
                 </div>
                 <div>
-                  <input 
+                  <input
                           v-if="isShowCreateGroup"
                           type="checkbox"
                           class="flex items-center justify-between text-purple rounded-full overflow-hidden w-full pl-6 cursor-pointer select-none"
                           :id="'user_' + data.user_id"
                           :value="data.user_id"
                           v-model="checkedNames"
-                  >                  
+                  >
                 </div>
               </div>
             </transition-group>
@@ -130,7 +130,7 @@
               />
               <h2>To change feedback go to Instant Feedback in Settings.</h2>
               <base-button type="submit" expanded>Done</base-button>
-              <a href="#">Don’t show me this again</a>
+              <button type="button" @click="dontShowBtn">Don’t show me this again</button>
             </form>
           </modal>
         </div>
@@ -285,17 +285,34 @@ export default {
       "addPerformer"
     ]),
     ...mapActions("round", ["fetch"]),
-    async rejectBtn(performer_id) {
-      this.performer_id = performer_id;
-      let { data: { data } } = await axios.get(
-        `t/instantfeedbacks/defaultFeedback/${this.userId}`
-      );
-      this.feedbackText = data.comment ? data.comment : "Default Feedback Text";
-      this.$modal.show("showRejectMdl");
+    dontShowBtn(){
+      localStorage.setItem("reject_popup_dont_show", "1");
+      this.handleApprMdlFrm('rejected');
+      this.$modal.hide("showRejectMdl");
     },
-    approveBtn(performer_id) {
+    async rejectBtn(performer_id, is_feedback_sent) {
       this.performer_id = performer_id;
-      this.$modal.show("showApproveMdl");
+      if(is_feedback_sent == 1){
+        this.$toasted.error("Feedback already send");
+      }else {
+        let {data: {data}} = await axios.get(
+                `t/instantfeedbacks/defaultFeedback/${this.userId}`
+        );
+        this.feedbackText = data.comment ? data.comment : "Default Feedback Text";
+        if (localStorage.getItem("reject_popup_dont_show") && localStorage.getItem("reject_popup_dont_show") == "1") {
+          this.handleApprMdlFrm('rejected');
+        } else {
+          this.$modal.show("showRejectMdl");
+        }
+      }
+    },
+    approveBtn(performer_id, is_feedback_sent) {
+      this.performer_id = performer_id;
+      if(is_feedback_sent == 1){
+        this.$toasted.error("Feedback already send");
+      }else{
+        this.$modal.show("showApproveMdl");
+      }
     },
     fetchOptions(search, loading) {
       loading(true);
@@ -406,6 +423,8 @@ export default {
         }
         let res = await axios.post(`/t/instantfeedbacks/add`, data);
         this.$toasted.success(res.data.data);
+        this.getUserlist();
+        this.getGroupdetails();
         this.$modal.hide("showApproveMdl");
         this.$modal.hide("showRejectMdl");
         this.comment = "";

@@ -1018,7 +1018,7 @@ export default {
     this.form.image= this.user.image.url;
     birth.setDate(birth.getDate() + 1);
     this.form.birth = birth;
-    debugger;
+    // debugger;
   },
   watch:{
     tabSelected:{

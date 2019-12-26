@@ -9,7 +9,7 @@ class AuthService extends BaseService {
   async login(credentials) {
     // eslint-disable-next-line camelcase
     const { data: { data: { id }, access_token } } = await this.post('/login', credentials);
-    debugger;
+    // debugger;
     // Save token
     TokenService.setToken(id, access_token);
     // Configure HttpClient with the new token
