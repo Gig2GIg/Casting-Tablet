@@ -10,7 +10,7 @@
       <div v-if="status == 1 && userList.length == 0 " class="flex items-center flex-wrap ml-5 h-full">
         <h4 class="w-full text-center text-purple font-semibold text-2xl">Not performers added yet</h4>
       </div>
-      <div v-if="status == 1 || finalCastState == true || round.length >0" class=" flex flex-wrap ml-5">
+      <div v-if="isShowPerformer && (status == 1 || finalCastState == true || round.length >0)" class=" flex flex-wrap ml-5">
         <div class="col-6">
           <draggable
             v-if="finalUserList && finalUserList.length > 0"
@@ -230,12 +230,17 @@ export default {
       isClickRecordGroup: false,
       isShowCloseGroup: false,
       isClickCloseGroup: false,
-      finalUserList: []
+      finalUserList: [],
+      isShowPerformer : false
     };
+  },
+  destroyed:()=>{
+    eventBus.$off();
   },
   watch: {
     userList: function() {
       eventBus.$emit("performerCount", this.userList.length);
+      this.manageSelectedPerformer();
     },
     round: function() {
       this.getGroupdetails();
@@ -310,6 +315,9 @@ export default {
         vm.options = data;
       }
     }),
+    destroyedBusevent(){
+      eventBus.$off();
+    },
     async createGroupAPI() {
       this.$toasted.clear();
 
@@ -364,8 +372,10 @@ export default {
           : [];
         this.isShowCloseGroup = this.openGroupMember.length > 0 || false;
         this.showCloseGroup(this.isShowCloseGroup);
-        this.manageSelectedPerformer();
+        await this.manageSelectedPerformer();
+        this.isShowPerformer = true;
       } catch (ex) {
+        this.isShowPerformer = true;
         console.log(ex);
         this.$toasted.error(ex.response.data.message);
       }
@@ -387,7 +397,7 @@ export default {
       this.finalUserList = [];
       _.each(this.openGroupMember, member => {
         let entry = _.find(this.userList, user => {
-          return user.user_id == member.id;
+          return user.user_id == member.user_id;
         });
         if (entry) this.finalUserList.push(entry);
       });
