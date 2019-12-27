@@ -1,6 +1,6 @@
 <template>
   <nav class="flex justify-center items-center h-12 text-white">
-      <div
+      <!-- <div
         v-if="!isShowCreateGroup && isShowCloseGroup"
         class="w-1/5 flex flex-wrap justify-center content-center h-10 border-2 ml-auto border-white rounded-sm cursor-pointer"
         @click="$refs.inputFile.click()">
@@ -9,7 +9,7 @@
           </div>
             <p class="w-full text-white tracking-wide text-lg ml-5 tracking-tight truncate">{{file.name}}</p>
         </div>
-      </div>
+      </div> -->
 
     <div class="flex flex-col" v-if="isSearchEnable">
       <div
@@ -47,18 +47,30 @@
           @click="closeGroup()" >Close Group</button>
         </div>    -->
 
-      <div class="text-white h-6 ml-auto mr-5"
+      <div class="text-white h-6 ml-auto mr-5 flex"
           v-if="!isShowCreateGroup && isShowCloseGroup"
           >
-          <input
+          <div
+        v-if="!isShowCreateGroup && isShowCloseGroup"
+        class="flex flex-wrap justify-center content-center h-10 ml-auto border-white rounded-sm cursor-pointer custom-btn-record"
+        @click="$refs.inputFile.click()">
+        <div class="w-full flex">
+          <div class="flex justify-center"><img :src="'/images/icons/camera.png'" class="h-6 ml-auto" alt="star">
+          </div>
+            <p class="w-full text-white tracking-wide text-lg ml-5 tracking-tight truncate">{{file.name}}</p>
+        </div>
+      </div>
+
+        <input
           ref="inputFile"
           accept=".mp4"
           type="file"
-          hidden
           @change="recordGroup"
+          hidden
           >
+          
           <button
-          class="ml-5"
+          class="custom-btn btn-empty"
           @click="closeGroup()">Close Group
           </button>
       </div>
@@ -260,4 +272,5 @@ nav {
     background-color: #fff;
     color: #4D2545;
 }
+.custom-btn-record {padding: 0 15px;margin-right: 15px;border: 1px solid #fff;}
 </style>
