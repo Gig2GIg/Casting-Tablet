@@ -32,30 +32,24 @@
                     :title="data.name"
                     :time="data.time"
                     :image="data.image"
-                    class="custom-perfom-list"
-                    v-bind:class="{ 'after-clck-new-grp' : isShowCreateGroup}"
                   />
                   </router-link>
-                  <div class="custom-btn-grp">
-                    <div @click="approveBtn(data.user_id, data.is_feedback_sent)" class="m-1 content-center rounded-full grren-back h-10 flex items-center">
-                      <button class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide" type="button"><img src="/images/icons/delete-icon.svg" alt="right-tick" /></button>
-                    </div>
-                    <div @click="rejectBtn(data.user_id, data.is_feedback_sent)" class="m-1 content-center rounded-full red-back h-10 flex items-center">
-                      <button class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide" type="button"><img src="/images/icons/delete-icon.svg" alt="delete-icon" /></button>
-                    </div>
-                  </div>
-                  <div class="check-grp" v-bind:class="{ 'after-check-grp' : isShowCreateGroup}">
-                    <input
-                            v-if="isShowCreateGroup"
-                            type="checkbox"
-                            class="flex items-center justify-between text-purple rounded-full overflow-hidden w-full pl-6 cursor-pointer select-none"
-                            :id="'user_' + data.user_id"
-                            :value="data.user_id"
-                            v-model="checkedNames"
-                    >
-                    <label :for="'user_' + data.user_id"></label>
-                  </div>
-              
+                <div @click="approveBtn(data.user_id, data.is_feedback_sent)" class="m-1 content-center rounded-full grren-back h-10 flex items-center">
+                  <button class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide" type="button">1</button>
+                </div>
+                <div @click="rejectBtn(data.user_id, data.is_feedback_sent)" class="m-1 content-center rounded-full red-back h-10 flex items-center">
+                  <button class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide" type="button">2</button>
+                </div>
+                <div>
+                  <input
+                          v-if="isShowCreateGroup"
+                          type="checkbox"
+                          class="flex items-center justify-between text-purple rounded-full overflow-hidden w-full pl-6 cursor-pointer select-none"
+                          :id="'user_' + data.user_id"
+                          :value="data.user_id"
+                          v-model="checkedNames"
+                  >
+                </div>
               </div>
             </transition-group>
           </draggable>
@@ -120,75 +114,64 @@
                     :title="data.name"
                     :time="data.time"
                     :image="data.image"
-                    class="custom-perfom-list"
-                    v-bind:class="{ 'after-clck-new-grp' : isShowCreateGroup}"
                   />
                   </router-link>
-                  <div class="custom-btn-grp">
-                    <div @click="approveBtn(data.user_id, data.is_feedback_sent)" class="m-1 content-center rounded-full grren-back h-10 flex items-center">
-                      <button class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide" type="button"><img src="/images/icons/right-tick.svg" alt="right-tick" /></button>
-                    </div>
-                    <div @click="rejectBtn(data.user_id, data.is_feedback_sent)" class="m-1 content-center rounded-full red-back h-10 flex items-center">
-                      <button class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide" type="button"><img src="/images/icons/delete-icon.svg" alt="delete-icon" /></button>
-                    </div>
-                  </div>
+                <div @click="approveBtn(data.user_id, data.is_feedback_sent)" class="m-1 content-center rounded-full grren-back h-10 flex items-center">
+                  <button class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide" type="button">1</button>
+                </div>
+                <div @click="rejectBtn(data.user_id, data.is_feedback_sent)" class="m-1 content-center rounded-full red-back h-10 flex items-center">
+                  <button class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide" type="button">2</button>
+                </div>
                 <div>
-                  <div class="check-grp" v-bind:class="{ 'after-check-grp' : isShowCreateGroup}">
-                    <input
-                            v-if="isShowCreateGroup"
-                            type="checkbox"
-                            class="flex items-center justify-between text-purple rounded-full overflow-hidden w-full pl-6 cursor-pointer select-none"
-                            :id="'user_' + data.user_id"
-                            :value="data.user_id"
-                            v-model="checkedNames"
-                    >
-                    <label :for="'user_' + data.user_id"></label>
-                  </div>
+                  <input
+                          v-if="isShowCreateGroup"
+                          type="checkbox"
+                          class="flex items-center justify-between text-purple rounded-full overflow-hidden w-full pl-6 cursor-pointer select-none"
+                          :id="'user_' + data.user_id"
+                          :value="data.user_id"
+                          v-model="checkedNames"
+                  >
                 </div>
               </div>
             </transition-group>
           </draggable>
-          <modal :width="390" :adaptive="true" name="showApproveMdl" class="custom-event-popup">
-            <button @click="$modal.hide('showApproveMdl')" class="popup-close-btn">
+          <modal :width="500" height="380" :adaptive="true" name="showApproveMdl">
+            <button @click="$modal.hide('showApproveMdl')">
               <i class="material-icons" style="font-size: 35px;color: black;">clear</i>
             </button>
             <form @submit.prevent="handleApprMdlFrm('approved')">
             <h2 style="text-align: center;" class="text-purple">Instant Feedback</h2>
-            <p class="text-purple">Send a Message</p>
+            <h2 class="text-purple">Send a Message</h2>
             <base-input
                     type="textarea"
                     v-model="comment"
                     placeholder="Add a brief message"
-                    class="custom-popup-textarea"
+                    class="px-2 py-2 w-2/3"
                     :custom-classes="['border', 'border-purple', 'mt-0']"
             />
-            <p>Recommend an Audition</p>
+            <h2>Recommend an Audition</h2>
 
               <v-select label="title" v-model="selectedAudition" :options="options" @search="fetchOptions"/>
-              <div class="text-center">
-              <base-button type="submit" expanded class="right-submit-btn">Submit</base-button>
-              </div>
+              <base-button type="submit" expanded>Submit</base-button>
             </form>
           </modal>
-          <modal :width="390" :adaptive="true" name="showRejectMdl" class="custom-event-popup">
-            <button @click="$modal.hide('showRejectMdl')" class="popup-close-btn">
+          <modal :width="500" height="380" :adaptive="true" name="showRejectMdl">
+            <button @click="$modal.hide('showRejectMdl')">
               <i class="material-icons" style="font-size: 35px;color: black;">clear</i>
             </button>
             <form @submit.prevent="handleApprMdlFrm('rejected')">
               <h2 style="text-align: center;" class="text-purple">Instant Feedback</h2>
-              <p class="text-purple">Performers who have been hidden will receive the message:</p>
+              <h2 class="text-purple">Performers who have been hidden will receive the message:</h2>
               <base-input
                 type="text"
                 v-model="feedbackText"
                 readonly
-                class="w-full custom-popup-input"
+                class="w-full px-2"
                 :custom-classes="['border', 'border-purple']"
               />
-              <p>To change feedback go to Instant Feedback in Settings.</p>
+              <h2>To change feedback go to Instant Feedback in Settings.</h2>
               <base-button type="submit" expanded>Done</base-button>
-              <div class="text-center">
-                <button type="button" @click="dontShowBtn" class="custom-small-btn">Don’t show me this again</button>
-              </div>
+              <button type="button" @click="dontShowBtn">Don’t show me this again</button>
             </form>
           </modal>
         </div>
