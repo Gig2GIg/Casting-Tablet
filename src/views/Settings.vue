@@ -13,18 +13,18 @@
         <div class="py-4">
           <div class="flex items-center px-3">
             <div class="mr-6">
-              <img
-                :src="user.image.url"
+              <img                
+                :src="user.image ? user.image.url : ''"
                 class="h-24 w-24 rounded"
                 alt="Logo"
               >
             </div>
             <div class="w-6/12 py-8">
               <p class="font-bold">
-                {{ user.details.first_name }} {{ user.details.last_name }}
+                {{ user.details?user.details.first_name + ' ' + user.details.last_name:"" }}
               </p>
               <p class="font-bold">
-                {{ user.details.agency_name }}
+                {{ user.details ? user.details.agency_name : '' }}
               </p>
             </div>
           </div>
@@ -164,7 +164,7 @@
             </svg>
           </div>
         </div>
-        <div
+        <!-- <div
           class="mt-4 flex flex-wrap py-2 px-4 border-b-2 border-gray-300 mr-2 cursor-pointer font-bold"
           @click="tabSelected = 'faq'; hideMenuInfo = true"
         >
@@ -190,7 +190,7 @@
               </g>
             </svg>
           </div>
-        </div>
+        </div> -->
         <div
           class="mt-4 flex flex-wrap py-2 px-4 border-b-2 border-gray-300 mr-2 cursor-pointer font-bold"
           @click="tabSelected = 'termsofuse'; hideMenuInfo = true"
@@ -218,13 +218,13 @@
             </svg>
           </div>
         </div>
-        <div class="mt-4 flex flex-wrap py-2 px-4 border-b-2 border-gray-300 mr-2 cursor-pointer font-bold">
-          <a
-            class="w-10/12"
-            :href="['mailto:' + mailContactTo]"
-          >
-            <p class="font-bold">Contact Us</p>
-          </a>
+        <div class="mt-4 flex flex-wrap py-2 px-4 border-b-2 border-gray-300 mr-2 cursor-pointer font-bold"
+            @click="tabSelected = 'contact_us'; hideMenuInfo = true"
+            >          
+            <div class="w-10/12">
+              <p class="font-bold">Contact Us</p>
+            </div>
+            
           <div class="w-2/12">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -805,9 +805,9 @@
           </svg>
         </div>
 
-        <div class="py-4 px-4 mr-2 cursor-pointer font-bold text-justify">
-          Lorem ipsum dolor sit, amet consectetur adipisicing elit. Incidunt nisi labore natus, quod repellendus cupiditate et facilis voluptates accusamus blanditiis? Necessitatibus repudiandae voluptatem explicabo tempora omnis accusamus eum! Facilis voluptate pariatur, corporis animi, quod quae quos fugiat amet nesciunt repellendus aut beatae facere quis consectetur dignissimos ratione rem hic molestias aliquid delectus sequi quas odit. Officiis blanditiis dicta ducimus exercitationem in perferendis expedita aliquid quibusdam doloremque mollitia aliquam suscipit autem reprehenderit ad explicabo incidunt consequuntur illo fuga, numquam cupiditate nisi! Ullam, neque repellendus unde deleniti tempore hic eligendi est recusandae inventore ipsam cupiditate placeat ut consectetur eaque laborum, ab officiis facilis delectus animi fugit. Maxime cumque natus, dicta eius voluptate nostrum ipsa consequatur, corporis quaerat repellat earum adipisci fugiat, laborum reprehenderit. Alias accusantium ut ipsa amet facere necessitatibus autem molestias! Repellat, harum maxime sunt corrupti eum qui amet quibusdam, quaerat optio odit iste rerum? Dolorem est ad doloremque reiciendis adipisci quas illo maiores veniam exercitationem a odit fuga nisi eligendi consectetur culpa facere, voluptate voluptas, modi explicabo perspiciatis. Illo dolores libero iure excepturi incidunt quam explicabo, fuga, harum quisquam placeat, debitis modi molestias quia sequi reiciendis necessitatibus corrupti aliquam atque vitae voluptatem! Velit fuga neque amet harum eius? Vitae, ut!
+        <div v-html="cmsContentDetails.app_info ? cmsContentDetails.app_info: ''">
         </div>
+
       </div>
 
       <div
@@ -915,8 +915,7 @@
           </svg>
         </div>
 
-        <div class="py-4 px-4 mr-2 cursor-pointer font-bold text-justify">
-          Lorem ipsum dolor sit, amet consectetur adipisicing elit. Incidunt nisi labore natus, quod repellendus cupiditate et facilis voluptates accusamus blanditiis? Necessitatibus repudiandae voluptatem explicabo tempora omnis accusamus eum! Facilis voluptate pariatur, corporis animi, quod quae quos fugiat amet nesciunt repellendus aut beatae facere quis consectetur dignissimos ratione rem hic molestias aliquid delectus sequi quas odit. Officiis blanditiis dicta ducimus exercitationem in perferendis expedita aliquid quibusdam doloremque mollitia aliquam suscipit autem reprehenderit ad explicabo incidunt consequuntur illo fuga, numquam cupiditate nisi! Ullam, neque repellendus unde deleniti tempore hic eligendi est recusandae inventore ipsam cupiditate placeat ut consectetur eaque laborum, ab officiis facilis delectus animi fugit. Maxime cumque natus, dicta eius voluptate nostrum ipsa consequatur, corporis quaerat repellat earum adipisci fugiat, laborum reprehenderit. Alias accusantium ut ipsa amet facere necessitatibus autem molestias! Repellat, harum maxime sunt corrupti eum qui amet quibusdam, quaerat optio odit iste rerum? Dolorem est ad doloremque reiciendis adipisci quas illo maiores veniam exercitationem a odit fuga nisi eligendi consectetur culpa facere, voluptate voluptas, modi explicabo perspiciatis. Illo dolores libero iure excepturi incidunt quam explicabo, fuga, harum quisquam placeat, debitis modi molestias quia sequi reiciendis necessitatibus corrupti aliquam atque vitae voluptatem! Velit fuga neque amet harum eius? Vitae, ut!
+        <div v-html="cmsContentDetails.term_of_use ? cmsContentDetails.term_of_use : ''">
         </div>
       </div>
 
@@ -970,8 +969,60 @@
           </svg>
         </div>
 
-        <div class="py-4 px-4 mr-2 cursor-pointer font-bold text-justify">
-          Lorem ipsum dolor sit, amet consectetur adipisicing elit. Incidunt nisi labore natus, quod repellendus cupiditate et facilis voluptates accusamus blanditiis? Necessitatibus repudiandae voluptatem explicabo tempora omnis accusamus eum! Facilis voluptate pariatur, corporis animi, quod quae quos fugiat amet nesciunt repellendus aut beatae facere quis consectetur dignissimos ratione rem hic molestias aliquid delectus sequi quas odit. Officiis blanditiis dicta ducimus exercitationem in perferendis expedita aliquid quibusdam doloremque mollitia aliquam suscipit autem reprehenderit ad explicabo incidunt consequuntur illo fuga, numquam cupiditate nisi! Ullam, neque repellendus unde deleniti tempore hic eligendi est recusandae inventore ipsam cupiditate placeat ut consectetur eaque laborum, ab officiis facilis delectus animi fugit. Maxime cumque natus, dicta eius voluptate nostrum ipsa consequatur, corporis quaerat repellat earum adipisci fugiat, laborum reprehenderit. Alias accusantium ut ipsa amet facere necessitatibus autem molestias! Repellat, harum maxime sunt corrupti eum qui amet quibusdam, quaerat optio odit iste rerum? Dolorem est ad doloremque reiciendis adipisci quas illo maiores veniam exercitationem a odit fuga nisi eligendi consectetur culpa facere, voluptate voluptas, modi explicabo perspiciatis. Illo dolores libero iure excepturi incidunt quam explicabo, fuga, harum quisquam placeat, debitis modi molestias quia sequi reiciendis necessitatibus corrupti aliquam atque vitae voluptatem! Velit fuga neque amet harum eius? Vitae, ut!
+        <div v-html="cmsContentDetails.privacy_policy ? cmsContentDetails.privacy_policy : ''">          
+        </div>
+      </div>
+      <div
+        v-if="tabSelected === 'contact_us'"
+        class="tags w-9/12 shadow-lg mx-auto px-3 py-3 mt-6"
+      >
+        <div
+          class="cursor-pointer"
+          @click="hideMenuInfo = false; tabSelected = ''"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="30.049"
+            height="39.187"
+          >
+            <defs>
+              <filter
+                id="a"
+                x="0"
+                y="0"
+                width="30.049"
+                height="39.187"
+                filterUnits="userSpaceOnUse"
+              >
+                <feOffset dy="3" />
+                <feGaussianBlur
+                  stdDeviation="3"
+                  result="blur"
+                />
+                <feFlood flood-opacity=".161" />
+                <feComposite
+                  operator="in"
+                  in2="blur"
+                />
+                <feComposite in="SourceGraphic" />
+              </filter>
+            </defs>
+            <g data-name="Grupo 39">
+              <g
+                filter="url(#a)"
+                data-name="Grupo 38"
+              >
+                <path
+                  data-name="Trazado 24"
+                  d="M12.447 16.594L20.641 8.4a1.406 1.406 0 10-1.988-1.988l-8.88 8.88a1.453 1.453 0 000 2.6l8.88 8.88a1.406 1.406 0 101.988-1.988z"
+                  fill="#4d2545"
+                />
+              </g>
+            </g>
+          </svg>
+        </div>
+
+        <div v-html="cmsContentDetails.contact_us ? cmsContentDetails.contact_us : ''">          
         </div>
       </div>
     </div>
@@ -981,10 +1032,9 @@
 </template>
 
 <script>
-import axios from 'axios';
-import states from '@/utils/states';
-import {mapActions, mapState} from 'vuex';
-
+import axios from "axios";
+import states from "@/utils/states";
+import { mapActions, mapState } from "vuex";
 
 export default {
   data() {
@@ -993,15 +1043,16 @@ export default {
       formfeatured: {},
       selectedFile: {},
       hideMenuInfo: false,
-      tabSelected: '',
-      mailContactTo: 'info@gig2gig.com',
+      tabSelected: "",
+      mailContactTo: "info@gig2gig.com",
       listNotificacions: [],
       listAuditionFeedback: [],
-      feedbackText:"",
+      feedbackText: "",
+      cmsContentDetails: {},
       states
     };
   },
-  async mounted(){
+  async mounted() {
     await this.fetch();
     this.user.details;
     this.form.name = this.user.details.first_name;
@@ -1014,142 +1065,174 @@ export default {
     this.form.gender = this.user.details.gender;
     this.form.state = this.user.details.state;
     let birth = new Date(this.user.details.birth);
-    this.form.location= "12,33334 - 23,00000";
-    this.form.image= this.user.image.url;
+    this.form.location = "12,33334 - 23,00000";
+    this.form.image = this.user.image.url;
     birth.setDate(birth.getDate() + 1);
     this.form.birth = birth;
     // debugger;
   },
-  watch:{
-    tabSelected:{
-      immediate:true,
-      async handler(value){
-        if(value == "instantFeedback"){
-          try{
-            let { data: { data } } = await axios.get(`t/instantfeedbacks/defaultFeedback/${this.user.id}`);
-            this.feedbackText = data.comment ? data.comment : "Default Feedback Text";
-          }catch(e){
-            console.log(e);
-          }
+  watch: {
+    tabSelected: {
+      immediate: true,
+      async handler(value) {        
+        switch (value) {
+          case "instantFeedback":
+            this.getInstantFeedback();
+            break;
+          case "termsofuse":
+            this.getCMSContent();
+            break;
+          case "policy":
+            this.getCMSContent();
+            break;    
+          case "appinfo":
+            this.getCMSContent();
+            break;
+          case "contact_us":
+            this.getCMSContent();
+            break;
+          default:
+            break;
         }
       }
     }
   },
   computed: {
-    ...mapState('profile', ['user']),
+    ...mapState("profile", ["user"])
   },
   methods: {
-    ...mapActions('profile', ['fetch']),
-    async updateFeedBackTxt(){
-      try{
-        let res = await axios.post(`/t/instantfeedbacks/changeDefault`, {feedback: this.feedbackText});
+    ...mapActions("profile", ["fetch"]),
+    async updateFeedBackTxt() {
+      try {
+        let res = await axios.post(`/t/instantfeedbacks/changeDefault`, {
+          feedback: this.feedbackText
+        });
         this.$toasted.success("Feedback updated successfully.");
-      }catch(e){
+      } catch (e) {
         console.log(e);
         this.$toasted.success(e.response.data.data);
       }
     },
-    async updateData(){
-      try{
-        let action = await axios.put(`/t/users/update/${this.user.id}`, this.form);
-        this.$toasted.success('The user data has updated successfully.');
-
-      }
-      catch(e){
+    async updateData() {
+      try {
+        let action = await axios.put(
+          `/t/users/update/${this.user.id}`,
+          this.form
+        );
+        this.$toasted.success("The user data has updated successfully.");
+      } catch (e) {
         console.log(e);
-        this.$toasted.error('User data not updated, try later.');
+        this.$toasted.error("User data not updated, try later.");
       }
     },
-
-  },
-
+    async getInstantFeedback() {
+      try {
+        let { data: { data } } = await axios.get(
+          `t/instantfeedbacks/defaultFeedback/${this.user.id}`
+        );
+        this.feedbackText = data.comment
+          ? data.comment
+          : "Default Feedback Text";
+      } catch (e) {
+        console.log(e);
+      }
+    },
+    async getCMSContent() {
+      try {
+        let { data: { data } } = await axios.get(`/t/content-settings`);
+        this.cmsContentDetails = data[0] ? data[0] : {};
+      } catch (e) {
+        console.log(e);
+      }
+    }
+  }
 };
 </script>
 
 <style>
 @media (min-width: 1280px) {
-    .container {
-        max-width: 1450px;
-    }
+  .container {
+    max-width: 1450px;
+  }
 
-    .upcomingbtn {
-        border-color: #4d2545;
-        color: #4d2545;
-    }
+  .upcomingbtn {
+    border-color: #4d2545;
+    color: #4d2545;
+  }
 
-    .appointmentbtn {
-        background-color: #4d2545;
-    }
+  .appointmentbtn {
+    background-color: #4d2545;
+  }
 }
 
 .switch {
-    position: relative;
-    display: inline-block;
-    width: 75px;
-    height: 34px;
+  position: relative;
+  display: inline-block;
+  width: 75px;
+  height: 34px;
 }
 
 .switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
+  opacity: 0;
+  width: 0;
+  height: 0;
 }
 
 .slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #ccc;
-    -webkit-transition: .4s;
-    transition: .4s;
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
 }
 
 .slider:before {
-    position: absolute;
-    content: "";
-    height: 26px;
-    width: 26px;
-    left: 4px;
-    bottom: 4px;
-    background-color: white;
-    -webkit-transition: .4s;
-    transition: .4s;
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
 }
 
-input:checked+.slider {
-    background-color: #4D2545;
+input:checked + .slider {
+  background-color: #4d2545;
 }
 
-input:focus+.slider {
-    box-shadow: 0 0 1px #4D2545;
+input:focus + .slider {
+  box-shadow: 0 0 1px #4d2545;
 }
 
-input:checked+.slider:before {
-    -webkit-transform: translateX(38px);
-    -ms-transform: translateX(38px);
-    transform: translateX(38px);
+input:checked + .slider:before {
+  -webkit-transform: translateX(38px);
+  -ms-transform: translateX(38px);
+  transform: translateX(38px);
 }
 
 /* Rounded sliders */
 .slider.round {
-    border-radius: 34px;
+  border-radius: 34px;
 }
 
 .slider.round:before {
-    border-radius: 50%;
+  border-radius: 50%;
 }
 
 .description {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;
-    line-height: 16px;
-    max-height: 48px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-height: 16px;
+  max-height: 48px;
 }
 .custom-setting-form {
     width: 50%;

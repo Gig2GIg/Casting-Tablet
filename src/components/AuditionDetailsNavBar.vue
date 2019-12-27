@@ -9,7 +9,7 @@
           </div>
             <p class="w-full text-white tracking-wide text-lg ml-5 tracking-tight truncate">{{file.name}}</p>
         </div>
-      </div>  
+      </div>
 
     <div class="flex flex-col" v-if="isSearchEnable">
       <div
@@ -40,9 +40,9 @@
         <!-- <div class="text-white h-6 ml-auto mr-5" 
           v-if="!isShowCreateGroup && isShowCloseGroup"
           >
-          <button 
+          <button
           @click="recordGroup()" >Record Group</button>
-          <button 
+          <button
           class="ml-5"
           @click="closeGroup()" >Close Group</button>
         </div>    -->
@@ -81,7 +81,7 @@
 
 
   </nav>
-  
+
 </template>
 
 <script>
@@ -208,7 +208,7 @@ export default {
             url: url,
             appointment_id: this.$route.params.round,
             performer: "",
-            slot_id: 29,
+            slot_id: "",
             name: this.file.name || time() + ".mp4"
           };
           let files = await axios.post(

@@ -60,6 +60,47 @@
             </transition-group>
           </draggable>
           <draggable
+                  v-else-if="finalCastListUser && finalCastListUser.length > 0"
+                  class="dragArea list-group flex flex-wrap"
+                  :list="finalCastListUser"
+                  :group="{ name: 'people', pull: 'clone', put: false }"
+                  @change="log"
+                  :move="checkMove"
+          >
+            <transition-group  class="flex flex-wrap justify-center content-center" type="transition" :name="!drag ? 'flip-list' : null">
+              <div
+
+                      class="list-group-item"
+                      v-for="(data) in finalCastListUser"
+                      :key="data.user_id"
+              >
+                <router-link :to="{ name: 'auditions/user', params: {id: data.user_id, round: round.id, audition:$route.params.id} }">
+                  <card-user
+                          :title="data.name"
+                          :time="data.time"
+                          :image="data.image"
+                  />
+                </router-link>
+                <div @click="approveBtn(data.user_id, data.is_feedback_sent)" class="m-1 content-center rounded-full grren-back h-10 flex items-center">
+                  <button class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide" type="button">1</button>
+                </div>
+                <div @click="rejectBtn(data.user_id, data.is_feedback_sent)" class="m-1 content-center rounded-full red-back h-10 flex items-center">
+                  <button class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide" type="button">2</button>
+                </div>
+                <div>
+                  <input
+                          v-if="isShowCreateGroup"
+                          type="checkbox"
+                          class="flex items-center justify-between text-purple rounded-full overflow-hidden w-full pl-6 cursor-pointer select-none"
+                          :id="'user_' + data.user_id"
+                          :value="data.user_id"
+                          v-model="checkedNames"
+                  >
+                </div>
+              </div>
+            </transition-group>
+          </draggable>
+          <draggable
             v-else
             class="dragArea list-group flex flex-wrap"
             :list="userList"
@@ -248,7 +289,8 @@ export default {
       isShowCloseGroup: false,
       isClickCloseGroup: false,
       finalUserList: [],
-      isShowPerformer : false
+      isShowPerformer : false,
+      finalCastListUser: []
     };
   },
   destroyed:()=>{
@@ -534,6 +576,7 @@ export default {
           await this.removePerformer(filtered_data[0].id);
         }
         await this.chargeFinalCast();
+        this.toggleFinalCastListUser(item.added.element.user_id);
       } catch (e) {
         console.log(e);
       }
@@ -561,6 +604,7 @@ export default {
       this.mainRoles.map(role => {
         if (this.finalCast.length > 0) {
           this.finalCast.map(user => {
+            this.toggleFinalCastListUser(user.user_id)
             if (user.rol_id == role.id) {
               role.name = user.name;
               role.image.url = user.image;
@@ -576,6 +620,16 @@ export default {
     },
     checkMove: function(evt) {
       evt.draggedContext.element.name !== "apple";
+    },
+    toggleFinalCastListUser(performer_id){
+      this.finalCastListUser = [];
+      this.finalUserList = [];
+      let entry = _.each(this.userList, user => {
+        if(user.user_id != performer_id){
+          this.finalCastListUser.push(user);
+        }
+      });
+      // if (entry) this.finalCastListUser.push(entry);
     },
     async changeView(status) {
       this.status = status;
