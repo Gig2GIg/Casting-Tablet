@@ -345,7 +345,7 @@
   <div class="pane relative" :style="{ flexGrow: 1 }">
     <div class="absolute" v-for="data in currentUser" :key="data.id">
       <div class="flex flex-wrap content-center justify-center text-center">
-        <div class="w-1/2 mx-auto py-2">
+        <div class="mx-auto py-2">
           <base-input
                   v-if="!isAssignedNumber"
                   v-model="addNumberText"

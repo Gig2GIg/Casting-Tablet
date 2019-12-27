@@ -669,8 +669,8 @@
           </svg>
         </div>
         <div class="py-4 px-4  mr-2 font-bold">
-          <form @submit.prevent="updateFeedBackTxt()">
-            <h2 style="text-align: center">Performers who have been hidden will receive the message:</h2>
+          <form @submit.prevent="updateFeedBackTxt()" class="custom-setting-form">
+            <p style="text-align: center">Performers who have been hidden will receive the message:</p>
             <base-input
               type="text"
               v-model="feedbackText"
@@ -1150,5 +1150,23 @@ input:checked+.slider:before {
     -webkit-line-clamp: 3;
     line-height: 16px;
     max-height: 48px;
+}
+.custom-setting-form {
+    width: 50%;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.custom-setting-form p {
+    font-weight: normal;
+    margin-bottom: 15px;
+}
+.custom-setting-form input {
+    background-color: #F5F5F5;
+    border-radius: 8px !important;
+    border: 0;
+}
+.custom-setting-form .bg-purple-gradient {
+    width: 220px !important;
 }
 </style>

@@ -169,25 +169,19 @@
         </div>
       </div>
     </div>
-    <div class="flex w-full h-96 mt-16">
-      <div class="w-full shadow-lg ml-5 border border-gray-300 overflow-auto">
-        <p class="text-center text-2xl text-purple font-bold">Audition Videos</p>
-        <div
-                v-for="data in auditionList"
+    <div class="custom-video-wrap ml-5 shadow-lg border border-gray-300">
+      <h2>Audition Videos</h2>
+        <ul class="custom-video-list">
+          <li   v-for="data in auditionList"
                 :key="data.id"
-                class="flex m-3 content-center w-full h-16 flex justify-center"
-        >
-          <div class="flex justify-center w-90 h-80 button-detail rounded-lg">
-            <div class="flex justify-center h-100 content-center flex-wrap w-4/3 h-full">
-              <img :src="data.cover" alt="Icon" class="h-10" />
+                class="">
+            <div class="video-info-wrap">
+              <strong>{{ data.title }}</strong>
+              <p>{{ data.videos }} Videos</p>
+              <figure><img :src="data.cover" alt="Icon" class="h-10" /></figure>
             </div>
-            <div  class="flex h-100 content-center items-center relative w-full h-full bg-white mp-box">
-              <span class="text-center cus-spn-cls text-purple font-bold w-full">{{ data.title }}</span>
-              <span class="text-center cus-spn-cls text-purple font-bold w-full">{{ data.videos }} Videos</span>
-            </div>
-          </div>
-        </div>
-      </div>
+          </li>
+        </ul>
     </div>
   </div>
   </div>
@@ -359,5 +353,65 @@ nav {
 	background: #fff;
   border-radius: .4em;
   box-shadow: 0px 0px 6px #B2B2B2;
+}
+.custom-video-wrap {
+    padding: 30px;
+    width: 100%;
+    margin-top: 30px;
+}
+.custom-video-wrap h2 {
+    font-size: 20px;
+    color: #4D2545;
+    text-align: center;
+    font-weight: 600;
+    margin-bottom: 27px;
+}
+.custom-video-list {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    height: 273px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+.custom-video-list li {
+    width: 48%;
+    margin: 0;
+    margin-bottom: 27px;
+    cursor: pointer;
+}
+.video-info-wrap {
+    padding: 15px;
+    display: flex;
+    position: relative;
+    text-align: left;
+    flex-wrap: wrap;
+    border: 1px solid #D6D6D6;
+    border-radius: 4px;
+}
+.video-info-wrap strong {
+    font-size: 15px;
+    font-weight: 600;
+    color: #4D2545;
+    width: calc(100% - 90px);
+}
+.video-info-wrap p {
+    font-size: 13px;
+    color: #aaa;
+    width: calc(100% - 90px);
+}
+.video-info-wrap figure {
+    position: absolute;
+    right: -5px;
+    width: 100px;
+    height: 70px;
+    border-radius: 4px 4px 4px 19px;
+    overflow: hidden;
+    top: -5px;
+}
+.video-info-wrap figure img {
+    height: 100% !important;
+    width: 100%;
 }
 </style>

@@ -26,19 +26,16 @@
       >
       </div>
     </div>    
-    <div class="w-1/2 flex flex-col" v-if="isShowManageGroup && performerCount && performerCount > 0">             
+    <div class="flex flex-col custom-top-nav" v-if="isShowManageGroup && performerCount && performerCount > 0">             
         <div 
           v-if="isShowNewGroup"
           class="text-white h-6 ml-auto mr-5" >
-          <button @click="showCreateGroup(true)">New Group</button>
+          <button @click="showCreateGroup(true)" class="custom-btn-group"><img src="/images/icons/group-icon.svg" alt="group-icon"/>New Group</button>
         </div>   
         <div class="text-white h-6 ml-auto mr-5" 
           v-if="!isShowNewGroup && isShowCreateGroup" >
-          <button 
-          @click="cancelGroup()" >Cancel Group</button>
-          <button 
-          class="ml-5"
-          @click="createGroup()" >Create Group</button>
+          <button @click="cancelGroup()" class="custom-btn btn-empty">Cancel Group</button>
+          <button @click="createGroup()" class="custom-btn ml-5 btn-fill">Create Group</button>
         </div>   
         <!-- <div class="text-white h-6 ml-auto mr-5" 
           v-if="!isShowCreateGroup && isShowCloseGroup"
@@ -234,5 +231,33 @@ export default {
 <style scoped>
 nav {
   background-image: linear-gradient(#4d2545, #782541);
+}
+.custom-top-nav {
+    width: 100%;
+}
+.custom-btn-group {
+    display: flex;
+    border: 1px solid #fff;
+    padding: 5px 18px;
+    align-items: center;
+    font-size: 16px;
+}
+.custom-btn-group img {
+    width: 32px;
+    margin-right: 5px;
+}
+.custom-top-nav .text-white.h-6 {
+    height: auto !important;
+}
+.custom-btn {
+    border: 1px solid #fff;
+    padding: 5px 18px;
+    font-size: 16px;
+    display: inline-block;
+    border-radius: 4px;
+}
+.custom-btn.btn-fill {
+    background-color: #fff;
+    color: #4D2545;
 }
 </style>
