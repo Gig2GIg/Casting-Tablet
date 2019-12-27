@@ -32,8 +32,6 @@
                     :title="data.name"
                     :time="data.time"
                     :image="data.image"
-                    class="custom-perfom-list"
-                    v-bind:class="{ 'after-clck-new-grp' : isShowCreateGroup}"
                   />
                   </router-link>
                   <div class="custom-btn-grp">
@@ -72,7 +70,6 @@
           >
             <transition-group  class="flex flex-wrap justify-center content-center" type="transition" :name="!drag ? 'flip-list' : null">
               <div
-
                       class="list-group-item"
                       v-for="(data) in finalCastListUser"
                       :key="data.user_id"
@@ -108,8 +105,6 @@
                     :title="data.name"
                     :time="data.time"
                     :image="data.image"
-                    class="custom-perfom-list"
-                    v-bind:class="{ 'after-clck-new-grp' : isShowCreateGroup}"
                   />
                   </router-link>
                   <div class="custom-btn-grp">
@@ -134,47 +129,43 @@
               </div>
             </transition-group>
           </draggable>
-          <modal :width="390" :adaptive="true" name="showApproveMdl" class="custom-event-popup">
-            <button @click="$modal.hide('showApproveMdl')" class="popup-close-btn">
+          <modal :width="500" height="380" :adaptive="true" name="showApproveMdl">
+            <button @click="$modal.hide('showApproveMdl')">
               <i class="material-icons" style="font-size: 35px;color: black;">clear</i>
             </button>
             <form @submit.prevent="handleApprMdlFrm('approved')">
             <h2 style="text-align: center;" class="text-purple">Instant Feedback</h2>
-            <p class="text-purple">Send a Message</p>
+            <h2 class="text-purple">Send a Message</h2>
             <base-input
                     type="textarea"
                     v-model="comment"
                     placeholder="Add a brief message"
-                    class="custom-popup-textarea"
+                    class="px-2 py-2 w-2/3"
                     :custom-classes="['border', 'border-purple', 'mt-0']"
             />
-            <p>Recommend an Audition</p>
+            <h2>Recommend an Audition</h2>
 
               <v-select label="title" v-model="selectedAudition" :options="options" @search="fetchOptions"/>
-              <div class="text-center">
-              <base-button type="submit" expanded class="right-submit-btn">Submit</base-button>
-              </div>
+              <base-button type="submit" expanded>Submit</base-button>
             </form>
           </modal>
-          <modal :width="390" :adaptive="true" name="showRejectMdl" class="custom-event-popup">
-            <button @click="$modal.hide('showRejectMdl')" class="popup-close-btn">
+          <modal :width="500" height="380" :adaptive="true" name="showRejectMdl">
+            <button @click="$modal.hide('showRejectMdl')">
               <i class="material-icons" style="font-size: 35px;color: black;">clear</i>
             </button>
             <form @submit.prevent="handleApprMdlFrm('rejected')">
               <h2 style="text-align: center;" class="text-purple">Instant Feedback</h2>
-              <p class="text-purple">Performers who have been hidden will receive the message:</p>
+              <h2 class="text-purple">Performers who have been hidden will receive the message:</h2>
               <base-input
                 type="text"
                 v-model="feedbackText"
                 readonly
-                class="w-full custom-popup-input"
+                class="w-full px-2"
                 :custom-classes="['border', 'border-purple']"
               />
-              <p>To change feedback go to Instant Feedback in Settings.</p>
+              <h2>To change feedback go to Instant Feedback in Settings.</h2>
               <base-button type="submit" expanded>Done</base-button>
-              <div class="text-center">
-                <button type="button" @click="dontShowBtn" class="custom-small-btn">Don’t show me this again</button>
-              </div>
+              <button type="button" @click="dontShowBtn">Don’t show me this again</button>
             </form>
           </modal>
         </div>
