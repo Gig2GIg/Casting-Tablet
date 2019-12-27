@@ -37,8 +37,11 @@
                   />
                   </router-link>
                   <div class="custom-btn-grp">
-                    <div @click="approveBtn(data.user_id, data.is_feedback_sent)" class="m-1 content-center rounded-full grren-back h-10 flex items-center">
+                    <!-- <div @click="approveBtn(data.user_id, data.is_feedback_sent)" class="m-1 content-center rounded-full grren-back h-10 flex items-center">
                       <button class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide" type="button"><img src="/images/icons/delete-icon.svg" alt="right-tick" /></button>
+                    </div> -->
+                    <div @click="approveBtn(data.user_id, data.is_feedback_sent)" class="m-1 content-center rounded-full grren-back h-10 flex items-center">
+                      <button class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide" type="button"><img src="/images/icons/right-tick.svg" alt="right-tick" /></button>
                     </div>
                     <div @click="rejectBtn(data.user_id, data.is_feedback_sent)" class="m-1 content-center rounded-full red-back h-10 flex items-center">
                       <button class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide" type="button"><img src="/images/icons/delete-icon.svg" alt="delete-icon" /></button>
@@ -80,23 +83,7 @@
                           :time="data.time"
                           :image="data.image"
                   />
-                </router-link>
-                <div @click="approveBtn(data.user_id, data.is_feedback_sent)" class="m-1 content-center rounded-full grren-back h-10 flex items-center">
-                  <button class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide" type="button">1</button>
-                </div>
-                <div @click="rejectBtn(data.user_id, data.is_feedback_sent)" class="m-1 content-center rounded-full red-back h-10 flex items-center">
-                  <button class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide" type="button">2</button>
-                </div>
-                <div>
-                  <input
-                          v-if="isShowCreateGroup"
-                          type="checkbox"
-                          class="flex items-center justify-between text-purple rounded-full overflow-hidden w-full pl-6 cursor-pointer select-none"
-                          :id="'user_' + data.user_id"
-                          :value="data.user_id"
-                          v-model="checkedNames"
-                  >
-                </div>
+                </router-link>                               
               </div>
             </transition-group>
           </draggable>
@@ -115,7 +102,8 @@
                 v-for="(data) in userList"
                 :key="data.user_id"
               >
-                  <router-link :to="{ name: 'auditions/user', params: {id: data.user_id, round: round.id, audition:$route.params.id} }">
+                  <!-- <router-link :to="{ name: 'auditions/user', params: {id: data.user_id, round: round.id, audition:$route.params.id} }"> -->
+                  <router-link v-bind:class="{ 'pointer-none' : isShowCreateGroup}" :to="!isShowCreateGroup ? { name: 'auditions/user', params: {id: data.user_id, round: round.id, audition:$route.params.id} } : { name: 'auditions/detail', params: {id: $route.params.id} }">                  
                   <card-user
                     :title="data.name"
                     :time="data.time"
@@ -132,7 +120,6 @@
                       <button class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide" type="button"><img src="/images/icons/delete-icon.svg" alt="delete-icon" /></button>
                     </div>
                   </div>
-                <div>
                   <div class="check-grp" v-bind:class="{ 'after-check-grp' : isShowCreateGroup}">
                     <input
                             v-if="isShowCreateGroup"
@@ -144,7 +131,6 @@
                     >
                     <label :for="'user_' + data.user_id"></label>
                   </div>
-                </div>
               </div>
             </transition-group>
           </draggable>
@@ -843,5 +829,8 @@ export default {
 .check-grp.after-check-grp {
   opacity: 1;
   visibility: visible
+}
+.pointer-none {
+  cursor: default;
 }
 </style>
