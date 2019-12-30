@@ -1,0 +1,2 @@
+(window["webpackJsonp"]=window["webpackJsonp"]||[]).push([["auditions.update"],{"97ed":function(t,e,n){"use strict";n.r(e);var a=function(){var t=this,e=t.$createElement,n=t._self._c||e;return n("section",{staticClass:"w-4/5 mx-auto my-6"},[n("AuditionUpdateForm")],1)},o=[],i=n("d1a5"),u={name:"CreateAudition",components:{AuditionUpdateForm:i["default"]}},s=u,d=n("2877"),c=Object(d["a"])(s,a,o,!1,null,"4a961c95",null);e["default"]=c.exports}}]);
+//# sourceMappingURL=auditions.update.ad80524c.js.map
