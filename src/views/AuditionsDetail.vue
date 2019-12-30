@@ -32,6 +32,8 @@
                     :title="data.name"
                     :time="data.time"
                     :image="data.image"
+                    class="custom-perfom-list"
+                    v-bind:class="{ 'after-clck-new-grp' : isShowCreateGroup}"
                   />
                   </router-link>
                   <div class="custom-btn-grp">
@@ -105,6 +107,8 @@
                     :title="data.name"
                     :time="data.time"
                     :image="data.image"
+                    class="custom-perfom-list"
+                    v-bind:class="{ 'after-clck-new-grp' : isShowCreateGroup}"
                   />
                   </router-link>
                   <div class="custom-btn-grp">
@@ -267,6 +271,7 @@ export default {
       isClickCloseGroup: false,
       finalUserList: [],
       isShowPerformer : false,
+      isOpenGroup:false,
       finalCastListUser: []
     };
   },
@@ -289,6 +294,7 @@ export default {
     eventBus.$on("clickCancelGroup", value => {
       this.isShowNewGroup = true;
       this.isShowCreateGroup = !this.isShowNewGroup;
+      this.checkedNames = [];
     });
     eventBus.$on("createGroup", value => {
       this.isShowCreateGroup = value;
@@ -420,10 +426,14 @@ export default {
         let groupStatusRes = await axios.get(
           `/t/group/status/${this.round.id}`
         );
-        this.openGroupMember = groupStatusRes.data.data
+        this.openGroupMember = groupStatusRes.data.data        
           ? groupStatusRes.data.data
-          : [];
-        this.isShowCloseGroup = this.openGroupMember.length > 0 || false;
+          : [];        
+        this.isOpenGroup = this.isShowCloseGroup = this.openGroupMember.length > 0 || false;
+
+        // emit for side bar audition details view for handle close current round first check group is open or not
+        eventBus.$emit("isCurrentOpenGroup", this.isOpenGroup);
+
         this.showCloseGroup(this.isShowCloseGroup);
         await this.manageSelectedPerformer();
         this.isShowPerformer = true;

@@ -404,6 +404,7 @@
 <script>
 import { mapActions, mapState, mapGetters } from "vuex";
 import { eventBus } from "../../main";
+import axios from "axios";
 
 export default {
   props: [],
@@ -427,7 +428,18 @@ export default {
       openId: "",
       active: false,
       isShowManageGroup: false,
+      isOpenGroup : false,
+      isLastRoundGroupOpen : false,
+      lastRound : "",
     };
+  },
+   watch: {
+    rounds: function() {
+      if(this.rounds && this.rounds.length > 0){
+        this.lastRound = this.rounds[this.rounds.length-1];
+        this.getGroupdetails();
+      }
+    }
   },
   computed: {
     ...mapState("audition", ["audition", "videos"]),
@@ -437,6 +449,12 @@ export default {
     await this.fetchAuditionData(this.$route.params.id);
 
     this.$emit("statusSet", this.audition.status);
+  },
+  created() {  
+    console.log("TCL: created -> this.audition", this.audition)
+    eventBus.$on("isCurrentOpenGroup", value => {
+      this.isOpenGroup = value;
+    });
   },
   methods: {
     handleNewGroup(round_status){
@@ -505,6 +523,11 @@ export default {
       this.statusChild = data;
     },
     async closeRounds() {
+      this.$toasted.clear();
+      if(this.isOpenGroup){
+        this.$toasted.error("Please close group first.");
+        return;
+      }
       await this.closeRound(this.roundActive.id);
       this.handleNewGroup(0);
       this.roundActive.status = 0;
@@ -520,6 +543,10 @@ export default {
       await this.$emit("statusSet", this.audition.status);
     },
     async close() {
+      if(this.isOpenGroup || this.isLastRoundGroupOpen){
+        this.$toasted.error("Please close group first.");
+        return;
+      }
       await this.closeAudition(this.audition.id);
       this.handleNewGroup(0);
       await this.$emit("statusSet", this.audition.status);
@@ -535,7 +562,20 @@ export default {
         await this.$emit("selected", payload);
       }
       this.roundActive = payload;
-    }
+    },
+    async getGroupdetails() {
+      try {
+        let groupStatusRes = await axios.get(
+          `/t/group/status/${this.lastRound.id}`
+        );
+        let openGroupMember = groupStatusRes.data.data        
+          ? groupStatusRes.data.data
+          : [];        
+        this.isLastRoundGroupOpen = openGroupMember.length > 0 || false;
+      } catch (ex) {
+        console.log(ex);
+      }
+    },
   }
 };
 </script>
