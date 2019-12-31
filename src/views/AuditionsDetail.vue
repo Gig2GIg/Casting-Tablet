@@ -13,7 +13,7 @@
       <div v-if="isShowPerformer && (status == 1 || finalCastState == true || round.length >0)" class=" flex flex-wrap ml-5">
         <div class="col-6">
           <draggable
-            v-if="finalUserList && finalUserList.length > 0"
+            v-if="!finalCastState && finalUserList && finalUserList.length > 0"
             class="dragArea list-group flex flex-wrap"
             :list="finalUserList"
             :group="{ name: 'people', pull: 'clone', put: false }"
@@ -63,7 +63,7 @@
             </transition-group>
           </draggable>
           <draggable
-                  v-else-if="finalCastListUser && finalCastListUser.length > 0"
+                  v-else-if="finalCastState && finalCastListUser && finalCastListUser.length > 0"
                   class="dragArea list-group flex flex-wrap"
                   :list="finalCastListUser"
                   :group="{ name: 'people', pull: 'clone', put: false }"

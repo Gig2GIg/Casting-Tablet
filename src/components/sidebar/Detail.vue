@@ -434,7 +434,7 @@ export default {
     };
   },
    watch: {
-    rounds: function() {
+    rounds: function() {      
       if(this.rounds && this.rounds.length > 0){
         this.lastRound = this.rounds[this.rounds.length-1];
         this.getGroupdetails();
@@ -450,8 +450,7 @@ export default {
 
     this.$emit("statusSet", this.audition.status);
   },
-  created() {  
-    console.log("TCL: created -> this.audition", this.audition)
+  created() {          
     eventBus.$on("isCurrentOpenGroup", value => {
       this.isOpenGroup = value;
     });
@@ -492,7 +491,7 @@ export default {
       this.info = false;
       this.manage = true;
     },
-    async emmitFinalCast() {
+    async emmitFinalCast() {      
       await this.$emit("handleFinalCast", this.audition.roles);
     },
     async auditionVideo() {
