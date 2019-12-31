@@ -447,7 +447,6 @@ export default {
   },
   async beforeMount() {
     await this.fetchAuditionData(this.$route.params.id);
-
     this.$emit("statusSet", this.audition.status);
   },
   created() {          
@@ -567,9 +566,9 @@ export default {
         let groupStatusRes = await axios.get(
           `/t/group/status/${this.lastRound.id}`
         );
-        let openGroupMember = groupStatusRes.data.data        
+        let openGroupMember = groupStatusRes.data.data
           ? groupStatusRes.data.data
-          : [];        
+          : [];
         this.isLastRoundGroupOpen = openGroupMember.length > 0 || false;
       } catch (ex) {
         console.log(ex);

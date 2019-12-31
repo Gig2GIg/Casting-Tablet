@@ -59,9 +59,22 @@ export default {
       const { data: { data } } = await axios.get(`/auditions/show/${audition}`);
       console.log(data);
 
-      commit(types.FETCH_AUDITION_DATA_SUCCESS, data);
+      commit(types.FETCH_AUDITION_DATA_SUCCESS, data);z
     } catch (e) {
       commit(types.FETCH_AUDITION_DATA_FAILURE);
+    }
+  },
+
+  async fetchAuditionDataNew({ commit }, audition) {
+    try {
+      const { data: { data } } = await axios.get(`/auditions/show/${audition}`);
+      console.log(data);
+
+      commit(types.FETCH_AUDITION_DATA_SUCCESS, data);
+      return data;
+    } catch (e) {
+      commit(types.FETCH_AUDITION_DATA_FAILURE);
+      return {};
     }
   },
 
