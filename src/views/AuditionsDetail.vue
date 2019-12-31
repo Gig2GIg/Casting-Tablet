@@ -36,7 +36,7 @@
                     v-bind:class="{ 'after-clck-new-grp' : isShowCreateGroup}"
                   />
                   </router-link>
-                  <div class="custom-btn-grp">
+                  <div v-if="auditionData.online == 0" class="custom-btn-grp">
                     <!-- <div @click="approveBtn(data.user_id, data.is_feedback_sent)" class="m-1 content-center rounded-full grren-back h-10 flex items-center">
                       <button class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide" type="button"><img src="/images/icons/delete-icon.svg" alt="right-tick" /></button>
                     </div> -->
@@ -58,7 +58,7 @@
                     >
                     <label :for="'user_' + data.user_id"></label>
                   </div>
-              
+
               </div>
             </transition-group>
           </draggable>
@@ -82,7 +82,7 @@
                           :time="data.time"
                           :image="data.image"
                   />
-                </router-link>                               
+                </router-link>
               </div>
             </transition-group>
           </draggable>
@@ -102,7 +102,7 @@
                 :key="data.user_id"
               >
                   <!-- <router-link :to="{ name: 'auditions/user', params: {id: data.user_id, round: round.id, audition:$route.params.id} }"> -->
-                  <router-link v-bind:class="{ 'pointer-none' : isShowCreateGroup}" :to="!isShowCreateGroup ? { name: 'auditions/user', params: {id: data.user_id, round: round.id, audition:$route.params.id} } : { name: 'auditions/detail', params: {id: $route.params.id} }">                  
+                  <router-link v-bind:class="{ 'pointer-none' : isShowCreateGroup}" :to="!isShowCreateGroup ? { name: 'auditions/user', params: {id: data.user_id, round: round.id, audition:$route.params.id} } : { name: 'auditions/detail', params: {id: $route.params.id} }">
                   <card-user
                     :title="data.name"
                     :time="data.time"
@@ -111,7 +111,7 @@
                     v-bind:class="{ 'after-clck-new-grp' : isShowCreateGroup}"
                   />
                   </router-link>
-                  <div class="custom-btn-grp">
+                  <div v-if="auditionData.online == 0" class="custom-btn-grp">
                     <div @click="approveBtn(data.user_id, data.is_feedback_sent)" class="m-1 content-center rounded-full grren-back h-10 flex items-center">
                       <button class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide" type="button"><img src="/images/icons/right-tick.svg" alt="right-tick" /></button>
                     </div>
@@ -133,8 +133,8 @@
               </div>
             </transition-group>
           </draggable>
-          <modal :width="500" height="380" :adaptive="true" name="showApproveMdl">
-            <button @click="$modal.hide('showApproveMdl')">
+          <modal :width="500" height="380" :adaptive="true" name="showApproveMdl" class="custom-event-popup">
+            <button @click="$modal.hide('showApproveMdl')" class="popup-close-btn">
               <i class="material-icons" style="font-size: 35px;color: black;">clear</i>
             </button>
             <form @submit.prevent="handleApprMdlFrm('approved')">
@@ -144,7 +144,7 @@
                     type="textarea"
                     v-model="comment"
                     placeholder="Add a brief message"
-                    class="px-2 py-2 w-2/3"
+                    class="custom-popup-textarea"
                     :custom-classes="['border', 'border-purple', 'mt-0']"
             />
             <h2>Recommend an Audition</h2>
@@ -153,8 +153,8 @@
               <base-button type="submit" expanded>Submit</base-button>
             </form>
           </modal>
-          <modal :width="500" height="380" :adaptive="true" name="showRejectMdl">
-            <button @click="$modal.hide('showRejectMdl')">
+          <modal :width="500" height="380" :adaptive="true" name="showRejectMdl" class="custom-event-popup">
+            <button @click="$modal.hide('showRejectMdl')" class="popup-close-btn">
               <i class="material-icons" style="font-size: 35px;color: black;">clear</i>
             </button>
             <form @submit.prevent="handleApprMdlFrm('rejected')">
@@ -272,7 +272,8 @@ export default {
       finalUserList: [],
       isShowPerformer : false,
       isOpenGroup:false,
-      finalCastListUser: []
+      finalCastListUser: [],
+      auditionData:null
     };
   },
   destroyed:()=>{
@@ -323,13 +324,15 @@ export default {
   },
   async mounted() {
     this.userId = TokenService.getUserId();
+    this.auditionData = await this.fetchAuditionDataNew(this.$route.params.id);
   },
   methods: {
     ...mapActions("audition", [
       "fetchUserList",
       "fetchFinalCastList",
       "removePerformer",
-      "addPerformer"
+      "addPerformer",
+      "fetchAuditionDataNew"
     ]),
     ...mapActions("round", ["fetch"]),
     dontShowBtn(){
@@ -426,9 +429,9 @@ export default {
         let groupStatusRes = await axios.get(
           `/t/group/status/${this.round.id}`
         );
-        this.openGroupMember = groupStatusRes.data.data        
+        this.openGroupMember = groupStatusRes.data.data
           ? groupStatusRes.data.data
-          : [];        
+          : [];
         this.isOpenGroup = this.isShowCloseGroup = this.openGroupMember.length > 0 || false;
 
         // emit for side bar audition details view for handle close current round first check group is open or not
@@ -466,6 +469,11 @@ export default {
       });
     },
     async handleApprMdlFrm(type) {
+      if(!this.comment){
+        this.$toasted.clear();
+        this.$toasted.error("Please enter feedback message");
+        return false;
+      }
       try {
         let data = {
           appointment_id: this.round.id,
@@ -833,5 +841,13 @@ export default {
 }
 .pointer-none {
   cursor: default;
+}
+.vs__selected-options {
+  position: relative;
+}
+.vs__selected-options .vs__selected {
+  position: absolute;
+  left: 40px;
+  top: 8px;
 }
 </style>

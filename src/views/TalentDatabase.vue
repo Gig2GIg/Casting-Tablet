@@ -50,7 +50,7 @@
           v-for="item in talentList"
           :key="item.id"
           >
-          <router-link :to="{ name: 'talent/user', params: {id: item.details.id, image: item.image, code:item.share_code} }">
+          <router-link :to="{ name: 'talent/user', params: {id: item.details.user_id, image: item.image, code:item.share_code} }">
             <card-user
               :title="item.details.first_name +' '+ item.details.last_name"
               time=""

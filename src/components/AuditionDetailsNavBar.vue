@@ -25,19 +25,19 @@
           @change="$emit('onSearch', $event.target.value)"
       >
       </div>
-    </div>    
-    <div class="flex flex-col custom-top-nav" v-if="isShowManageGroup && performerCount && performerCount > 0">             
-        <div 
+    </div>
+    <div class="flex flex-col custom-top-nav" v-if="isShowManageGroup && performerCount && performerCount > 0">
+        <div
           v-if="isShowNewGroup"
           class="text-white h-6 ml-auto mr-5" >
           <button @click="showCreateGroup(true)" class="custom-btn-group"><img src="/images/icons/group-icon.svg" alt="group-icon"/>New Group</button>
-        </div>   
-        <div class="text-white h-6 ml-auto mr-5" 
+        </div>
+        <div class="text-white h-6 ml-auto mr-5"
           v-if="!isShowNewGroup && isShowCreateGroup" >
           <button @click="cancelGroup()" class="custom-btn btn-empty">Cancel Group</button>
           <button @click="createGroup()" class="custom-btn ml-5 btn-fill">Create Group</button>
-        </div>   
-        <!-- <div class="text-white h-6 ml-auto mr-5" 
+        </div>
+        <!-- <div class="text-white h-6 ml-auto mr-5"
           v-if="!isShowCreateGroup && isShowCloseGroup"
           >
           <button
@@ -68,7 +68,7 @@
           @change="recordGroup"
           hidden
           >
-          
+
           <button
           class="custom-btn btn-empty"
           @click="closeGroup()">Close Group
@@ -128,6 +128,7 @@ export default {
       file: {
         name: 'Record Group',
       },
+      audition_data: null
     };
   },
   computed: {
@@ -161,7 +162,7 @@ export default {
     });
   },
   methods: {
-    ...mapActions("audition", ["fetchUserList"]),
+    ...mapActions("audition", ["fetchUserList", "fetchAuditionDataNew"]),
     ...mapActions("profile", ["fetch"]),
     async sendData() {
       let data = {
@@ -204,6 +205,7 @@ export default {
       eventBus.$emit("clickCreateGroup", this.isClickCreateGroup);
     },
     async recordGroup(e) {
+      let auditionData = await this.fetchAuditionDataNew(this.$route.params.id);
       eventBus.$emit("clickRecordGroup", this.isClickRecordGroup);
       const file = e.target.files[0];
       this.form.file = file;
@@ -218,7 +220,7 @@ export default {
           let url = await file.ref.getDownloadURL();
           let audition_record = {
             url: url,
-            appointment_id: this.$route.params.round,
+            appointment_id: auditionData.appointment_id ? auditionData.appointment_id : "",
             performer: "",
             slot_id: "",
             name: this.file.name || time() + ".mp4"
