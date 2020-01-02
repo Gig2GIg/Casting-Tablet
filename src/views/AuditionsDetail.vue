@@ -73,7 +73,7 @@
                   @change="deletePerformer"        
                   :move="checkPerformerMove"
                   @end="endPerformerMove"
-                  :emptyInsertThreshold="100"
+                  :emptyInsertThreshold="800"
           >
             <transition-group  class="final-cast-list flex flex-wrap justify-center content-center" type="transition" :name="!drag ? 'flip-list' : null">
               <div
@@ -195,7 +195,7 @@
         :list="mainRoles?mainRoles:[]"
         group="people"
         :move="checkFinalCastMove"
-        @end="endFinalCastMove"
+        @end="endFinalCastMove"        
       >
       <!-- @change="verifyRegisters" -->
         <transition-group class="final-role-list flex flex-wrap w-full justify-center content-center w-full " type="transition" :name="!drag ? 'flip-list' : null">
@@ -551,7 +551,7 @@ export default {
       }
       this.mainRoles = _.cloneDeep(this.roles);
       await this.mainRoles.map(async role => {
-        if (this.finalCast.length > 0) {
+        if (this.finalCast.length > 0) {        
 
           let filtered_data = await this.finalCast.filter(
                 user => user.rol_id === role.id
@@ -647,19 +647,19 @@ export default {
         rol_id: item.added.element.rol_id
       };
       await this.addPerformer(data);
-      try {
-        let filtered_data = this.finalCastFilter.filter(
-          user =>
-            user.rol_id == item.added.element.rol &&
-            user.user_id != item.added.element.user_id
-        );
-        if (filtered_data.length > 0) {
-          this.finalCastFilter = this.finalCastFilter.filter(
-            user => user.user_id != filtered_data[0].user_id
+        try {
+          let filtered_data = this.finalCastFilter.filter(
+            user =>
+              user.rol_id == item.added.element.rol &&
+              user.user_id != item.added.element.user_id
           );
-          await this.removePerformer(filtered_data[0].id);
-        }
-        await this.chargeFinalCast();
+          if (filtered_data.length > 0) {
+            this.finalCastFilter = this.finalCastFilter.filter(
+              user => user.user_id != filtered_data[0].user_id
+            );
+            await this.removePerformer(filtered_data[0].id);
+          }
+          await this.chargeFinalCast();
         } catch (e) {
           console.log(e);
         }
@@ -680,15 +680,19 @@ export default {
     },
     async endFinalCastMove(evt){
       if(this.fromElementFinalCast && this.toElementFinalCast && this.fromElementFinalCast.is_peformer && !this.toElementFinalCast.is_peformer && this.fromElementFinalCast.user_id){
-        await this.removePerformer(this.fromElementFinalCast.finalcast_id);
-        let data = {
-            audition_id: this.$route.params.id,
-            performer_id: this.fromElementFinalCast.user_id,
-            rol_id: this.toElementFinalCast.id
-          };
-        await this.addPerformer(data);
+        try {
+          await this.removePerformer(this.fromElementFinalCast.finalcast_id);          
+          let data = {
+              audition_id: this.$route.params.id,
+              performer_id: this.fromElementFinalCast.user_id,
+              rol_id: this.toElementFinalCast.id
+            };
+          await this.addPerformer(data);
 
-        await this.chargeFinalCast();
+          await this.chargeFinalCast();
+        } catch (e) {
+          console.log(e);
+        }
 
       }
     },
@@ -701,21 +705,22 @@ export default {
     async endPerformerMove(evt){
       let isPerfomer = this.toElementPerformer && this.toElementPerformer.is_peformer && this.toElementPerformer.finalcast_id ? true : false;
         if(!isPerfomer){
-          if(this.fromElementPerformer && this.toElementPerformer){
-              let data = {
-                audition_id: this.$route.params.id,
-                performer_id: this.fromElementPerformer.user_id,
-                rol_id: this.toElementPerformer.id
-              };
-              await this.addPerformer(data);
-          try {
+          if(this.fromElementPerformer && this.toElementPerformer){              
+            try {
+                let data = {
+                  audition_id: this.$route.params.id,
+                  performer_id: this.fromElementPerformer.user_id,
+                  rol_id: this.toElementPerformer.id
+                };
+                await this.addPerformer(data);
+
                 // if(isPerfomer){
                 //   await this.removePerformer(this.toElementPerformer.finalcast_id);
                 // }
                 await this.chargeFinalCast();
-          } catch (e) {
-            console.log(e);
-          }
+            } catch (e) {
+              console.log(e);
+            }
         } 
       } else {
         await this.chargeFinalCast();
@@ -730,7 +735,7 @@ export default {
         this.roles = this.auditionData.roles;
         await this.chargeFinalCast();
       }      
-    },    
+    },     
     checkMove: function(evt) {
       evt.draggedContext.element.name !== "apple";
     },
