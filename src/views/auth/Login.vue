@@ -53,6 +53,7 @@
 
 <script>
 import { mapActions } from 'vuex';
+import DEFINE from '../../utils/const.js';
 
 export default {
   data() {
@@ -76,6 +77,7 @@ export default {
         await this.login({
           email: this.email,
           password: this.password,
+          type: DEFINE.caster_type,
         });
 
         // Redirect the user to the page he first tried to visit or to the home view

@@ -32,7 +32,7 @@ export default {
     },
     time: {
       type: String,
-      required: true,
+      required: false,
     },
     tag: {
       type: String,
