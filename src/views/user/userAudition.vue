@@ -436,6 +436,7 @@ import firebase from 'firebase/app';
 import 'firebase/storage';
 import uuid from 'uuid/v1';
 import 'vue-sweet-calendar/dist/SweetCalendar.css'
+import TokenService from "../../services/core/TokenService";
 
 export default {
   // ...
@@ -588,7 +589,8 @@ export default {
       this.form.favorite = this.favorite
       this.form.evaluation = this.emoji;
       this.form.slot_id = this.slot;
-      this.form.evaluator = this.profile.details.id;
+      // this.form.evaluator = this.profile.details.id;
+      this.form.evaluator = TokenService.getUserId();
       let data = {"appointment_id": this.$route.params.round, "performer": this.$route.params.id}
 
       if(Object.keys(this.feedback).length==0){

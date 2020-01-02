@@ -196,7 +196,7 @@
      <div
         v-show="isShowAuditionVideo"
         :class="{'hidden': !isShowAuditionVideo}"
-        class="absolute flex flex-wrap w-full justify-center align-content-start minh-100vh"   
+        class="absolute flex flex-wrap w-full justify-center align-content-start minh-100vh"
       >
 
       <div class="container flex w-full mt-2">
@@ -210,12 +210,12 @@
                 />
                 <h1 class="text-purple text-lg font-bold">Audition Videos</h1>
               </div>
-              
+
               <div
                 v-for="data in videos"
                 :key="data.id"
                 class="flex m-3 content-center w-full h-16 flex justify-center custom-side-video-list"
-              > 
+              >
                 <div class="flex justify-center w-full h-80 button-detail rounded-lg">
                   <div class="flex justify-center content-center flex-wrap w-1/2 h-full">
                     <img src="/images/icons/mp4Icon@3x.png" alt="Icon" class="h-10" />
@@ -225,7 +225,7 @@
                   >
                     <span class="text-center cus-spn-cls text-purple font-bold w-full">{{ data.name }}</span>
                     <ul id="navigation">
-                      <li>                        
+                      <li>
                         <a
                           href="javascript:void(0);"
                           :class="{ active }"
@@ -236,7 +236,7 @@
                             alt="Icon"
                             class="h-6 absolute right-0 bottom-0"
                           />
-                        </a>                        
+                        </a>
                         <div class="dropdown cus-dropdown submanu" v-bind:class="{ 'isOpen' : openId==data.id}">
                           <ul class="submanu-content">
                             <li>
@@ -255,7 +255,7 @@
             </div>
           </div>
         </div>
-  
+
   </div>
   </div>
   </multipane>
@@ -271,6 +271,7 @@ import axios from 'axios';
 import moment from "moment";
 import 'vue-sweet-calendar/dist/SweetCalendar.css'
 import { async } from 'q';
+import TokenService from "../../services/core/TokenService";
 
 export default {
   // ...
@@ -381,7 +382,8 @@ export default {
       this.form.favorite = this.favorite
       this.form.evaluation = this.emoji;
       this.form.slot_id = this.slot;
-      this.form.evaluator = this.profile.details.id;
+      // this.form.evaluator = this.profile.details.id;
+      this.form.evaluator = TokenService.getUserId();
       let status = await axios.post('/t/feedbacks/add', this.form);
       this.$toasted.success('Feedback Created');
 
