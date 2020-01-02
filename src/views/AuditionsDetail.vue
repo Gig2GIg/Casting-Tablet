@@ -85,7 +85,7 @@
                   <card-user
                           :title="data.name"
                           :time="data.time"
-                          :image="data.image"
+                          :image="data.image && !data.image.url ? data.image : ''"
                   />
                 </router-link>
               </div>
@@ -207,7 +207,7 @@
               <card-user
                 :title="data.name"
                 :rol="data.rol"
-                :image="data.image.url"
+                :image="data.image.url ? data.image.url : data.image"
               />
         </div>
         </transition-group>
@@ -550,7 +550,7 @@ export default {
         }
       }
       this.mainRoles = _.cloneDeep(this.roles);
-      this.mainRoles.map(async role => {
+      await this.mainRoles.map(async role => {
         if (this.finalCast.length > 0) {
 
           let filtered_data = await this.finalCast.filter(
@@ -558,23 +558,85 @@ export default {
             );        
           if (filtered_data && filtered_data.length > 0) {
             role.name = filtered_data[0].name;
-            role.image.url = filtered_data[0].image;
+            role.image = filtered_data[0].image;
             role.rol = filtered_data[0].rol_name;
             role.is_peformer = true;
             role.finalcast_id = filtered_data[0].id;
             role.user_id = filtered_data[0].user_id;
+            role.time = filtered_data[0].time;
           } else {
             role.is_peformer = false;
             role.finalcast_id = null;
             role.user_id = null;
+            role.image = role.image.url;
+            role.time = '';
           }
-          return role;
+        } else {
+          role.image = role.image.url;
+          role.time = '';
         }
-        });
+        return role;
+      });
+
       this.toggleFinalCastListUser();
       if (this.finalCast.length > 0) {
         this.finalCastFilter = this.finalCast;
       }
+    },
+    async activeFinalCast(item) {
+      this.roles = item;
+      await this.fetch(this.$route.params.id);
+      let lastRound = this.rounds.slice(-1);
+      if (lastRound.length > 0) {
+        await this.fetchUserList(lastRound[0].id);
+        this.round = lastRound[0];
+      }
+      for (let data in this.finalCast) {
+        let filtered_data = _.cloneDeep(this.userList.filter(        
+          user => user.user_id == this.finalCast[data].user_id
+        ));
+        
+        for (let j in filtered_data) {
+          this.finalCast[data].image = filtered_data[j].image;
+          this.finalCast[data].name = filtered_data[j].name;
+          this.finalCast[data].time = filtered_data[j].time;
+          // this.finalCast[data].rol_id = filtered_data[j].rol;
+        }
+      }
+
+      this.mainRoles = _.cloneDeep(this.roles);
+      await this.mainRoles.map(async role => {
+        if (this.finalCast.length > 0) {
+          let filtered_data = await this.finalCast.filter(
+                user => user.rol_id === role.id
+            );        
+          if (filtered_data && filtered_data.length > 0) {
+            role.name = filtered_data[0].name;
+            role.image = filtered_data[0].image;
+            role.rol = filtered_data[0].rol_name;
+            role.is_peformer = true;
+            role.finalcast_id = filtered_data[0].id;
+            role.user_id = filtered_data[0].user_id;
+            role.time = filtered_data[0].time;
+          } else {
+            role.is_peformer = false;
+            role.finalcast_id = null;
+            role.user_id = null;
+            role.image = role.image.url;
+            role.time = '';
+          }          
+        } else {
+          role.image = role.image.url;
+          role.time = '';
+        }
+        return role;
+      });
+
+      this.toggleFinalCastListUser();
+      if (this.finalCast.length > 0) {
+        this.finalCastFilter = this.finalCast;
+      }
+      this.finalCastState = true;
     },
     async verifyRegisters(item) {
       if(item && item.added && item.added.element){
@@ -617,21 +679,18 @@ export default {
       return returnVal;
     },
     async endFinalCastMove(evt){
-      // console.log("TCL: endFinalCastMove -> evt", evt)
-      // console.log("TCL: endFinalCastMove -> this.fromElementFinalCast", this.fromElementFinalCast)
-      // console.log("TCL: endFinalCastMove -> this.toElementFinalCast", this.toElementFinalCast)
-      // if(this.fromElementFinalCast.is_peformer && !this.toElementFinalCast.is_peformer && this.fromElementPerformer.user_id){
-      //   await this.removePerformer(this.fromElementFinalCast.finalcast_id);
-      //   let data = {
-      //       audition_id: this.$route.params.id,
-      //       performer_id: this.fromElementPerformer.user_id,
-      //       rol_id: this.toElementPerformer.id
-      //     };
-      //   await this.addPerformer(data);
+      if(this.fromElementFinalCast && this.toElementFinalCast && this.fromElementFinalCast.is_peformer && !this.toElementFinalCast.is_peformer && this.fromElementFinalCast.user_id){
+        await this.removePerformer(this.fromElementFinalCast.finalcast_id);
+        let data = {
+            audition_id: this.$route.params.id,
+            performer_id: this.fromElementFinalCast.user_id,
+            rol_id: this.toElementFinalCast.id
+          };
+        await this.addPerformer(data);
 
-      //   await this.chargeFinalCast();
+        await this.chargeFinalCast();
 
-      // }
+      }
     },
     checkPerformerMove: function(evt){
       this.fromElementPerformer = evt.draggedContext.element ? evt.draggedContext.element : null;
@@ -671,56 +730,7 @@ export default {
         this.roles = this.auditionData.roles;
         await this.chargeFinalCast();
       }      
-    },
-    async activeFinalCast(item) {
-      this.roles = item;
-      await this.fetch(this.$route.params.id);
-      let lastRound = this.rounds.slice(-1);
-      if (lastRound.length > 0) {
-        await this.fetchUserList(lastRound[0].id);
-        this.round = lastRound[0];
-      }
-      for (let data in this.finalCast) {
-        let filtered_data = _.cloneDeep(this.userList.filter(        
-          user => user.user_id == this.finalCast[data].user_id
-        ));
-        
-        for (let j in filtered_data) {
-          this.finalCast[data].image = filtered_data[j].image;
-          this.finalCast[data].name = filtered_data[j].name;
-          this.finalCast[data].time = filtered_data[j].time;
-          // this.finalCast[data].rol_id = filtered_data[j].rol;
-        }
-      }
-
-      this.mainRoles = _.cloneDeep(this.roles);
-      this.mainRoles.map(async role => {
-        if (this.finalCast.length > 0) {
-          let filtered_data = await this.finalCast.filter(
-                user => user.rol_id === role.id
-            );        
-          if (filtered_data && filtered_data.length > 0) {
-            role.name = filtered_data[0].name;
-            role.image.url = filtered_data[0].image;
-            role.rol = filtered_data[0].rol_name;
-            role.is_peformer = true;
-            role.finalcast_id = filtered_data[0].id;
-            role.user_id = filtered_data[0].user_id;
-          } else {
-            role.is_peformer = false;
-            role.finalcast_id = null;
-            role.user_id = null;
-          }
-          return role;
-        }
-      });
-
-      this.toggleFinalCastListUser();
-      if (this.finalCast.length > 0) {
-        this.finalCastFilter = this.finalCast;
-      }
-      this.finalCastState = true;
-    },
+    },    
     checkMove: function(evt) {
       evt.draggedContext.element.name !== "apple";
     },
