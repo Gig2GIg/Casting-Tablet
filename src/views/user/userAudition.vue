@@ -9,7 +9,7 @@
       </div>
       <img v-if="favorite == 0" :src="'/images/icons/4-layers.png'" class="w-6 m-6" alt="star" @click="favorite=1">
       <img v-else  :src="'/images/icons/Path_56@2x.png'" class="w-6 m-6" alt="star" @click="favorite=0">
-    <div class="flex items-center border-l border-white text-white float-right cursor-pointer">
+    <div class="flex items-center border-l border-white text-white ml-auto cursor-pointer">
       <span class="mx-4">
         {{profile.details.first_name}} {{profile.details.last_name}}
       </span>
@@ -18,7 +18,7 @@
       </i> -->
       <img
         :src="profile.image.url"
-        class="w-12"
+        class="w-12 img-h48"
         alt="Avatar"
       >
     </div>
@@ -57,7 +57,7 @@
       </div>
   </modal>
  <multipane class="custom-resizer h-full " layout="vertical">
-  <div class="pane bg-white overflow-scroll" :style="{ minWidth: '80%', width: '100%', maxWidth: '100%' }">
+  <div class="pane bg-white overflow-scroll" :style="{ minWidth: '80%', width: '75%', maxWidth: '100%' }">
   <div class="flex flex-wrap  h-full">
     <div class="flex w-full">
       <div class="w-1/4 flex flex-wrap content-center justify-center calendar shadow-lg">
@@ -341,7 +341,7 @@
     </div>
   </div>
   </div>
-  <multipane-resizer class="mt-96 bg-purple h-20"></multipane-resizer>
+  <multipane-resizer class="mt-0.1 bg-purple full-height"></multipane-resizer>
   <div class="pane relative" :style="{ flexGrow: 1 }">
     <div class="absolute" v-for="data in currentUser" :key="data.id">
       <div class="flex flex-wrap content-center justify-center text-center">
@@ -751,5 +751,12 @@ export default {
 }
 nav {
   background-image: linear-gradient(#4D2545, #782541);
+}
+.img-h48{
+  height: 48px;
+}
+.full-height{
+  // height: 66rem !important;
+  height : auto !important;
 }
 </style>

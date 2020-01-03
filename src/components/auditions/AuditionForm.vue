@@ -413,7 +413,7 @@
 
                 <input
                         ref="inputFile"
-                        accept=".png, .jpg, .jpeg"
+                        accept=".png, .jpg, .jpeg, .pdf"
                         type="file"
                         multiple
                         hidden

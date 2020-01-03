@@ -7,10 +7,14 @@
     <div class="flex flex-wrap items-center justify-center w-full h-84" v-if="upcoming == ''">
       <p class="text-purple font-bold tracking-wide text-lg">No auditions found</p>
     </div>
+    <!-- :paginationPosition="bottom-overlay" -->
     <carousel
-      class="flex mt-4"
+      class="flex mt-4 carousel-slider-width"
       :per-page="3"
       :pagination-enabled="false"
+      :navigation-enabled="true"
+      :navigation-next-label="'🡲'"
+      :navigation-prev-label="'🡰'"
     >
       <slide
         v-for="data in upcoming"
@@ -36,9 +40,12 @@
       <p class="text-purple font-bold tracking-wide text-lg">No auditions found</p>
     </div>
     <carousel
-      class="flex mt-4 w-full"
+      class="flex mt-4 w-full carousel-slider-width"
       :per-page="3"
       :pagination-enabled="false"
+      :navigation-enabled="true"
+      :navigation-next-label="'🡲'"
+      :navigation-prev-label="'🡰'"
     >
       <slide
         v-for="data in passed"
@@ -89,6 +96,12 @@ export default {
 };
 </script>
 <style>
+.carousel-slider-width{
+  width: 97%!important;
+}
+.VueCarousel-navigation-button{
+  color: #592543!important;
+}
 @media (min-width: 1280px){
   .container {
       max-width: 1450px;

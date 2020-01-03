@@ -661,6 +661,12 @@ export default {
     this.form.media = this.audition.media;
     this.form.roles = this.audition.roles;
     this.form.contributors = this.audition.contributors;
+    // .map(contributor=>{
+    //   // contributors.email = contributor.contributor_info.email
+    // });
+    
+    console.log("TCL: mounted -> this.audition.contributors", this.audition.contributors)
+    console.log("TCL: mounted -> this.form.contributors", this.form.contributors)
     this.form.roles.map(items => {
       items.preview = items.image.url;
     });

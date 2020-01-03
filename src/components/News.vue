@@ -25,7 +25,7 @@
       </i>-->
       <img
         :src="user.image.url"
-        class="w-12"
+        class="w-12 img-h48"
         alt="Avatar"
       >
     </div>
@@ -70,5 +70,8 @@ export default {
 <style scoped>
 nav {
   background-image: linear-gradient(#4D2545, #782541);
+}
+.img-h48{
+  height: 48px;
 }
 </style>

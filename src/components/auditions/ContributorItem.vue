@@ -12,7 +12,7 @@
         class="ml-4 h-4 mr-4"
       >
       <span class="text-purple truncate mr-4">
-        {{ contributor.email }}
+        {{ contributor.email ? contributor.email : contributor.contributor_info.email}}
       </span>
     </template>
     <template v-else>

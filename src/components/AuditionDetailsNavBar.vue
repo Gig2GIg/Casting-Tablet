@@ -86,7 +86,7 @@
       <img
         v-if="user.image && user.image.url"
         :src="user.image.url"
-        class="w-12"
+        class="w-12 img-h48"
         alt="Avatar"
       >
     </div>
@@ -275,4 +275,7 @@ nav {
     color: #4D2545;
 }
 .custom-btn-record {padding: 0 15px;margin-right: 15px;border: 1px solid #fff;}
+.img-h48{
+  height: 48px;
+}
 </style>

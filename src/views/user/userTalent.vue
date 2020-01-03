@@ -37,7 +37,7 @@
       <img
         v-if="profile.image && profile.image.url"
         :src="profile.image.url"
-        class="h-10"
+        class="w-13 img-h48"
         alt="Avatar"
       >
       </div>
@@ -669,5 +669,8 @@ ul.submanu-content > li > a {
 .custom-side-video-info {
     width: calc(100% - 50px) !important;
     font-size: 14px;
+}
+.img-h48{
+  height: 48px;
 }
 </style>

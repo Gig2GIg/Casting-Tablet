@@ -41,7 +41,7 @@
       </div>
       <img :src="'/images/icons/Path_31@3x_1.png'" class="h-6  ml-auto mr-5" alt="star" @click="invitation.adding = invitation.adding == true?false:true">
       </div>
-    <div class="flex items-center border-l border-white text-white ml-auto cursor-pointer">
+    <div class="flex items-center border-l border-white text-white ml-auto cursor-pointer login-user-details">
       <span class="mx-4">
         {{user.details.first_name}} {{user.details.last_name}}
       </span>
@@ -50,7 +50,7 @@
       </i>-->
       <img
         :src="user.image.url"
-        class="w-12"
+        class="w-12 img-h48"
         alt="Avatar"
       >
     </div>
@@ -107,5 +107,8 @@ export default {
 <style scoped>
 nav {
   background-image: linear-gradient(#4D2545, #782541);
+}
+.img-h48{
+  height: 48px;
 }
 </style>
