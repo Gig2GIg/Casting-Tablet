@@ -521,11 +521,11 @@
                     media: []
                 },
                 union_status: [
-                    {
-                        value: "any",
-                        name: "Any",
-                        selected: false
-                    },
+                    // {
+                    //     value: "any",
+                    //     name: "Any",
+                    //     selected: false
+                    // },
                     {
                         value: "union",
                         name: "Union",
@@ -538,11 +538,11 @@
                     }
                 ],
                 contract_types: [
-                    {
-                        key: "any",
-                        name: "Any",
-                        selected: false
-                    },
+                    // {
+                    //     key: "any",
+                    //     name: "Any",
+                    //     selected: false
+                    // },
                     {
                         key: "paid",
                         name: "Paid",

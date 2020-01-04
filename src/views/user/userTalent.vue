@@ -162,12 +162,12 @@
           <div class="w-1/2 shadow-lg ml-5 border border-gray-300 overflow-auto">
             <p class="text-center text-2xl text-purple font-bold">Comments</p>
             <div class="m-4">
-              <!-- <div v-for="data in recommendations" :key="data.id" class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
-                <p class="text-purple w-1/2">{{data.markeplace.title}}</p>
+              <div v-for="data in comments" :key="data.id" class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
+                <p class="text-purple w-1/2">{{data.comment}}</p>
                 <div class="flex flex-wrap justify-end w-1/2">
-                  <img src="/images/icons/garbage@3x.png" alt="Icon" class="h-6" @click="deleteRecommended(data)">
+                  <!-- <img src="/images/icons/garbage@3x.png" alt="Icon" class="h-6" @click="deleteTag(data)"> -->
                 </div>
-              </div> -->
+              </div>
             </div>
           </div>
         </div>
@@ -307,7 +307,8 @@ export default {
       isShowAuditionVideo : false,
       active: false,
       videos : [],
-      openId: ""
+      openId: "",
+      comments:[]
     };
   },
   computed: {
@@ -319,6 +320,12 @@ export default {
     this.image;
     let { data: { data } } = await axios.get(`/t/performers/tags?user=${this.$route.params.id}`);
     this.tags = data;
+    let commentsData = await axios.get(`/t/performers/comments?user=${this.$route.params.id}`);
+    if(commentsData.status == 200){
+      this.comments = commentsData.data.data;
+    }else{
+      this.comments = [];
+    }
     let getAuditionList = await axios.get(`/t/auditions/list/${this.$route.params.id}`);
     if(getAuditionList.data.data.length){
       this.auditionList = getAuditionList.data.data;
