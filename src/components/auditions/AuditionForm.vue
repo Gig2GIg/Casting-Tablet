@@ -90,6 +90,22 @@
                     :custom-classes="['border', 'border-purple']"
                     :message="errors.first('create.date')"
             />
+            <!-- <template>
+                <div class="relative h-12 my-2">                    
+                    <vue-clock-picker
+                        mode="24"                         
+                        class=""
+                        :onTimeChange="timeChangeHandler"
+                        :defaultFocused="false"
+                        v-validate="'required'"
+                        :message="errors.first('create.time')"
+                        placeholder="Time"
+                        :defaultHour="defaultHour"
+                        :defaultMinute="defaultMinute"
+                    >
+                    </vue-clock-picker>
+                </div>
+            </template> -->
             <base-input
                     v-model="form.time"
                     v-validate="'required'"
@@ -450,6 +466,7 @@
 </template>
 
 <script>
+    import VueClockPicker from 'vue-clock-picker'
     import Vue from "vue";
     import uuid from "uuid/v1";
     import firebase from "firebase/app";
@@ -488,10 +505,13 @@
             RolesModal,
             ContributorItem,
             DocumentItem,
-            Loading
+            Loading,
+            VueClockPicker
         },
         data() {
             return {
+                defaultHour:'',
+                defaultMinute:'',
                 innerWidth: window.innerWidth,
                 manageAppointments: false,
                 manageInvitations: false,
@@ -715,6 +735,7 @@
             },
 
             async handleCreate() {
+                console.log("TCL: handleCreate -> this.form", this.form)
                 let coverSnapshot = null,
                     rolesSnapshots = [],
                     filesSnaphosts = [];
@@ -724,7 +745,7 @@
                         return;
                     }
 
-                    if (!this.form.cover) {
+                    if (!this.form.cover) {                        
                         this.$toasted.error("The cover field is required.");
                         return;
                     }
@@ -849,6 +870,9 @@
                         lng: position.coords.longitude
                     };
                 });
+            },
+            timeChangeHandler : function (event){
+                this.form.time = event.hour > 0 && event.minute > 0 ? `${event.hour}:${event.minute}` : '';
             }
         }
     };
@@ -866,4 +890,9 @@
     /*.close-btn.search.wrap{display: flex;align-items: center;flex-wrap: wrap;}*/
     .vue-map-container{float: left;}
     .location-icon {background-image: url('../../../public/images/icons/location-icon.svg');background-repeat: no-repeat;background-position: right 12px top 14px;}
+    
+    .time-picker-preview.active {
+        border-color: #782541 !important;
+        background-color: #782541 !important;
+    }
 </style>

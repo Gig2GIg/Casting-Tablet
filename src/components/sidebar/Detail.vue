@@ -439,6 +439,10 @@ export default {
         this.lastRound = this.rounds[this.rounds.length-1];
         this.getGroupdetails();
       }
+    },
+    audition : function(){
+    let auditionStatus = this.audition.status ? this.audition.status : '';
+      eventBus.$emit('auditionStatus', auditionStatus);
     }
   },
   computed: {

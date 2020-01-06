@@ -37,7 +37,7 @@
                     v-bind:class="{ 'after-clck-new-grp' : isShowCreateGroup}"
                   />
                   </router-link>
-                  <div v-if="auditionData.online == 0" class="custom-btn-grp">
+                  <div v-if="auditionData.online == 0 && auditionStatus != 2" class="custom-btn-grp">
                     <!-- <div @click="approveBtn(data.user_id, data.is_feedback_sent)" class="m-1 content-center rounded-full grren-back h-10 flex items-center">
                       <button class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide" type="button"><img src="/images/icons/delete-icon.svg" alt="right-tick" /></button>
                     </div> -->
@@ -117,7 +117,7 @@
                     v-bind:class="{ 'after-clck-new-grp' : isShowCreateGroup}"
                   />
                   </router-link>
-                  <div v-if="auditionData.online == 0" class="custom-btn-grp">
+                  <div v-if="auditionData.online == 0 && auditionStatus != 2" class="custom-btn-grp">
                     <div @click="approveBtn(data.user_id, data.is_feedback_sent)" class="m-1 content-center rounded-full grren-back h-10 flex items-center">
                       <button class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide" type="button"><img src="/images/icons/right-tick.svg" alt="right-tick" /></button>
                     </div>
@@ -286,7 +286,8 @@ export default {
       fromElementPerformer : null,
       toElementPerformer : null,
       fromElementFinalCast : null,
-      toElementFinalCast : null
+      toElementFinalCast : null,
+      auditionStatus : null
     };
   },
   destroyed:()=>{
@@ -321,6 +322,10 @@ export default {
     eventBus.$on("clickRecordGroup", value => {});
     eventBus.$on("clickCloseGroup", value => {
       this.closeGroupAPI();
+    });
+    eventBus.$on("auditionStatus", value => {
+      this.auditionStatus = value;
+      console.log("TCL: created -> this.auditionStatus", this.auditionStatus)
     });
   },
   computed: {

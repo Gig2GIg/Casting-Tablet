@@ -25,6 +25,7 @@
     "vee-validate-laravel-extended": "^1.0.0",
     "vue": "^2.6.10",
     "vue-carousel": "^0.18.0",
+    "vue-clock-picker": "^0.4.2",
     "vue-draggable": "^2.0.2",
     "vue-dropdowns": "^1.0.6",
     "vue-global-var": "^1.0.0",
@@ -54,6 +55,8 @@
     "eslint-plugin-import": "^2.18.0",
     "eslint-plugin-vue": "^5.2.3",
     "node-sass": "^4.12.0",
+    "pug": "^2.0.4",
+    "pug-plain-loader": "^1.0.0",
     "sass-loader": "^7.1.0",
     "tailwindcss": "^1.1.2",
     "vue-template-compiler": "^2.5.21"
