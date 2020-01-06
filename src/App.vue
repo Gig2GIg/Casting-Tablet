@@ -35,4 +35,36 @@ export default {
 body, html {
   height: 100%;
 }
+.cus-des-timepicker .time-picker-preview {
+    border-radius: 50px !important;
+    border: 1px solid #4d2545 !important;
+    box-shadow: none !important;
+}
+.cus-des-timepicker .time-picker-preview .preview-container{
+    font-size: 100%;
+    color: #4d2545;
+}
+.cus-des-timepicker .time-picker-preview.active{
+      background-image: linear-gradient(#4D2545, #782541);
+      color: #ffffff;
+}
+.cus-des-timepicker .time-picker-preview.active .preview-container{
+  color: #ffffff;
+}
+.cus-des-timepicker .time-picker-modal-container{
+  width: 300px;
+}
+.cus-des-timepicker .time-picker-modal-header .time-picker-header.active, .cus-des-timepicker .time-picker-modal-header .time-picker-header:hover{
+  color: #4d2545;
+}
+.cus-des-timepicker .picker-point.current{
+  background-image: linear-gradient(#4D2545, #782541);
+}
+.cus-des-timepicker .time-picker-interval.active, .cus-des-timepicker .time-picker-interval:hover{
+  color: #4d2545;
+  font-weight: bold;
+}
+.cus-des-timepicker .interval-container{
+  text-align: center;
+}
 </style>

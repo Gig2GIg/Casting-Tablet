@@ -90,11 +90,11 @@
                     :custom-classes="['border', 'border-purple']"
                     :message="errors.first('create.date')"
             />
-            <!-- <template>
+            <template>
                 <div class="relative h-12 my-2">                    
                     <vue-clock-picker
                         mode="24"                         
-                        class=""
+                        class="cus-des-timepicker px-2 text-left"
                         :onTimeChange="timeChangeHandler"
                         :defaultFocused="false"
                         v-validate="'required'"
@@ -102,11 +102,13 @@
                         placeholder="Time"
                         :defaultHour="defaultHour"
                         :defaultMinute="defaultMinute"
+                        colorPalette="dark"
+                        theme="material"
                     >
                     </vue-clock-picker>
                 </div>
-            </template> -->
-            <base-input
+            </template>
+            <!-- <base-input
                     v-model="form.time"
                     v-validate="'required'"
                     name="time"
@@ -115,7 +117,7 @@
                     placeholder="Time"
                     :custom-classes="['border', 'border-purple']"
                     :message="errors.first('create.time')"
-            />
+            /> -->
             <button
                     class="w-1/3 location-icon border border-purple rounded-full h-full py-3 px-6 h-12 my-2 text-left text-purple"
                     v-validate="'required'"
@@ -510,8 +512,8 @@
         },
         data() {
             return {
-                defaultHour:'',
-                defaultMinute:'',
+                defaultHour:'0',
+                defaultMinute:'0',
                 innerWidth: window.innerWidth,
                 manageAppointments: false,
                 manageInvitations: false,
@@ -891,8 +893,9 @@
     .vue-map-container{float: left;}
     .location-icon {background-image: url('../../../public/images/icons/location-icon.svg');background-repeat: no-repeat;background-position: right 12px top 14px;}
     
-    .time-picker-preview.active {
+    /* .time-picker-preview.active {
         border-color: #782541 !important;
         background-color: #782541 !important;
-    }
+    } */
+    
 </style>
