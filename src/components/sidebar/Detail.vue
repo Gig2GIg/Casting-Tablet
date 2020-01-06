@@ -441,8 +441,8 @@ export default {
       }
     },
     audition : function(){
-    let auditionStatus = this.audition.status ? this.audition.status : '';
-      eventBus.$emit('auditionStatus', auditionStatus);
+      let currentAudition = this.audition ? this.audition : null;
+      eventBus.$emit('currentAudition', currentAudition);
     }
   },
   computed: {
@@ -542,7 +542,7 @@ export default {
     },
     async changeStatus() {
       await this.openAudition(this.audition.id);
-      await this.$emit("statusSet", this.audition.status);
+      await this.$emit("statusSet", this.audition.status);      
     },
     async close() {
       if(this.isOpenGroup || this.isLastRoundGroupOpen){

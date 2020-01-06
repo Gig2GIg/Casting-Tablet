@@ -19,7 +19,7 @@
             :group="{ name: 'people', pull: 'clone', put: false }"
             @change="log"
             :move="checkMove"
-          > -->
+          > -->          
           <template v-if="!finalCastState && finalUserList && finalUserList.length > 0" class="list-group flex flex-wrap">
             <transition-group  class="flex flex-wrap justify-center content-center" type="transition" :name="!drag ? 'flip-list' : null">
               <div
@@ -28,7 +28,8 @@
                 v-for="(data) in finalUserList"
                 :key="data.user_id"
               >
-                  <router-link :to="{ name: 'auditions/user', params: {id: data.user_id, round: round.id, audition:$route.params.id} }">
+                  <router-link :to="currentAudition && currentAudition.status == 2 ? { name: 'talent/user', params: {id: data.user_id} } : { name: 'auditions/user', params: {id: data.user_id, round: round.id, audition:$route.params.id} }">
+                  <!-- <router-link :to="{ name: 'auditions/user', params: {id: data.user_id, round: round.id, audition:$route.params.id} }"> -->
                   <card-user
                     :title="data.name"
                     :time="data.time"
@@ -37,7 +38,7 @@
                     v-bind:class="{ 'after-clck-new-grp' : isShowCreateGroup}"
                   />
                   </router-link>
-                  <div v-if="auditionData.online == 0 && auditionStatus != 2" class="custom-btn-grp">
+                  <div v-if="auditionData.online == 0 && (!currentAudition || currentAudition.status != 2)" class="custom-btn-grp">
                     <!-- <div @click="approveBtn(data.user_id, data.is_feedback_sent)" class="m-1 content-center rounded-full grren-back h-10 flex items-center">
                       <button class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide" type="button"><img src="/images/icons/delete-icon.svg" alt="right-tick" /></button>
                     </div> -->
@@ -81,7 +82,7 @@
                       v-for="(data) in finalCastListUser"
                       :key="data.user_id"
               >
-                <router-link :to="{ name: 'auditions/user', params: {id: data.user_id, round: round.id, audition:$route.params.id} }">
+                <router-link :to="currentAudition && currentAudition.status == 2 ? { name: 'talent/user', params: {id: data.user_id} } : { name: 'auditions/user', params: {id: data.user_id, round: round.id, audition:$route.params.id} }">
                   <card-user
                           :title="data.name"
                           :time="data.time"
@@ -98,7 +99,7 @@
             :group="{ name: 'people', pull: 'clone', put: false }"
             @change="log"
             :move="checkMove"
-          > -->
+          > -->          
           <template v-else class="list-group flex flex-wrap">
             <transition-group  class="flex flex-wrap justify-center content-center" type="transition" :name="!drag ? 'flip-list' : null">
               <div
@@ -108,7 +109,7 @@
                 :key="data.user_id"
               >
                   <!-- <router-link :to="{ name: 'auditions/user', params: {id: data.user_id, round: round.id, audition:$route.params.id} }"> -->
-                  <router-link v-bind:class="{ 'pointer-none' : isShowCreateGroup}" :to="!isShowCreateGroup ? { name: 'auditions/user', params: {id: data.user_id, round: round.id, audition:$route.params.id} } : { name: 'auditions/detail', params: {id: $route.params.id} }">
+                  <router-link v-bind:class="{ 'pointer-none' : isShowCreateGroup}" :to="!isShowCreateGroup ? (currentAudition && currentAudition.status == 2 ? { name: 'talent/user', params: {id: data.user_id} } : { name: 'auditions/user', params: {id: data.user_id, round: round.id, audition:$route.params.id} }) : { name: 'auditions/detail', params: {id: $route.params.id} }">
                   <card-user
                     :title="data.name"
                     :time="data.time"
@@ -117,7 +118,7 @@
                     v-bind:class="{ 'after-clck-new-grp' : isShowCreateGroup}"
                   />
                   </router-link>
-                  <div v-if="auditionData.online == 0 && auditionStatus != 2" class="custom-btn-grp">
+                  <div v-if="auditionData.online == 0 && (!currentAudition || currentAudition.status != 2)" class="custom-btn-grp">
                     <div @click="approveBtn(data.user_id, data.is_feedback_sent)" class="m-1 content-center rounded-full grren-back h-10 flex items-center">
                       <button class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide" type="button"><img src="/images/icons/right-tick.svg" alt="right-tick" /></button>
                     </div>
@@ -287,7 +288,7 @@ export default {
       toElementPerformer : null,
       fromElementFinalCast : null,
       toElementFinalCast : null,
-      auditionStatus : null
+      currentAudition : null
     };
   },
   destroyed:()=>{
@@ -323,9 +324,8 @@ export default {
     eventBus.$on("clickCloseGroup", value => {
       this.closeGroupAPI();
     });
-    eventBus.$on("auditionStatus", value => {
-      this.auditionStatus = value;
-      console.log("TCL: created -> this.auditionStatus", this.auditionStatus)
+    eventBus.$on("currentAudition", value => {
+      this.currentAudition = value;
     });
   },
   computed: {
