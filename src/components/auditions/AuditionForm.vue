@@ -78,6 +78,7 @@
             >Online submition
             </base-checkbox>
         </div>
+        form.online===={{form.online}}
         <div class="flex" v-if="!form.online">
             <base-input
                     v-model="form.date"
@@ -874,7 +875,7 @@
                 });
             },
             timeChangeHandler : function (event){
-                this.form.time = event.hour > 0 && event.minute > 0 ? `${event.hour}:${event.minute}` : '';
+                this.form.time = event.hour > 0 || event.minute > 0 ? `${event.hour}:${event.minute}` : '';
             }
         }
     };

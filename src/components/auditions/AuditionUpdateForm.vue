@@ -68,13 +68,13 @@
         :message="errors.first('create.title')"
         expanded
       />
-      <base-checkbox
+      <!-- <base-checkbox
         class="w-1/3 px-2"
         v-model="form.online"
         :custom-classes="['border', 'border-purple']"
         name="title"
         :value="form.online"
-      >Online submition</base-checkbox>
+      >Online submition</base-checkbox> -->
     </div>
     <div class="flex" v-if="!form.online">
       <base-input
@@ -88,7 +88,26 @@
         :custom-classes="['border', 'border-purple']"
         :message="errors.first('create.date')"
       />
-      <base-input
+      <template>
+          <div class="relative h-12 my-2">                    
+              <vue-clock-picker
+                  mode="24"
+                  v-bind='{ defaultTimeHour, defaultTimeMinute }'
+                  :defaultHour="defaultTimeHour"
+                  :defaultMinute="defaultTimeMinute"                     
+                  class="cus-des-timepicker px-2 text-left"
+                  :onTimeChange="timeChangeHandler"
+                  :defaultFocused="false"
+                  v-validate="'required'"
+                  :message="errors.first('create.time')"
+                  placeholder="Time"
+                  colorPalette="dark"
+                  theme="material"
+              >
+              </vue-clock-picker>
+          </div>
+      </template>
+      <!-- <base-input
         v-model="form.time"
         v-validate="'required'"
         name="time"
@@ -97,7 +116,7 @@
         placeholder="Time"
         :custom-classes="['border', 'border-purple']"
         :message="errors.first('create.time')"
-      />
+      /> -->
       <button
               class="w-1/3 location-icon border border-purple rounded-full h-full py-3 px-6 h-12 my-2 text-left text-purple"
               v-validate="'required'"
@@ -468,6 +487,8 @@ Vue.use(VueMask);
 
 // Import Google Maps Autocomplete
 import * as VueGoogleMaps from "vue2-google-maps";
+import VueClockPicker from 'vue-clock-picker'
+import { setTimeout } from 'timers';
 
 Vue.use(VueGoogleMaps, {
   load: {
@@ -483,10 +504,13 @@ export default {
     RolesUpdModal,
     ContributorItem,
     DocumentItem,
-    Loading
+    Loading,
+    VueClockPicker
   },
   data() {
     return {
+      defaultTimeHour: '0',
+      defaultTimeMinute: '0',
       innerWidth: window.innerWidth,
       manageAppointments: false,
       manageInvitations: false,
@@ -600,7 +624,14 @@ export default {
     }
   },
   computed: {
-    ...mapState("audition", ["audition"])
+    ...mapState("audition", ["audition"]),
+  },
+  watch: {
+    audition: function() {      
+      let timeArr = this.audition && this.audition.time ? this.audition.time.split(":") : [];
+      this.defaultTimeHour = parseInt(timeArr[0] ? timeArr[0] : '0');
+      this.defaultTimeMinute = parseInt(timeArr[1] ? timeArr[1] : '0');
+    }
   },
   created() {
     window.addEventListener("resize", this.onResize);
@@ -641,7 +672,6 @@ export default {
     });
     this.audition.production.map(value => {
       this.production_types.map(items => {
-        console.log(items.key == value.trim());
         if (items.key == value.trim()) {
           items.selected = true;
         }
@@ -649,6 +679,15 @@ export default {
     });
     this.form.contract = this.audition.contract;
     this.form.production = this.audition.production;
+
+
+    let timeArr = this.audition && this.audition.time ? this.audition.time.split(":") : [];
+    this.defaultTimeHour = parseInt(timeArr[0] ? timeArr[0] : '0');
+    this.defaultTimeMinute = parseInt(timeArr[1] ? timeArr[1] : '0');
+    
+    
+    
+    
     this.form.dates.map(function(values) {
       let start = new Date(values.from);
       start.setDate(start.getDate() + 1);
@@ -661,12 +700,8 @@ export default {
     this.form.media = this.audition.media;
     this.form.roles = this.audition.roles;
     this.form.contributors = this.audition.contributors;
-    // .map(contributor=>{
-    //   // contributors.email = contributor.contributor_info.email
-    // });
-
-    console.log("TCL: mounted -> this.audition.contributors", this.audition.contributors)
-    console.log("TCL: mounted -> this.form.contributors", this.form.contributors)
+    console.log("TCL: mounted -> this.audition", this.audition)
+    console.log("TCL: mounted -> this.form", this.form)
     this.form.roles.map(items => {
       items.preview = items.image.url;
     });
@@ -795,12 +830,15 @@ export default {
     },
 
     async handleCreate() {
+      console.log("TCL: handleCreate -> handleCreate")
       let coverSnapshot = null,
         rolesSnapshots = [],
         filesSnaphosts = [];
 
-      try {
-        if (this.isLoading || !(await this.$validator.validateAll("create"))) {
+      try {        
+        if (this.isLoading) {
+        // if (this.isLoading || !(await this.$validator.validateAll("create"))) {
+          console.log("TCL: handleCreate -> this.$validator.validateAll", this.$validator.validateAll())
           return;
         }
         this.form.location = this.form.online ? null : this.form.location;
@@ -814,6 +852,8 @@ export default {
           .filter(x => x.selected)
           .map(x => x.key)
           .join(", ");
+        
+        this.audition.apointment.general.time = this.form.time
         data.appointment = [this.audition.apointment];
         // debugger;
         if (this.selectedLocation) {
@@ -920,6 +960,10 @@ export default {
           lng: position.coords.longitude
         };
       });
+    },
+    timeChangeHandler : function (event){
+      this.form.time = event.hour > 0 || event.minute > 0 ? `${event.hour}:${event.minute}` : '';
+      console.log("TCL: this.form", this.form)
     }
   }
 };

@@ -1,11 +1,14 @@
 <template>
     <div>
+        <img v-if="showWalkInQr" src="/images/icons/left_arrow_white.png" class="absolute back-button cursor-pointer" @click="useWalkinQRClose()">
         <div class="flex flex-col flex-1 justify-center items-center text-white py-16 h-full">
             <p
                     v-if="init"
                     class="text-xl tracking-wider font-bold"
             >{{this.$route.params.title}} | {{this.$route.params.startTime}}</p>
+            
             <p v-if="scan" class="text-xl tracking-wider font-bold">Scan Your QR code to Sign In</p>
+            <p v-if="showWalkInQr" class="text-xl tracking-wider font-bold">I'm a New User</p>
 
             <!-- <p v-if="scan" class="text-xl tracking-wider font-bold">
             You've Checked-In Successfully!
@@ -27,6 +30,7 @@
                         type="submit"
                         class="m-5"
                         expanded
+                        @click.native="useWalkinQR"
                 >I'm a Walk In
                 </base-button>
             </div>
@@ -43,6 +47,14 @@
                 </router-link>
             </div>
             <p v-if="scan" class="decode-result" @click="changeScanner">Change method</p>
+            <div v-if="showWalkInQr" class="flex justify-center w-full max-w-xl mt-16">
+                <div class="w-1/1 flex justify-center rounded-lg shadow-xl">
+                    <div class="m-6">
+                        <img :src="qr_code_walkin" class="w-32 h-32 block m-auto"/>
+                    </div>
+                </div>
+            </div>
+            <p v-if="showWalkInQr" class="text-xl tracking-wider font-bold">Scan To Download and Create Your Account!</p>
             <div v-if="scan" class="flex w-full max-w-xl mt-16">
                 <p v-if="error !== null" class="drop-error">{{ error }}</p>
                 <qrcode-stream v-if="cam" @decode="onDecode" @init="onInit"/>
@@ -146,7 +158,8 @@
 
 <script>
     import {mapActions, mapState, mapGetters} from "vuex";
-
+    import DEFINE from '../../utils/const.js';
+    console.log("TCL: DEFINE", DEFINE)
     export default {
         data() {
             return {
@@ -160,9 +173,11 @@
                 result: null,
                 error: null,
                 dragover: false,
-                showAppointments: false,
+                showAppointments: false,                
                 cam: true,
                 image: false,
+                showWalkInQr : false,
+                qr_code_walkin : DEFINE.qr_code_walkin,
                 data: {}
             };
         },
@@ -194,7 +209,18 @@
             useScanner() {
                 this.init = false;
                 this.scan = true;
+                this.showWalkInQr = false;
                 this.fetch(this.$route.params.id);
+            },
+            useWalkinQR(){
+                this.init = false;
+                this.scan = false;
+                this.showWalkInQr = true;
+            },
+            useWalkinQRClose(){
+                this.init = true;
+                this.scan = false;
+                this.showWalkInQr = false;
             },
             async onInit(promise) {
                 try {
@@ -343,5 +369,9 @@
 
     .button-detail {
         background-image: linear-gradient(#4d2545, #782541);
+    }
+    .back-button {
+        margin-left: 27.5rem !important;
+        margin-top: -1.9rem !important
     }
 </style>
