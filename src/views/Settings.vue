@@ -13,7 +13,7 @@
         <div class="py-4">
           <div class="flex items-center px-3">
             <div class="mr-6">
-              <img                
+              <img
                 :src="user.image ? user.image.url : ''"
                 class="h-24 w-24 rounded"
                 alt="Logo"
@@ -218,13 +218,11 @@
             </svg>
           </div>
         </div>
-        <div class="mt-4 flex flex-wrap py-2 px-4 border-b-2 border-gray-300 mr-2 cursor-pointer font-bold"
-            @click="tabSelected = 'contact_us'; hideMenuInfo = true"
-            >          
+        <div class="mt-4 flex flex-wrap py-2 px-4 border-b-2 border-gray-300 mr-2 cursor-pointer font-bold">
             <div class="w-10/12">
-              <p class="font-bold">Contact Us</p>
+              <a target="_blank" href="mailto:support@gig2gig.com" class="font-bold">Contact Us</a>
             </div>
-            
+
           <div class="w-2/12">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -969,7 +967,7 @@
           </svg>
         </div>
 
-        <div v-html="cmsContentDetails.privacy_policy ? cmsContentDetails.privacy_policy : ''">          
+        <div v-html="cmsContentDetails.privacy_policy ? cmsContentDetails.privacy_policy : ''">
         </div>
       </div>
       <div
@@ -1022,7 +1020,7 @@
           </svg>
         </div>
 
-        <div v-html="cmsContentDetails.contact_us ? cmsContentDetails.contact_us : ''">          
+        <div v-html="cmsContentDetails.contact_us ? cmsContentDetails.contact_us : ''">
         </div>
       </div>
     </div>
@@ -1074,7 +1072,7 @@ export default {
   watch: {
     tabSelected: {
       immediate: true,
-      async handler(value) {        
+      async handler(value) {
         switch (value) {
           case "instantFeedback":
             this.getInstantFeedback();
@@ -1084,13 +1082,13 @@ export default {
             break;
           case "policy":
             this.getCMSContent();
-            break;    
+            break;
           case "appinfo":
             this.getCMSContent();
             break;
-          case "contact_us":
-            this.getCMSContent();
-            break;
+          // case "contact_us":
+          //   this.getCMSContent();
+          //   break;
           default:
             break;
         }

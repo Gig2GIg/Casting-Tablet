@@ -11,13 +11,13 @@
       <img v-else  :src="'/images/icons/Path_56@2x.png'" class="w-6 m-6" alt="star" @click="favorite=0">
     <div class="flex items-center border-l border-white text-white ml-auto cursor-pointer">
       <span class="mx-4">
-        {{profile.details.first_name}} {{profile.details.last_name}}
+        {{profile.details ? profile.details.first_name : ""}} {{profile.details ? profile.details.last_name : ""}}
       </span>
       <!-- <i class="material-icons mr-4">
         keyboard_arrow_down
       </i> -->
       <img
-        :src="profile.image.url"
+        :src="profile.image ? profile.image.url : ''"
         class="w-12 img-h48"
         alt="Avatar"
       >
@@ -373,16 +373,16 @@
         class="-ml-3"
       >
       <p class="text-purple text-xl font-bold mt-4 w-full">{{data.name}}</p>
-      <p class="text-purple text-m font-bold mt-2 w-full">Test City</p>
-      <div class="flex w-full justify-start mt-12">
+      <p class="text-purple text-m font-bold mt-2 w-full">{{performerDetails.details.city ? performerDetails.details.city : ""}}</p>
+      <div @click="getPerformerDetail('info')" class="flex w-full justify-start mt-12 cus-cur">
         <img
           :src="'/images/icons/person.png'"
           alt="Icon"
           class="content-center h-8"
         >
-        <p class="text-purple text-m text-left ml-4 tracking-wide font-semibold w-1/2">Test City</p>
+        <p class="text-purple text-m text-left ml-4 tracking-wide font-semibold w-1/2">Info</p>
       </div>
-      <div class="flex w-full justify-start mt-12">
+      <div @click="getPerformerDetail('credit')" class="flex w-full justify-start mt-12 cus-cur">
         <img
           :src="'/images/icons/icon.png'"
           alt="Icon"
@@ -390,7 +390,7 @@
         >
         <p class="text-purple text-m text-left ml-4 tracking-wide font-semibold w-1/2">Credit</p>
       </div>
-      <div class="flex w-full justify-start mt-12">
+      <div @click="getPerformerDetail('eduTra')" class="flex w-full justify-start mt-12 cus-cur">
         <img
           :src="'/images/icons/book.png'"
           alt="Icon"
@@ -398,7 +398,7 @@
         >
         <p class="text-purple text-m text-left ml-4 tracking-wide font-semibold w-1/2">Education & Training</p>
       </div>
-      <div class="flex w-full justify-start mt-12">
+      <div @click="getPerformerDetail('appearance')"  class="flex w-full justify-start mt-12 cus-cur">
         <img
           :src="'/images/icons/12-layers.png'"
           alt="Icon"
@@ -422,6 +422,122 @@
     </div>
   </div>
 </multipane>
+  <modal :width="500" height="200" :adaptive="true" name="infoModal">
+    <button @click="$modal.hide('infoModal')" class="popup-close-btn">
+      <i class="material-icons" style="font-size: 35px;color: black;">clear</i>
+    </button>
+    <div class="m-4">
+      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
+        <strong class="text-purple w-full">Stage Name</strong>
+        <p class="text-purple w-full">{{performerDetails.details ? performerDetails.details.stage_name : ""}}</p>
+      </div>
+    </div>
+    <div class="m-4">
+      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
+        <strong class="text-purple w-full">Professional/ Working Title</strong>
+        <p class="text-purple w-full">{{performerDetails.details ? performerDetails.details.profesion : ""}}</p>
+      </div>
+    </div>
+  </modal>
+  <modal :width="500" height="330" :adaptive="true" name="creditModal">
+    <button @click="$modal.hide('creditModal')" class="popup-close-btn">
+      <i class="material-icons" style="font-size: 35px;color: black;">clear</i>
+    </button>
+    <div class="m-4">
+      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
+        <strong class="text-purple w-full">Production Type</strong>
+        <p class="text-purple w-full">{{performerDetails.credits ? performerDetails.credits[0].type : ""}}</p>
+      </div>
+    </div>
+    <div class="m-4">
+      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
+        <strong class="text-purple w-full">Project Name</strong>
+        <p class="text-purple w-full">{{performerDetails.credits ? performerDetails.credits[0].name : ""}}</p>
+      </div>
+    </div>
+    <div class="m-4">
+      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
+        <strong class="text-purple w-full">Role</strong>
+        <p class="text-purple w-full">{{performerDetails.credits ? performerDetails.credits[0].rol : ""}}</p>
+      </div>
+    </div>
+    <div class="m-4">
+      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
+        <strong class="text-purple w-full">Director/Production Company</strong>
+        <p class="text-purple w-full">{{performerDetails.credits ? performerDetails.credits[0].production : ""}}</p>
+      </div>
+    </div>
+  </modal>
+  <modal :width="500" height="390" :adaptive="true" name="eduTraModal">
+    <button @click="$modal.hide('eduTraModal')" class="popup-close-btn">
+      <i class="material-icons" style="font-size: 35px;color: black;">clear</i>
+    </button>
+    <div class="m-4">
+      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
+        <strong class="text-purple w-full">School</strong>
+        <p class="text-purple w-full">{{performerDetails.education ? performerDetails.education[0].school : ""}}</p>
+      </div>
+    </div>
+    <div class="m-4">
+      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
+        <strong class="text-purple w-full">Degree/Cource</strong>
+        <p class="text-purple w-full">{{performerDetails.education ? performerDetails.education[0].degree : ""}}</p>
+      </div>
+    </div>
+    <div class="m-4">
+      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
+        <strong class="text-purple w-full">Instructor</strong>
+        <p class="text-purple w-full">{{performerDetails.education ? performerDetails.education[0].instructor : ""}}</p>
+      </div>
+    </div>
+    <div class="m-4">
+      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
+        <strong class="text-purple w-full">Location</strong>
+        <p class="text-purple w-full">{{performerDetails.education ? performerDetails.education[0].location : ""}}</p>
+      </div>
+    </div>
+    <div class="m-4">
+      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
+        <strong class="text-purple w-full">Year</strong>
+        <p class="text-purple w-full">{{performerDetails.education ? performerDetails.education[0].year : ""}}</p>
+      </div>
+    </div>
+  </modal>
+  <modal :width="500" height="390" :adaptive="true" name="appearance">
+    <button @click="$modal.hide('appearance')" class="popup-close-btn">
+      <i class="material-icons" style="font-size: 35px;color: black;">clear</i>
+    </button>
+    <div class="m-4">
+      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
+        <strong class="text-purple w-full">Height</strong>
+        <p class="text-purple w-full">{{performerDetails.aparence ? performerDetails.aparence.height : ""}}</p>
+      </div>
+    </div>
+    <div class="m-4">
+      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
+        <strong class="text-purple w-full">Weight</strong>
+        <p class="text-purple w-full">{{performerDetails.aparence ? performerDetails.aparence.weight : ""}}</p>
+      </div>
+    </div>
+    <div class="m-4">
+      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
+        <strong class="text-purple w-full">Hair Color</strong>
+        <p class="text-purple w-full">{{performerDetails.aparence ? performerDetails.aparence.hair : ""}}</p>
+      </div>
+    </div>
+    <div class="m-4">
+      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
+        <strong class="text-purple w-full">Eye Color</strong>
+        <p class="text-purple w-full">{{performerDetails.aparence ? performerDetails.aparence.eyes : ""}}</p>
+      </div>
+    </div>
+    <div class="m-4">
+      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
+        <strong class="text-purple w-full">Race</strong>
+        <p class="text-purple w-full">{{performerDetails.aparence ? performerDetails.aparence.race : ""}}</p>
+      </div>
+    </div>
+  </modal>
 </div>
 </template>
 
@@ -470,7 +586,8 @@ export default {
         color: 'red'
       },
       addNumberText: "",
-      isAssignedNumber:false
+      isAssignedNumber:false,
+      performerDetails:{}
     };
   },
   computed: {
@@ -479,7 +596,7 @@ export default {
     ...mapState('feedback', ['feedback', 'tags', 'marketplace', 'recommendations']),
     ...mapState('profile', {profile:'user', calendar:'calendar', contract:'contract'}),
     getAssignNumber : function() {
-      return this.addNumberText.toString();
+      return this.addNumberText ? this.addNumberText.toString() : "";
     }
   },
   async mounted() {
@@ -505,8 +622,13 @@ export default {
     }
       // Get Assigend Number
       let getPerformerDetails = await axios.get(`/t/auditions/profile/user/${this.$route.params.id}/appointment/${this.$route.params.round}`);
-      if(getPerformerDetails.data.data.assign_number){
+      if(getPerformerDetails.status == 200){
+        this.performerDetails = getPerformerDetails.data.data;
         this.addNumberText = getPerformerDetails.data.data.assign_number;
+        this.isAssignedNumber = true;
+      }else{
+        this.performerDetails = {};
+        this.addNumberText = "";
         this.isAssignedNumber = true;
       }
     this.currentUser = this.userList.filter(userList => userList.user_id == this.$route.params.id);
@@ -527,6 +649,20 @@ export default {
     ...mapActions('feedback', ['fetchUserFeedback', 'storeTag', 'storeRecommendation', 'fetchTags', 'fetchRecommendation', 'delete', 'searchMarketplace', 'setRecommendations', 'deleteRecommendation']),
     goToday() {
       this.$refs.calendar.goToday()
+    },
+    getPerformerDetail(type){
+      if(type == 'info'){
+        this.$modal.show('infoModal');
+      }
+      if(type == 'credit'){
+        this.$modal.show('creditModal');
+      }
+      if(type == 'eduTra'){
+        this.$modal.show('eduTraModal');
+      }
+      if(type == 'appearance'){
+        this.$modal.show('appearance');
+      }
     },
     async addNumber() {
       try {
@@ -758,5 +894,8 @@ nav {
 .full-height{
   // height: 66rem !important;
   height : auto !important;
+}
+.cus-cur{
+  cursor: pointer;
 }
 </style>
