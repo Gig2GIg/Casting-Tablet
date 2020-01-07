@@ -43,10 +43,10 @@
             v-model="appointments.spaces"
             type="number"
             placeholder="0"
-            class="w-full slots-input py-3 px-4 text-xl text-purple font-bold rounded-full border border-purple "
+            class="w-full slots-input py-3 h-57 px-4 text-xl text-purple font-bold rounded-full border border-purple "
             @input="makeSlots"
           >
-          <span class="appointment-label w-2/3 text-center right-0 absolute text-white rounded-r-full py-3 text-xl px-4 border border-transparent">
+          <span class="appointment-label w-2/3 top-0 text-center right-0 absolute text-white rounded-r-full py-3 text-xl px-4 border border-transparent">
             Appointments
           </span>
         </div>

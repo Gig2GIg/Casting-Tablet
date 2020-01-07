@@ -208,16 +208,16 @@
           v-if="roundActive.status != 0 && audition.status == 1 && roundActive.status > 0 && audition.online == 0"
           class="w-full border border-gray-300 mt-6 mb-6"
         />
-        <router-link
+        <!-- <router-link
           v-if="roundActive.status != 0 && audition.status == 1 && roundActive.status > 0 && audition.online == 0"
           :to="{ name: 'auditions/checkin', params: {id: roundActive.id, title:audition.title, startTime: roundActive.time, auditionId:audition.id } }"
-        >
-        <!-- v-if="roundActive.status != 0 && audition.status == 1 && roundActive.status > 0 && audition.online == 0" -->
+        > -->
           <div
-            
-            class="flex w-full content-center text-center justify-center flex-wrap cursor-pointer"          >
-            <!-- @click="openConfirmCheckInmodal" -->
-            <button              
+            v-if="roundActive.status != 0 && audition.status == 1 && roundActive.status > 0 && audition.online == 0"
+            class="flex w-full content-center text-center justify-center flex-wrap cursor-pointer"
+          >
+            <button
+              @click="openConfirmCheckInmodal"
               class="m-3 content-center flex items-center flex m-3 content-center border-2 rounded-sm border-purple w-48 h-10"
             >
               <p
@@ -225,7 +225,7 @@
               >Enter Check-In Mode</p>
             </button>
           </div>
-        </router-link>
+        <!-- </router-link> -->
         <div
           v-if="roundActive.status != 0 && audition.status == 1 && roundActive.status > 0 && audition.online == 0"
           class="w-full border border-gray-300 mt-6 mb-6"
@@ -402,7 +402,7 @@
     </transition>
     <modal class="flex flex-col w-full items-center mt-4" :width="540" height="175" name="modal_confirm_check_in_mode">
         <div class="py-8 px-3">
-            <p class="text-lg text-purple font-bold text-center">Do you want enter checkin mode?</p>
+            <p class="text-lg text-purple font-bold text-center">Are you sure you want to open Check In for audition?</p>
             <div class="w-full flex flex-wrap justify-center overflow-hidden mt-3">
                 <div class="w-1/4">
                     <base-button type="submit" expanded @click="confirmCheckInmode(true)">
@@ -419,25 +419,27 @@
         </div>
     </modal>
 
-    <modal class="flex flex-col w-full items-center mt-4" :width="600" height="400" name="modal_passcode_check_in_mode">
+    <modal class="flex flex-col w-full items-center mt-4" :width="600" height="490" name="modal_passcode_check_in_mode">
         <div class="py-8 px-3">          
-            <p class="text-lg text-purple font-bold text-center">Passcode</p>
+            <p class="text-lg text-purple font-bold text-center">Set Passcode</p>
             <div class="flex w-full pass-code-input">
-              <input class="px-2 py-2 w-2/3 border border-purple mt-0 align-center" type="password" placeholder="Passcode" @focus="show" data-layout="numeric" />
-            <!-- <base-input
-                    v-model="form.description"
-                    v-validate="'required|max:500'"
-                    name="description"
-                    class="px-2 py-2 w-2/3"
-                    type="textarea"
-                    placeholder="Description"
-                    :custom-classes="['border', 'border-purple', 'mt-0', { 'mb-0': !errors.has('create.description') }]"
-                    :message="errors.first('create.description')"
-            /> -->
-           
+              <input class="px-2 py-2 w-2/3 border border-purple mt-0 align-center" type="password" :value="checkInPassCode"   @input="onInputChange" placeholder="Passcode"    />              
             </div>
             <div class="flex w-full mt-3">
-              <vue-touch-keyboard class="px-2 py-2 border border-purple mt-0 touchpad-width" :options="options" v-if="visible" :layout="layout" :cancel="hide" :accept="accept" :input="input" />
+              <SimpleKeyboard @onChange="onChange" @onKeyPress="onKeyPress" :input="checkInPassCode" :layout="layout" :theme="theme"/>              
+            </div>
+            <div class="w-full flex flex-wrap justify-center overflow-hidden mt-3">
+                <div class="w-1/4">
+                    <base-button type="button" expanded @click="cancelSetPassCodeCheckIn()">
+                        Cancel
+                    </base-button>
+                    </div>
+                    <div class="w-1/4 ml-3">
+                    <base-button type="button" expanded @click="saveSetPassCodeCheckIn()">
+                        Set
+                    </base-button>
+                </div>
+
             </div>
         </div>
     </modal>
@@ -453,7 +455,14 @@ import { mapActions, mapState, mapGetters } from "vuex";
 import { eventBus } from "../../main";
 import axios from "axios";
 
+import SimpleKeyboard from "../shared/SimpleKeyboard";
+
+import DEFINE from '../../utils/const.js';
+
 export default {
+  components: {
+    SimpleKeyboard
+  },
   props: [],
   data() {
     return {
@@ -475,52 +484,59 @@ export default {
       openId: "",
       active: false,
       isShowManageGroup: false,
-      isOpenGroup : false,
-      isLastRoundGroupOpen : false,
-      lastRound : "",
-      visible: true,
-      layout: "numeric",
-      input: null,
+      isOpenGroup: false,
+      isLastRoundGroupOpen: false,
+      lastRound: "",
+      checkInPassCode: "",
+      layout: {
+        default: ["1 2 3", "4 5 6", "7 8 9", "0"],
+        // default: ["1 2 3", "4 5 6", "7 8 9", "{shift} 0 _", "{bksp}"],
+        shift: ["! / #", "$ % ^", "& * (", "{shift} ) +", "{bksp}"]
+      },
+      theme: "hg-theme-default hg-layout-numeric numeric-theme",
       options: {
         useKbEvents: false,
-        next : 'Set',
         preventClickEvent: false
       }
     };
   },
-   watch: {
-    rounds: function() {      
-      if(this.rounds && this.rounds.length > 0){
-        this.lastRound = this.rounds[this.rounds.length-1];
+  watch: {
+    rounds: function() {
+      if (this.rounds && this.rounds.length > 0) {
+        this.lastRound = this.rounds[this.rounds.length - 1];
         this.getGroupdetails();
       }
     },
-    audition : function(){
+    audition: function() {
       let currentAudition = this.audition ? this.audition : null;
-      eventBus.$emit('currentAudition', currentAudition);
+      eventBus.$emit("currentAudition", currentAudition);
     }
   },
   computed: {
     ...mapState("audition", ["audition", "videos"]),
-    ...mapState("round", ["rounds"]),
+    ...mapState("round", ["rounds"])
   },
   async beforeMount() {
     await this.fetchAuditionData(this.$route.params.id);
     this.$emit("statusSet", this.audition.status);
   },
-  created() {          
+  created() {
     eventBus.$on("isCurrentOpenGroup", value => {
       this.isOpenGroup = value;
     });
   },
   methods: {
-    handleNewGroup(round_status){
-      if(this.audition.status == 1 && this.audition.online == 0 && round_status == 1 ){
+    handleNewGroup(round_status) {
+      if (
+        this.audition.status == 1 &&
+        this.audition.online == 0 &&
+        round_status == 1
+      ) {
         this.isShowManageGroup = true;
       } else {
         this.isShowManageGroup = false;
       }
-      eventBus.$emit('showManageGroup', this.isShowManageGroup);
+      eventBus.$emit("showManageGroup", this.isShowManageGroup);
     },
     openMenu: function(id) {
       this.isOpen = false;
@@ -549,7 +565,7 @@ export default {
       this.info = false;
       this.manage = true;
     },
-    async emmitFinalCast() {      
+    async emmitFinalCast() {
       await this.$emit("handleFinalCast", this.audition.roles);
     },
     async auditionVideo() {
@@ -566,7 +582,7 @@ export default {
     },
     async auditionDeleteVideo(id) {
       let sendDataToAPI = {
-        id:id,
+        id: id,
         audition_id: this.audition.id
       };
       await this.deleteVideo(sendDataToAPI);
@@ -581,7 +597,7 @@ export default {
     },
     async closeRounds() {
       this.$toasted.clear();
-      if(this.isOpenGroup){
+      if (this.isOpenGroup) {
         this.$toasted.error("Please close group first.");
         return;
       }
@@ -597,10 +613,10 @@ export default {
     },
     async changeStatus() {
       await this.openAudition(this.audition.id);
-      await this.$emit("statusSet", this.audition.status);      
+      await this.$emit("statusSet", this.audition.status);
     },
     async close() {
-      if(this.isOpenGroup || this.isLastRoundGroupOpen){
+      if (this.isOpenGroup || this.isLastRoundGroupOpen) {
         this.$toasted.error("Please close group first.");
         return;
       }
@@ -633,31 +649,36 @@ export default {
         console.log(ex);
       }
     },
-    openConfirmCheckInmodal(){
-      this.$modal.show('modal_confirm_check_in_mode');
+    openConfirmCheckInmodal() {
+      this.$modal.show("modal_confirm_check_in_mode");
     },
-    confirmCheckInmode(mode){
-    console.log("TCL: confirmCheckInmode -> mode", mode)
-      if(!mode){
-        this.$modal.hide('modal_confirm_check_in_mode');
-      } else {
-        this.$modal.show('modal_passcode_check_in_mode');        
+    confirmCheckInmode(mode) {
+      console.log("TCL: confirmCheckInmode -> mode", mode);
+      this.$modal.hide("modal_confirm_check_in_mode");
+      if (mode) {
+        this.$modal.show("modal_passcode_check_in_mode");
       }
     },
-    accept(text) {
-      alert("Input text: " + text);
-      this.hide();
-    }, 
-    show(e) {
-      this.input = e.target;
-      this.layout = e.target.dataset.layout;
-
-      if (!this.visible)
-        this.visible = true
+    onChange(input) {
+      console.log("TCL: onChange -> input", input);
+      this.checkInPassCode = input;
     },
-
-    hide() {
-      this.visible = false;
+    onKeyPress(button) {
+      console.log("button", button);
+    },
+    onInputChange(input) {
+      console.log("TCL: onInputChange -> input", input);
+      this.checkInPassCode = input.target.value;      
+    },
+    cancelSetPassCodeCheckIn(){
+      this.$modal.hide("modal_passcode_check_in_mode");
+      this.checkInPassCode = "";
+      console.log("TCL: onInputChange -> this.checkInPassCode", this.checkInPassCode)
+    },
+    saveSetPassCodeCheckIn(){
+      localStorage.setItem(DEFINE.set_pass_code_key, this.checkInPassCode);
+      this.$modal.hide("modal_passcode_check_in_mode");
+      this.checkInPassCode = "";
     }
   }
 };
@@ -728,7 +749,7 @@ ul#navigation {
   opacity: 0;
 }
 
-.cus-spn-cls{
+.cus-spn-cls {
   margin-left: 10px;
 }
 
@@ -825,60 +846,13 @@ ul.submanu-content > li > a {
   overflow: hidden;
   width: 170px !important;
 }
-.touchpad-width{
-  width : 578px!important
+
+.touchpad-width {
+  width: 578px !important;
 }
 
 .pass-code-input {
   margin-left: 5.5rem !important;
-}
-#keyboard {
-	position: fixed;
-	left: 0;
-	right: 0;
-	bottom: 0;
-
-	z-index: 1000;
-	width: 100%;
-	max-width: 1000px;
-	margin: 0 auto;
-
-	padding: 1em;
-
-	background-color: #EEE;
-	box-shadow: 0px -3px 10px rgba(black, 0.3);
-
-	border-radius: 10px;
-}
-
-fieldset {
-	display: block;
-	width: 300px;
-	padding: 15px;
-	margin: 15px auto;
-	border-style: solid;
-	background-color: #fff;
-	border-color: #ddd;
-	border-width: 1px;
-	border-radius: 4px;	
-}
-
-input {
-	display: block;
-	width: 100%;
-	height: 34px;
-	padding: 6px 12px;
-	font-size: 14px;
-	line-height: 1.42857143;
-	color: #555;
-	background-color: #fff;
-	background-image: none;
-	border: 1px solid #ccc;
-	border-radius: 4px;
-	box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
-	transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;		
-
-	
 }
 </style>
 
