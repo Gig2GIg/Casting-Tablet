@@ -68,13 +68,13 @@
         :message="errors.first('create.title')"
         expanded
       />
-      <!-- <base-checkbox
+      <base-checkbox
         class="w-1/3 px-2"
         v-model="form.online"
         :custom-classes="['border', 'border-purple']"
         name="title"
         :value="form.online"
-      >Online Submission</base-checkbox> -->
+      >Online Submission</base-checkbox>
     </div>
     <div class="flex" v-if="!form.online">
       <base-input
