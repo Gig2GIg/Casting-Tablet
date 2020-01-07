@@ -10,7 +10,12 @@ import App from '@/App';
 import store from '@/store';
 import router from '@/router';
 import VModal from 'vue-js-modal'
+
+import VueTouchKeyboard from "vue-touch-keyboard";
+import style from "vue-touch-keyboard/dist/vue-touch-keyboard.css"; // load default style
  
+Vue.use(VueTouchKeyboard);
+
 Vue.use(VModal)
 
 Vue.use(VueCarousel);

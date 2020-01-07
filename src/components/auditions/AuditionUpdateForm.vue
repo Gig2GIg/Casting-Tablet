@@ -74,7 +74,7 @@
         :custom-classes="['border', 'border-purple']"
         name="title"
         :value="form.online"
-      >Online submition</base-checkbox> -->
+      >Online Submission</base-checkbox> -->
     </div>
     <div class="flex" v-if="!form.online">
       <base-input

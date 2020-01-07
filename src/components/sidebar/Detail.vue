@@ -212,10 +212,12 @@
           v-if="roundActive.status != 0 && audition.status == 1 && roundActive.status > 0 && audition.online == 0"
           :to="{ name: 'auditions/checkin', params: {id: roundActive.id, title:audition.title, startTime: roundActive.time, auditionId:audition.id } }"
         >
+        <!-- v-if="roundActive.status != 0 && audition.status == 1 && roundActive.status > 0 && audition.online == 0" -->
           <div
-            class="flex w-full content-center text-center justify-center flex-wrap cursor-pointer"
-          >
-            <button
+            
+            class="flex w-full content-center text-center justify-center flex-wrap cursor-pointer"          >
+            <!-- @click="openConfirmCheckInmodal" -->
+            <button              
               class="m-3 content-center flex items-center flex m-3 content-center border-2 rounded-sm border-purple w-48 h-10"
             >
               <p
@@ -398,7 +400,52 @@
         </div>
       </div>
     </transition>
+    <modal class="flex flex-col w-full items-center mt-4" :width="540" height="175" name="modal_confirm_check_in_mode">
+        <div class="py-8 px-3">
+            <p class="text-lg text-purple font-bold text-center">Do you want enter checkin mode?</p>
+            <div class="w-full flex flex-wrap justify-center overflow-hidden mt-3">
+                <div class="w-1/4">
+                    <base-button type="submit" expanded @click="confirmCheckInmode(true)">
+                        Yes
+                    </base-button>
+                    </div>
+                    <div class="w-1/4 ml-3">
+                    <base-button type="submit" expanded @click="confirmCheckInmode(false)">
+                        No
+                    </base-button>
+                </div>
+
+            </div>
+        </div>
+    </modal>
+
+    <modal class="flex flex-col w-full items-center mt-4" :width="600" height="400" name="modal_passcode_check_in_mode">
+        <div class="py-8 px-3">          
+            <p class="text-lg text-purple font-bold text-center">Passcode</p>
+            <div class="flex w-full pass-code-input">
+              <input class="px-2 py-2 w-2/3 border border-purple mt-0 align-center" type="password" placeholder="Passcode" @focus="show" data-layout="numeric" />
+            <!-- <base-input
+                    v-model="form.description"
+                    v-validate="'required|max:500'"
+                    name="description"
+                    class="px-2 py-2 w-2/3"
+                    type="textarea"
+                    placeholder="Description"
+                    :custom-classes="['border', 'border-purple', 'mt-0', { 'mb-0': !errors.has('create.description') }]"
+                    :message="errors.first('create.description')"
+            /> -->
+           
+            </div>
+            <div class="flex w-full mt-3">
+              <vue-touch-keyboard class="px-2 py-2 border border-purple mt-0 touchpad-width" :options="options" v-if="visible" :layout="layout" :cancel="hide" :accept="accept" :input="input" />
+            </div>
+        </div>
+    </modal>
+        
+
+
   </section>
+  
 </template>
 
 <script>
@@ -431,6 +478,14 @@ export default {
       isOpenGroup : false,
       isLastRoundGroupOpen : false,
       lastRound : "",
+      visible: true,
+      layout: "numeric",
+      input: null,
+      options: {
+        useKbEvents: false,
+        next : 'Set',
+        preventClickEvent: false
+      }
     };
   },
    watch: {
@@ -578,6 +633,32 @@ export default {
         console.log(ex);
       }
     },
+    openConfirmCheckInmodal(){
+      this.$modal.show('modal_confirm_check_in_mode');
+    },
+    confirmCheckInmode(mode){
+    console.log("TCL: confirmCheckInmode -> mode", mode)
+      if(!mode){
+        this.$modal.hide('modal_confirm_check_in_mode');
+      } else {
+        this.$modal.show('modal_passcode_check_in_mode');        
+      }
+    },
+    accept(text) {
+      alert("Input text: " + text);
+      this.hide();
+    }, 
+    show(e) {
+      this.input = e.target;
+      this.layout = e.target.dataset.layout;
+
+      if (!this.visible)
+        this.visible = true
+    },
+
+    hide() {
+      this.visible = false;
+    }
   }
 };
 </script>
@@ -743,6 +824,61 @@ ul.submanu-content > li > a {
   white-space: nowrap !important;
   overflow: hidden;
   width: 170px !important;
+}
+.touchpad-width{
+  width : 578px!important
+}
+
+.pass-code-input {
+  margin-left: 5.5rem !important;
+}
+#keyboard {
+	position: fixed;
+	left: 0;
+	right: 0;
+	bottom: 0;
+
+	z-index: 1000;
+	width: 100%;
+	max-width: 1000px;
+	margin: 0 auto;
+
+	padding: 1em;
+
+	background-color: #EEE;
+	box-shadow: 0px -3px 10px rgba(black, 0.3);
+
+	border-radius: 10px;
+}
+
+fieldset {
+	display: block;
+	width: 300px;
+	padding: 15px;
+	margin: 15px auto;
+	border-style: solid;
+	background-color: #fff;
+	border-color: #ddd;
+	border-width: 1px;
+	border-radius: 4px;	
+}
+
+input {
+	display: block;
+	width: 100%;
+	height: 34px;
+	padding: 6px 12px;
+	font-size: 14px;
+	line-height: 1.42857143;
+	color: #555;
+	background-color: #fff;
+	background-image: none;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+	transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;		
+
+	
 }
 </style>
 

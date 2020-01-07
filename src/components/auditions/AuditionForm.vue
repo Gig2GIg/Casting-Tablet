@@ -75,10 +75,9 @@
                     :custom-classes="['border', 'border-purple']"
                     name="title"
                     :value="form.online"
-            >Online submition
+            >Online Submission
             </base-checkbox>
         </div>
-        form.online===={{form.online}}
         <div class="flex" v-if="!form.online">
             <base-input
                     v-model="form.date"
