@@ -1,5 +1,8 @@
 <template>
 <div>
+  <loading :active.sync="isLoading" 
+        :can-cancel="true" 
+        :is-full-page="fullPage"></loading>
   <nav class="flex items-center h-12">
       <div class="w-1/5 flex flex-wrap justify-center content-center h-10 border-2 ml-auto border-white rounded-sm cursor-pointer" @click="$refs.inputFile.click()">
         <div class="w-full flex">
@@ -554,16 +557,20 @@ import uuid from 'uuid/v1';
 import 'vue-sweet-calendar/dist/SweetCalendar.css'
 import TokenService from "../../services/core/TokenService";
 
+// Import component
+import Loading from 'vue-loading-overlay';
+
 export default {
   // ...
   components: {
     Multipane,
     MultipaneResizer,
-    Calendar
+    Calendar,
+    Loading
   },
   data() {
     return {
-      isLoading: true,
+      isLoading: false,
       rol:'',
       emoji:3,
       callback: 1,
@@ -697,7 +704,13 @@ export default {
       }
     },
     async saveFeedback(){
+      this.$toasted.clear();
       try{
+        if (this.isLoading) {
+          return;
+        }
+        
+        this.isLoading = true;
         if(this.file.name !='Record Audition'){
           let file = await firebase.storage()
         .ref(`temp/${uuid()}.${this.file.name.split('.').pop()}`)
@@ -715,6 +728,7 @@ export default {
         this.$toasted.success('Audition record saved');
         }
       }catch(e){
+        this.isLoading = false;
         this.$toasted.error('This performer already has a video, try later');
       }
       this.form.callback = this.callback == 1 ?true:false;
@@ -738,6 +752,7 @@ export default {
       this.form.user_id = this.$route.params.id;
         let status = await axios.put(`/t/auditions/${this.$route.params.round}/feedbacks/update`, this.form);
         this.$toasted.success('Feedback Updated');
+        this.isLoading = false;
         await this.fetchTeamFeedback(data);
         return;
     },

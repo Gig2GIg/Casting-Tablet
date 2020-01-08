@@ -11,6 +11,9 @@ import store from '@/store';
 import router from '@/router';
 import VModal from 'vue-js-modal'
 
+// Import stylesheet
+import 'vue-loading-overlay/dist/vue-loading.css';
+
 Vue.use(VModal)
 
 Vue.use(VueCarousel);
