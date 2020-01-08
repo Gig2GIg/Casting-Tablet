@@ -400,9 +400,10 @@
         </div>
       </div>
     </transition>
-    <modal class="flex flex-col w-full items-center mt-4" :width="540" height="175" name="modal_confirm_check_in_mode">
+    <modal class="flex flex-col w-full items-center" :width="540" height="175" name="modal_confirm_check_in_mode">
         <div class="py-8 px-3">
-            <p class="text-lg text-purple font-bold text-center">Are you sure you want to open Check In for audition?</p>
+              <h1 class="text-lg text-purple font-bold text-center">Open Check In?</h1>
+              <p class="text-lg text-purple text-center">Are you sure you want to open Check In for audition?</p>
             <div class="w-full flex flex-wrap justify-center overflow-hidden mt-3">
                 <div class="w-1/4">
                     <base-button type="submit" expanded @click="confirmCheckInmode(true)">
@@ -419,12 +420,12 @@
         </div>
     </modal>
 
-    <modal class="flex flex-col w-full items-center mt-4" :width="600" height="490" name="modal_passcode_check_in_mode">
+    <modal class="flex flex-col w-full items-center" :width="600" height="490" name="modal_passcode_check_in_mode">
         <div class="py-8 px-3">          
-            <p class="text-lg text-purple font-bold text-center">Set Passcode</p>
+            <p class="text-lg text-purple font-bold text-center mb-2">Set Passcode</p>
             <div class="flex w-full pass-code-input">
               <form class="w-full max-w-xs">
-                <input class="px-2 py-2 w-3/4 border border-purple mt-0" type="password" :value="checkInPassCode"   @input="onInputChange" placeholder="Passcode" autocomplete="off"    />              
+                <input class="text-black rounded-full overflow-hidden w-full h-full py-3 pl-6 pr-10 placeholder-purple focus:outline-none border border-purple" type="password" :value="checkInPassCode"   @input="onInputChange" placeholder="Passcode" autocomplete="off"    />              
               </form>
             </div>
             <div class="flex w-full mt-3">
