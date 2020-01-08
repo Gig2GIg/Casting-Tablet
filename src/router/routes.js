@@ -40,6 +40,14 @@ export default [
     },
   ]),
 
+  ...mapRoutes({ layout: 'monitor' }, [
+    {
+      path: '/auditions/:id/monitor-mode/:auditionId',
+      name: 'monitor-update',
+      component: () => import(/* webpackChunkName: 'monitor-update' */ '@/views/auditions/MonitorMode'),
+    },
+  ]),
+
   ...mapRoutes({ layout: 'talent' }, [
     {
       path: '/auditions/talent-database',
@@ -85,7 +93,7 @@ export default [
       name: 'auditions/detail',
       component: () => import(/* webpackChunkName: 'auditions.detail' */ '@/views/AuditionsDetail'),
     },
-  ]),
+  ]),  
 
   /*
   |--------------------------------------------------------------------------
@@ -122,11 +130,6 @@ export default [
     path: '/auditions/round/:id/create',
     name: 'auditions.round',
     component: () => import(/* webpackChunkName: 'auditions.round' */ '@/views/auditions/CreateRound'),
-  },
-  {
-    path: '/auditions/:id/monitor-mode',
-    name: 'monitor-update',
-    component: () => import(/* webpackChunkName: 'monitor-update' */ '@/views/auditions/MonitorMode'),
   },
   {
     path: '/notifications',

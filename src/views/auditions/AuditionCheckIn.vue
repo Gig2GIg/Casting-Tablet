@@ -185,8 +185,7 @@
             if(!passCode || passCode == ''){
                 this.$toasted.error("You have not passcode to access check-in mode.");
                 this.$router.push({ name: 'auditions/detail', params: {id: this.$route.params.auditionId } });
-            }
-            
+            }            
         },
         computed: {
             ...mapState("appointment", [
