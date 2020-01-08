@@ -208,24 +208,19 @@
           v-if="roundActive.status != 0 && audition.status == 1 && roundActive.status > 0 && audition.online == 0"
           class="w-full border border-gray-300 mt-6 mb-6"
         />
-        <!-- <router-link
+        <div
           v-if="roundActive.status != 0 && audition.status == 1 && roundActive.status > 0 && audition.online == 0"
-          :to="{ name: 'auditions/checkin', params: {id: roundActive.id, title:audition.title, startTime: roundActive.time, auditionId:audition.id } }"
-        > -->
-          <div
-            v-if="roundActive.status != 0 && audition.status == 1 && roundActive.status > 0 && audition.online == 0"
-            class="flex w-full content-center text-center justify-center flex-wrap cursor-pointer"
+          class="flex w-full content-center text-center justify-center flex-wrap cursor-pointer"
+        >
+          <button
+            @click="openConfirmCheckInmodal"
+            class="m-3 content-center flex items-center flex m-3 content-center border-2 rounded-sm border-purple w-48 h-10"
           >
-            <button
-              @click="openConfirmCheckInmodal"
-              class="m-3 content-center flex items-center flex m-3 content-center border-2 rounded-sm border-purple w-48 h-10"
-            >
-              <p
-                class="flex-1 text-purple text-sm font-semibold content-center tracking-tighter flex-1"
-              >Enter Check-In Mode</p>
-            </button>
-          </div>
-        <!-- </router-link> -->
+            <p
+              class="flex-1 text-purple text-sm font-semibold content-center tracking-tighter flex-1"
+            >Enter Check-In Mode</p>
+          </button>
+        </div>
         <div
           v-if="roundActive.status != 0 && audition.status == 1 && roundActive.status > 0 && audition.online == 0"
           class="w-full border border-gray-300 mt-6 mb-6"
@@ -234,15 +229,16 @@
           v-if="roundActive.status != 0 && audition.status == 1 && roundActive.status > 0 && audition.online == 0"
           class="flex w-full content-center text-center justify-center flex-wrap cursor-pointer"
         >
-          <router-link :to="{ name: 'monitor-update', params: {id: roundActive.id } }">
+          <!-- <router-link :to="{ name: 'monitor-update', params: {id: roundActive.id,auditionId:audition.id } }"> -->
             <div
+              @click="openConfirmMonitorInmodal"
               class="m-3 content-center flex items-center flex m-3 content-center border-2 rounded-sm border-purple w-48 h-10"
             >
               <p
                 class="flex-1 light-purple text-sm font-semibold content-center tracking-tighter flex-1"
               >Enter Monitor Mode</p>
             </div>
-          </router-link>
+          <!-- </router-link> -->
         </div>
         <div v-if="audition.status == 0" class="w-full border border-gray-300 mt-6 mb-6" />
         <div
@@ -400,6 +396,7 @@
         </div>
       </div>
     </transition>
+    <!--start: enter Check in model modal-->
     <modal class="flex flex-col w-full items-center mt-4" :width="540" height="175" name="modal_confirm_check_in_mode">
         <div class="py-8 px-3">
             <p class="text-lg text-purple font-bold text-center">Are you sure you want to open Check In for audition?</p>
@@ -445,6 +442,56 @@
             </div>
         </div>
     </modal>
+    <!--end: enter Check in model modal-->
+
+    <!--start: enter monitor mode in model modal-->
+    <modal class="flex flex-col w-full items-center mt-4" :width="540" height="175" name="modal_confirm_monitor_in_mode">
+        <div class="py-8 px-3">
+            <h1 class="text-lg text-purple font-bold text-center">Enter Monitor Mode?</h1>
+            <p class="text-lg text-purple text-center">Are you sure you want to open Monitor Mode?</p>
+            <div class="w-full flex flex-wrap justify-center overflow-hidden mt-3">
+                <div class="w-1/4">
+                    <base-button type="submit" expanded @click="confirmMonitorInmode(true)">
+                        Yes
+                    </base-button>
+                    </div>
+                    <div class="w-1/4 ml-3">
+                    <base-button type="submit" expanded @click="confirmMonitorInmode(false)">
+                        No
+                    </base-button>
+                </div>
+
+            </div>
+        </div>
+    </modal>
+
+    <modal class="flex flex-col w-full items-center mt-4" :width="600" height="490" name="modal_passcode_monitor_in_mode">
+        <div class="py-8 px-3">          
+            <p class="text-lg text-purple font-bold text-center">Set Passcode</p>
+            <div class="flex w-full pass-code-input">
+              <form class="w-full max-w-xs">
+                <input class="px-2 py-2 w-3/4 border border-purple mt-0" type="password" :value="monitorInPassCode"   @input="onInputChangeMonitor" placeholder="Passcode" autocomplete="off"    />              
+              </form>
+            </div>
+            <div class="flex w-full mt-3">
+              <SimpleKeyboard @onChange="onChangeMonitor" @onKeyPress="onKeyPressMonitor" :input="monitorInPassCode" :layout="layout" :theme="theme"/>              
+            </div>
+            <div class="w-full flex flex-wrap justify-center overflow-hidden mt-3">
+                <div class="w-1/4">
+                    <base-button type="button" expanded @click="cancelSetPassCodeMonitorIn()">
+                        Cancel
+                    </base-button>
+                    </div>
+                    <div class="w-1/4 ml-3">
+                    <base-button type="button" expanded @click="saveSetPassCodeMonitorIn()">
+                        Set
+                    </base-button>
+                </div>
+
+            </div>
+        </div>
+    </modal>
+    <!--end: enter monitor mode in model modal-->
         
 
 
@@ -489,6 +536,7 @@ export default {
       isLastRoundGroupOpen: false,
       lastRound: "",
       checkInPassCode: "",
+      monitorInPassCode: "",
       layout: {
         default: ["1 2 3", "4 5 6", "7 8 9", "0"],
         // default: ["1 2 3", "4 5 6", "7 8 9", "{shift} 0 _", "{bksp}"],
@@ -684,6 +732,40 @@ export default {
       this.$modal.hide("modal_passcode_check_in_mode");
       this.checkInPassCode = "";
       this.$router.push({ name: 'auditions/checkin', params: {id: this.roundActive.id, title: this.audition.title, startTime: this.roundActive.time, auditionId: this.audition.id } });
+    },
+    openConfirmMonitorInmodal() {
+      this.$modal.show("modal_confirm_monitor_in_mode");
+    },
+    confirmMonitorInmode(mode) {
+      this.$modal.hide("modal_confirm_monitor_in_mode");
+      if (mode) {
+        this.$modal.show("modal_passcode_monitor_in_mode");
+      }
+    },
+    onChangeMonitor(input) {
+      this.monitorInPassCode = input;
+    },
+    onKeyPressMonitor(button) {
+      // console.log("button", button);
+    },
+    onInputChangeMonitor(input) {
+      this.monitorInPassCode = input.target.value;      
+    },
+    cancelSetPassCodeMonitorIn(){
+      this.$modal.hide("modal_passcode_monitor_in_mode");
+      this.monitorInPassCode = "";
+      localStorage.removeItem(DEFINE.set_monitor_pass_code_key);
+    },
+    saveSetPassCodeMonitorIn(){
+      this.$toasted.clear();
+      if(!this.monitorInPassCode || this.monitorInPassCode == ''){
+        this.$toasted.error("Please enter passcode.");
+        return;
+      }
+      localStorage.setItem(DEFINE.set_monitor_pass_code_key, window.btoa(this.monitorInPassCode));
+      this.$modal.hide("modal_passcode_monitor_in_mode");
+      this.checkInPassCode = "";
+      this.$router.push({ name: 'monitor-update', params: {id: this.roundActive.id, auditionId: this.audition.id } });
     }
   }
 };

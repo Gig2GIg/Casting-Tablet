@@ -3,17 +3,17 @@
     <div
       class="flex justify-center items-center h-12 text-gray-200 font-light tracking-wider h-10 bg-purple"
     >
-      Check In
+      Monitor Updates
       <a class="flex items-center cursor-pointer bg-purple mr-0 ml-5" @click="toggleCheckinExit()">
           <figure class="flex justify-center"><img src="/images/icons/settings_white.png" alt="Icon" class="h-4">
           </figure>
       </a>
     </div>   
-    <div v-if="showCheckInExit" class="exit-checkin">
+    <div v-if="showCheckInExit" class="exit-monitor">
       <a class="flex items-center cursor-pointer mr-0 ml-5 mr-1 bg-white" @click="openConfirmCheckOutmodal()">
           <figure class="flex justify-center"><img src="/images/icons/sign_out.png" alt="Icon" class="h-4">
           </figure>
-          <span class="ml-1">Exit Check-In</span>
+          <span class="ml-1">Exit Monitor</span>
       </a>
     </div> 
     <transition
@@ -24,18 +24,18 @@
     
       <router-view class="flex flex-row flex-1 h-full" />
     </transition>
-    <modal class="flex flex-col w-full items-center mt-4" :width="540" height="175" name="modal_confirm_check_out_mode">
+    <modal class="flex flex-col w-full items-center mt-4" :width="540" height="175" name="modal_confirm_monitor_out_mode">
         <div class="py-8 px-3">
-            <h1 class="text-lg text-purple font-bold text-center">Close Check In?</h1>
-            <p class="text-lg text-purple text-center">Are you sure you want to close Check In for audition?</p>
+            <h1 class="text-lg text-purple font-bold text-center">Close Monitor Mode?</h1>
+            <p class="text-lg text-purple text-center">Are you sure you want to close Monitor Mode?</p>
             <div class="w-full flex flex-wrap justify-center overflow-hidden mt-3">
                 <div class="w-1/4">
-                    <base-button type="submit" expanded @click="confirmCheckOutmode(true)">
+                    <base-button type="submit" expanded @click="confirmMonitorOutmode(true)">
                         Yes
                     </base-button>
                     </div>
                     <div class="w-1/4 ml-3">
-                    <base-button type="submit" expanded @click="confirmCheckOutmode(false)">
+                    <base-button type="submit" expanded @click="confirmMonitorOutmode(false)">
                         No
                     </base-button>
                 </div>
@@ -43,16 +43,16 @@
             </div>
         </div>
     </modal>
-    <modal class="flex flex-col w-full items-center mt-4" :width="600" height="490" name="modal_passcode_check_out_mode">
+    <modal class="flex flex-col w-full items-center mt-4" :width="600" height="490" name="modal_passcode_monitor_out_mode">
         <div class="py-8 px-3">          
             <p class="text-lg text-purple font-bold text-center">Enter Passcode</p>
             <div class="flex w-full pass-code-input">
               <form class="w-full max-w-xs">
-                <input class="px-2 py-2 w-3/4 border border-purple mt-0" type="password" :value="checkInPassCode"   @input="onInputChange" placeholder="Passcode" autocomplete="off"    />              
+                <input class="px-2 py-2 w-3/4 border border-purple mt-0" type="password" :value="monitorInPassCode"   @input="onInputChange" placeholder="Passcode" autocomplete="off"    />              
               </form>
             </div>
             <div class="flex w-full mt-3">
-              <SimpleKeyboard @onChange="onChange" @onKeyPress="onKeyPress" :input="checkInPassCode" :layout="layout" :theme="theme"/>              
+              <SimpleKeyboard @onChange="onChange" @onKeyPress="onKeyPress" :input="monitorInPassCode" :layout="layout" :theme="theme"/>              
             </div>
             <div class="w-full flex flex-wrap justify-center overflow-hidden mt-3">
                 <div class="w-1/4">
@@ -85,7 +85,7 @@ export default {
     return {
       showNavBar: true,
       showCheckInExit : false,
-      checkInPassCode: "",
+      monitorInPassCode: "",
       layout: {
         default: ["1 2 3", "4 5 6", "7 8 9", "0"],
         // default: ["1 2 3", "4 5 6", "7 8 9", "{shift} 0 _", "{bksp}"],
@@ -111,35 +111,35 @@ export default {
      this.showCheckInExit = !this.showCheckInExit;
     },
     openConfirmCheckOutmodal() {
-      this.$modal.show("modal_confirm_check_out_mode");
+      this.$modal.show("modal_confirm_monitor_out_mode");
     },
-    confirmCheckOutmode(mode) {
-      this.$modal.hide("modal_confirm_check_out_mode");
+    confirmMonitorOutmode(mode) {
+      this.$modal.hide("modal_confirm_monitor_out_mode");
       if (mode) {
-        this.$modal.show("modal_passcode_check_out_mode");
+        this.$modal.show("modal_passcode_monitor_out_mode");
       }
     }, 
     onChange(input) {
-      this.checkInPassCode = input;
+      this.monitorInPassCode = input;
     },
     onKeyPress(button) {
       // console.log("button", button);
     },
     onInputChange(input) {
-      this.checkInPassCode = input.target.value;      
+      this.monitorInPassCode = input.target.value;      
     },
     cancelPassCodeCheckOut(){
-      this.$modal.hide("modal_passcode_check_out_mode");
+      this.$modal.hide("modal_passcode_monitor_out_mode");
     },
     checkPassCodeCheckOut(){
         this.$toasted.clear();
-        if(!this.checkInPassCode || this.checkInPassCode == ''){
+        if(!this.monitorInPassCode || this.monitorInPassCode == ''){
           this.$toasted.error("Please enter passcode.");
           return;
         }
-        let setPasscode = localStorage.getItem(DEFINE.set_pass_code_key);
-        if(window.atob(setPasscode)== this.checkInPassCode){
-          localStorage.removeItem(DEFINE.set_pass_code_key);          
+        let setPasscode = localStorage.getItem(DEFINE.set_monitor_pass_code_key);
+        if(window.atob(setPasscode)== this.monitorInPassCode){
+          localStorage.removeItem(DEFINE.set_monitor_pass_code_key);
           this.$router.push({ name: 'auditions/detail', params: {id: this.$route.params.auditionId } });
         } else {
           this.$toasted.error("Please enter valid passcode.");
@@ -160,7 +160,7 @@ export default {
 nav {
   background-image: linear-gradient(#4D2545, #782541);
 }
-.exit-checkin{
+.exit-monitor{
   width: 155px;
   height : 150px;
   right: 0;

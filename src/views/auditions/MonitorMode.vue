@@ -63,6 +63,7 @@
 import { mapActions, mapState, mapGetters } from 'vuex';
 import axios from 'axios';
 import moment from "moment";
+import DEFINE from '../../utils/const.js';
 
 export default {
   data() {
@@ -92,6 +93,13 @@ export default {
     this.fetch(this.$route.params.id);
     let { data: { data } } = await axios.get(`/monitor/show/${this.$route.params.id}`);
     this.updates = data;
+  },
+  created() {
+      let passCode = localStorage.getItem(DEFINE.set_monitor_pass_code_key);
+      if(!passCode || passCode == ''){
+          this.$toasted.error("You have not passcode to access monitor mode.");
+          this.$router.push({ name: 'auditions/detail', params: {id: this.$route.params.auditionId } });
+      }            
   },
   methods: {
     ...mapActions("appointment", ["fetch", "fetchUserAudition", "saveCheckIn", "fetchAppointmentNotWalk"]),
