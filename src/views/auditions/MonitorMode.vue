@@ -11,7 +11,7 @@
                 placeholder="Add a new update"
                 :custom-classes="['border-2', 'border-purple']"
               />
-            <div class="m-3 content-center rounded-full red-light w-40 h-10 flex items-center button-detail" @click="sendUpdate()">
+            <div class="m-3 content-center rounded-full red-light w-40 h-10 flex items-center button-detail cursor-pointer" @click="sendUpdate()">
               <p class="text-white text-sm font-bold content-center tracking-tighter flex-1">
                 Send Updates
               </p>
@@ -123,6 +123,7 @@ export default {
         this.$toasted.success('Update send successfully');
         let { data: { data } } = await axios.get(`/monitor/show/${this.$route.params.id}`);
         this.updates = data;
+        this.updateText = "";
       } catch (error) {
         this.$toasted.error("Not performers added to notificate");
       }
