@@ -3,6 +3,18 @@
     <div class="flex flex-wrap flex-1 justify-center items-center text-white py-16 h-full bg-gray-100 ">
       <div class="container flex w-full mt-3">
           <div class="flex w-full text-center justify-center flex-wrap flex-row">
+            
+            <div v-for="(val, index) in updateTextArray" :key="index">
+              <base-input                
+                name="tag"
+                v-model="val.title"
+                class="px-2"
+                type="text"
+                readonly="true"
+                :custom-classes="['border-2', 'border-purple']"
+              />
+            </div>
+            
              <base-input
                 v-model="updateText"
                 name="tag"
@@ -84,6 +96,7 @@ export default {
       data:{},
       updates:{},
       updateText:'',
+      updateTextArray:[],
     };
   },
   computed:{
@@ -113,7 +126,16 @@ export default {
         this.appointment_id=""
     },
     async sendUpdate(){
-      try {
+      if (this.isLoading) {
+          return;
+      }
+      this.$toasted.clear();
+      try {        
+        if (!this.updateText ||this.updateText == '') {
+            this.$toasted.error("Please enter a new udpate.");
+            return;
+        }
+        this.isLoading = true;
         let body = {
           "appointment":this.$route.params.id,
           "title": this.updateText,
@@ -123,8 +145,12 @@ export default {
         this.$toasted.success('Update send successfully');
         let { data: { data } } = await axios.get(`/monitor/show/${this.$route.params.id}`);
         this.updates = data;
+        this.updateTextArray.push({title : this.updateText});
         this.updateText = "";
+        this.isLoading = false;
+
       } catch (error) {
+        this.isLoading = false;
         this.$toasted.error("Not performers added to notificate");
       }
     },
