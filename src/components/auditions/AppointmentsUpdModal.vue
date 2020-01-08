@@ -47,7 +47,7 @@
             @input="makeSlots"
           >
           <span class="appointment-label top-0 w-2/3 text-center right-0 absolute text-white rounded-r-full py-3 text-xl px-4 border border-transparent">
-            Appointments
+            Appointments 
           </span>
         </div>
 
