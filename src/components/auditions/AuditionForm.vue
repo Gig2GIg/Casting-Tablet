@@ -427,8 +427,8 @@
                             :per-page="innerWidth < 1920 ? 1 : 2"
                             :pagination-enabled="false"
                             :navigation-enabled="true"
-                            :navigation-next-label="'🡲'"
-                            :navigation-prev-label="'🡰'"
+                            :navigation-next-label="'<'"
+                            :navigation-prev-label="'>'"
                     >
                         <slide v-for="(media, index) in form.media" :key="index">
                             <DocumentItem :media="media" @destroy="handleDeleteDocument"/>

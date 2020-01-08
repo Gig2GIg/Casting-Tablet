@@ -1,16 +1,17 @@
 <template>
   <div class="flex flex-col min-h-full cover h-full">
     <div
-      class="flex justify-center items-center h-12 text-gray-200 font-light tracking-wider h-10 bg-purple"
+      class="flex justify-between pr-4 items-center h-12 text-gray-200 font-light tracking-wider h-10 bg-purple"
     >
-      Monitor Updates
+    <span></span>
+    <h3>Monitor Updates</h3>      
       <a class="flex items-center cursor-pointer bg-purple mr-0 ml-5" @click="toggleCheckinExit()">
           <figure class="flex justify-center"><img src="/images/icons/settings_white.png" alt="Icon" class="h-4">
           </figure>
       </a>
     </div>   
-    <div v-if="showCheckInExit" class="exit-monitor">
-      <a class="flex items-center cursor-pointer mr-0 ml-5 mr-1 bg-white" @click="openConfirmCheckOutmodal()">
+    <div v-if="showMonitorModeExit" class="exit-monitor">
+      <a class="flex items-center cursor-pointer mr-0 ml-5 mr-1 bg-purple br-12 text-white" @click="openConfirmCheckOutmodal()">
           <figure class="flex justify-center"><img src="/images/icons/sign_out.png" alt="Icon" class="h-4">
           </figure>
           <span class="ml-1">Exit Monitor</span>
@@ -24,31 +25,30 @@
     
       <router-view class="flex flex-row flex-1 h-full" />
     </transition>
-    <modal class="flex flex-col w-full items-center mt-4" :width="540" height="175" name="modal_confirm_monitor_out_mode">
+    <modal class="flex flex-col w-full items-center" :width="540" height="175" name="modal_confirm_monitor_out_mode">
         <div class="py-8 px-3">
             <h1 class="text-lg text-purple font-bold text-center">Close Monitor Mode?</h1>
             <p class="text-lg text-purple text-center">Are you sure you want to close Monitor Mode?</p>
             <div class="w-full flex flex-wrap justify-center overflow-hidden mt-3">
                 <div class="w-1/4">
-                    <base-button type="submit" expanded @click="confirmMonitorOutmode(true)">
-                        Yes
-                    </base-button>
-                    </div>
-                    <div class="w-1/4 ml-3">
-                    <base-button type="submit" expanded @click="confirmMonitorOutmode(false)">
-                        No
-                    </base-button>
+                  <base-button type="submit" expanded @click="confirmMonitorOutmode(false)">
+                      No
+                  </base-button>                    
                 </div>
-
+                <div class="w-1/4 ml-3">
+                  <base-button type="submit" expanded @click="confirmMonitorOutmode(true)">
+                      Yes
+                  </base-button>
+                </div>
             </div>
         </div>
     </modal>
-    <modal class="flex flex-col w-full items-center mt-4" :width="600" height="490" name="modal_passcode_monitor_out_mode">
+    <modal class="flex flex-col w-full items-center" :width="600" height="490" name="modal_passcode_monitor_out_mode">
         <div class="py-8 px-3">          
-            <p class="text-lg text-purple font-bold text-center">Enter Passcode</p>
+            <p class="text-lg text-purple font-bold text-center mb-2">Enter Passcode</p>
             <div class="flex w-full pass-code-input">
               <form class="w-full max-w-xs">
-                <input class="px-2 py-2 w-3/4 border border-purple mt-0" type="password" :value="monitorInPassCode"   @input="onInputChange" placeholder="Passcode" autocomplete="off"    />              
+                <input class="text-black rounded-full overflow-hidden w-full h-full py-3 pl-6 pr-10 placeholder-purple focus:outline-none border border-purple" type="password" :value="monitorInPassCode"   @input="onInputChange" placeholder="Passcode" autocomplete="off"    />              
               </form>
             </div>
             <div class="flex w-full mt-3">
@@ -84,7 +84,7 @@ export default {
   data() {
     return {
       showNavBar: true,
-      showCheckInExit : false,
+      showMonitorModeExit : false,
       monitorInPassCode: "",
       layout: {
         default: ["1 2 3", "4 5 6", "7 8 9", "0"],
@@ -108,7 +108,7 @@ export default {
   },
   methods:{
     toggleCheckinExit(){
-     this.showCheckInExit = !this.showCheckInExit;
+     this.showMonitorModeExit = !this.showMonitorModeExit;
     },
     openConfirmCheckOutmodal() {
       this.$modal.show("modal_confirm_monitor_out_mode");
@@ -160,9 +160,16 @@ export default {
 nav {
   background-image: linear-gradient(#4D2545, #782541);
 }
-.exit-monitor{
-  width: 155px;
-  height : 150px;
-  right: 0;
+.exit-monitor {
+    width: 155px;
+    position: absolute;
+    right: 10px;
+    top: 49px;
+}
+.br-12{
+  border-radius: 12px;
+}
+.bg-white-hover:hover {
+    background-color: #ececec !important;
 }
 </style>
