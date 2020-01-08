@@ -377,16 +377,20 @@
 
           <carousel
             class="flex-none w-full"
-            :per-page="innerWidth < 1920 ? 2 : 4"
+            :per-page="innerWidth < 1920 ? 3 : 4"
             :pagination-enabled="false"
+            :navigation-enabled="true"
+            :navigation-next-label="'🡲'"
+            :navigation-prev-label="'🡰'"
           >
             <slide
               v-for="(role, index) in form.roles"
               :key="index"
               :data-index="index"
               @slide-click="openRole"
+              class="py-2 pr-2 cml-6"
             >
-              <div class="flex flex-col items-center cursor-pointer">
+              <div class="flex flex-col items-center cursor-pointer box-shadow">
                 <div
                   class="bg-purple-gradient flex items-center justify-center rounded-full h-12 w-12"
                 >
@@ -417,6 +421,9 @@
             class="flex-none w-full"
             :per-page="innerWidth < 1920 ? 1 : 2"
             :pagination-enabled="false"
+            :navigation-enabled="true"
+            :navigation-next-label="'🡲'"
+            :navigation-prev-label="'🡰'"
           >
             <slide v-for="(media, index) in form.media" :key="index">
               <DocumentItem :media="media" @destroy="true" />
@@ -981,4 +988,10 @@ export default {
   /*.close-btn.search.wrap{display: flex;align-items: center;flex-wrap: wrap;}*/
   .vue-map-container{float: left;}
   .location-icon {background-image: url('../../../public/images/icons/location-icon.svg');background-repeat: no-repeat;background-position: right 12px top 14px;}
+  .box-shadow{
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+  }    
+  .cml-6{
+      margin-left: 2px !important;
+  }
 </style>

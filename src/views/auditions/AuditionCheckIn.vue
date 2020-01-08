@@ -159,7 +159,6 @@
 <script>
     import {mapActions, mapState, mapGetters} from "vuex";
     import DEFINE from '../../utils/const.js';
-    console.log("TCL: DEFINE", DEFINE)
     export default {
         data() {
             return {
@@ -180,6 +179,14 @@
                 qr_code_walkin : DEFINE.qr_code_walkin,
                 data: {}
             };
+        },
+        created() {
+            let passCode = localStorage.getItem(DEFINE.set_pass_code_key);
+            if(!passCode || passCode == ''){
+                this.$toasted.error("You have not passcode for access this.");
+                this.$router.push({ name: 'auditions/detail', params: {id: this.$route.params.auditionId } });
+            }
+            
         },
         computed: {
             ...mapState("appointment", [

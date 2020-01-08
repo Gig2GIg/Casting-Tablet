@@ -423,7 +423,9 @@
         <div class="py-8 px-3">          
             <p class="text-lg text-purple font-bold text-center">Set Passcode</p>
             <div class="flex w-full pass-code-input">
-              <input class="px-2 py-2 w-2/3 border border-purple mt-0 align-center" type="password" :value="checkInPassCode"   @input="onInputChange" placeholder="Passcode"    />              
+              <form class="w-full max-w-xs">
+                <input class="px-2 py-2 w-3/4 border border-purple mt-0" type="password" :value="checkInPassCode"   @input="onInputChange" placeholder="Passcode" autocomplete="off"    />              
+              </form>
             </div>
             <div class="flex w-full mt-3">
               <SimpleKeyboard @onChange="onChange" @onKeyPress="onKeyPress" :input="checkInPassCode" :layout="layout" :theme="theme"/>              
@@ -456,7 +458,6 @@ import { eventBus } from "../../main";
 import axios from "axios";
 
 import SimpleKeyboard from "../shared/SimpleKeyboard";
-
 import DEFINE from '../../utils/const.js';
 
 export default {
@@ -524,6 +525,7 @@ export default {
     eventBus.$on("isCurrentOpenGroup", value => {
       this.isOpenGroup = value;
     });
+    
   },
   methods: {
     handleNewGroup(round_status) {
@@ -660,25 +662,29 @@ export default {
       }
     },
     onChange(input) {
-      console.log("TCL: onChange -> input", input);
       this.checkInPassCode = input;
     },
     onKeyPress(button) {
-      console.log("button", button);
+      // console.log("button", button);
     },
     onInputChange(input) {
-      console.log("TCL: onInputChange -> input", input);
       this.checkInPassCode = input.target.value;      
     },
     cancelSetPassCodeCheckIn(){
       this.$modal.hide("modal_passcode_check_in_mode");
       this.checkInPassCode = "";
-      console.log("TCL: onInputChange -> this.checkInPassCode", this.checkInPassCode)
+      localStorage.removeItem(DEFINE.set_pass_code_key);
     },
     saveSetPassCodeCheckIn(){
-      localStorage.setItem(DEFINE.set_pass_code_key, this.checkInPassCode);
+      this.$toasted.clear();
+      if(!this.checkInPassCode || this.checkInPassCode == ''){
+        this.$toasted.error("Please enter passcode.");
+        return;
+      }
+      localStorage.setItem(DEFINE.set_pass_code_key, window.btoa(this.checkInPassCode));
       this.$modal.hide("modal_passcode_check_in_mode");
       this.checkInPassCode = "";
+      this.$router.push({ name: 'auditions/checkin', params: {id: this.roundActive.id, title: this.audition.title, startTime: this.roundActive.time, auditionId: this.audition.id } });
     }
   }
 };
@@ -852,7 +858,7 @@ ul.submanu-content > li > a {
 }
 
 .pass-code-input {
-  margin-left: 5.5rem !important;
+  margin-left: 10.5rem !important;
 }
 </style>
 
