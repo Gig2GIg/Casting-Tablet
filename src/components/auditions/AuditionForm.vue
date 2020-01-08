@@ -385,9 +385,9 @@
                             class="flex-none w-full"
                             :per-page="innerWidth < 1920 ? 3 : 4"
                             :pagination-enabled="false"
-                            :navigation-enabled="true"
-                            :navigation-next-label="'🡲'"
-                            :navigation-prev-label="'🡰'"
+                            :navigation-enabled="true"                            
+                            :navigation-prev-label="'&#x279C;'"                            
+                            :navigation-next-label="'&#x279C;'"
                     >
                         <slide
                                 v-for="(role, index) in form.roles"
@@ -427,8 +427,8 @@
                             :per-page="innerWidth < 1920 ? 1 : 2"
                             :pagination-enabled="false"
                             :navigation-enabled="true"
-                            :navigation-next-label="'<'"
-                            :navigation-prev-label="'>'"
+                            :navigation-prev-label="'&#x279C;'"                            
+                            :navigation-next-label="'&#x279C;'"
                     >
                         <slide v-for="(media, index) in form.media" :key="index">
                             <DocumentItem :media="media" @destroy="handleDeleteDocument"/>
@@ -909,5 +909,8 @@
     }    
     .cml-6{
         margin-left: 2px !important;
+    }    
+    .VueCarousel-navigation-button{
+        color: #592543!important;
     }
 </style>

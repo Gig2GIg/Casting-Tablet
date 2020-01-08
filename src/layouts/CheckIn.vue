@@ -9,7 +9,7 @@
       </a>
     </div>   
     <div v-if="showCheckInExit" class="exit-checkin">
-      <a class="flex items-center cursor-pointer mr-0 ml-5 mr-1 bg-white bg-white-hover br-12" @click="openConfirmCheckOutmodal()">
+      <a class="flex items-center cursor-pointer bg-white bg-white-hover br-12 p-2" @click="openConfirmCheckOutmodal()">
           <figure class="flex justify-center"><img src="/images/icons/sign_out.png" alt="Icon" class="h-4">
           </figure>
           <span class="ml-1">Exit Check-In</span>
