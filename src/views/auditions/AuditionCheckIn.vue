@@ -34,7 +34,7 @@
                 >I'm a Walk In
                 </base-button>
             </div>
-            <div v-if="init" class="flex w-half max-w-xl mt-16">
+            <!-- <div v-if="init" class="flex w-half max-w-xl mt-16">
                 <router-link :to="{ name: 'auditions/detail', params: {id: this.$route.params.auditionId } }">
                     <base-button
                             type="submit"
@@ -45,7 +45,7 @@
                     >Not Now
                     </base-button>
                 </router-link>
-            </div>
+            </div> -->
             <p v-if="scan" class="decode-result" @click="changeScanner">Change method</p>
             <div v-if="showWalkInQr" class="flex justify-center w-full max-w-xl mt-16">
                 <div class="w-1/1 flex justify-center rounded-lg shadow-xl">
@@ -183,7 +183,7 @@
         created() {
             let passCode = localStorage.getItem(DEFINE.set_pass_code_key);
             if(!passCode || passCode == ''){
-                this.$toasted.error("You have not passcode for access this.");
+                this.$toasted.error("You have not passcode to access check-in mode.");
                 this.$router.push({ name: 'auditions/detail', params: {id: this.$route.params.auditionId } });
             }
             

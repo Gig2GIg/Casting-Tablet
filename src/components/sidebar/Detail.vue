@@ -656,7 +656,6 @@ export default {
       this.$modal.show("modal_confirm_check_in_mode");
     },
     confirmCheckInmode(mode) {
-      console.log("TCL: confirmCheckInmode -> mode", mode);
       this.$modal.hide("modal_confirm_check_in_mode");
       if (mode) {
         this.$modal.show("modal_passcode_check_in_mode");

@@ -9,7 +9,7 @@
       </a>
     </div>   
     <div v-if="showCheckInExit" class="exit-checkin">
-      <a class="flex items-center cursor-pointer bg-white p-2 bg-white-hover br-12" @click="checkOut()">
+      <a class="flex items-center cursor-pointer mr-0 ml-5 mr-1 bg-white bg-white-hover br-12" @click="openConfirmCheckOutmodal()">
           <figure class="flex justify-center"><img src="/images/icons/sign_out.png" alt="Icon" class="h-4">
           </figure>
           <span class="ml-1">Exit Check-In</span>
@@ -23,7 +23,25 @@
     
       <router-view class="flex flex-row flex-1 h-full" />
     </transition>
-    <modal class="flex flex-col w-full items-center" :width="600" height="490" name="modal_passcode_check_out_mode">
+    <modal class="flex flex-col w-full items-center" :width="540" height="175" name="modal_confirm_check_out_mode">
+        <div class="py-8 px-3">
+            <p class="text-lg text-purple font-bold text-center">Are you sure you want to close Check In for audition?</p>
+            <div class="w-full flex flex-wrap justify-center overflow-hidden mt-3">
+                <div class="w-1/4">
+                    <base-button type="submit" expanded @click="confirmCheckOutmode(true)">
+                        Yes
+                    </base-button>
+                    </div>
+                    <div class="w-1/4 ml-3">
+                    <base-button type="submit" expanded @click="confirmCheckOutmode(false)">
+                        No
+                    </base-button>
+                </div>
+
+            </div>
+        </div>
+    </modal>
+    <modal class="flex flex-col w-full items-center mt-4" :width="600" height="490" name="modal_passcode_check_out_mode">
         <div class="py-8 px-3">          
             <p class="text-lg text-purple font-bold text-center mb-2">Enter Passcode</p>
             <div class="flex w-full pass-code-input">
@@ -87,14 +105,19 @@ export default {
     },
   },
   methods:{
-   toggleCheckinExit(){
+    toggleCheckinExit(){
      this.showCheckInExit = !this.showCheckInExit;
-     console.log("TCL: toggleCheckinExit -> this.showCheckInExit", this.showCheckInExit)
-   },
-   checkOut(){
-     this.$modal.show("modal_passcode_check_out_mode");
-   },   
-   onChange(input) {
+    },
+    openConfirmCheckOutmodal() {
+      this.$modal.show("modal_confirm_check_out_mode");
+    },
+    confirmCheckOutmode(mode) {
+      this.$modal.hide("modal_confirm_check_out_mode");
+      if (mode) {
+        this.$modal.show("modal_passcode_check_out_mode");
+      }
+    }, 
+    onChange(input) {
       this.checkInPassCode = input;
     },
     onKeyPress(button) {
