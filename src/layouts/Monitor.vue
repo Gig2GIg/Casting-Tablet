@@ -11,8 +11,8 @@
       </a>
     </div>   
     <div v-if="showMonitorModeExit" class="exit-monitor">
-      <a class="flex items-center cursor-pointer mr-0 ml-5 mr-1 bg-purple br-12 text-white" @click="openConfirmCheckOutmodal()">
-          <figure class="flex justify-center"><img src="/images/icons/sign_out.png" alt="Icon" class="h-4">
+      <a class="flex items-center cursor-pointer p-2 bg-purple br-12 text-white" @click="openConfirmCheckOutmodal()">
+          <figure class="flex justify-center"><img src="/images/icons/sign_out-white.png" alt="Icon" class="h-4">
           </figure>
           <span class="ml-1">Exit Monitor</span>
       </a>
@@ -164,7 +164,7 @@ nav {
     width: 155px;
     position: absolute;
     right: 10px;
-    top: 49px;
+    top: 50px;
 }
 .br-12{
   border-radius: 12px;
