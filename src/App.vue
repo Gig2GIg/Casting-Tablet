@@ -68,4 +68,6 @@ body, html {
   text-align: center;
 }
 .h-57{height: 57px;}
+.VueCarousel-navigation-prev {transform: rotate(180deg) translate(32px, 20px) !important;}
+.VueCarousel-navigation-button{color: #592543!important;}
 </style>

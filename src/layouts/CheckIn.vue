@@ -9,7 +9,7 @@
       </a>
     </div>   
     <div v-if="showCheckInExit" class="exit-checkin">
-      <a class="flex items-center cursor-pointer mr-0 ml-5 mr-1 bg-white bg-white-hover br-12" @click="openConfirmCheckOutmodal()">
+      <a class="flex items-center cursor-pointer bg-white bg-white-hover br-12 p-2" @click="openConfirmCheckOutmodal()">
           <figure class="flex justify-center"><img src="/images/icons/sign_out.png" alt="Icon" class="h-4">
           </figure>
           <span class="ml-1">Exit Check-In</span>
@@ -41,7 +41,7 @@
             </div>
         </div>
     </modal>
-    <modal class="flex flex-col w-full items-center mt-4" :width="600" height="490" name="modal_passcode_check_out_mode">
+    <modal class="flex flex-col w-full items-center" :width="600" height="490" name="modal_passcode_check_out_mode">
         <div class="py-8 px-3">          
             <p class="text-lg text-purple font-bold text-center mb-2">Enter Passcode</p>
             <div class="flex w-full pass-code-input">

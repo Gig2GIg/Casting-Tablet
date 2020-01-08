@@ -13,8 +13,8 @@
       :per-page="3"
       :pagination-enabled="false"
       :navigation-enabled="true"
-      :navigation-next-label="'🡲'"
-      :navigation-prev-label="'🡰'"
+      :navigation-prev-label="'&#x279C;'"                            
+      :navigation-next-label="'&#x279C;'"
     >
       <slide
         v-for="data in upcoming"
@@ -44,8 +44,8 @@
       :per-page="3"
       :pagination-enabled="false"
       :navigation-enabled="true"
-      :navigation-next-label="'🡲'"
-      :navigation-prev-label="'🡰'"
+      :navigation-prev-label="'&#x279C;'"                            
+      :navigation-next-label="'&#x279C;'"
     >
       <slide
         v-for="data in passed"
@@ -97,10 +97,7 @@ export default {
 </script>
 <style>
 .carousel-slider-width{
-  width: 97%!important;
-}
-.VueCarousel-navigation-button{
-  color: #592543!important;
+  width: 96% !important;
 }
 @media (min-width: 1280px){
   .container {
