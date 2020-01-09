@@ -23,7 +23,20 @@
                             <path fill="url(#a)" d="M.684 24.712C.684 11.226 11.616.293 25.103.293c13.486 0 24.419 10.933 24.419 24.42 0 13.486-10.933 24.418-24.42 24.418C11.617 49.131.685 38.2.685 24.712z" />
                             <path fill="#fff" d="M29.894 14.422H19.54a6.411 6.411 0 00-6.404 6.404v3.445a6.42 6.42 0 006.241 6.384 1.26 1.26 0 001.33-1.094 1.19 1.19 0 00-1.154-1.283c-2.302-.06-4.038-1.754-4.038-3.936v-3.517a4.03 4.03 0 014.024-4.024h10.356a4.03 4.03 0 014.024 4.024v3.428a4.03 4.03 0 01-4.024 4.023h-3.437a1.22 1.22 0 00-.856.354l-5.19 5.192a1.188 1.188 0 000 1.682c.47.45 1.212.45 1.682 0l4.842-4.842.238-.005h2.721a6.411 6.411 0 006.404-6.404v-3.427a6.411 6.411 0 00-6.404-6.404z" />
                         </svg>
-                        <span class="text-purple text-xl overflow-auto ml-10 my-auto">{{ notifications.title }}</span></div>
+                        <div>
+                            <span class="text-purple text-xl overflow-auto ml-10 my-auto">{{ notifications.title }}</span>
+                            <div v-if="notifications.code = 'autidion_add_contribuidor' && notifications.status !== 'accepted' && notifications.status !== 'rejected'">
+                                <div class="cursor-pointer m-3 content-center rounded-full red-light w-40 h-10 flex items-center button-detail accept-decline-btn" @click="manageNotification(notifications,true)">
+                                    <p class="text-white text-sm text-center font-bold content-center flex-1">Accept</p>
+                                </div>
+                                <div class="cursor-pointer m-3 content-center rounded-full red-light w-40 h-10 flex items-center bg-white border border-purple accept-decline-btn" @click="manageNotification(notifications,false)">
+                                    <p class="text-purple text-sm text-center font-bold content-center flex-1">Decline</p>
+                                </div>
+                            </div>
+                            <span v-else class="text-purple text-xl overflow-auto ml-1 my-auto capitalize">- {{ notifications.status}}</span>
+                        </div>
+                        
+                    </div>
                     <div class="w-3/12 text-right">
                         <div class="w-3/12 items-end ml-auto cursor-pointer" @click="notificationDetail(notifications)">
                             <svg xmlns="http://www.w3.org/2000/svg" width="54" height="29" @click="displayToogleMenu = true">
@@ -125,6 +138,7 @@ export default {
             notificationHistoryList: [],
             displayToogleMenu: false,
             objNotification: [],
+            loading : false
         };
     },
 
@@ -168,6 +182,23 @@ export default {
             }
             this.$modal.hide("modal_confirm_notification_delete");
             this.notificationHistory();
+        },
+        async manageNotification(data, status) {
+            let finalMsg = status ? 'Notification accepted successfully.' : 'Notification rejected successfully.';
+            let finalStatus = status ? 1 : 0;
+            let url = `t/auditions/invite-accept/${data.custom_data}?status=${finalStatus}&notification_id=${data.id}`;
+
+            try {
+                const {
+                    data: {
+                        data
+                    }
+                } = await axios.get(url);
+                this.$toasted.show(finalMsg);
+            } catch (ex) {
+                console.log(ex);
+            }            
+            this.notificationHistory();
         }
 
     },
@@ -200,4 +231,9 @@ export default {
     line-height: 16px;
     max-height: 48px;
 }
+.accept-decline-btn{
+    display:inline;
+    float:left;
+}
+
 </style>

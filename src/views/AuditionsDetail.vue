@@ -431,6 +431,7 @@ export default {
         );
         this.$toasted.success(groupCloseStatusRes.data.message);
         this.showNewGroup(true);
+        eventBus.$emit("isCurrentOpenGroup", false);
         this.openGroupMember = [];
         this.finalUserList = [];
         this.getUserlist();

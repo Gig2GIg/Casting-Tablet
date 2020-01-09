@@ -20,7 +20,40 @@
         :custom-classes="['border', 'border-purple']"
         :message="errors.first('create.date')"
       />
-      <base-input
+      <template>
+        <div class="relative h-12 my-2">                    
+            <vue-clock-picker
+                mode="24"                         
+                class="cus-des-timepicker px-2 text-left"
+                :onTimeChange="timeChangeHandler"
+                :defaultFocused="false"                                
+                placeholder="Time"
+                :defaultHour="defaultHour"
+                :defaultMinute="defaultMinute"
+                colorPalette="dark"
+                theme="material"
+            >
+            </vue-clock-picker>
+            <!-- <p v-if="isFormSubmit && (!appointments.time || appointments.time == '')" data-v-2d998ef9="" class="ml-6 mb-2">
+              The time field is required.
+            </p> -->
+            <input  
+              type="hidden"
+              :value="appointments.time"
+              v-validate="'required'"
+              name="time"
+              class="w-1/3 px-2"
+            />
+            <!-- {{errors}} -->
+            
+            <p v-if="errors.has('create.time')" class="ml-6 mb-2">
+              {{errors.first('create.time')}}
+            </p>
+
+        </div>
+      </template>
+
+      <!-- <base-input
         v-model="appointments.time"
         v-validate="'required'"
         name="time"
@@ -29,18 +62,47 @@
         placeholder="Time"
         :custom-classes="['border', 'border-purple']"
         :message="errors.first('create.time')"
-      />
-      <base-input
-        v-model="appointments.location"
-        v-validate="'required'"
-        name="location"
-        class="w-1/3 px-2"
-        type="location"
-        placeholder="Select a ubication"
+      /> -->
+      <button
+        class="w-1/3 location-icon border border-purple rounded-full h-full py-3 px-6 h-12 my-2 text-left text-purple"
         :custom-classes="['w-1/4', 'border', 'border-purple']"
-        :message="errors.first('create.location')"
-        @place="handleLocation"
-      />
+        name="location"
+        type="button"
+        @click="openLocationModel()"
+        >{{changeLocationBtnTxt ? 'Location Saved' : 'Location'}}
+    </button>
+    <modal width="80%" height="500px" :adaptive="true" name="location_model">
+      <template>
+        <div class="close-btn search wrap">
+
+            <div>
+                <label class="search-btn-wrap">
+                    <button type="button" class="location-close-button"><i class="material-icons" @click="closeLocationModel('close')"
+                                              style="font-size: 35px;">clear</i></button>
+                    <gmap-autocomplete class="w-1/3 px-2 border border-purple rounded-full h-full location-input" @place_changed="setPlace">
+                    </gmap-autocomplete>
+                    <button type="button" class="w-1/4 w-2btn border border-purple bg-purple-gradient text-white rounded-full h-full"
+                            @click="closeLocationModel('save')">Save
+                    </button>
+                </label>
+                <br/>
+            </div>
+            <br>
+            <gmap-map
+                    :center="center"
+                    :zoom="12"
+                    style="width:100%;  height: 400px;"
+            >
+                <gmap-marker
+                        :key="index"
+                        v-for="(m, index) in markers"
+                        :position="m.position"
+                        @click="center=m.position"
+                ></gmap-marker>
+            </gmap-map>
+        </div>
+      </template>
+    </modal>
     </div>
 
   </form>
@@ -167,6 +229,8 @@
 </template>
 
 <script>
+import Vue from "vue";
+import VueClockPicker from 'vue-clock-picker'
 import { mapActions, mapState, mapGetters } from "vuex";
 import SlotItem from '@/components/auditions/SlotItem.vue';
 import AuditionForm from '@/components/auditions/AuditionForm.vue';
@@ -175,9 +239,20 @@ import firebase from 'firebase/app';
 import axios from 'axios';
 import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/vue-loading.css'
+
+// Import Google Maps Autocomplete
+import * as VueGoogleMaps from "vue2-google-maps";
+
+Vue.use(VueGoogleMaps, {
+  load: {
+    key: "AIzaSyCNwa9Hpkf463makeiBW_vSMH2Y0sY23q0",
+    libraries: "places"
+  }
+});
+
 export default {
   name: 'AppointmentsModal',
-  components: { SlotItem, Loading },
+  components: { SlotItem, Loading, VueClockPicker },
   props: {
     data: {
       type: Object,
@@ -193,9 +268,12 @@ export default {
   },
   data() {
     return {
+      defaultHour:'0',
+      defaultMinute:'0',
       appointments: {},
       selectedLocation: null,
       isLoading: false,
+      isFormSubmit : false,
       form: {
         dates: [
           {
@@ -210,6 +288,12 @@ export default {
         contributors: [],
         media: [],
       },
+      changeLocationBtnTxt: false,
+      center: {lat: 45.508, lng: -73.587},
+      markers: [],
+      places: [],
+      currentPlace: null,
+      fullPage : true
     };
   },
   watch: {
@@ -261,10 +345,55 @@ export default {
 
       this.appointments.end = this.appointments.slots.length ? counter : '';
     },
+    openLocationModel() {
+        this.$modal.show("location_model");
+        this.geolocate();
+    },
+    closeLocationModel(type) {
+        if (type == 'save') {
+            this.changeLocationBtnTxt = true;
+            this.$modal.hide("location_model");
+        } else {
+            this.changeLocationBtnTxt = false;
+            this.$modal.hide("location_model");
+            this.currentPlace = null;
+            this.selectedLocation = null;
+        }
+    },
+    setPlace(place) {
+        this.currentPlace = place;
+        this.selectedLocation = place;
+        this.addMarker();
+        // this.$modal.hide("location_model");
+    },
+    addMarker() {
+        if (this.currentPlace) {
+            const marker = {
+                lat: this.currentPlace.geometry.location.lat(),
+                lng: this.currentPlace.geometry.location.lng()
+            };
+            this.markers.push({position: marker});
+            this.places.push(this.currentPlace);
+            this.center = marker;
+            this.currentPlace = null;
+        }
+    },
+    geolocate: function () {
+        navigator.geolocation.getCurrentPosition(position => {
+            this.center = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            };
+        });
+    },
+    timeChangeHandler : function (event){
+        this.appointments.time = event.hour > 0 || event.minute > 0 ? `${event.hour}:${event.minute}` : '';
+    },
     handleLocation(place) {
       this.selectedLocation = place;
     },
     async handleCreate() {
+      this.isFormSubmit = true;
       let coverSnapshot = null,
           rolesSnapshots = [],
           filesSnaphosts = [];
@@ -310,7 +439,15 @@ export default {
         await axios.post(`/t/appointment/${this.$route.params.id}/rounds`, data);
         this.isLoading = false;
         this.$toasted.success('The round has created successfully.');
+        this.$router.push({
+            name: "auditions/detail",
+            params: {id: this.$route.params.id}
+        });
+        this.isFormSubmit = false;
+        this.isLoading = false;
       } catch (e) {
+        this.isFormSubmit = false;
+        this.isLoading = false;
         this.$toasted.error('Audition not created, try later.');
         console.log(e);
         coverSnapshot && coverSnapshot.ref.delete();
@@ -349,5 +486,14 @@ button {
 	background: #fff;
   border-radius: .4em;
   box-shadow: 0px 0px 6px #B2B2B2;
+}
+.location-input{padding: 7px 8px;}
+.w-2btn{padding: 7px 8px;margin-left: 10px;float: right;}
+.search-btn-wrap {width: 100%;float: left;padding: 20px;padding-right: 20px;display: flex;align-items: center;justify-content: space-between;}
+/*.close-btn.search.wrap{display: flex;align-items: center;flex-wrap: wrap;}*/
+.vue-map-container{float: left;}
+.location-icon {background-image: url('../../../public/images/icons/location-icon.svg');background-repeat: no-repeat;background-position: right 12px top 14px;}
+.location-close-button {
+  background: transparent;
 }
 </style>

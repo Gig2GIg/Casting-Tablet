@@ -70,4 +70,13 @@ body, html {
 .h-57{height: 57px;}
 .VueCarousel-navigation-prev {transform: rotate(180deg) translate(32px, 20px) !important;}
 .VueCarousel-navigation-button{color: #592543!important;}
+.outside-click-container{display: none;}
+.time-picker-preview.active ~ .outside-click-container {
+    display: block;
+}
+.text-transform-capitalize{
+  text-transform: capitalize
+}
+
+
 </style>
