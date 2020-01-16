@@ -13,6 +13,16 @@ import VModal from 'vue-js-modal'
 
 // Import stylesheet
 import 'vue-loading-overlay/dist/vue-loading.css';
+import VueLazyload from 'vue-lazyload'
+
+// Vue.use(VueLazyload)
+Vue.use(VueLazyload, {
+  preLoad: 1.3,
+  error: '/images/no-image.jpg',
+  loading: '/images/Loadingsome.gif',
+  attempt: 1
+})
+
 
 Vue.use(VModal)
 

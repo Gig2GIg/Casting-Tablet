@@ -346,14 +346,17 @@ export default {
     },
     asignEvents(){
         var finalList = new Array();
-        this.calendar.map(function(value) {
+        if(this.calendar && this.calendar.length > 0){
+          this.calendar.map(function(value) {
           let splitInitDate = value.start_date.split("-");
           let splitFinalDate = value.end_date.split("-");
           finalList.push({
               start: new Date(splitInitDate[0], splitInitDate[1] - 1, splitInitDate[2]),
               end: new Date(splitFinalDate[0], splitFinalDate[1] - 1, splitFinalDate[2])
+            });
           });
-      });
+        }
+        
       finalList;
       // debugger;
       this.attrs = [

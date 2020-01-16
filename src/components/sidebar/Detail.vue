@@ -571,6 +571,9 @@ export default {
   created() {
     eventBus.$on("isCurrentOpenGroup", value => {
       this.isOpenGroup = value;
+      if(!value){
+        this.getGroupdetails();
+      }
     });
     
   },
@@ -623,7 +626,11 @@ export default {
       this.info = false;
       this.manage = false;
       this.videoSection = true;
-
+      let videosDetails = {
+        videos : this.videos,
+        videoSection : this.videoSection
+      }
+      eventBus.$emit("auditionVideoDetails", videosDetails);
       // await this.listVideos(this.roundActive.id);
       // this.info = false;
       // this.manage = false;
@@ -659,6 +666,11 @@ export default {
       this.info = true;
       this.manage = false;
       this.videoSection = false;
+      let videosDetails = {
+        videos : [],
+        videoSection : this.videoSection
+      }
+      eventBus.$emit("auditionVideoDetails", videosDetails);
     },
     async changeStatus() {
       await this.openAudition(this.audition.id);

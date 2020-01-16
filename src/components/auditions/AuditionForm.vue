@@ -499,11 +499,11 @@
 
     // Import Google Maps Autocomplete
     import * as VueGoogleMaps from "vue2-google-maps";
-
+    import DEFINE from '../../utils/const.js';
     Vue.use(VueGoogleMaps, {
         load: {
-            key: "AIzaSyCNwa9Hpkf463makeiBW_vSMH2Y0sY23q0",
-            libraries: "places"
+            key: DEFINE.google.key,
+            libraries: DEFINE.google.libraries
         }
     });
 

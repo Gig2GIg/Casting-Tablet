@@ -172,7 +172,7 @@
     </div>
     <div class="flex w-full h-96 mt-16">
       <div class="w-1/3 shadow-lg border border-gray-300">
-        <p class="text-center text-2xl text-purple font-bold">Instant Feedback</p>
+        <p class="text-center text-2xl text-purple font-bold">Feedback</p>
         <div class="flex flex-wrap justify-center w-full">
             <div class="text-center w-full flex flex-wrap justify-center">
             <div>
@@ -726,6 +726,7 @@ export default {
         };
         let files = await axios.post('/t/auditions/video/save', audition_record);
         this.$toasted.success('Audition record saved');
+        this.isLoading = false;
         }
       }catch(e){
         this.isLoading = false;
@@ -742,7 +743,7 @@ export default {
       // this.form.evaluator = this.profile.details.id;
       this.form.evaluator = TokenService.getUserId();
       let data = {"appointment_id": this.$route.params.round, "performer": this.$route.params.id}
-
+      this.isLoading = false;
       if(Object.keys(this.feedback).length==0){
         let status = await axios.post('/t/feedbacks/add', this.form);
         this.$toasted.success('Feedback Created');
@@ -750,11 +751,10 @@ export default {
         return;
       }
       this.form.user_id = this.$route.params.id;
-        let status = await axios.put(`/t/auditions/${this.$route.params.round}/feedbacks/update`, this.form);
-        this.$toasted.success('Feedback Updated');
-        this.isLoading = false;
-        await this.fetchTeamFeedback(data);
-        return;
+      let status = await axios.put(`/t/auditions/${this.$route.params.round}/feedbacks/update`, this.form);
+      this.$toasted.success('Feedback Updated');      
+      await this.fetchTeamFeedback(data);
+      return;
     },
     handleFile(e) {
       const file = e.target.files[0];
@@ -766,14 +766,16 @@ export default {
     },
     asignEvents(){
       var finalList = new Array();
-        this.calendar.map(function(value) {
-          let splitInitDate = value.start_date.split("-");
-          let splitFinalDate = value.end_date.split("-");
+      if(this.calendar && this.calendar.length > 0){
+          this.calendar.map(function(value) {
+            let splitInitDate = value.start_date.split("-");
+            let splitFinalDate = value.end_date.split("-");
           finalList.push({
-              start: new Date(splitInitDate[0], splitInitDate[1] - 1, splitInitDate[2]),
-              end: new Date(splitFinalDate[0], splitFinalDate[1] - 1, splitFinalDate[2])
+            start: new Date(splitInitDate[0], splitInitDate[1] - 1, splitInitDate[2]),
+            end: new Date(splitFinalDate[0], splitFinalDate[1] - 1, splitFinalDate[2])
           });
-      });
+        });
+      }
       this.attrs = [
         {
           bar: {

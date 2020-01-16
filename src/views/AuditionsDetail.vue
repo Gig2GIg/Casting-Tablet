@@ -5,31 +5,23 @@
         <h4 class="w-full text-center text-purple font-semibold text-2xl">Check-In has not opened for this audition</h4>
       </div>
       <div v-if="(status == 2 && round.length ==0) && (finalCastState == false)" class="flex items-center flex-wrap ml-5 h-full">
-        <h4 class="w-full text-center text-purple font-semibold text-2xl">Auditions has been closed for this audition</h4>
+        <!-- <h4 class="w-full text-center text-purple font-semibold text-2xl">Auditions has been closed for this audition</h4> -->
       </div>
       <div v-if="status == 1 && userList.length == 0 " class="flex items-center flex-wrap ml-5 h-full">
         <h4 class="w-full text-center text-purple font-semibold text-2xl">Not performers added yet</h4>
       </div>
       <div v-if="isShowPerformer && (status == 1 || finalCastState == true || round.length >0)" class=" flex flex-wrap ml-5">
         <div class="col-6">
-          <!-- <draggable
-            v-if="!finalCastState && finalUserList && finalUserList.length > 0"
-            class="dragArea list-group flex flex-wrap"
-            :list="finalUserList"
-            :group="{ name: 'people', pull: 'clone', put: false }"
-            @change="log"
-            :move="checkMove"
-          > -->          
+
           <template v-if="!finalCastState && finalUserList && finalUserList.length > 0" class="list-group flex flex-wrap">
-            <transition-group  class="flex flex-wrap justify-center content-center" type="transition" :name="!drag ? 'flip-list' : null">
+            <transition-group  class="flex flex-wrap justify-center content-center" type="transition" :name="!drag ? 'flip-list' : null">              
               <div
 
                 class="list-group-item"
                 v-for="(data) in finalUserList"
                 :key="data.user_id"
               >
-                  <router-link :to="currentAudition && currentAudition.status == 2 ? { name: 'talent/user', params: {id: data.user_id} } : { name: 'auditions/user', params: {id: data.user_id, round: round.id, audition:$route.params.id} }">
-                  <!-- <router-link :to="{ name: 'auditions/user', params: {id: data.user_id, round: round.id, audition:$route.params.id} }"> -->
+                  <router-link :to="isAuditionVideos || (currentAudition && currentAudition.status == 2) ? { name: 'talent/user', params: {id: data.user_id} } : { name: 'auditions/user', params: {id: data.user_id, round: round.id, audition:$route.params.id} }">
                   <card-user
                     :title="data.name"
                     :time="data.time"
@@ -38,10 +30,7 @@
                     v-bind:class="{ 'after-clck-new-grp' : isShowCreateGroup}"
                   />
                   </router-link>
-                  <div v-if="auditionData.online == 0 && (!currentAudition || currentAudition.status != 2)" class="custom-btn-grp">
-                    <!-- <div @click="approveBtn(data.user_id, data.is_feedback_sent)" class="m-1 content-center rounded-full grren-back h-10 flex items-center">
-                      <button class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide" type="button"><img src="/images/icons/delete-icon.svg" alt="right-tick" /></button>
-                    </div> -->
+                  <div v-if="!isAuditionVideos && auditionData.online == 0 && (!currentAudition || currentAudition.status != 2)" class="custom-btn-grp">                    
                     <div @click="approveBtn(data.user_id, data.is_feedback_sent)" class="m-1 content-center rounded-full grren-back h-10 flex items-center">
                       <button class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide" type="button"><img src="/images/icons/right-tick.svg" alt="right-tick" /></button>
                     </div>
@@ -64,8 +53,6 @@
               </div>
             </transition-group>
           </template>
-          <!-- </draggable> -->
-          <!-- v-bind="dragOptions" :move="checkMove" -->
           <draggable
                   v-else-if="finalCastState"
                   class="dragArea list-group flex flex-wrap"
@@ -77,6 +64,7 @@
                   :emptyInsertThreshold="800"
           >
             <transition-group  class="final-cast-list flex flex-wrap justify-center content-center" type="transition" :name="!drag ? 'flip-list' : null">
+              
               <div
                       class="list-group-item"
                       v-for="(data) in finalCastListUser"
@@ -91,24 +79,15 @@
                 </router-link>
               </div>
             </transition-group>
-          </draggable>
-          <!-- <draggable
-            v-else
-            class="dragArea list-group flex flex-wrap"
-            :list="userList"
-            :group="{ name: 'people', pull: 'clone', put: false }"
-            @change="log"
-            :move="checkMove"
-          > -->          
+          </draggable>   
           <template v-else class="list-group flex flex-wrap">
-            <transition-group  class="flex flex-wrap justify-center content-center" type="transition" :name="!drag ? 'flip-list' : null">
+            <transition-group  class="flex flex-wrap justify-center content-center" type="transition" :name="!drag ? 'flip-list' : null">              
               <div
 
                 class="list-group-item"
                 v-for="(data) in userList"
                 :key="data.user_id"
-              >
-                  <!-- <router-link :to="{ name: 'auditions/user', params: {id: data.user_id, round: round.id, audition:$route.params.id} }"> -->
+              >                  
                   <router-link v-bind:class="{ 'pointer-none' : isShowCreateGroup}" :to="!isShowCreateGroup ? (currentAudition && currentAudition.status == 2 ? { name: 'talent/user', params: {id: data.user_id} } : { name: 'auditions/user', params: {id: data.user_id, round: round.id, audition:$route.params.id} }) : { name: 'auditions/detail', params: {id: $route.params.id} }">
                   <card-user
                     :title="data.name"
@@ -140,7 +119,6 @@
               </div>
             </transition-group>
             </template>
-          <!-- </draggable> -->
           <modal :width="500" height="380" :adaptive="true" name="showApproveMdl" class="custom-event-popup">
             <button @click="$modal.hide('showApproveMdl')" class="popup-close-btn">
               <i class="material-icons" style="font-size: 35px;color: black;">clear</i>
@@ -196,20 +174,22 @@
         :list="mainRoles?mainRoles:[]"
         group="people"
         :move="checkFinalCastMove"
-        @end="endFinalCastMove"        
-      >
-      <!-- @change="verifyRegisters" -->
+        @end="endFinalCastMove"    
+        @add="addFinalCastMove"        
+      >      
         <transition-group class="final-role-list flex flex-wrap w-full justify-center content-center w-full " type="transition" :name="!drag ? 'flip-list' : null">
         <div
-            class="list-group-item"
-            v-for="data in mainRoles"
+            class="list-group-item final-cast"
+            v-for="(data, lindex) in mainRoles"
             :key="data.id"
+            :class="(lindex+1) == mainRoles.length ? 'last-final-cast' : ''"
           >
               <card-user
                 :title="data.name"
                 :rol="data.rol"
                 :image="data.image.url ? data.image.url : data.image"
-              />
+                
+              /> 
         </div>
         </transition-group>
       </draggable>
@@ -288,7 +268,8 @@ export default {
       toElementPerformer : null,
       fromElementFinalCast : null,
       toElementFinalCast : null,
-      currentAudition : null
+      currentAudition : null,
+      isAuditionVideos : false
     };
   },
   destroyed:()=>{
@@ -326,6 +307,11 @@ export default {
     });
     eventBus.$on("currentAudition", value => {
       this.currentAudition = value;
+    });
+    eventBus.$on("auditionVideoDetails", value => {
+    console.log("TCL: created -> value", value)
+      this.isAuditionVideos = value.videoSection;
+      this.isAuditionVideos ? this.manageAuditionVideoPerformer(value.videos) : this.manageSelectedPerformer();      
     });
   },
   computed: {
@@ -487,6 +473,17 @@ export default {
         if (entry) this.finalUserList.push(entry);
       });
     },
+    manageAuditionVideoPerformer(videos) {
+      let userIds = _.compact(_.uniq(videos.map(video=>video.performer.user_id ? video.performer.user_id : null)));
+      console.log("TCL: manageAuditionVideoPerformer -> userIds", userIds)
+      this.finalUserList = [];
+      _.each(userIds, user_id => {
+        let entry = _.find(this.userList, user => {
+          return user.user_id == user_id;
+        });
+        if (entry) this.finalUserList.push(entry);
+      });
+    },
     async handleApprMdlFrm(type) {
       if(!this.comment){
         this.$toasted.clear();
@@ -542,9 +539,56 @@ export default {
         this.finalCastFilter = this.finalCast;
       }
     },
+    async chargeFinalCastInstant() {
+      for (let data in this.finalCast) {        
+        let filtered_data = _.cloneDeep(this.userList.filter(
+          user => user.user_id == this.finalCast[data].user_id
+        ));
+        for (let j in filtered_data) {
+          this.finalCast[data].image = filtered_data[j].image;
+          this.finalCast[data].name = filtered_data[j].name;
+          this.finalCast[data].time = filtered_data[j].time;
+          // this.finalCast[data].rol_id = filtered_data[j].rol;
+        }
+      }
+      this.mainRoles = [];
+      this.mainRoles = _.cloneDeep(this.roles);
+      await this.mainRoles.map(async role => {
+        if (this.finalCast.length > 0) {        
+
+          let filtered_data = await this.finalCast.filter(
+                user => user.rol_id === role.id
+            );        
+          if (filtered_data && filtered_data.length > 0) {
+            role.name = filtered_data[0].name;
+            role.image = filtered_data[0].image;
+            role.rol = filtered_data[0].rol_name;
+            role.is_peformer = true;
+            role.finalcast_id = filtered_data[0].id;
+            role.user_id = filtered_data[0].user_id;
+            role.time = filtered_data[0].time;
+          } else {
+            role.is_peformer = false;
+            role.finalcast_id = null;
+            role.user_id = null;
+            role.image = role.image.url;
+            role.time = '';
+          }
+        } else {
+          role.image = role.image.url;
+          role.time = '';
+        }
+        return role;
+      });
+
+      this.toggleFinalCastListUser();
+      if (this.finalCast.length > 0) {
+        this.finalCastFilter = this.finalCast;
+      }
+    },
     async chargeFinalCast() {
       await this.fetchFinalCastList(this.$route.params.id);
-      for (let data in this.finalCast) {
+      for (let data in this.finalCast) {        
         let filtered_data = _.cloneDeep(this.userList.filter(
           user => user.user_id == this.finalCast[data].user_id
         ));
@@ -603,7 +647,7 @@ export default {
         ));
         
         for (let j in filtered_data) {
-          this.finalCast[data].image = filtered_data[j].image;
+          this.finalCast[data].image = filtered_data[j].image;          
           this.finalCast[data].name = filtered_data[j].name;
           this.finalCast[data].time = filtered_data[j].time;
           // this.finalCast[data].rol_id = filtered_data[j].rol;
@@ -611,6 +655,7 @@ export default {
       }
 
       this.mainRoles = _.cloneDeep(this.roles);
+      
       await this.mainRoles.map(async role => {
         if (this.finalCast.length > 0) {
           let filtered_data = await this.finalCast.filter(
@@ -672,6 +717,7 @@ export default {
       }      
     },
     checkFinalCastMove: function(evt) {
+    // console.log("TCL: evt", evt)
       let returnVal = false;
       this.fromElementFinalCast = evt.draggedContext.element ? evt.draggedContext.element : null;
       this.toElementFinalCast = evt.relatedContext.element ? evt.relatedContext.element : null;
@@ -683,6 +729,10 @@ export default {
         returnVal = checkClassList.indexOf('final-role-list') > -1 ? true : false;
       }
       return returnVal;
+    },
+    async addFinalCastMove(evt){
+    // console.log("TCL: addFinalCastMove -> evt", evt)
+
     },
     async endFinalCastMove(evt){
       if(this.fromElementFinalCast && this.toElementFinalCast && this.fromElementFinalCast.is_peformer && !this.toElementFinalCast.is_peformer && this.fromElementFinalCast.user_id){
@@ -733,15 +783,22 @@ export default {
       }      
       return !isPerfomer;      
     },
-    async deletePerformer(item) {      
+    async deletePerformer(item) {
       let roleData = item.added && item.added.element ? item.added.element : null;
       if(roleData && roleData.is_peformer && roleData.finalcast_id){
         await this.removePerformer(roleData.finalcast_id);
+        await this.removePerformerFromFinalCast(roleData.user_id);
+        await this.chargeFinalCastInstant();
         this.auditionData = await this.fetchAuditionDataNew(this.$route.params.id);
         this.roles = this.auditionData.roles;
         await this.chargeFinalCast();
       }      
-    },     
+    },
+    removePerformerFromFinalCast(user_id){
+      this.finalCast = _.remove(this.finalCast, (value) => {
+        return value.user_id !== user_id;
+      });      
+    },
     checkMove: function(evt) {
       evt.draggedContext.element.name !== "apple";
     },
@@ -749,8 +806,7 @@ export default {
       this.finalCastListUser = [];
       this.finalUserList = [];
       let finalCastUserIds = this.finalCast && this.finalCast.length > 0 ? this.finalCast.map(cast=>cast.user_id) : [];
-    _.each(this.userList, member => {        
-    
+    _.each(this.userList, member => {    
         if(finalCastUserIds.indexOf(member.user_id) == -1){
           this.finalCastListUser.push(member);
         }
@@ -980,4 +1036,14 @@ export default {
   left: 40px;
   top: 8px;
 }
+/* .list-group-item.sortable-chosen.sortable-ghost + .list-group-item.final-cast, .list-group-item.sortable-chosen.sortable-ghost + .list-group-item.final-cast.last-final-cast {
+    display: none;
+}
+.final-role-list:nth-last-child(-n+1) {
+  display: none!important;
+} */
+/* .list-group-item.sortable-chosen.sortable-ghost ? .list-group-item.flip-list-enter-to {
+    display: none;
+} */
+
 </style>

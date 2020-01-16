@@ -496,11 +496,12 @@ Vue.use(VueMask);
 import * as VueGoogleMaps from "vue2-google-maps";
 import VueClockPicker from 'vue-clock-picker'
 import { setTimeout } from 'timers';
+import DEFINE from '../../utils/const.js';
 
 Vue.use(VueGoogleMaps, {
   load: {
-    key: "AIzaSyCNwa9Hpkf463makeiBW_vSMH2Y0sY23q0",
-    libraries: "places"
+    key: DEFINE.google.key,
+    libraries: DEFINE.google.libraries
   }
 });
 

@@ -29,7 +29,7 @@ export default [
       path: '/password/email',
       name: 'password.email',
       component: () => import(/* webpackChunkName: 'email' */ '@/views/auth/password/Email'),
-    },
+    },    
   ]),
 
   ...mapRoutes({ layout: 'checkIn' }, [
@@ -93,6 +93,13 @@ export default [
       name: 'auditions/detail',
       component: () => import(/* webpackChunkName: 'auditions.detail' */ '@/views/AuditionsDetail'),
     },
+  ]),  
+  ...mapRoutes({ layout: 'tour' }, [
+    {
+      path: '/tour/:step',
+      name: 'tour',
+      component: () => import(/* webpackChunkName: 'tour' */ '@/views/tour/Details'),
+    }
   ]),  
 
   /*
