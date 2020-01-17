@@ -628,9 +628,14 @@ export default {
       // Get Assigend Number
       let getPerformerDetails = await axios.get(`/t/auditions/profile/user/${this.$route.params.id}/appointment/${this.$route.params.round}`);
       if(getPerformerDetails.status == 200){
-        this.performerDetails = getPerformerDetails.data.data;
+        this.performerDetails = getPerformerDetails.data.data;        
         this.addNumberText = getPerformerDetails.data.data.assign_number;
-        this.isAssignedNumber = true;
+        if(this.addNumberText && this.addNumberText != ''){
+          this.isAssignedNumber = true;
+        } else {
+          this.isAssignedNumber = false;
+        }
+        
       }else{
         this.performerDetails = {};
         this.addNumberText = "";

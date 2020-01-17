@@ -1,5 +1,11 @@
 <template>
   <div>
+    <loading
+      :active.sync="isLoading"
+      :can-cancel="true"
+      :on-cancel="onCancel"
+      :is-full-page="fullPage"
+    ></loading>
     <p class="text-2xl">
       Create Your Account
     </p>
@@ -33,6 +39,7 @@
           type="password"
           placeholder="Password"
           :message="errors.first('password')"
+          autocomplete="false"
         />
 
         <base-input
@@ -43,6 +50,7 @@
           placeholder="Re-enter Password"
           :message="errors.first('password_confirmation')"
           data-vv-as="password"
+          autocomplete="false"
         />
       </template>
 
@@ -180,17 +188,28 @@
 </template>
 
 <script>
+import Vue from "vue";
 import AuthService from '@/services/AuthService';
 import states from '@/utils/states';
 import DEFINE from '../../utils/const.js';
 import { mapActions } from 'vuex';
+// Import component
+import Loading from "vue-loading-overlay";
+// Import stylesheet
+import "vue-loading-overlay/dist/vue-loading.css";
+Vue.use(Loading);
+
 
 export default {
+  components: {
+    Loading
+  },
   data() {
     return {
       form: {},
       step: 1,
       isLoading: false,
+      fullPage: true,
       preview: null,
       states,
     };
@@ -249,11 +268,15 @@ export default {
         this.$toasted.show('Account created successfully.');
         this.$router.push({ name: 'tour' });        
       } catch (e) {
-        this.$toasted.error(e.response.data.message);
+        let errorMsg = this.$options.filters.getErrorMsg(e.response.data.errors);
+        this.$toasted.error(errorMsg ? errorMsg : e.response.data.message);
         this.$setErrorsFromLaravel(e.response.data);
       } finally {
         this.isLoading = false;
       }
+    },
+    onCancel() {
+      console.log("User cancelled the loader.");
     },
   },
 };
