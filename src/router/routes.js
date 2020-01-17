@@ -96,7 +96,7 @@ export default [
   ]),  
   ...mapRoutes({ layout: 'tour' }, [
     {
-      path: '/tour/:step',
+      path: '/tour',
       name: 'tour',
       component: () => import(/* webpackChunkName: 'tour' */ '@/views/tour/Details'),
     }

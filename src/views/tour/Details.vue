@@ -7,10 +7,10 @@
       :pagination-active-color="'#512544'"
       :pagination-color="'#8E768A'"
       :pagination-position="'bottom'"
-      :navigate-to="setPage"
       @page-change="pageChange"
     >
-    
+    <!-- :navigate-to="setPage"
+       -->
       <slide
         v-for="data in tour_list"
         :key="data.step"
@@ -44,21 +44,18 @@ export default {
   },
   created() {
     this.tour_list  = DEFINE.tours;
-    this.current_page_index = this.$route.params.step;
-    
+    // this.current_page_index = this.$route.params.step;    
   },
-  updated() {
-    console.log("TCL: created -> this.current_page_index", this.current_page_index)
-    this.setPage = [this.current_page_index,false];
-  },
+  // mounted() {
+  //   console.log("TCL: created -> this.current_page_index", this.current_page_index)
+  //   this.setPage = [this.current_page_index,false];
+  // },
   methods: {
     pageChange(page){
-
       this.current_page_index = page;
-      if(this.$route.params.step != this.current_page_index){
-        this.$router.push({ name: 'tour',  params:{step : page} });
-      }
-      
+      // if(this.$route.params.step != this.current_page_index){
+      //   this.$router.push({ name: 'tour',  params:{step : page} });
+      // }      
     }
   }
   
