@@ -182,6 +182,8 @@
 <script>
 import AuthService from '@/services/AuthService';
 import states from '@/utils/states';
+import DEFINE from '../../utils/const.js';
+import { mapActions } from 'vuex';
 
 export default {
   data() {
@@ -194,6 +196,7 @@ export default {
     };
   },
   methods: {
+    ...mapActions('auth', ['login']),
     async nextStep() {
       if (await this.$validator.validateAll()) {
         this.step += 1;
@@ -232,9 +235,19 @@ export default {
         this.isLoading = true;
 
         await AuthService.register(this.form);
+        await this.login({
+          email: this.form.email,
+          password: this.form.password,
+          type: DEFINE.caster_type,
+        });
+
+        // Redirect the user to the page he first tried to visit or to the home view
+        // this.$router.replace(
+        //   this.$route.query.redirect || { name: 'auditions' },
+        // );
 
         this.$toasted.show('Account created successfully.');
-        this.$router.push({ name: 'login' });        
+        this.$router.push({ name: 'tour' });        
       } catch (e) {
         this.$toasted.error(e.response.data.message);
         this.$setErrorsFromLaravel(e.response.data);

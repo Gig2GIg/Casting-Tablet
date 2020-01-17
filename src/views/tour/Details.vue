@@ -1,7 +1,7 @@
 <template>
   <div>    
     <carousel
-      class="flex mt-4 carousel-slider-width "
+      class="flex mt-4 carousel-slider-width btn-position"
       :per-page="1"
       :pagination-enabled="true"
       :pagination-active-color="'#512544'"
@@ -17,14 +17,14 @@
         >
 
       <img v-lazy="data.image" class="tour-img" >
-      <h1 class="font-bold text-2xl text-center ml-20 tracking-wide text-purple">{{ data.title }}</h1>
-      <h1 class="text-center text-purple">{{ data.details }}</h1>
+      <h1 class="font-bold mb-2 text-2xl text-center ml-20 tracking-wide text-purple">{{ data.title }}</h1>
+      <h1 class="text-center text-purple m-width">{{ data.details }}</h1>
       </slide>
     </carousel>
-    <router-link :to="{ name: 'auditions'}" class="cursor-pointer left-2">
+    <router-link :to="{ name: 'auditions'}" class="cursor-pointer skip-btn left-2 text-purple">
       Skip
     </router-link>
-    <router-link v-if="(current_page_index+1) == tour_list.length" :to="{ name: 'auditions'}" class="cursor-pointer right-2">
+    <router-link v-if="(current_page_index+1) == tour_list.length"  :to="{ name: 'auditions'}" class="cursor-pointer done-btn right-2 text-purple">
       Done
     </router-link>
     </div>
@@ -72,6 +72,30 @@ export default {
   margin-right: auto;
   margin-bottom: 10px;
   /* width: 100%; */
+}
+.btn-position{
+  position: relative;
+  padding-bottom: 30px;
+}
+.skip-btn{
+  position: absolute;
+  left: 420px;
+  bottom: 20px;
+}
+.done-btn{
+  position: absolute;
+  right: 420px;
+  bottom: 20px;
+}
+.VueCarousel-pagination .VueCarousel-dot-container button.VueCarousel-dot{
+  margin-top: 0 !important;
+}
+.VueCarousel-pagination .VueCarousel-dot-container {
+  margin-top: 0 !important;
+}
+.m-width{
+  max-width: 900px;
+  margin: 0 auto;
 }
 </style>
 

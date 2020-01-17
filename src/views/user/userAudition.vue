@@ -15,10 +15,7 @@
     <div class="flex items-center border-l border-white text-white ml-auto cursor-pointer">
       <span class="mx-4">
         {{profile.details ? profile.details.first_name : ""}} {{profile.details ? profile.details.last_name : ""}}
-      </span>
-      <!-- <i class="material-icons mr-4">
-        keyboard_arrow_down
-      </i> -->
+      </span>      
       <img
         :src="profile.image ? profile.image.url : ''"
         class="w-12 img-h48"
@@ -247,8 +244,8 @@
                   <p class="text-purple justify-center w-16 font-bold tracking-tighter flex-1 w-full text-xl font-bold tracking-wider">
                     Work On
                   </p>
-                  <div class="flex flex-wrap justify-center content-center w-full">
-                    <div class="container flex w-1/4 mt-3">
+                  <div class="flex flex-wrap work-on-btn justify-center content-center w-full">
+                    <div class="container mt-3">
                       <div class="flex w-full text-center justify-center flex-wrap">
                         <div :class="{'button-detail': workon == 1}" class="m-3 content-center rounded-full border border-purple red-light w-20 h-10 flex items-center bg-white"  @click="workon = 1">
                           <p :class="{'text-white': workon == 1 , 'text-purple': workon != 1}" class="text-sm font-bold content-center tracking-tighter flex-1">
@@ -257,7 +254,7 @@
                         </div>
                       </div>
                     </div>
-                    <div class="container flex w-1/4 mt-3">
+                    <div class="container mt-3">
                       <div class="flexw-full text-center justify-center flex-wrap">
                         <div :class="{'button-detail': workon == 2}" class="m-3 content-center rounded-full border border-purple bg-white w-20 h-10 flex items-center"  @click="workon = 2">
                           <p :class="{'text-white': workon == 2 , 'text-purple': workon != 2}" class="text-sm font-bold content-center tracking-tighter flex-1">
@@ -266,7 +263,7 @@
                         </div>
                       </div>
                     </div>
-                    <div class="container flex w-1/4 mt-3">
+                    <div class="container mt-3">
                       <div class="flexw-full text-center justify-center flex-wrap">
                         <div :class="{'button-detail': workon == 3}" class="m-3 content-center rounded-full border border-purple bg-white w-20 h-10 flex items-center"  @click="workon = 3">
                           <p :class="{'text-white': workon == 3 , 'text-purple': workon != 3}" class="text-sm font-bold content-center tracking-tighter flex-1">
@@ -376,7 +373,7 @@
         class="-ml-3"
       >
       <p class="text-purple text-xl font-bold mt-4 w-full">{{data.name}}</p>
-      <p class="text-purple text-m font-bold mt-2 w-full">{{performerDetails.details.city ? performerDetails.details.city : ""}}</p>
+      <p class="text-purple text-m font-bold mt-2 w-full">{{performerDetails.details && performerDetails.details.city ? performerDetails.details.city : ""}}</p>
       <div @click="getPerformerDetail('info')" class="flex w-full justify-start mt-12 cus-cur">
         <img
           :src="'/images/icons/person.png'"
@@ -449,25 +446,25 @@
     <div class="m-4">
       <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
         <strong class="text-purple w-full">Production Type</strong>
-        <p class="text-purple w-full">{{performerDetails.credits ? performerDetails.credits[0].type : ""}}</p>
+        <p class="text-purple w-full">{{performerDetails.credits && performerDetails.credits[0] ? performerDetails.credits[0].type : ""}}</p>
       </div>
     </div>
     <div class="m-4">
       <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
         <strong class="text-purple w-full">Project Name</strong>
-        <p class="text-purple w-full">{{performerDetails.credits ? performerDetails.credits[0].name : ""}}</p>
+        <p class="text-purple w-full">{{performerDetails.credits && performerDetails.credits[0] ? performerDetails.credits[0].name : ""}}</p>
       </div>
     </div>
     <div class="m-4">
       <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
         <strong class="text-purple w-full">Role</strong>
-        <p class="text-purple w-full">{{performerDetails.credits ? performerDetails.credits[0].rol : ""}}</p>
+        <p class="text-purple w-full">{{performerDetails.credits && performerDetails.credits[0] ? performerDetails.credits[0].rol : ""}}</p>
       </div>
     </div>
     <div class="m-4">
       <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
         <strong class="text-purple w-full">Director/Production Company</strong>
-        <p class="text-purple w-full">{{performerDetails.credits ? performerDetails.credits[0].production : ""}}</p>
+        <p class="text-purple w-full">{{performerDetails.credits && performerDetails.credits[0] ? performerDetails.credits[0].production : ""}}</p>
       </div>
     </div>
   </modal>
@@ -478,31 +475,31 @@
     <div class="m-4">
       <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
         <strong class="text-purple w-full">School</strong>
-        <p class="text-purple w-full">{{performerDetails.education ? performerDetails.education[0].school : ""}}</p>
+        <p class="text-purple w-full">{{performerDetails.education && performerDetails.education[0] ? performerDetails.education[0].school : ""}}</p>
       </div>
     </div>
     <div class="m-4">
       <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
         <strong class="text-purple w-full">Degree/Cource</strong>
-        <p class="text-purple w-full">{{performerDetails.education ? performerDetails.education[0].degree : ""}}</p>
+        <p class="text-purple w-full">{{performerDetails.education && performerDetails.education[0] ? performerDetails.education[0].degree : ""}}</p>
       </div>
     </div>
     <div class="m-4">
       <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
         <strong class="text-purple w-full">Instructor</strong>
-        <p class="text-purple w-full">{{performerDetails.education ? performerDetails.education[0].instructor : ""}}</p>
+        <p class="text-purple w-full">{{performerDetails.education && performerDetails.education[0] ? performerDetails.education[0].instructor : ""}}</p>
       </div>
     </div>
     <div class="m-4">
       <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
         <strong class="text-purple w-full">Location</strong>
-        <p class="text-purple w-full">{{performerDetails.education ? performerDetails.education[0].location : ""}}</p>
+        <p class="text-purple w-full">{{performerDetails.education && performerDetails.education[0] ? performerDetails.education[0].location : ""}}</p>
       </div>
     </div>
     <div class="m-4">
       <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
         <strong class="text-purple w-full">Year</strong>
-        <p class="text-purple w-full">{{performerDetails.education ? performerDetails.education[0].year : ""}}</p>
+        <p class="text-purple w-full">{{performerDetails.education && performerDetails.education[0] ? performerDetails.education[0].year : ""}}</p>
       </div>
     </div>
   </modal>
@@ -571,6 +568,7 @@ export default {
   data() {
     return {
       isLoading: false,
+      fullPage : true,
       rol:'',
       emoji:3,
       callback: 1,
@@ -812,6 +810,7 @@ export default {
             "marketplace_id": this.currentMarketplace.id,
             "audition_id": this.$route.params.audition,
             "user_id": this.$route.params.id,
+            "appointment_id" : this.$route.params.round
           }
           if (await this.storeRecommendation(data))
             this.$toasted.success('Recommendation created successfully');
@@ -914,5 +913,10 @@ nav {
 }
 .cus-cur{
   cursor: pointer;
+}
+.work-on-btn{
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
 }
 </style>

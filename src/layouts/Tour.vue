@@ -1,13 +1,5 @@
 <template>
-  <div class="flex flex-col min-h-full h-full">
-    <!-- <div class="flex justify-between pr-4 items-center h-12 text-gray-200 font-light tracking-wider h-10 bg-purple">
-      <span></span>
-      <h3>Check In</h3>
-      <a class="flex items-center cursor-pointer bg-purple mr-0 ml-5" @click="toggleCheckinExit()">
-          <figure class="flex justify-center"><img src="/images/icons/settings_white.png" alt="Icon" class="h-4">
-          </figure>
-      </a>
-    </div>    -->
+  <div class="flex flex-col min-h-full h-full">  
     
     <transition
       name="page"
@@ -43,13 +35,7 @@ export default {
 };
 </script>
 
-<style scoped>
-.cover {
-  background-image: url('/images/background.jpg');
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-}
+<style >
 nav {
   background-image: linear-gradient(#4D2545, #782541);
 }

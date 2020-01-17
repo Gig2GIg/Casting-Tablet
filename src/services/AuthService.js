@@ -36,6 +36,7 @@ class AuthService extends BaseService {
       resource_name: imageName,
       type: '1',
     });
+    console.log("TCL: AuthService -> register -> data", data)
 
     return data;
   }

@@ -21,7 +21,7 @@ Vue.use(VueLazyload, {
   error: '/images/no-image.jpg',
   loading: '/images/Loadingsome.gif',
   attempt: 1
-})
+});
 
 
 Vue.use(VModal)
