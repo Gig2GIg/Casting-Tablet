@@ -7,6 +7,33 @@
 </template>
 
 <script>
+import firebase from 'firebase/app';
+import 'firebase/messaging';
+import axios from "axios";
+
+import Vue from 'vue';
+
+import TokenService from './services/core/TokenService';
+
+// Initialize Firebase
+firebase.initializeApp({
+  apiKey: 'AIzaSyDTrKkhJCM4ZNbFXRTq0AE2uKzNlpo3_i4',
+  authDomain: 'dd-gig2gig.firebaseapp.com',
+  databaseURL: 'https://dd-gig2gig.firebaseio.com',
+  projectId: 'dd-gig2gig',
+  storageBucket: 'dd-gig2gig.appspot.com',
+  messagingSenderId: '593196123450',
+  appId: '1:593196123450:web:796a695a5e872524fc3c03',
+});
+
+if (firebase.messaging.isSupported()) {
+  const messaging = firebase.messaging();
+  //listen for firebase notifications when window is active
+  messaging.onMessage(payload => {    
+    Vue.toasted.info(payload.notification.body);
+  });
+}
+
 export default {
   computed: {
     defaultLayout() {
@@ -16,6 +43,35 @@ export default {
       return `${this.$route.meta.layout || this.defaultLayout}-layout`;
     },
   },
+  async created() {      
+      if (firebase.messaging.isSupported() && TokenService.getUserId()) {
+        await this.askForPermissionToReceiveNotifications();
+      }
+    },
+  methods: {
+    async askForPermissionToReceiveNotifications() {
+      const messaging = firebase.messaging();
+
+      // Request permission
+      await messaging.requestPermission();
+
+      // Update token
+      const token = await messaging.getToken();      
+      await this.updateDeviceToken(token);
+
+      // Listen token changes
+      messaging.onTokenRefresh(async () => {
+        const token = await messaging.getToken();
+        await this.updateDeviceToken(token);
+      });
+    },
+    async updateDeviceToken(device_token) {
+      let userAgentId = window.navigator.userAgent.replace(/\D+/g, '');
+      if (device_token) {
+        await axios.put(`/t/notification-send-pushkey?pushkey=${device_token}&device_id=${userAgentId}`);
+      }
+    },
+  }
 };
 </script>
 

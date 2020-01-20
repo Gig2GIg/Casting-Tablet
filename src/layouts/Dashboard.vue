@@ -11,12 +11,20 @@
 </template>
 <script>
   import { mapActions, mapState, mapGetters } from "vuex";
+  import firebase from 'firebase/app';
+  import 'firebase/messaging';
+  
   export default {
     data() {
       return {
         search: '',
         reload: 0,
       };
+    },
+    async created() {      
+      // if (firebase.messaging.isSupported()) {
+      //   await this.askForPermissionToReceiveNotifications();
+      // }
     },
     computed:{},
     mounted(){},
@@ -26,7 +34,7 @@
       },
       reloadData(data){
         this.reload = data;
-      },
+      }      
     },
   };
 </script>
