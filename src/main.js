@@ -33,7 +33,6 @@ Vue.use(VueTheMask);
 Vue.use(VueQrcodeReader);
 
 Vue.filter("getErrorMsg", function(errors) {
-console.log("TCL: errors", errors)
   if (errors) {
     let obj = errors;
     return obj[Object.keys(obj)[0]] ? obj[Object.keys(obj)[0]][0] : null;

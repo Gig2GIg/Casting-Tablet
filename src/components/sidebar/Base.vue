@@ -1,5 +1,11 @@
 <template>
   <section class="flex flex-col items-center h-full w-1/5 text-purple">
+  <loading
+      :active.sync="isLoading"
+      :can-cancel="true"
+      :on-cancel="onCancel"
+      :is-full-page="fullPage"
+    ></loading>
     <img
       src="/images/logo-color.png"
       class="h-12"
@@ -50,15 +56,33 @@
 
 <script>
 import { mapActions } from 'vuex';
+import axios from "axios";
 
 export default {
+  data() {
+    return {
+      isLoading: false,
+      fullPage: true,
+    };
+  },
   methods: {
     ...mapActions('auth', ['logout']),
 
-    handleSignOut() {
+    async handleSignOut() {
+      this.isLoading = true;
+      await this.updateDeviceToken("");
       this.logout();
+      this.isLoading = false;
       this.$router.replace('/');
     },
+    async updateDeviceToken(device_token) {
+      let userAgentId = window.navigator.userAgent.replace(/\D+/g, '');      
+      await axios.put(`/t/notification-send-pushkey?pushkey=${device_token}&device_id=${userAgentId}`);
+    },
+    onCancel() {
+      console.log("User cancelled the loader.");
+    },
+
   },
 };
 </script>

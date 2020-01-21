@@ -485,7 +485,7 @@ import "firebase/storage";
 import Loading from "vue-loading-overlay";
 // Import stylesheet
 import "vue-loading-overlay/dist/vue-loading.css";
-import undefined from "firebase/storage";
+
 Vue.use(Loading);
 
 // Import v-mask

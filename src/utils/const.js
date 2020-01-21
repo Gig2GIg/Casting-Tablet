@@ -7,6 +7,10 @@ const DEFINE = {
         key: "AIzaSyCNwa9Hpkf463makeiBW_vSMH2Y0sY23q0",
         libraries: "places"
     },
+    firebase_permission_error:{
+        code : "messaging/permission-blocked",
+        name : "FirebaseError"
+    },
     tours : [
         {
             step : 1,
