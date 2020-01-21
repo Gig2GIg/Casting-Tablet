@@ -220,26 +220,27 @@
         </div>
         <div class="mt-4 flex flex-wrap py-2 px-4 border-b-2 border-gray-300 mr-2 cursor-pointer font-bold">
             <div class="w-10/12">
-              <a target="_blank" href="mailto:support@gig2gig.com" class="font-bold">Contact Us</a>
+              <a target="_blank" v-bind:href="'mailto:'+contact_us_email+''" class="font-bold">Contact Us</a>
             </div>
-
-          <div class="w-2/12">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="10.926"
-              height="19.213"
-            >
-              <g data-name="Grupo 1912">
-                <g data-name="Grupo 38">
-                  <path
-                    data-name="Trazado 24"
-                    d="M7.804 9.606L.373 17.037a1.275 1.275 0 101.8 1.8l8.053-8.05a1.26 1.26 0 00.328-.231 1.267 1.267 0 00.372-.95 1.267 1.267 0 00-.369-.95 1.259 1.259 0 00-.328-.231L2.175.373a1.275 1.275 0 00-1.8 1.8z"
-                    fill="#4d2545"
-                  />
+          <a target="_blank" v-bind:href="'mailto:'+contact_us_email+''" >
+            <div class="w-2/12">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="10.926"
+                height="19.213"
+              >
+                <g data-name="Grupo 1912">
+                  <g data-name="Grupo 38">
+                    <path
+                      data-name="Trazado 24"
+                      d="M7.804 9.606L.373 17.037a1.275 1.275 0 101.8 1.8l8.053-8.05a1.26 1.26 0 00.328-.231 1.267 1.267 0 00.372-.95 1.267 1.267 0 00-.369-.95 1.259 1.259 0 00-.328-.231L2.175.373a1.275 1.275 0 00-1.8 1.8z"
+                      fill="#4d2545"
+                    />
+                  </g>
                 </g>
-              </g>
-            </svg>
-          </div>
+              </svg>
+            </div>
+          </a>
         </div>
         <div
           class="mt-4 flex flex-wrap py-2 px-4 border-b-2 border-gray-300 mr-2 cursor-pointer font-bold"
@@ -1033,6 +1034,7 @@
 import axios from "axios";
 import states from "@/utils/states";
 import { mapActions, mapState } from "vuex";
+import DEFINE from '../utils/const.js';
 
 export default {
   data() {
@@ -1042,7 +1044,7 @@ export default {
       selectedFile: {},
       hideMenuInfo: false,
       tabSelected: "",
-      mailContactTo: "info@gig2gig.com",
+      contact_us_email: DEFINE.contact_us,
       listNotificacions: [],
       listAuditionFeedback: [],
       feedbackText: "",

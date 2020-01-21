@@ -3,6 +3,7 @@ const DEFINE = {
     qr_code_walkin: "/images/qr_codes/qr@3x.png",
     set_pass_code_key : 'checkin_set_pass_code',
     set_monitor_pass_code_key : 'monitor_set_pass_code',
+    contact_us : "support@gig2gig.com",
     google : {
         key: "AIzaSyCNwa9Hpkf463makeiBW_vSMH2Y0sY23q0",
         libraries: "places"
