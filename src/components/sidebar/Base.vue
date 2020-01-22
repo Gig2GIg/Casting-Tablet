@@ -1,11 +1,11 @@
 <template>
   <section class="flex flex-col items-center h-full w-1/5 text-purple">
-  <loading
+  <!-- <loading
       :active.sync="isLoading"
       :can-cancel="true"
       :on-cancel="onCancel"
       :is-full-page="fullPage"
-    ></loading>
+    ></loading> -->
     <img
       src="/images/logo-color.png"
       class="h-12"

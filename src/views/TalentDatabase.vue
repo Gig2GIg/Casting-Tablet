@@ -8,12 +8,12 @@
         </div>
         <div class="px-6 py-4">
           <div class="font-bold text-sm mb-2 py-2">Union Status</div>
-          <div class="tags w-2/5 mb-6">
-            <div class="flex">
+          <div class="tags w-2/5 mb-6 w-full">
+            <div class="flex flex-wrap w-full">
               <div
                 v-for="union in union_status"
                 :key="union.key"
-                class="py-2 px-4 border border-purple uppercase mr-2 rounded-full cursor-pointer"
+                class="py-2 px-4 border border-purple uppercase mr-2 rounded-full cursor-pointer mb-2"
                 :class="[union.selected ? 'bg-purple text-white' : 'bg-white text-purple']"
                 @click="setTags($event, 'union_status', false)"
               >
@@ -23,12 +23,12 @@
           </div>
 
           <div class="font-bold text-sm mb-2 py-2">Gender</div>
-          <div class="tags w-2/5">
-            <div class="flex">
+          <div class="tags w-2/5 w-full">
+            <div class="flex flex-wrap w-full">
               <div
                 v-for="gender in gender_list"
                 :key="gender.key"
-                class="py-2 px-4 uppercase border border-purple mr-2 rounded-full cursor-pointer"
+                class="py-2 px-4 uppercase border border-purple mr-2 rounded-full cursor-pointer mb-2"
                 :class="[gender.selected ? 'bg-purple text-white' : 'bg-white text-purple']"
                 @click="setTags($event, 'gender_list', false)"
               >
@@ -52,7 +52,7 @@
           >
           <router-link :to="{ name: 'talent/user', params: {id: item.details.user_id, image: item.image, code:item.share_code} }">
             <card-user
-              :title="item.details.first_name +' '+ item.details.last_name"
+              :title="item.details && item.details.first_name ? item.details.first_name +' '+ item.details.last_name : ''"
               time=""
               :image="item.image"
             />
@@ -87,7 +87,7 @@ export default {
           value: '1', name: 'UNION', selected: true,
         },
         {
-          value: '2', name: 'NOUNION', selected: false,
+          value: '2', name: 'Non Union', selected: false,
         },
       ],
       gender_list: [

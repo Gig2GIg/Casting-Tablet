@@ -24,7 +24,7 @@
                   <router-link :to="isAuditionVideos || (currentAudition && currentAudition.status == 2) ? { name: 'talent/user', params: {id: data.user_id} } : { name: 'auditions/user', params: {id: data.user_id, round: round.id, audition:$route.params.id} }">
                   <card-user
                     :title="data.name"
-                    :time="data.time"
+                    :time="currentAudition.online != 1 ? data.time : ''"
                     :image="data.image"
                     class="custom-perfom-list"
                     v-bind:class="{ 'after-clck-new-grp' : isShowCreateGroup}"
@@ -73,7 +73,7 @@
                 <router-link :to="currentAudition && currentAudition.status == 2 ? { name: 'talent/user', params: {id: data.user_id} } : { name: 'auditions/user', params: {id: data.user_id, round: round.id, audition:$route.params.id} }">
                   <card-user
                           :title="data.name"
-                          :time="data.time"
+                          :time="currentAudition.online != 1 ? data.time : ''"
                           :image="data.image && !data.image.url ? data.image : ''"
                   />
                 </router-link>
@@ -91,7 +91,7 @@
                   <router-link v-bind:class="{ 'pointer-none' : isShowCreateGroup}" :to="!isShowCreateGroup ? (currentAudition && currentAudition.status == 2 ? { name: 'talent/user', params: {id: data.user_id} } : { name: 'auditions/user', params: {id: data.user_id, round: round.id, audition:$route.params.id} }) : { name: 'auditions/detail', params: {id: $route.params.id} }">
                   <card-user
                     :title="data.name"
-                    :time="data.time"
+                    :time="currentAudition.online != 1 ? data.time : ''"
                     :image="data.image"
                     class="custom-perfom-list"
                     v-bind:class="{ 'after-clck-new-grp' : isShowCreateGroup}"

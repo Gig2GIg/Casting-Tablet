@@ -201,10 +201,10 @@ export default {
   methods: {
     async handleDone(preventClose = false) {
       if (await this.$validator.validateAll('role')) {
-        if (!this.form.cover) {
-          this.$toasted.error('The photo field is required.');
-          return;
-        }
+        // if (!this.form.cover) {
+        //   this.$toasted.error('The photo field is required.');
+        //   return;
+        // }
 
         if (!this.form.id) {
           this.form.id = uuid();

@@ -12,20 +12,23 @@
                     <p>There are no notifications</p>
                 </div>
                 <div class="flex flex-wrap py-4 border-b border-gray-300" v-for="notifications in notificationHistoryList" :key="notifications.id">
-                    <div class="flex flex-wrap overflow-auto w-9/12">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50">
-                            <defs>
-                                <linearGradient id="a" x1="25.1" x2="25.1" y1="-9.47" y2="92.36" gradientUnits="userSpaceOnUse">
-                                    <stop offset="0" stop-color="#4d2545" />
-                                    <stop offset="1" stop-color="#782541" />
-                                </linearGradient>
-                            </defs>
-                            <path fill="url(#a)" d="M.684 24.712C.684 11.226 11.616.293 25.103.293c13.486 0 24.419 10.933 24.419 24.42 0 13.486-10.933 24.418-24.42 24.418C11.617 49.131.685 38.2.685 24.712z" />
-                            <path fill="#fff" d="M29.894 14.422H19.54a6.411 6.411 0 00-6.404 6.404v3.445a6.42 6.42 0 006.241 6.384 1.26 1.26 0 001.33-1.094 1.19 1.19 0 00-1.154-1.283c-2.302-.06-4.038-1.754-4.038-3.936v-3.517a4.03 4.03 0 014.024-4.024h10.356a4.03 4.03 0 014.024 4.024v3.428a4.03 4.03 0 01-4.024 4.023h-3.437a1.22 1.22 0 00-.856.354l-5.19 5.192a1.188 1.188 0 000 1.682c.47.45 1.212.45 1.682 0l4.842-4.842.238-.005h2.721a6.411 6.411 0 006.404-6.404v-3.427a6.411 6.411 0 00-6.404-6.404z" />
-                        </svg>
-                        <div>
-                            <span class="text-purple text-xl overflow-auto ml-10 my-auto">{{ notifications.title }}</span>
-                            <div v-if="notifications.code = 'autidion_add_contribuidor' && notifications.status !== 'accepted' && notifications.status !== 'rejected'">
+                    <div class="flex flex-nowrap overflow-auto w-9/12">
+                        <figure class="mr-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50">
+                                <defs>
+                                    <linearGradient id="a" x1="25.1" x2="25.1" y1="-9.47" y2="92.36" gradientUnits="userSpaceOnUse">
+                                        <stop offset="0" stop-color="#4d2545" />
+                                        <stop offset="1" stop-color="#782541" />
+                                    </linearGradient>
+                                </defs>
+                                <path fill="url(#a)" d="M.684 24.712C.684 11.226 11.616.293 25.103.293c13.486 0 24.419 10.933 24.419 24.42 0 13.486-10.933 24.418-24.42 24.418C11.617 49.131.685 38.2.685 24.712z" />
+                                <path fill="#fff" d="M29.894 14.422H19.54a6.411 6.411 0 00-6.404 6.404v3.445a6.42 6.42 0 006.241 6.384 1.26 1.26 0 001.33-1.094 1.19 1.19 0 00-1.154-1.283c-2.302-.06-4.038-1.754-4.038-3.936v-3.517a4.03 4.03 0 014.024-4.024h10.356a4.03 4.03 0 014.024 4.024v3.428a4.03 4.03 0 01-4.024 4.023h-3.437a1.22 1.22 0 00-.856.354l-5.19 5.192a1.188 1.188 0 000 1.682c.47.45 1.212.45 1.682 0l4.842-4.842.238-.005h2.721a6.411 6.411 0 006.404-6.404v-3.427a6.411 6.411 0 00-6.404-6.404z" />
+                            </svg>
+                        </figure>
+                        <div class="flex flex-wrap"
+                            :class="notifications.code = 'autidion_add_contribuidor' && notifications.status !== 'accepted' && notifications.status !== 'rejected' ? 'flex-dir-column' : ''">
+                            <span class="text-purple text-xl overflow-auto my-auto">{{ notifications.title }}</span>
+                            <div class="flex flex-no-wrap" v-if="notifications.code = 'autidion_add_contribuidor' && notifications.status !== 'accepted' && notifications.status !== 'rejected'">
                                 <div class="cursor-pointer m-3 content-center rounded-full red-light w-40 h-10 flex items-center button-detail accept-decline-btn" @click="manageNotification(notifications,true)">
                                     <p class="text-white text-sm text-center font-bold content-center flex-1">Accept</p>
                                 </div>
@@ -235,5 +238,7 @@ export default {
     display:inline;
     float:left;
 }
-
+.flex-dir-column {
+    flex-direction: column;
+}
 </style>

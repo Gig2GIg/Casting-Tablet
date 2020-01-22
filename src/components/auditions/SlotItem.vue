@@ -8,8 +8,12 @@
           type="text"
           readonly
         >
-        <span class="absolute text-purple left-0 py-2 px-4 my-2 border border-purple rounded-l-full">
-          {{ data.time || data.number }}
+        <span v-if="data.number" class="absolute text-purple left-0 py-2 px-4 my-2 border border-purple rounded-l-full">
+          {{ data.number }}
+        </span>
+        <span  :class="data.number ? 'absolute text-purple py-2 px-4 my-2 border border-purple v-l-42': 'absolute text-purple left-0 py-2 px-4 my-2 border border-purple rounded-l-full'">
+
+          {{ data.time }}
         </span>
       </div>
       <div
@@ -50,3 +54,8 @@ export default {
   },
 };
 </script>
+<style>
+  .v-l-42{
+    left: 42px !important;
+  }
+</style>

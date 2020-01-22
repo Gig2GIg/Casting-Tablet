@@ -4,11 +4,15 @@
         :can-cancel="true" 
         :is-full-page="fullPage"></loading>
   <nav class="flex items-center h-12">
-      <div class="w-1/5 flex flex-wrap justify-center content-center h-10 border-2 ml-auto border-white rounded-sm cursor-pointer" @click="$refs.inputFile.click()">
+      <div v-if="audition.online != 1" class="w-1/5 flex flex-wrap justify-center content-center h-10 border-2 ml-auto border-white rounded-sm cursor-pointer" @click="$refs.inputFile.click()">
+      <!-- v-if="audition.online != 1" -->
         <div class="w-full flex">
             <div class="w-1/4 flex justify-center"><img :src="'/images/icons/camera.png'" class="h-6 ml-auto" alt="star"></div>
             <p class="w-full text-white tracking-wide text-lg ml-5 tracking-tight truncate">{{file.name}}</p>
         </div>
+      </div>
+      <div v-else class="w-610">
+
       </div>
       <img v-if="favorite == 0" :src="'/images/icons/4-layers.png'" class="w-6 m-6" alt="star" @click="favorite=1">
       <img v-else  :src="'/images/icons/Path_56@2x.png'" class="w-6 m-6" alt="star" @click="favorite=0">
@@ -345,7 +349,7 @@
   <div class="pane relative" :style="{ flexGrow: 1 }">
     <div class="absolute" v-for="data in currentUser" :key="data.id">
       <div class="flex flex-wrap content-center justify-center text-center">
-        <div class="mx-auto py-2">
+        <div class="mx-auto py-2" v-if="audition.online != 1">
           <base-input
                   v-if="!isAssignedNumber"
                   v-model="addNumberText"
@@ -370,7 +374,7 @@
       <img
         :src="data.image"
         alt="Icon"
-        class="-ml-3"
+        class="-ml-3 h-300"
       >
       <p class="text-purple text-xl font-bold mt-4 w-full">{{data.name}}</p>
       <p class="text-purple text-m font-bold mt-2 w-full">{{performerDetails.details && performerDetails.details.city ? performerDetails.details.city : ""}}</p>
@@ -422,7 +426,7 @@
     </div>
   </div>
 </multipane>
-  <modal :width="500" height="200" :adaptive="true" name="infoModal">
+  <modal :width="500" height="200" :adaptive="true" name="infoModal" class="custom-event-popup">
     <button @click="$modal.hide('infoModal')" class="popup-close-btn">
       <i class="material-icons" style="font-size: 35px;color: black;">clear</i>
     </button>
@@ -923,5 +927,11 @@ nav {
   display: flex !important;
   flex-direction: row !important;
   flex-wrap: nowrap !important;
+}
+.w-610{
+  width: 610px;
+}
+.h-300{
+  height: 290px;
 }
 </style>

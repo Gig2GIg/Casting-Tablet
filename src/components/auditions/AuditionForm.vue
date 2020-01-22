@@ -401,7 +401,8 @@
                                         class="bg-purple-gradient flex items-center justify-center rounded-full h-12 w-12"
                                 >
                                     <img
-                                            :src="role.preview"
+                                            :src="role && role.preview ? role.preview :imgUrlAlt" 
+                                            @error="imgUrlAlt"
                                             alt="Cover"
                                             class="w-full h-full object-cover rounded-full"
                                     />
@@ -556,13 +557,13 @@
                     //     selected: false
                     // },
                     {
-                        value: "union",
+                        value: "UNION",
                         name: "Union",
                         selected: true
                     },
                     {
-                        value: "nounion",
-                        name: "Nounion",
+                        value: "NONUNION",
+                        name: "Non Union",
                         selected: false
                     }
                 ],
@@ -573,49 +574,49 @@
                     //     selected: false
                     // },
                     {
-                        key: "paid",
+                        key: "PAID",
                         name: "Paid",
                         selected: true
                     },
                     {
-                        key: "unpaid",
+                        key: "UNPAID",
                         name: "Unpaid",
                         selected: false
                     }
                 ],
                 production_types: [
                     {
-                        key: "theater",
+                        key: "THEATER",
                         name: "Theater",
                         selected: true
                     },
                     {
-                        key: "film",
+                        key: "FILM",
                         name: "Film",
                         selected: false
                     },
                     {
-                        key: "voiceover",
+                        key: "VOICEOVER",
                         name: "VoiceOver",
                         selected: false
                     },
                     {
-                        key: "commercials",
+                        key: "COMMERCIALS",
                         name: "Commercials",
                         selected: false
                     },
                     {
-                        key: "performing arts",
+                        key: "PERFORMING ARTS",
                         name: "Performing Arts",
                         selected: false
                     },
                     {
-                        key: "modeling",
+                        key: "MODELING",
                         name: "Modeling",
                         selected: false
                     },
                     {
-                        key: "tv & video",
+                        key: "TV & VIDEO",
                         name: "TV & Video",
                         selected: false
                     }
@@ -796,14 +797,16 @@
                     // Upload roles
                     await Promise.all(
                         data.roles.map(async role => {
-                            const snapshot = await firebase
-                                .storage()
-                                .ref(`temp/${uuid()}.${role.name_cover.split(".").pop()}`)
-                                .put(role.cover);
+                            if (role.cover != undefined) {
+                                const snapshot = await firebase
+                                    .storage()
+                                    .ref(`temp/${uuid()}.${role.name_cover.split(".").pop()}`)
+                                    .put(role.cover);
 
-                            role.cover = await snapshot.ref.getDownloadURL();
+                                role.cover = await snapshot.ref.getDownloadURL();
 
-                            rolesSnapshots.push(snapshot);
+                                rolesSnapshots.push(snapshot);
+                            }
                         })
                     );
 
@@ -882,8 +885,11 @@
             },
             timeChangeHandler : function (event){
                 this.form.time = event.hour > 0 || event.minute > 0 ? `${event.hour}:${event.minute}` : '';
-            }
-        }
+            },
+            imgUrlAlt(event) {
+                event.target.src = DEFINE.role_placeholder;
+            }          
+        }        
     };
 </script>
 
