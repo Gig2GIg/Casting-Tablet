@@ -9,7 +9,7 @@
         <div class="tags w-full shadow-md mx-auto px-3 py-3 mt-6">
             <div class="py-4 px-4  mr-2 ">
                 <div v-if="notificationHistoryList.length == 0" class="flex w-full justify-center text-purple text-2xl">
-                    <p>Not notifications sended yet</p>
+                    <p>There are no notifications</p>
                 </div>
                 <div class="flex flex-wrap py-4 border-b border-gray-300" v-for="notifications in notificationHistoryList" :key="notifications.id">
                     <div class="flex flex-wrap overflow-auto w-9/12">
