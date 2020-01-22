@@ -847,7 +847,7 @@ export default {
       try {        
         if (this.isLoading) {
         // if (this.isLoading || !(await this.$validator.validateAll("create"))) {
-          console.log("TCL: handleCreate -> this.$validator.validateAll", this.$validator.validateAll())
+          // console.log("TCL: handleCreate -> this.$validator.validateAll", this.$validator.validateAll())
           return;
         }
         this.form.location = this.form.online ? null : this.form.location;
@@ -860,7 +860,7 @@ export default {
         data.production = this.production_types
           .filter(x => x.selected)
           .map(x => x.key)
-          .join(", ");
+          .join(",");
         
         this.audition.apointment.general.time = this.form.time
         data.appointment = [this.audition.apointment];

@@ -745,7 +745,7 @@
             },
 
             async handleCreate() {
-                console.log("TCL: handleCreate -> this.form", this.form)
+                // console.log("TCL: handleCreate -> this.form", this.form)
                 let coverSnapshot = null,
                     rolesSnapshots = [],
                     filesSnaphosts = [];
@@ -777,7 +777,7 @@
                     data.production = this.production_types
                         .filter(x => x.selected)
                         .map(x => x.key)
-                        .join(", ");
+                        .join(",");
                     if (this.selectedLocation) {
                         data.location = {
                             latitude: this.selectedLocation.geometry.location.lat(),
