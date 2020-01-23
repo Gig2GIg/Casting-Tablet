@@ -1,11 +1,15 @@
 <template>
     <div>
-        <img v-if="showWalkInQr" src="/images/icons/left_arrow_white.png" class="absolute back-button cursor-pointer" @click="useWalkinQRClose()">
+        <img v-if="!init" src="/images/icons/left_arrow_white.png" class="absolute back-button cursor-pointer" @click="useWalkinQRClose()">
         <div class="flex flex-col flex-1 justify-center items-center text-white py-16 h-full">
             <p
                     v-if="init"
                     class="text-xl tracking-wider font-bold"
-            >{{this.$route.params.title}} | {{this.$route.params.startTime}}</p>
+            >{{this.$route.params.title}} | {{this.$route.params.startTime | custTimeFormat}}</p>
+            <p
+                    v-if="scan"
+                    class="text-xl tracking-wider font-bold"
+            >{{this.$route.params.title}} | {{nowTime | formatDate}} | {{this.$route.params.startTime | custTimeFormat}} </p>
             
             <p v-if="scan" class="text-xl tracking-wider font-bold">Scan Your QR code to Sign In</p>
             <p v-if="showWalkInQr" class="text-xl tracking-wider font-bold">I'm a New User</p>
@@ -21,7 +25,7 @@
                         class="m-5 bg-white"
                         expanded
                         @click.native="useScanner"
-                >I Have an Appoinment
+                >I'm a Gig2Gig User
                 </base-button>
 
                 <base-button
@@ -31,7 +35,7 @@
                         class="m-5"
                         expanded
                         @click.native="useWalkinQR"
-                >I'm a Walk In
+                >Sign Up
                 </base-button>
             </div>
             <!-- <div v-if="init" class="flex w-half max-w-xl mt-16">
@@ -177,7 +181,8 @@
                 image: false,
                 showWalkInQr : false,
                 qr_code_walkin : DEFINE.qr_code_walkin,
-                data: {}
+                data: {},
+                nowTime: new Date()
             };
         },
         created() {

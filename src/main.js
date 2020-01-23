@@ -11,6 +11,8 @@ import store from '@/store';
 import router from '@/router';
 import VModal from 'vue-js-modal'
 
+import moment from "moment";
+
 // Import stylesheet
 import 'vue-loading-overlay/dist/vue-loading.css';
 import VueLazyload from 'vue-lazyload'
@@ -38,6 +40,19 @@ Vue.filter("getErrorMsg", function(errors) {
     return obj[Object.keys(obj)[0]] ? obj[Object.keys(obj)[0]][0] : null;
   } else {
     return null;
+  }
+});
+
+
+Vue.filter("formatDate", function (value) {
+  if (value) {
+    return moment(String(value)).format("MMMM Do, YYYY");
+  }
+});
+
+Vue.filter("custTimeFormat", function (value) {
+  if (value) {
+    return moment(String(value), "h:mma").format("hh:mm A");
   }
 });
 
