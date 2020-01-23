@@ -73,8 +73,10 @@
         } catch (e) {
           console.log("TCL: handleLogin -> e.FirebaseError",e);
           if(e.code && e.code == DEFINE.firebase_permission_error.code){
-              this.onLoginSuccessRedirect();
+            this.updateDeviceToken("");
+            this.onLoginSuccessRedirect();
           } else if(e.name && e.name == DEFINE.firebase_permission_error.name){
+            this.updateDeviceToken("");
             this.onLoginSuccessRedirect();
           }
           else if (e.response.status === 401) {
@@ -102,9 +104,7 @@
       },
       async updateDeviceToken(device_token) {
         let userAgentId = window.navigator.userAgent.replace(/\D+/g, '');
-        if (device_token) {
-          await axios.put(`/t/notification-send-pushkey?pushkey=${device_token}&device_id=${userAgentId}`);
-        }
+        await axios.put(`/t/notification-send-pushkey?pushkey=${device_token}&device_id=${userAgentId}`);
       },
       onLoginSuccessRedirect(){
         // Redirect the user to the page he first tried to visit or to the home view

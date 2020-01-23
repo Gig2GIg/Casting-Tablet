@@ -14,6 +14,7 @@ import axios from "axios";
 import Vue from 'vue';
 
 import TokenService from './services/core/TokenService';
+import DEFINE from './utils/const';
 
 // Initialize Firebase
 firebase.initializeApp({
@@ -45,7 +46,15 @@ export default {
   },
   async created() {      
       if (firebase.messaging.isSupported() && TokenService.getUserId()) {
-        await this.askForPermissionToReceiveNotifications();
+        try {
+          await this.askForPermissionToReceiveNotifications();
+        } catch (e) { 
+          if(e.code && e.code == DEFINE.firebase_permission_error.code){
+            this.updateDeviceToken("");
+          } else if(e.name && e.name == DEFINE.firebase_permission_error.name){
+            this.updateDeviceToken("");
+          }
+        }
       }
     },
   methods: {
@@ -66,10 +75,8 @@ export default {
       });
     },
     async updateDeviceToken(device_token) {
-      let userAgentId = window.navigator.userAgent.replace(/\D+/g, '');
-      if (device_token) {
-        await axios.put(`/t/notification-send-pushkey?pushkey=${device_token}&device_id=${userAgentId}`);
-      }
+      let userAgentId = window.navigator.userAgent.replace(/\D+/g, '');      
+      await axios.put(`/t/notification-send-pushkey?pushkey=${device_token}&device_id=${userAgentId}`);
     },
   }
 };
