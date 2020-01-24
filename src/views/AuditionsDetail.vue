@@ -485,7 +485,7 @@ export default {
       });
     },
     async handleApprMdlFrm(type) {
-      if(!this.comment){
+      if(type != "approved" && !this.feedbackText){
         this.$toasted.clear();
         this.$toasted.error("Please enter feedback message");
         return false;
