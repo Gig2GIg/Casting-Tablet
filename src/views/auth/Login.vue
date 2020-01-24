@@ -23,7 +23,8 @@
     </router-link>
   
     <router-link :to="{ name: 'register' }" class="mt-16">
-      Create Account
+      <!-- Create Account -->
+      <span class="text-2xl"> Create an Account</span>
     </router-link>
   </div>
 </template>
@@ -38,11 +39,11 @@
   import 'firebase/messaging';
   import axios from "axios";
   // Import component
-    import Loading from "vue-loading-overlay";
-    // Import stylesheet
-    import "vue-loading-overlay/dist/vue-loading.css";
+  import Loading from "vue-loading-overlay";
+  // Import stylesheet
+  import "vue-loading-overlay/dist/vue-loading.css";
 
-    Vue.use(Loading);
+  Vue.use(Loading);
     
   export default {
     components: {

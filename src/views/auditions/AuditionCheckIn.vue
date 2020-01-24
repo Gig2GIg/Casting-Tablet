@@ -5,11 +5,12 @@
             <p
                     v-if="init"
                     class="text-xl tracking-wider font-bold"
-            >{{this.$route.params.title}} | {{this.$route.params.startTime | custTimeFormat}}</p>
+            >{{this.$route.params.title}} | {{nowTime | custTimeFormat}}</p>
+            <!-- this.$route.params.startTime -->
             <p
                     v-if="scan"
                     class="text-xl tracking-wider font-bold"
-            >{{this.$route.params.title}} | {{nowTime | formatDate}} | {{this.$route.params.startTime | custTimeFormat}} </p>
+            >{{this.$route.params.title}} | {{this.$route.params.date | formatDate}} | {{nowTime | custTimeFormat}} </p>
             
             <p v-if="scan" class="text-xl tracking-wider font-bold">Scan Your QR code to Sign In</p>
             <p v-if="showWalkInQr" class="text-xl tracking-wider font-bold">I'm a New User</p>
@@ -163,6 +164,7 @@
 <script>
     import {mapActions, mapState, mapGetters} from "vuex";
     import DEFINE from '../../utils/const.js';
+    import moment from "moment";
     export default {
         data() {
             return {
@@ -182,7 +184,7 @@
                 showWalkInQr : false,
                 qr_code_walkin : DEFINE.qr_code_walkin,
                 data: {},
-                nowTime: new Date()
+                nowTime: moment().format('HH:mm')
             };
         },
         created() {
@@ -277,7 +279,6 @@
                 }
             },
             async updateCheckIn() {
-                console.log(this.appointment_id);
                 await this.fetchUserAudition(this.result);
                 let data = {
                     slot: this.appointment_id,

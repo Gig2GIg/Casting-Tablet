@@ -50,6 +50,7 @@ Vue.filter("formatDate", function (value) {
   }
 });
 
+// only time value should be pass e.g. 10:20 am or 15:30
 Vue.filter("custTimeFormat", function (value) {
   if (value) {
     return moment(String(value), "h:mma").format("hh:mm A");

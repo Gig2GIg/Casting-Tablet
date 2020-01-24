@@ -309,7 +309,6 @@ export default {
       this.currentAudition = value;
     });
     eventBus.$on("auditionVideoDetails", value => {
-    console.log("TCL: created -> value", value)
       this.isAuditionVideos = value.videoSection;
       this.isAuditionVideos ? this.manageAuditionVideoPerformer(value.videos) : this.manageSelectedPerformer();      
     });
@@ -475,7 +474,6 @@ export default {
     },
     manageAuditionVideoPerformer(videos) {
       let userIds = _.compact(_.uniq(videos.map(video=>video.performer.user_id ? video.performer.user_id : null)));
-      console.log("TCL: manageAuditionVideoPerformer -> userIds", userIds)
       this.finalUserList = [];
       _.each(userIds, user_id => {
         let entry = _.find(this.userList, user => {

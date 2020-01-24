@@ -56,12 +56,20 @@
 
       <template v-else-if="step === 2">
         <base-input
-          key="address-input"
-          v-model="form.address"
+          key="address1-input"
+          v-model="form.address1"
           v-validate="'required|max:255'"
-          name="address"
-          placeholder="Address"
+          name="address1"
+          placeholder="Address Line 1"
           :message="errors.first('address')"
+        />
+        <base-input
+          key="address2-input"
+          v-model="form.address2"
+          v-validate="'required|max:255'"
+          name="address2"
+          placeholder="Address Line 2"
+          :message="errors.first('address2')"
         />
 
         <base-input
@@ -103,7 +111,7 @@
           />
         </div>
 
-        <base-input
+        <!-- <base-input
           key="birth-input"
           v-model="form.birth"
           v-validate="'required'"
@@ -112,7 +120,7 @@
           placeholder="Birth Date"
           :message="errors.first('birth')"
           data-vv-as="birth date"
-        />
+        /> -->
       </template>
 
       <template v-else>
@@ -257,7 +265,9 @@ export default {
         // }
 
         this.isLoading = true;
-
+        this.form.address = `${this.form.address1} ${this.form.address2}`
+        delete this.form.address1;
+        delete this.form.address2;
         await AuthService.register(this.form);
         await this.login({
           email: this.form.email,

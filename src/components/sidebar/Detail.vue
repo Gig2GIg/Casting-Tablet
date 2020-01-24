@@ -742,7 +742,8 @@ export default {
       localStorage.setItem(DEFINE.set_pass_code_key, window.btoa(this.checkInPassCode));
       this.$modal.hide("modal_passcode_check_in_mode");
       this.checkInPassCode = "";
-      this.$router.push({ name: 'auditions/checkin', params: {id: this.roundActive.id, title: this.audition.title, startTime: this.roundActive.time, auditionId: this.audition.id } });
+      this.$router.push({ name: 'auditions/checkin', params: {id: this.roundActive.id, title: this.audition.title, date: this.audition.date, auditionId: this.audition.id } });
+      
     },
     openConfirmMonitorInmodal() {
       this.$modal.show("modal_confirm_monitor_in_mode");
