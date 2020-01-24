@@ -1,5 +1,11 @@
 <template>
   <div class="flex flex-wrap h-full">
+    <loading
+      :active.sync="isLoading"
+      :can-cancel="true"
+      :on-cancel="onCancel"
+      :is-full-page="fullPage"
+    ></loading>
     <div class="flex flex-wrap flex-1 justify-center items-center text-white py-16 h-full bg-gray-100 ">
       <div class="container flex w-full mt-3">
           <div class="flex w-full text-center justify-center flex-wrap flex-row">
@@ -48,36 +54,60 @@
       <div v-if="appointments.length == 0" class="mt-10">
         <p class="text-purple font-medium tracking-wide">Appointments not added yet</p>
       </div>
-      <div
-        v-for="data in appointments"
-        :key="data.id"
-        class="w-full"
+      <draggable
+        :list="appointments"
+        :disabled="!enabled"
+        class="list-group"
+        ghost-class="ghost"
+        :move="checkMove"
+        @start="dragging = true"
+        @end="endMove"
       >
-        <div class="flex w-full -mb-5">
-          <div class="w-1/2 text-center m-8 float-left">
-            <h4 class="text-left text-sm  text-purple">
-              {{ data.name }}
-            </h4>
+        <div
+          v-for="data in appointments"
+          :key="data.id"
+          class="w-full"
+        >
+          <div class="flex w-full -mb-5">
+            <div class="w-1/2 text-center m-8 float-left">
+              <h4 class="text-left text-sm  text-purple">
+                {{ data.name }}
+              </h4>
+            </div>
+            <div class="w-1/2 text-center m-8 float-right">
+              <h4 class="text-right text-sm font-bold text-purple">
+                {{ data.time }}
+              </h4>
+            </div>
           </div>
-          <div class="w-1/2 text-center m-8 float-right">
-            <h4 class="text-right text-sm font-bold text-purple">
-              {{ data.time }}
-            </h4>
-          </div>
+          <div class="w-full border border-gray-300" />
         </div>
-        <div class="w-full border border-gray-300" />
-      </div>
+      </draggable>
+
     </section>
   </div>
 </template>
 
 <script>
+import Vue from "vue";
 import { mapActions, mapState, mapGetters } from 'vuex';
 import axios from 'axios';
 import moment from "moment";
 import DEFINE from '../../utils/const.js';
+import draggable from "vuedraggable";
+
+// Import component
+import Loading from "vue-loading-overlay";
+// Import stylesheet
+import "vue-loading-overlay/dist/vue-loading.css";
+
+Vue.use(Loading);
 
 export default {
+  components: {
+    draggable,
+    Loading
+  },
   data() {
     return {
       email: '',
@@ -87,6 +117,7 @@ export default {
       prechecked:false,
       appointment_id:"",
       isLoading: false,
+      fullPage: true,
       result: null,
       error: null,
       dragover: false,
@@ -97,10 +128,17 @@ export default {
       updates:{},
       updateText:'',
       updateTextArray:[],
+      enabled: true,
+      dragging: false,
+      fromSlot : {},
+      toSlot : {}
     };
   },
   computed:{
-    ...mapState("appointment", ["appointments", "userAppointment", "appointmentNotWalk"])
+    ...mapState("appointment", ["appointments", "userAppointment", "appointmentNotWalk"]),
+    //  draggingInfo() {
+    //   return this.dragging ? "under drag" : "";
+    // }
   },
   async mounted() {
     this.fetch(this.$route.params.id);
@@ -124,6 +162,51 @@ export default {
         this.scan = false;
         this.prechecked = false;
         this.appointment_id=""
+    },
+    checkMove: function(e) {
+      this.fromSlot = e.draggedContext.element;      
+      this.toSlot = e.relatedContext.element;
+    },
+    async endMove(){
+      console.log("TCL: this.fromSlot", this.fromSlot)
+      console.log("TCL: this.toSlot", this.toSlot)
+      
+      if(this.toSlot && this.fromSlot && this.fromSlot.user_id && this.toSlot.user_id){
+        this.isLoading = true;
+        this.enabled = false;
+        try {
+          let request = {
+            slots : [
+              {
+                "slot_id": this.toSlot.slot_id,
+                "user_id": this.fromSlot.user_id
+              },
+              {
+                "slot_id": this.fromSlot.slot_id,
+                "user_id": this.toSlot.user_id
+              }
+            ]
+          }
+          await axios.put(`t/auditions/appointments/${this.$route.params.id}/slots`, request);
+          await this.swampAppoiment(this.fromSlot,this.toSlot);
+          this.fromSlot = {};
+          this.toSlot = {};
+          // await this.fetch(this.$route.params.id);
+          this.isLoading = false;
+          this.enabled = true;
+        } catch (error) {
+          this.isLoading = false;
+          // this.enabled = true;
+          this.$toasted.error("Audition appointments not changed");
+        }
+      }      
+    },
+    async swampAppoiment(fromAppointments, toAppointments){
+      let fromIndex = await this.appointments.findIndex( el => el.user_id === fromAppointments.user_id);
+      let toIndex = await this.appointments.findIndex( el => el.user_id === toAppointments.user_id);
+      let tempTime = this.appointments[fromIndex].time;
+      this.appointments[fromIndex].time = this.appointments[toIndex].time;
+      this.appointments[toIndex].time = tempTime;
     },
     async sendUpdate(){
       if (this.isLoading) {
@@ -217,10 +300,9 @@ export default {
     logErrors(promise) {
       promise.catch(console.error);
     },
-
-    onDragOver(isDraggingOver) {
-      this.dragover = isDraggingOver;
-    },
+    onCancel() {
+      console.log("User cancelled the loader.");
+    },   
   },
 };
 </script>

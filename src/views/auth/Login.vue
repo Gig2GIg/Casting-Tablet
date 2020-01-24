@@ -29,7 +29,7 @@
 </template>
 
 <script>
-
+  import Vue from "vue";
   import {
     mapActions
   } from 'vuex';
@@ -37,8 +37,17 @@
   import firebase from 'firebase/app';
   import 'firebase/messaging';
   import axios from "axios";
-  
+  // Import component
+    import Loading from "vue-loading-overlay";
+    // Import stylesheet
+    import "vue-loading-overlay/dist/vue-loading.css";
+
+    Vue.use(Loading);
+    
   export default {
+    components: {
+      Loading,
+    },
     data() {
       return {
         email: '',
