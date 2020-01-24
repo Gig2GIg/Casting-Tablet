@@ -35,13 +35,18 @@ class AuthService extends BaseService {
       ...userData,
       resource_name: imageName,
       type: '1',
-    });    
+    });
 
     return data;
   }
 
   async sendPasswordResetNotification(email) {
     const { data } = await this.post('/remember', { email });
+    return data;
+  }
+
+  async resetPassword(parmas) {
+    const { data } = await this.post('/reset-password', parmas);
     return data;
   }
 

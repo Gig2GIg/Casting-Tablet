@@ -29,7 +29,12 @@ export default [
       path: '/password/email',
       name: 'password.email',
       component: () => import(/* webpackChunkName: 'email' */ '@/views/auth/password/Email'),
-    },    
+    },
+    {
+      path: '/password/reset-password/:token',
+      name: 'password.reset-password',
+      component: () => import(/* webpackChunkName: 'email' */ '@/views/auth/password/Resetpassword'),
+    },
   ]),
 
   ...mapRoutes({ layout: 'checkIn' }, [
@@ -93,14 +98,14 @@ export default [
       name: 'auditions/detail',
       component: () => import(/* webpackChunkName: 'auditions.detail' */ '@/views/AuditionsDetail'),
     },
-  ]),  
+  ]),
   ...mapRoutes({ layout: 'tour' }, [
     {
       path: '/tour',
       name: 'tour',
       component: () => import(/* webpackChunkName: 'tour' */ '@/views/tour/Details'),
     }
-  ]),  
+  ]),
 
   /*
   |--------------------------------------------------------------------------
