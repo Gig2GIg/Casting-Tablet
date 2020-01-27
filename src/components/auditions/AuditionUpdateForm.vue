@@ -206,9 +206,9 @@
       </div>
     </div>
     <div class="flex w-full">
+      <!-- v-validate="'required|max:500'" -->
       <base-input
-        v-model="form.personal_information"
-        v-validate="'required|max:500'"
+        v-model="form.personal_information"        
         name="personal_information"
         class="px-2 w-full h-40"
         type="textarea"
@@ -219,8 +219,8 @@
       />
     </div>
     <div class="flex w-full">
-      <base-input
-        v-model="form.additional_info"
+      <!-- v-model="form.additional_info" -->
+      <base-input        
         v-validate="'required|max:500'"
         name="additional_info"
         class="px-2 w-full h-40"
@@ -234,9 +234,9 @@
 
     <p class="px-5 text-purple font-medium py-8 pb-6">Contract Information</p>
     <div class="flex w-full">
+      <!-- v-validate="'required'" -->
       <base-input
-        v-model="form.dates[0].from"
-        v-validate="'required'"
+        v-model="form.dates[0].from"        
         name="contract_start_date"
         class="w-1/2 px-2"
         type="date"
@@ -246,9 +246,9 @@
         :message="errors.first('create.contract_start_date')"
         data-vv-as="start date"
       />
+      <!-- v-validate="'required'" -->
       <base-input
-        v-model="form.dates[0].to"
-        v-validate="'required'"
+        v-model="form.dates[0].to"        
         name="contract_end_date"
         class="w-1/2 px-2"
         type="date"
@@ -260,10 +260,10 @@
       />
     </div>
     <div class="flex w-full">
+      <!-- v-validate="'required'" -->
       <base-input
         v-model="form.dates[1].from"
-        :mindate="new Date()"
-        v-validate="'required'"
+        :mindate="new Date()"        
         name="rehearsal_start_date"
         class="w-1/2 px-2"
         type="date"
@@ -272,10 +272,10 @@
         :message="errors.first('create.rehearsal_start_date')"
         data-vv-as="start date"
       />
+      <!-- v-validate="'required'" -->
       <base-input
         v-model="form.dates[1].to"
-        :mindate="form.dates[1].from"
-        v-validate="'required'"
+        :mindate="form.dates[1].from"        
         name="rehearsal_end_date"
         class="w-1/2 px-2"
         type="date"

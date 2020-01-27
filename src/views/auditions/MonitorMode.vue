@@ -51,11 +51,12 @@
         Audition <br> Appointments
       </div>
     </div>
-      <div v-if="appointments.length == 0" class="mt-10">
+      <div v-if="!slotsData || slotsData.length == 0 || !slotsData.length" class="mt-10">
         <p class="text-purple font-medium tracking-wide">Appointments not added yet</p>
       </div>
       <draggable
-        :list="appointments"
+        v-else
+        :list="slotsData"
         :disabled="!enabled"
         class="list-group"
         ghost-class="ghost"
@@ -64,14 +65,14 @@
         @end="endMove"
       >
         <div
-          v-for="data in appointments"
+          v-for="data in slotsData"
           :key="data.id"
           class="w-full"
         >
           <div class="flex w-full -mb-5">
             <div class="w-1/2 text-center m-8 float-left">
               <h4 class="text-left text-sm  text-purple">
-                {{ data.name }}
+                {{ data.name ? data.name : 'Free' }}
               </h4>
             </div>
             <div class="w-1/2 text-center m-8 float-right">
@@ -131,7 +132,8 @@ export default {
       enabled: true,
       dragging: false,
       fromSlot : {},
-      toSlot : {}
+      toSlot : {},
+      slotsData : []
     };
   },
   computed:{
@@ -141,16 +143,17 @@ export default {
     // }
   },
   async mounted() {
-    this.fetch(this.$route.params.id);
+    await this.fetch(this.$route.params.id);
+    this.getSlotsData();
     let { data: { data } } = await axios.get(`/monitor/show/${this.$route.params.id}`);
     this.updates = data;
   },
-  created() {
+  async created() {
       let passCode = localStorage.getItem(DEFINE.set_monitor_pass_code_key);
       if(!passCode || passCode == ''){
           this.$toasted.error("You have not passcode to access monitor mode.");
           this.$router.push({ name: 'auditions/detail', params: {id: this.$route.params.auditionId } });
-      }            
+      }                 
   },
   methods: {
     ...mapActions("appointment", ["fetch", "fetchUserAudition", "saveCheckIn", "fetchAppointmentNotWalk"]),
@@ -163,32 +166,67 @@ export default {
         this.prechecked = false;
         this.appointment_id=""
     },
+    async getSlotsData(){
+      let { data: { data } } = await axios.get(`/t/appointments/${this.$route.params.id}/slots`);             
+      this.slotsData = data.map(slot=>{
+          let user = this.findUserBySlot(slot.id);
+          if(user){
+            slot.name = user.name;
+            slot.image = user.image;
+            slot.user_id = user.user_id;
+            slot.email = user.email;            
+          }
+          return slot;
+      });
+    },
+    findUserBySlot(slot_id){
+      let filtered_data = this.appointments.filter(
+          user => user.slot_id == slot_id
+        );
+      return filtered_data[0] ? filtered_data[0] : null;
+    },
     checkMove: function(e) {
       this.fromSlot = e.draggedContext.element;      
       this.toSlot = e.relatedContext.element;
     },
-    async endMove(){
-      console.log("TCL: this.fromSlot", this.fromSlot)
-      console.log("TCL: this.toSlot", this.toSlot)
-      
-      if(this.toSlot && this.fromSlot && this.fromSlot.user_id && this.toSlot.user_id){
+    async endMove(){      
+      if(this.toSlot && this.fromSlot){
         this.isLoading = true;
         this.enabled = false;
-        try {
-          let request = {
-            slots : [
+        let slots = [];
+        if(this.fromSlot.user_id && this.toSlot.user_id){
+          slots = [
               {
-                "slot_id": this.toSlot.slot_id,
+                "slot_id": this.toSlot.id,
                 "user_id": this.fromSlot.user_id
               },
               {
-                "slot_id": this.fromSlot.slot_id,
+                "slot_id": this.fromSlot.id,
                 "user_id": this.toSlot.user_id
               }
             ]
-          }
+        } else if(this.fromSlot.user_id){
+          slots = [
+              {
+                "slot_id": this.toSlot.id,
+                "user_id": this.fromSlot.user_id
+              }
+          ]
+        } else if(this.toSlot.user_id){
+          slots = [
+              {
+                "slot_id": this.fromSlot.id,
+                "user_id": this.toSlot.user_id
+              }
+          ]
+        }
+        try {
+          let request = {
+            slots :slots 
+          };
           await axios.put(`t/auditions/appointments/${this.$route.params.id}/slots`, request);
-          await this.swampAppoiment(this.fromSlot,this.toSlot);
+          await this.fetch(this.$route.params.id);
+          await this.getSlotsData();
           this.fromSlot = {};
           this.toSlot = {};
           // await this.fetch(this.$route.params.id);
@@ -200,13 +238,6 @@ export default {
           this.$toasted.error("Audition appointments not changed");
         }
       }      
-    },
-    async swampAppoiment(fromAppointments, toAppointments){
-      let fromIndex = await this.appointments.findIndex( el => el.user_id === fromAppointments.user_id);
-      let toIndex = await this.appointments.findIndex( el => el.user_id === toAppointments.user_id);
-      let tempTime = this.appointments[fromIndex].time;
-      this.appointments[fromIndex].time = this.appointments[toIndex].time;
-      this.appointments[toIndex].time = tempTime;
     },
     async sendUpdate(){
       if (this.isLoading) {
@@ -282,7 +313,6 @@ export default {
       }
     },
     async updateCheckIn(){
-      console.log(this.appointment_id);
       await this.fetchUserAudition(this.result);
       let data = {"slot": this.appointment_id, "user": this.result.userId, "auditions": this.result.auditionId, "rol": this.result.rolId, "appointment_id": this.result.appointmentId}
       let stateCheckin = await this.saveCheckIn(data);

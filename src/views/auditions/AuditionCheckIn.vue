@@ -234,6 +234,7 @@
                 this.init = true;
                 this.scan = false;
                 this.showWalkInQr = false;
+                this.showAppointments = false;
             },
             async onInit(promise) {
                 try {
