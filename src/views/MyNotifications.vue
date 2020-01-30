@@ -109,7 +109,7 @@
 
         <modal class="flex flex-col w-full items-center mt-4" :width="540" height="175" name="modal_confirm_notification_delete">
             <div class="py-8 px-3">
-                <p class="text-lg text-purple font-bold text-center">¿Do you want delete this Notification?</p>
+                <p class="text-lg text-purple font-bold text-center">Do you want delete this Notification?</p>
                 <div class="w-full flex flex-wrap justify-center overflow-hidden mt-3">
                     <div class="w-1/2">
                         <base-button type="submit" expanded @click="deleteNotification()">
