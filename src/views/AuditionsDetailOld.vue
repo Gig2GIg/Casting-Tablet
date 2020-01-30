@@ -1,6 +1,6 @@
 <template>
-  <div class="flex text-purple h-full w-full container-overflow-hiden" id="container">
-    <div class="w-full" :class="{'w-calc': finalCastState}">
+  <div class="flex text-purple h-full w-full">
+    <div class="w-full">
       <div v-if="status == 0" class="flex items-center flex-wrap ml-5 h-full">
         <h4 class="w-full text-center text-purple font-semibold text-2xl">Check-In has not opened for this audition</h4>
       </div>
@@ -30,7 +30,7 @@
                     v-bind:class="{ 'after-clck-new-grp' : isShowCreateGroup}"
                   />
                   </router-link>
-                  <div v-show="!isAuditionVideos && auditionData.online == 0 && (!currentAudition || currentAudition.status != 2)" class="custom-btn-grp">                    
+                  <div v-if="!isAuditionVideos && auditionData.online == 0 && (!currentAudition || currentAudition.status != 2)" class="custom-btn-grp">                    
                     <div @click="approveBtn(data.user_id, data.is_feedback_sent)" class="m-1 content-center rounded-full grren-back h-10 flex items-center">
                       <button class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide" type="button"><img src="/images/icons/right-tick.svg" alt="right-tick" /></button>
                     </div>
@@ -40,7 +40,7 @@
                   </div>
                   <div class="check-grp" v-bind:class="{ 'after-check-grp' : isShowCreateGroup}">
                     <input
-                            v-show="isShowCreateGroup"
+                            v-if="isShowCreateGroup"
                             type="checkbox"
                             class="flex items-center justify-between text-purple rounded-full overflow-hidden w-full pl-6 cursor-pointer select-none"
                             :id="'user_' + data.user_id"
@@ -53,30 +53,33 @@
               </div>
             </transition-group>
           </template>
-
-          <div id="performer_box"  v-else-if="finalCastState" class="box dragArea list-group flex flex-wrap mt-2">
-            <span class="final-cast-list flex flex-wrap justify-center content-start">
-                <div
-                        class="slot list-group-item mr-4 mb-3"
-                        v-for="(data) in finalCastListUser"
-                        :key="data.user_id"                      
-                        v-bind:user_id="data.user_id"
-                        v-bind:isPerformer="true"
-                >
-
-                      <div v-if="data.user_id" v-bind:id="'item_'+data.user_id" v-bind:user_id="data.user_id" class="item" >
-                        <a class="performer-view" v-bind:performer="data.user_id" v-on:click="clickFinalPerformer($event,data)">  
-                              <card-user
-                                      :title="data.name"
-                                      :time="currentAudition && currentAudition.online != 1 ? data.time : ''"
-                                      :image="data.image && !data.image.url ? data.image : ''"
-                              />
-                          </a>
-                    </div>
-                </div>
-            </span>
-            
-          </div>
+          <draggable
+                  v-else-if="finalCastState"
+                  class="dragArea list-group flex flex-wrap"
+                  :list="finalCastListUser"
+                  group="people"                  
+                  @change="deletePerformer"        
+                  :move="checkPerformerMove"
+                  @end="endPerformerMove"
+                  :emptyInsertThreshold="800"
+          >
+            <transition-group  class="final-cast-list flex flex-wrap justify-center content-center" type="transition" :name="!drag ? 'flip-list' : null">
+              
+              <div
+                      class="list-group-item"
+                      v-for="(data) in finalCastListUser"
+                      :key="data.user_id"
+              >
+                <router-link :to="currentAudition && currentAudition.status == 2 ? { name: 'talent/user', params: {id: data.user_id} } : { name: 'auditions/user', params: {id: data.user_id, round: round.id, audition:$route.params.id} }">
+                  <card-user
+                          :title="data.name"
+                          :time="currentAudition && currentAudition.online != 1 ? data.time : ''"
+                          :image="data.image && !data.image.url ? data.image : ''"
+                  />
+                </router-link>
+              </div>
+            </transition-group>
+          </draggable>   
           <template v-else class="list-group flex flex-wrap">
             <transition-group  class="flex flex-wrap justify-center content-center" type="transition" :name="!drag ? 'flip-list' : null">              
               <div
@@ -94,7 +97,7 @@
                     v-bind:class="{ 'after-clck-new-grp' : isShowCreateGroup}"
                   />
                   </router-link>
-                  <div v-if="auditionData && auditionData.online == 0 && (!currentAudition || currentAudition.status != 2)" class="custom-btn-grp">
+                  <div v-if="auditionData.online == 0 && (!currentAudition || currentAudition.status != 2)" class="custom-btn-grp">
                     <div @click="approveBtn(data.user_id, data.is_feedback_sent)" class="m-1 content-center rounded-full grren-back h-10 flex items-center">
                       <button class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide" type="button"><img src="/images/icons/right-tick.svg" alt="right-tick" /></button>
                     </div>
@@ -156,37 +159,40 @@
             </form>
           </modal>
         </div>
-      </div>      
+      </div>
     </div>
     <sidebar-detail :class="{'hidden': finalCastState}"  @selected="chargeUsers" @statusSet="changeView" @handleFinalCast="activeFinalCast" class="float-right w-1/2 ml-2"/>
-    <section :class="{'hidden': !finalCastState}" class="float-right w-1/2 ml-2 bg-sidebar flex flex-col items-center h-full w-370">
-      <div class="flex content-center justify-center relative w-1/2 mt-2" @click="backFinalCastList">
+    <section :class="{'hidden': !finalCastState}" class="float-right w-1/2 ml-2 bg-sidebar flex flex-col items-center h-full">
+      <div class="flex content-center justify-center relative w-1/2 mt-2" @click="finalCastState = false">
         <img src="/images/icons/left_arrow.png" class="absolute left-0 " >
         <h1 class="text-purple text-lg font-bold">Final Cast List</h1>
       </div>
       <div class="w-full border border-gray-300 mt-1 mb-6" />
-      
-      <div id="role_box" class="box list-group flex flex-wrap justify-center content-start w-full" :class="{'h-48':mainRoles && mainRoles.length==0}">
-        
+      <draggable
+        class="dragArea list-group flex flex-wrap justify-center content-center w-full"
+        :class="{'h-48':mainRoles.length==0}"
+        :list="mainRoles?mainRoles:[]"
+        group="people"
+        :move="checkFinalCastMove"
+        @end="endFinalCastMove"    
+        @add="addFinalCastMove"        
+      >      
+        <transition-group class="final-role-list flex flex-wrap w-full justify-center content-center w-full " type="transition" :name="!drag ? 'flip-list' : null">
         <div
-            class="slot list-group-item final-cast main-role-slot"
-            v-for="(data) in mainRoles"
-            :key="data.id"            
-            v-bind:finalcast_id="data.finalcast_id"            
-            v-bind:isRole="true"
-            v-bind:role_id="data.id"
+            class="list-group-item final-cast"
+            v-for="(data, lindex) in mainRoles"
+            :key="data.id"
+            :class="(lindex+1) == mainRoles.length ? 'last-final-cast' : ''"
           >
-               <div v-if="data.user_id"  class="item" v-bind:user_id="data.user_id" v-bind:finalcast_id="data.finalcast_id" >                    
-                      <card-user
-                              :title="data.name"
-                              :image="data.image.url ? data.image.url : data.image"
-                      />
-              </div>
-              <span class="role-name">{{data.user_id && data.rol ? data.rol : data.name}}</span>
+              <card-user
+                :title="data.name"
+                :rol="data.rol"
+                :image="data.image.url ? data.image.url : data.image"
+                
+              /> 
         </div>
-        
-        </div>
-      
+        </transition-group>
+      </draggable>
       <div v-if="mainRoles.length == 0" class="text-center h-full">
           <p class="text-purple font-bold text-xl">Add a performer to <br/>your final cast list</p>
       </div>
@@ -209,13 +215,6 @@ import _ from "lodash";
 import BaseInput from "../components/BaseInput";
 import { eventBus } from "../main";
 import { close } from "fs";
-import { setTimeout } from 'timers';
-
-// const $ = require("jquery");
-// window.$ = $;
-// import JQuery from 'jquery'
-
-
 
 export default {
   components: {
@@ -270,8 +269,7 @@ export default {
       fromElementFinalCast : null,
       toElementFinalCast : null,
       currentAudition : null,
-      isAuditionVideos : false,
-      isFinalCastredirect : false
+      isAuditionVideos : false
     };
   },
   destroyed:()=>{
@@ -279,26 +277,14 @@ export default {
   },
   watch: {
     userList: function() {
-      eventBus.$emit("performerCount", this.userList && this.userList.length ? this.userList.length : 0);
+      eventBus.$emit("performerCount", this.userList.length);
       this.manageSelectedPerformer();
     },
     round: function() {
       this.getGroupdetails();
     }
   },
-  created() {    
-
-    // start : manage final cast list show on reload
-    // let uri = window.location.search.substring(1); 
-    // let params = new URLSearchParams(uri);
-    // this.isFinalCastredirect = params.get("isShowFinalCast");
-    // if(this.isFinalCastredirect){
-    //   setTimeout(()=>{
-    //     this.activeFinalCast();
-    //   },2000)
-    // }
-    // end : manage final cast list show on reload
-    
+  created() {
     eventBus.$on("newGroup", value => {
       this.isShowNewGroup = value;
     });
@@ -343,7 +329,7 @@ export default {
     this.userId = TokenService.getUserId();
     this.auditionData = await this.fetchAuditionDataNew(this.$route.params.id);
   },
-  methods: {    
+  methods: {
     ...mapActions("audition", [
       "fetchUserList",
       "fetchFinalCastList",
@@ -356,226 +342,6 @@ export default {
       localStorage.setItem("reject_popup_dont_show", "1");
       this.handleApprMdlFrm('rejected');
       this.$modal.hide("showRejectMdl");
-    },
-    clickFinalPerformer(event,data){
-      event.preventDefault();
-    },
-    returnRefinedURL(key, url){
-      let newUrl = url.replace(new RegExp(key + "=\\w+"),"").replace("?&","?").replace("&&","&"); 
-      return newUrl.endsWith("?") ? newUrl.slice(0, -1) : newUrl; 
-    },
-    redirectOnDetails(user_id){
-      
-      if(this.currentAudition && this.currentAudition.status == 2){
-        this.$router.replace(
-          this.$route.query.redirect || {
-            name: 'talent/user',
-            params: {id: user_id}
-          },
-        );
-      } else {
-        this.$router.replace(
-          this.$route.query.redirect || {
-            name: 'auditions/user', 
-            params: {id: user_id, round: this.round.id, audition: this.$route.params.id}
-          },
-        );        
-      }
-      
-    },
-    backFinalCastList(){
-      this.finalCastState = false;
-      this.destroyDragDrop();
-    },
-    destroyDragDrop(){
-      $(".ui-selected").draggable("destroy");
-      this.mainRoles = [];
-      this.finalCastListUser = [];
-      // $('.item').remove();
-    },
-    initDropdrag(){
-      let that = this;
-        $(function () {
-          
-          var isDragging = false;
-            $(".performer-view")
-            .mousedown(function() {
-                isDragging = false;
-            })
-            .mousemove(function() {
-                isDragging = true;
-            })
-            .mouseup(function() {
-               var user_id = $(this).attr("performer");
-                var wasDragging = isDragging;
-                isDragging = false;
-                if (!wasDragging) {
-                  that.redirectOnDetails(user_id);
-                    // $("#throbble").toggle();
-                }
-            });
-
-          var dragOption = {
-              delay: 10,
-              distance: 5,
-              opacity: 0.45,
-              revert: true,
-              containment: "#container",
-              start: function (event, ui) {
-                  $(".ui-selected").each(function () {
-                      $(this).data("original", $(this).position());
-                  });
-              },
-              drag: function (event, ui) {
-                  var offset = ui.position;
-                  $(".ui-selected").not(this).each(function () {
-                      var current = $(this).offset(),
-                          targetLeft = document.elementFromPoint(current.left - 1, current.top),
-                          targetRight = document.elementFromPoint(current.left + $(this).width() + 1, current.top);
-                      $(this).css({
-                          position: "relative",
-                          left: offset.left,
-                          top: offset.top
-                      }).data("target", $.unique([targetLeft, targetRight]));
-                      //console.log($.unique([targetLeft, targetRight]));
-                  });
-              },
-              stop: function (event, ui) {
-                  validate($(".ui-selected").not(ui.draggable));
-              }
-          }, dropOption = {
-              accept: '.item',
-              activeClass: "green3",
-              greedy: true,
-              drop: function (event, ui) {
-                  // get atrribute value
-                  var draggable_user_id = ui.draggable.attr("user_id");
-                  
-                  var draggable_parent_isPerformer = ui.draggable.parent().attr("isPerformer");
-                  var draggable_parent_isRole = ui.draggable.parent().attr("isRole");
-
-                  var droppable_isPerformer = $(this).attr("isPerformer");
-                  var droppable_isRole = $(this).attr("isRole");              
-                  
-                  //  case for handle perform movement
-                  if(draggable_parent_isPerformer == 'true' && droppable_isPerformer == 'true'){ // if move performer from one place to another performer place then revert it
-                    console.log("revert on same list drop!");
-                    ui.draggable.animate(ui.draggable.data().original,"slow");
-                    return;
-                  } else if (draggable_parent_isPerformer == 'true' && droppable_isRole == 'true' && $(this).find('div.item').length === 0){ // From performer list , add performer to particular role
-                    
-                    var draggable_user_id = ui.draggable.attr("user_id");        
-                    var droppable_role_id = $(this).attr("role_id");
-                    if(draggable_user_id == undefined || draggable_user_id == null || droppable_role_id == undefined || droppable_role_id == null){ // if not found required data then revert back draggable performer to thier back position
-                      ui.draggable.animate(ui.draggable.data().original,"slow");
-                      return;
-                    }
-                    that.addPerformerToRole(draggable_user_id, droppable_role_id).then((result) => {
-                        $(this).attr('finalcast_id',result.id);
-                        ui.draggable.attr('finalcast_id',result.id);
-                    }). 
-                    catch((err) => { 
-                        console.log("TCL: initDropdrag -> err", err);
-                    });
-                    
-                  } else if(draggable_parent_isRole == 'true' && droppable_isPerformer == 'true' && $(this).find('div.item').length === 0){ // remove performer from role list
-                    
-                    var draggable_parent_finalcast_id = ui.draggable.parent().attr("finalcast_id");
-                    var draggable_user_id = ui.draggable.attr("user_id");     
-                    if(draggable_parent_finalcast_id == undefined || draggable_parent_finalcast_id == null || draggable_user_id == undefined || draggable_user_id == null){ // if not required then revert back draggable performer to thier back position
-                      ui.draggable.animate(ui.draggable.data().original,"slow");
-                      return;
-                    }
-                    ui.draggable.parent().removeAttr("finalcast_id");
-                    ui.draggable.removeAttr("finalcast_id");
-                    that.removePerformerFromRole(draggable_parent_finalcast_id, draggable_user_id);
-                    
-                  } else if(draggable_parent_isRole == 'true' && droppable_isRole == 'true' && $(this).find('div.item').length === 0) { // move performer from one role to another role
-                    var draggable_parent_finalcast_id = ui.draggable.parent().attr("finalcast_id");
-                    var draggable_user_id = ui.draggable.attr("user_id");     
-                    var droppable_role_id = $(this).attr("role_id");   
-                    if(draggable_parent_finalcast_id == undefined || draggable_parent_finalcast_id == null || draggable_user_id == undefined || draggable_user_id == null || droppable_role_id == undefined || droppable_role_id == null){ // if not foudn any required then revert back draggable performer to thier last position
-                      ui.draggable.animate(ui.draggable.data().original,"slow");
-                      return;
-                    }                  
-                    ui.draggable.parent().removeAttr("finalcast_id");
-                    ui.draggable.removeAttr("finalcast_id");
-                    that.swapPerformerRoleToRole(draggable_parent_finalcast_id, draggable_user_id, droppable_role_id).then((result) => {
-                        $(this).attr('finalcast_id',result.id);
-                        ui.draggable.attr('finalcast_id',result.id);
-                    }). 
-                    catch((err) => { 
-                        console.log("TCL: initDropdrag -> err", err);
-                    });
-                  } else {
-                    console.log("movement action not found!");                    
-                    ui.draggable.animate(ui.draggable.data().original,"slow");
-                    return;
-                  }
-
-
-                  if ($(this).is(".slot") && !$(this).has(".item").length) {
-                      console.log("appending")
-                      $(this).append(ui.draggable.css({
-                          top: 0,
-                          left: 0
-                      }));
-                  } else {                      
-                      console.log("reverting")
-                      ui.draggable.animate({
-                          top: 0,
-                          left: 0
-                      }, "slow");
-                      // event.preventDefault();
-                  }
-                  validate($(".ui-selected").not(ui.draggable));
-              }
-          }
-
-          $(".box").selectable({
-              filter: ".item",
-              start: function (event, ui) {
-                  $(".ui-selected").draggable("destroy");
-              },
-              stop: function (event, ui) {
-                  $(".ui-selected").draggable(dragOption)
-              },
-              selected: function(event, ui) { 
-                var numItems = $('.ui-selected').length;
-                if(numItems > 1){
-                  $('.ui-selected').removeClass('ui-selected');
-                }
-              }  
-          });
-          $(".slot").droppable(dropOption);
-          $(".item").draggable(dragOption)
-
-          function validate($draggables) {
-
-              $draggables.each(function () {
-                  var $target = $($(this).data("target")).filter(function (i, elm) {
-                      return $(this).is(".slot") && !$(this).has(".item").length;
-                  });
-                  if ($target.length) {
-                      $target.append($(this).css({
-                          top: 0,
-                          left: 0
-                      }))
-                  } else {
-                      $(this).animate({
-                          top: 0,
-                          left: 0
-                      }, "slow");
-                  }
-
-              });
-              $(".ui-selected").data("original", null)
-                  .data("target", null)
-                  .removeClass("ui-selected");
-          }
-        });
-      // End : drag and drop box jquery code
-
     },
     async rejectBtn(performer_id, is_feedback_sent) {
       this.performer_id = performer_id;
@@ -670,7 +436,7 @@ export default {
         this.openGroupMember = groupStatusRes.data.data
           ? groupStatusRes.data.data
           : [];
-        this.isOpenGroup = this.isShowCloseGroup = this.openGroupMember && this.openGroupMember.length > 0 || false;
+        this.isOpenGroup = this.isShowCloseGroup = this.openGroupMember.length > 0 || false;
 
         // emit for side bar audition details view for handle close current round first check group is open or not
         eventBus.$emit("isCurrentOpenGroup", this.isOpenGroup);
@@ -756,7 +522,6 @@ export default {
       this.round = value;
       await this.fetchUserList(value.id);
       await this.fetchFinalCastList(this.$route.params.id);
-      
       for (let data in this.finalCast) {
         let filtered_data = this.userList.filter(
           user => user.user_id == this.finalCast[data].user_id
@@ -768,7 +533,7 @@ export default {
           // this.finalCast[data].rol_id = filtered_data[j].rol;
         }
       }
-      if (this.finalCast && this.finalCast.length > 0) {
+      if (this.finalCast.length > 0) {
         this.finalCastFilter = this.finalCast;
       }
     },
@@ -787,7 +552,7 @@ export default {
       this.mainRoles = [];
       this.mainRoles = _.cloneDeep(this.roles);
       await this.mainRoles.map(async role => {
-        if (this.finalCast && this.finalCast.length > 0) {        
+        if (this.finalCast.length > 0) {        
 
           let filtered_data = await this.finalCast.filter(
                 user => user.rol_id === role.id
@@ -814,8 +579,8 @@ export default {
         return role;
       });
 
-      await this.toggleFinalCastListUser();
-      if (this.finalCast && this.finalCast.length > 0) {
+      this.toggleFinalCastListUser();
+      if (this.finalCast.length > 0) {
         this.finalCastFilter = this.finalCast;
       }
     },
@@ -833,8 +598,8 @@ export default {
         }
       }
       this.mainRoles = _.cloneDeep(this.roles);
-      await this.mainRoles.map(async role => {
-        if (this.finalCast && this.finalCast.length > 0) {        
+      await this.mainRoles.map(async role => {      
+        if (this.finalCast.length > 0) {        
 
           let filtered_data = await this.finalCast.filter(
                 user => user.rol_id === role.id
@@ -860,19 +625,17 @@ export default {
         }
         return role;
       });
-
-      await this.toggleFinalCastListUser();
-      if (this.finalCast && this.finalCast.length > 0) {
+      console.log("TCL: chargeFinalCast -> mainRoles", this.mainRoles)
+      this.toggleFinalCastListUser();
+      if (this.finalCast.length > 0) {
         this.finalCastFilter = this.finalCast;
       }
     },
     async activeFinalCast(item) {
       this.roles = item;
-      // this.finalCast = [];
-      await this.fetchFinalCastList(this.$route.params.id);
       await this.fetch(this.$route.params.id);
       let lastRound = this.rounds.slice(-1);
-      if (lastRound && lastRound.length > 0) {
+      if (lastRound.length > 0) {
         await this.fetchUserList(lastRound[0].id);
         this.round = lastRound[0];
       }
@@ -891,9 +654,8 @@ export default {
 
       this.mainRoles = _.cloneDeep(this.roles);
       
-      
       await this.mainRoles.map(async role => {
-        if (this.finalCast && this.finalCast.length > 0) {
+        if (this.finalCast.length > 0) {
           let filtered_data = await this.finalCast.filter(
                 user => user.rol_id === role.id
             );        
@@ -918,20 +680,12 @@ export default {
         }
         return role;
       });
-
-      await this.toggleFinalCastListUser();
-      if (this.finalCast && this.finalCast.length > 0) {
+      console.log("TCL: chargeFinalCast -> mainRoles", this.mainRoles)
+      this.toggleFinalCastListUser();
+      if (this.finalCast.length > 0) {
         this.finalCastFilter = this.finalCast;
       }
       this.finalCastState = true;
-      if(this.isFinalCastredirect){
-        // let newUrl = this.returnRefinedURL('isShowFinalCast',window.location.href); 
-        // window.history.pushState("","", newUrl);
-      }
-      setTimeout(() =>{
-        // $(".slot").droppable(dropOption);
-        this.initDropdrag();
-      },100);
     },
     async verifyRegisters(item) {
       if(item && item.added && item.added.element){
@@ -948,7 +702,7 @@ export default {
               user.rol_id == item.added.element.rol &&
               user.user_id != item.added.element.user_id
           );
-          if (filtered_data && filtered_data.length > 0) {
+          if (filtered_data.length > 0) {
             this.finalCastFilter = this.finalCastFilter.filter(
               user => user.user_id != filtered_data[0].user_id
             );
@@ -960,6 +714,84 @@ export default {
         }
       }      
     },
+    checkFinalCastMove: function(evt) {
+    // console.log("TCL: evt", evt)
+      let returnVal = false;
+      this.fromElementFinalCast = evt.draggedContext.element ? evt.draggedContext.element : null;
+      this.toElementFinalCast = evt.relatedContext.element ? evt.relatedContext.element : null;
+
+      if(evt.draggedContext && evt.draggedContext.element && evt.draggedContext.element.is_peformer && typeof evt.draggedContext.element.is_peformer !== "undefined"){        
+        returnVal = evt.draggedContext.element.is_peformer
+      } else {
+        let checkClassList = evt.to && evt.to.classList ? Object.values(evt.to.classList) : [];
+        returnVal = checkClassList.indexOf('final-role-list') > -1 ? true : false;
+      }
+      return returnVal;
+    },
+    async addFinalCastMove(evt){
+    // console.log("TCL: addFinalCastMove -> evt", evt)
+
+    },
+    async endFinalCastMove(evt){
+      if(this.fromElementFinalCast && this.toElementFinalCast && this.fromElementFinalCast.is_peformer && !this.toElementFinalCast.is_peformer && this.fromElementFinalCast.user_id){
+        try {
+          await this.removePerformer(this.fromElementFinalCast.finalcast_id);          
+          let data = {
+              audition_id: this.$route.params.id,
+              performer_id: this.fromElementFinalCast.user_id,
+              rol_id: this.toElementFinalCast.id
+            };
+          await this.addPerformer(data);
+
+          await this.chargeFinalCast();
+        } catch (e) {
+          console.log(e);
+        }
+
+      }
+    },
+    checkPerformerMove: function(evt){
+      this.fromElementPerformer = evt.draggedContext.element ? evt.draggedContext.element : null;
+      this.toElementPerformer = evt.relatedContext.element ? evt.relatedContext.element : null;
+      let returnVal = this.toElementPerformer && this.toElementPerformer.is_peformer ? false : true;
+      return returnVal;
+    },
+    async endPerformerMove(evt){
+      let isPerfomer = this.toElementPerformer && this.toElementPerformer.is_peformer && this.toElementPerformer.finalcast_id ? true : false;
+        if(!isPerfomer){
+          if(this.fromElementPerformer && this.toElementPerformer){              
+            try {
+                let data = {
+                  audition_id: this.$route.params.id,
+                  performer_id: this.fromElementPerformer.user_id,
+                  rol_id: this.toElementPerformer.id
+                };
+                await this.addPerformer(data);
+
+                // if(isPerfomer){
+                //   await this.removePerformer(this.toElementPerformer.finalcast_id);
+                // }
+                await this.chargeFinalCast();
+            } catch (e) {
+              console.log(e);
+            }
+        } 
+      } else {
+        await this.chargeFinalCast();
+      }      
+      return !isPerfomer;      
+    },
+    async deletePerformer(item) {
+      let roleData = item.added && item.added.element ? item.added.element : null;
+      if(roleData && roleData.is_peformer && roleData.finalcast_id){
+        await this.removePerformer(roleData.finalcast_id);
+        await this.removePerformerFromFinalCast(roleData.user_id);
+        await this.chargeFinalCastInstant();
+        this.auditionData = await this.fetchAuditionDataNew(this.$route.params.id);
+        this.roles = this.auditionData.roles;
+        await this.chargeFinalCast();
+      }      
+    },
     removePerformerFromFinalCast(user_id){
       this.finalCast = _.remove(this.finalCast, (value) => {
         return value.user_id !== user_id;
@@ -968,18 +800,15 @@ export default {
     checkMove: function(evt) {
       evt.draggedContext.element.name !== "apple";
     },
-    async toggleFinalCastListUser(){
+    toggleFinalCastListUser(){
       this.finalCastListUser = [];
       this.finalUserList = [];
       let finalCastUserIds = this.finalCast && this.finalCast.length > 0 ? this.finalCast.map(cast=>cast.user_id) : [];
-      await _.each(this.userList, member => {    
-          if(finalCastUserIds.indexOf(member.user_id) == -1){
-            this.finalCastListUser.push(member);
-          } else {
-            this.finalCastListUser.push({user_id : null});          
-          }
-          return member;
-        });
+    _.each(this.userList, member => {    
+        if(finalCastUserIds.indexOf(member.user_id) == -1){
+          this.finalCastListUser.push(member);
+        }
+      });
     },
     async changeView(status) {
       this.status = status;
@@ -991,86 +820,8 @@ export default {
       // };
     },
     log: function(evt) {
-      // window.console.log(evt);
-    },
-    //start: new action for drag drop handle
-    async addPerformerToRole(user_id,role_id){ 
-      let apiThat = this;
-        apiThat.loading = true;               
-        try {
-            let requestParam = {
-              audition_id: apiThat.$route.params.id,
-              performer_id: user_id,
-              rol_id: role_id
-            };
-            // let newCast = await apiThat.addPerformer(data);
-            const { data: { data } } = await axios.post('/t/finalcast', requestParam);
-            apiThat.loading = false;
-            return data;
-        } catch (e) {
-          this.$toasted.error("Something went to wrong!");
-          this.backFinalCastList();
-          this.activeFinalCast()
-          // window.history.pushState("","", window.location.href+'?isShowFinalCast=true');
-          // setTimeout(()=>{
-          //   location.reload();
-          // },100)
-          
-          apiThat.loading = false;               
-          console.log(e);
-        }        
-    },
-    async removePerformerFromRole(finalcast_id, user_id) {
-      this.loading = true;               
-      try {
-        // await this.removePerformer(finalcast_id);
-        const { data: { data } } = await axios.delete(`/t/finalcast/${finalcast_id}`);
-        // await this.removePerformerFromFinalCast(user_id);
-        // await this.chargeFinalCastInstant();
-        // this.auditionData = await this.fetchAuditionDataNew(this.$route.params.id);
-        // this.roles = this.auditionData.roles;
-        // await this.chargeFinalCast();
-        this.loading = false;       
-      } catch (e) {
-        this.$toasted.error("Something went to wrong!");
-        this.backFinalCastList();
-        this.activeFinalCast();
-        // window.history.pushState("","", window.location.href+'?isShowFinalCast=true');
-        // setTimeout(()=>{
-        //   location.reload();
-        // },100)
-        this.loading = false;               
-        console.log(e);
-      }        
-    },
-    async swapPerformerRoleToRole(finalcast_id, user_id, role_id) {
-        this.loading = true;               
-        try {
-          // await this.removePerformer(finalcast_id); 
-          await axios.delete(`/t/finalcast/${finalcast_id}`);         
-          let requestParam = {
-              audition_id: this.$route.params.id,
-              performer_id: user_id,
-              rol_id: role_id
-            };
-          // let newCast = await this.addPerformer(data);
-          const { data: { data } } = await axios.post('/t/finalcast', requestParam);
-          // await this.chargeFinalCast();
-          this.loading = false;               
-          return data;
-        } catch (e) {
-          this.$toasted.error("Something went to wrong!");
-          this.backFinalCastList();
-          this.activeFinalCast();
-          // window.history.pushState("","", window.location.href+'?isShowFinalCast=true');
-          // setTimeout(()=>{
-          //   location.reload();
-          // },100)
-          this.loading = false;               
-          console.log(e);
-        }
-    },
-    //end: new action for drag drop handle
+      window.console.log(evt);
+    }
   }
 };
 </script>
@@ -1293,59 +1044,4 @@ export default {
     display: none;
 } */
 
-.box {
-    /* float: left; */
-    /* width: 600px; */
-    /* height: 500px; */
-    text-align: center;
-    margin-left: 20px;
-    /* border: 5px solid #999; */
-  }
-  .slot {
-    position: relative;
-    width: 10rem !important;
-    min-height: 200px;
-    margin-top: 2px;
-    margin: 0 auto;
-    border: 1px dotted;
-  }
-  .item {
-    width: 10rem !important;
-    /* height: 200px; */
-    margin: 0 auto;
-    z-index: 1;
-    /* background-color: #CCC; */
-  }
-  .ui-selecting {
-    background: #FECA40;
-  }
-  .ui-selected {
-    background-color: #F90;
-  }
-  .green3 {
-    background-color: #D9FFE2;
-  }
-  .main-role-slot{
-    position: relative;
-    margin-bottom: 35px;
-  }
-  .role-name{
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: -30px;
-  }
-  .container-overflow-hiden{
-    width: 99% !important;  
-  }
-  /* .scroll-auto{
-    overflow-y: auto;
-    overflow-x: hidden;
-  } */
-  .w-370{
-    width: 423px !important;
-  }
-  .w-calc{
-    width: calc(100% - 423px) !important;
-  }
 </style>

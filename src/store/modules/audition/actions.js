@@ -155,6 +155,7 @@ export default {
     try {
       const { data: { data } } = await axios.post('/t/finalcast', performer);
       commit(types.ADD_FINAL_CAST_PERFORMER_SUCCESS, data);
+      return data;
     } catch (e) {
       commit(types.ADD_FINAL_CAST_PERFORMER_FAILURE);
     }

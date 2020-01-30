@@ -99,6 +99,13 @@ export default [
       component: () => import(/* webpackChunkName: 'auditions.detail' */ '@/views/AuditionsDetail'),
     },
   ]),
+  ...mapRoutes({ layout: 'auditiondetails' }, [
+    {
+      path: '/auditions/detail_old/:id',
+      name: 'auditions/detail_old',
+      component: () => import(/* webpackChunkName: 'auditions.detail' */ '@/views/AuditionsDetailOld'),
+    },
+  ]),
   ...mapRoutes({ layout: 'tour' }, [
     {
       path: '/tour',
