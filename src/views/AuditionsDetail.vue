@@ -196,6 +196,11 @@
       <div v-if="mainRoles.length == 0" class="text-center h-full">
           <p class="text-purple font-bold text-xl">Add a performer to <br/>your final cast list</p>
       </div>
+      <div class="export-btn">
+        <div v-if="mainRoles.length > 0" class="purple-back cursor-pointer m-3 content-center flex items-center flex m-3 content-center border-2 rounded-sm border-purple w-48 h-10">
+        <p @click="exportRoleData" class="flex-1 text-white text-sm font-semibold content-center text-center tracking-tighter flex-1">Export</p>
+      </div>
+      </div>
     </section>
   </div>
 </template>
@@ -222,7 +227,10 @@ import Loading from "vue-loading-overlay";
 import "vue-loading-overlay/dist/vue-loading.css";
 
 Vue.use(Loading);
+import * as FileSaver from 'file-saver';
+import * as XLSX from 'xlsx';
 
+import ExcelService from '@/services/ExcelService';
 
 export default {
   components: {
@@ -775,21 +783,33 @@ export default {
       this.finalCastPerformerList = _.cloneDeep(this.$store.getters[
         "audition/listFinalCasts"
       ]);
-      for (let data in this.finalCast) {        
-        let filtered_data = _.cloneDeep(this.userList.filter(
+
+      await this.fetch(this.$route.params.id);
+      let lastRound = this.rounds.slice(-1);
+      if (lastRound && lastRound.length > 0) {
+        await this.fetchUserList(lastRound[0].id);
+        this.round = lastRound[0];
+      }
+      for (let data in this.finalCastPerformerList) {
+        let filtered_data = _.cloneDeep(this.userList.filter(        
           user => user.user_id == this.finalCastPerformerList[data].user_id
         ));
+        
         for (let j in filtered_data) {
-          this.finalCastPerformerList[data].image = filtered_data[j].image;
+          this.finalCastPerformerList[data].image = filtered_data[j].image;          
           this.finalCastPerformerList[data].name = filtered_data[j].name;
           this.finalCastPerformerList[data].time = filtered_data[j].time;
-          // this.finalCastPerformerList[data].rol_id = filtered_data[j].rol;
+          this.finalCastPerformerList[data].time = filtered_data[j].time;
+          this.finalCastPerformerList[data].birth = filtered_data[j].birth;
+          this.finalCastPerformerList[data].email = filtered_data[j].email;          
+          // this.finalCast[data].rol_id = filtered_data[j].rol;
         }
       }
+      
       this.mainRoles = _.cloneDeep(this.roles);
+            
       await this.mainRoles.map(async role => {
-        if (this.finalCastPerformerList && this.finalCastPerformerList.length > 0) {        
-
+        if (this.finalCastPerformerList && this.finalCastPerformerList.length > 0) {
           let filtered_data = await this.finalCastPerformerList.filter(
                 user => user.rol_id === role.id
             );        
@@ -801,16 +821,26 @@ export default {
             role.finalcast_id = filtered_data[0].id;
             role.user_id = filtered_data[0].user_id;
             role.time = filtered_data[0].time;
+            role.birth = filtered_data[0].birth;
+            role.email = filtered_data[0].email;
           } else {
             role.is_peformer = false;
             role.finalcast_id = null;
             role.user_id = null;
             role.image = role.image.url;
             role.time = '';
-          }
+            role.birth = null;
+            role.email = null;
+
+          }          
         } else {
+          role.is_peformer = false;
+          role.finalcast_id = null;
+          role.user_id = null;
           role.image = role.image.url;
           role.time = '';
+          role.birth = null;
+          role.email = null;
         }
         return role;
       });
@@ -819,10 +849,10 @@ export default {
       if (this.finalCastPerformerList && this.finalCastPerformerList.length > 0) {
         this.finalCastFilter = this.finalCastPerformerList;
       }
-      setTimeout(() =>{
-        // $(".slot").droppable(dropOption);
-        this.initDropdrag();
-      },100);
+      // setTimeout(() =>{
+      //   // $(".slot").droppable(dropOption);
+      //   this.initDropdrag();
+      // },100);
       this.isLoading = false;
     },
     async activeFinalCast(item) {
@@ -867,16 +897,26 @@ export default {
             role.finalcast_id = filtered_data[0].id;
             role.user_id = filtered_data[0].user_id;
             role.time = filtered_data[0].time;
+            role.birth = filtered_data[0].birth;
+            role.email = filtered_data[0].email;
           } else {
             role.is_peformer = false;
             role.finalcast_id = null;
             role.user_id = null;
             role.image = role.image.url;
             role.time = '';
+            role.birth = null;
+            role.email = null;
+
           }          
         } else {
+          role.is_peformer = false;
+          role.finalcast_id = null;
+          role.user_id = null;
           role.image = role.image.url;
           role.time = '';
+          role.birth = null;
+          role.email = null;
         }
         return role;
       });
@@ -892,6 +932,101 @@ export default {
         this.initDropdrag();
       },100);
       this.isLoading = false;
+    },
+    async exportRoleData(){
+      this.isLoading =  true;
+      let json = [];
+      await this.generateXlsJsonData().then(res=>{
+        json = res;
+      });      
+      console.log("TCL: exportRoleData -> json", json)
+      await ExcelService.exportAsExcelFile(json,'final_cast_list');
+      this.isLoading =  false;
+    },
+    async generateXlsJsonData(){
+
+
+      this.isLoading = true;
+      await this.fetchFinalCastList(this.$route.params.id);
+      let finalCastPerformerList = _.cloneDeep(this.$store.getters[
+        "audition/listFinalCasts"
+      ]);
+
+      await this.fetch(this.$route.params.id);
+      let lastRound = this.rounds.slice(-1);
+      if (lastRound && lastRound.length > 0) {
+        await this.fetchUserList(lastRound[0].id);
+        this.round = lastRound[0];
+      }
+      for (let data in finalCastPerformerList) {
+        let filtered_data = _.cloneDeep(this.userList.filter(        
+          user => user.user_id == finalCastPerformerList[data].user_id
+        ));
+        
+        for (let j in filtered_data) {
+          finalCastPerformerList[data].image = filtered_data[j].image;          
+          finalCastPerformerList[data].name = filtered_data[j].name;
+          finalCastPerformerList[data].time = filtered_data[j].time;
+          finalCastPerformerList[data].time = filtered_data[j].time;
+          finalCastPerformerList[data].birth = filtered_data[j].birth;
+          finalCastPerformerList[data].email = filtered_data[j].email;          
+          // this.finalCast[data].rol_id = filtered_data[j].rol;
+        }
+      }
+      
+      let mainRoles = _.cloneDeep(this.roles);
+            
+      await mainRoles.map(async role => {
+        if (finalCastPerformerList && finalCastPerformerList.length > 0) {
+          let filtered_data = await finalCastPerformerList.filter(
+                user => user.rol_id === role.id
+            );        
+          if (filtered_data && filtered_data.length > 0) {
+            role.name = filtered_data[0].name;
+            role.image = filtered_data[0].image;
+            role.rol = filtered_data[0].rol_name;
+            role.is_peformer = true;
+            role.finalcast_id = filtered_data[0].id;
+            role.user_id = filtered_data[0].user_id;
+            role.time = filtered_data[0].time;
+            role.birth = filtered_data[0].birth;
+            role.email = filtered_data[0].email;
+          } else {
+            role.is_peformer = false;
+            role.finalcast_id = null;
+            role.user_id = null;
+            role.image = role.image.url;
+            role.time = '';
+            role.birth = null;
+            role.email = null;
+
+          }          
+        } else {
+          role.is_peformer = false;
+          role.finalcast_id = null;
+          role.user_id = null;
+          role.image = role.image.url;
+          role.time = '';
+          role.birth = null;
+          role.email = null;
+        }
+        return role;
+      });
+
+
+
+      let exportData = [];            
+    _.each(mainRoles, member => {    
+        if(member.user_id){
+          let newExprtObj = {'Role Name':member.rol,'Performer Name': member.name,'Email':	member.email,	'Date of Birth': member.birth};
+          exportData.push(newExprtObj);
+        }
+      });
+      if(exportData.length == 0){
+        let newExprtObj = {'Role Name':'','Performer Name': '','Email':	'',	'Date of Birth': ''};
+          exportData.push(newExprtObj);
+      }
+      return exportData;
     },
     async verifyRegisters(item) {
       if(item && item.added && item.added.element){
@@ -1270,5 +1405,17 @@ export default {
   }
   .w-calc{
     width: calc(100% - 423px) !important;
+  }
+  .export-btn{
+    width: 100% !important;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    max-width: 423px; 
+    background-color: #F0F0F0;
+    z-index: 11111;
+  }
+  .main-role-slot:last-child{
+    margin-bottom: 110px !important;
   }
 </style>
