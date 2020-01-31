@@ -89,12 +89,12 @@
         :message="errors.first('create.date')"
       />
       <template>
-          <div class="relative h-12 my-2">                    
+          <div class="relative h-12 my-2">
               <vue-clock-picker
                   mode="24"
                   v-bind='{ defaultTimeHour, defaultTimeMinute }'
                   :defaultHour="defaultTimeHour"
-                  :defaultMinute="defaultTimeMinute"                     
+                  :defaultMinute="defaultTimeMinute"
                   class="cus-des-timepicker px-2 text-left"
                   :onTimeChange="timeChangeHandler"
                   :defaultFocused="false"
@@ -208,7 +208,7 @@
     <div class="flex w-full">
       <!-- v-validate="'required|max:500'" -->
       <base-input
-        v-model="form.personal_information"        
+        v-model="form.personal_information"
         name="personal_information"
         class="px-2 w-full h-40"
         type="textarea"
@@ -220,7 +220,7 @@
     </div>
     <div class="flex w-full">
       <!-- v-model="form.additional_info" -->
-      <base-input        
+      <base-input
         v-validate="'required|max:500'"
         name="additional_info"
         class="px-2 w-full h-40"
@@ -236,7 +236,7 @@
     <div class="flex w-full">
       <!-- v-validate="'required'" -->
       <base-input
-        v-model="form.dates[0].from"        
+        v-model="form.dates[0].from"
         name="contract_start_date"
         class="w-1/2 px-2"
         type="date"
@@ -248,7 +248,7 @@
       />
       <!-- v-validate="'required'" -->
       <base-input
-        v-model="form.dates[0].to"        
+        v-model="form.dates[0].to"
         name="contract_end_date"
         class="w-1/2 px-2"
         type="date"
@@ -263,7 +263,7 @@
       <!-- v-validate="'required'" -->
       <base-input
         v-model="form.dates[1].from"
-        :mindate="new Date()"        
+        :mindate="new Date()"
         name="rehearsal_start_date"
         class="w-1/2 px-2"
         type="date"
@@ -275,7 +275,7 @@
       <!-- v-validate="'required'" -->
       <base-input
         v-model="form.dates[1].to"
-        :mindate="form.dates[1].from"        
+        :mindate="form.dates[1].from"
         name="rehearsal_end_date"
         class="w-1/2 px-2"
         type="date"
@@ -380,7 +380,7 @@
             :per-page="innerWidth < 1920 ? 3 : 4"
             :pagination-enabled="false"
             :navigation-enabled="true"
-            :navigation-prev-label="'&#x279C;'"                            
+            :navigation-prev-label="'&#x279C;'"
             :navigation-next-label="'&#x279C;'"
           >
             <slide
@@ -423,7 +423,7 @@
             :per-page="innerWidth < 1920 ? 1 : 2"
             :pagination-enabled="false"
             :navigation-enabled="true"
-            :navigation-prev-label="'&#x279C;'"                            
+            :navigation-prev-label="'&#x279C;'"
             :navigation-next-label="'&#x279C;'"
           >
             <slide v-for="(media, index) in form.media" :key="index">
@@ -636,7 +636,7 @@ export default {
     ...mapState("audition", ["audition"]),
   },
   watch: {
-    audition: function() {      
+    audition: function() {
       let timeArr = this.audition && this.audition.time ? this.audition.time.split(":") : [];
       this.defaultTimeHour = parseInt(timeArr[0] ? timeArr[0] : '0');
       this.defaultTimeMinute = parseInt(timeArr[1] ? timeArr[1] : '0');
@@ -659,7 +659,7 @@ export default {
     this.form.email = this.audition.email;
     this.form.other_info = this.audition.other_info;
     this.form.url = this.audition.url;
-    this.form.dates = this.audition.dates;
+    this.form.dates = this.audition.dates.length ? this.audition.dates : [{"from":"", "to":""},{"from":"", "to":""}];
     this.form.online = this.audition.online;
     this.form.appointment = this.audition.apointment.general;
     this.form.appointment.type = this.form.appointment.type == "time" ? 1 : 2;
@@ -693,11 +693,14 @@ export default {
     let timeArr = this.audition && this.audition.time ? this.audition.time.split(":") : [];
     this.defaultTimeHour = parseInt(timeArr[0] ? timeArr[0] : '0');
     this.defaultTimeMinute = parseInt(timeArr[1] ? timeArr[1] : '0');
-    
-    
-    
-    
+
+
+
+
     this.form.dates.map(function(values) {
+      console.log("========================");
+      console.log(values);
+      console.log("========================");
       let start = new Date(values.from);
       start.setDate(start.getDate() + 1);
       values.from = start;
@@ -844,12 +847,23 @@ export default {
         rolesSnapshots = [],
         filesSnaphosts = [];
 
-      try {        
+      try {
         if (this.isLoading) {
         // if (this.isLoading || !(await this.$validator.validateAll("create"))) {
           // console.log("TCL: handleCreate -> this.$validator.validateAll", this.$validator.validateAll())
           return;
         }
+
+        if(this.form.dates[0].from && !this.form.dates[0].to){
+          this.$toasted.error("The contract end date field is required.");
+          return;
+        }
+
+        if(this.form.dates[1].from && !this.form.dates[1].to){
+          this.$toasted.error("The rehearsal end date field is required.");
+          return;
+        }
+
         this.form.location = this.form.online ? null : this.form.location;
 
         // this.form.appointment = this.form.online ? this.audition.apointment : this.form.appointment;
@@ -861,7 +875,7 @@ export default {
           .filter(x => x.selected)
           .map(x => x.key)
           .join(",");
-        
+
         this.audition.apointment.general.time = this.form.time
         data.appointment = [this.audition.apointment];
         // debugger;
@@ -976,7 +990,7 @@ export default {
     },
     imgUrlAlt(event) {
         event.target.src = DEFINE.role_placeholder;
-    } 
+    }
   }
 };
 </script>
@@ -995,7 +1009,7 @@ export default {
   .location-icon {background-image: url('../../../public/images/icons/location-icon.svg');background-repeat: no-repeat;background-position: right 12px top 14px;}
   .box-shadow{
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
-  }    
+  }
   .cml-6{
       margin-left: 2px !important;
   }

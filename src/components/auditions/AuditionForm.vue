@@ -91,9 +91,9 @@
                     :message="errors.first('create.date')"
             />
             <template>
-                <div class="relative h-12 my-2">                    
+                <div class="relative h-12 my-2">
                     <vue-clock-picker
-                        mode="24"                         
+                        mode="24"
                         class="cus-des-timepicker px-2 text-left"
                         :onTimeChange="timeChangeHandler"
                         :defaultFocused="false"
@@ -210,7 +210,7 @@
         <div class="flex w-full">
             <!-- v-validate="'required|max:500'" -->
             <base-input
-                    v-model="form.personal_information"                    
+                    v-model="form.personal_information"
                     name="personal_information"
                     class="px-2 w-full h-40"
                     type="textarea"
@@ -223,7 +223,7 @@
         <div class="flex w-full">
             <!-- v-validate="'required|max:500'" -->
             <base-input
-                    v-model="form.additional_info"                    
+                    v-model="form.additional_info"
                     name="additional_info"
                     class="px-2 w-full h-40"
                     type="textarea"
@@ -238,7 +238,7 @@
         <div class="flex w-full">
             <!-- v-validate="'required'" -->
             <base-input
-                    v-model="form.dates[0].from"                    
+                    v-model="form.dates[0].from"
                     name="contract_start_date"
                     class="w-1/2 px-2"
                     type="date"
@@ -250,7 +250,7 @@
             />
             <!-- v-validate="'required'" -->
             <base-input
-                    v-model="form.dates[0].to"                    
+                    v-model="form.dates[0].to"
                     name="contract_end_date"
                     class="w-1/2 px-2"
                     type="date"
@@ -265,7 +265,7 @@
             <!-- v-validate="'required'" -->
             <base-input
                     v-model="form.dates[1].from"
-                    :mindate="new Date()"                    
+                    :mindate="new Date()"
                     name="rehearsal_start_date"
                     class="w-1/2 px-2"
                     type="date"
@@ -277,7 +277,7 @@
             <!-- v-validate="'required'" -->
             <base-input
                     v-model="form.dates[1].to"
-                    :mindate="form.dates[1].from"                    
+                    :mindate="form.dates[1].from"
                     name="rehearsal_end_date"
                     class="w-1/2 px-2"
                     type="date"
@@ -385,8 +385,8 @@
                             class="flex-none w-full"
                             :per-page="innerWidth < 1920 ? 3 : 4"
                             :pagination-enabled="false"
-                            :navigation-enabled="true"                            
-                            :navigation-prev-label="'&#x279C;'"                            
+                            :navigation-enabled="true"
+                            :navigation-prev-label="'&#x279C;'"
                             :navigation-next-label="'&#x279C;'"
                     >
                         <slide
@@ -401,7 +401,7 @@
                                         class="bg-purple-gradient flex items-center justify-center rounded-full h-12 w-12"
                                 >
                                     <img
-                                            :src="role && role.preview ? role.preview :imgUrlAlt" 
+                                            :src="role && role.preview ? role.preview :imgUrlAlt"
                                             @error="imgUrlAlt"
                                             alt="Cover"
                                             class="w-full h-full object-cover rounded-full"
@@ -428,7 +428,7 @@
                             :per-page="innerWidth < 1920 ? 1 : 2"
                             :pagination-enabled="false"
                             :navigation-enabled="true"
-                            :navigation-prev-label="'&#x279C;'"                            
+                            :navigation-prev-label="'&#x279C;'"
                             :navigation-next-label="'&#x279C;'"
                     >
                         <slide v-for="(media, index) in form.media" :key="index">
@@ -755,10 +755,22 @@
                         return;
                     }
 
-                    if (!this.form.cover) {                        
+                    if(this.form.dates[0].from && !this.form.dates[0].to){
+                        this.$toasted.error("The contract end date field is required.");
+                        return;
+                    }
+
+                    if(this.form.dates[1].from && !this.form.dates[1].to){
+                        this.$toasted.error("The rehearsal end date field is required.");
+                        return;
+                    }
+
+                    if (!this.form.cover) {
                         this.$toasted.error("The cover field is required.");
                         return;
                     }
+
+
                     this.form.location = this.form.online ? null : this.form.location;
                     this.form.appointment = this.form.online
                         ? {
@@ -888,8 +900,8 @@
             },
             imgUrlAlt(event) {
                 event.target.src = DEFINE.role_placeholder;
-            }          
-        }        
+            }
+        }
     };
 </script>
 
@@ -905,17 +917,17 @@
     /*.close-btn.search.wrap{display: flex;align-items: center;flex-wrap: wrap;}*/
     .vue-map-container{float: left;}
     .location-icon {background-image: url('../../../public/images/icons/location-icon.svg');background-repeat: no-repeat;background-position: right 12px top 14px;}
-    
+
     /* .time-picker-preview.active {
         border-color: #782541 !important;
         background-color: #782541 !important;
     } */
     .box-shadow{
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
-    }    
+    }
     .cml-6{
         margin-left: 2px !important;
-    }    
+    }
     .VueCarousel-navigation-button{
         color: #592543!important;
     }
