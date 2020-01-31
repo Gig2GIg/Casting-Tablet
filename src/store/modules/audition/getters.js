@@ -1,1 +1,3 @@
-export default {};
+export default {
+    listFinalCasts: state => state.finalCast,
+};
