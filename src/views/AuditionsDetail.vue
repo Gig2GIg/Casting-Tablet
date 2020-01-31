@@ -482,18 +482,22 @@ export default {
                     
                   } else if(draggable_parent_isRole == 'true' && droppable_isPerformer == 'true' && $(this).find('div.item').length === 0){ // remove performer from role list
                     
-                    var draggable_parent_finalcast_id = ui.draggable.parent().attr("finalcast_id");
+                    var draggable_parent_finalcast_id = ui.draggable.attr("finalcast_id");
                     var draggable_user_id = ui.draggable.attr("user_id");     
                     if(draggable_parent_finalcast_id == undefined || draggable_parent_finalcast_id == null || draggable_user_id == undefined || draggable_user_id == null){ // if not required then revert back draggable performer to thier back position
                       ui.draggable.animate(ui.draggable.data().original,"slow");
                       return;
-                    }
+                    }        
+                    
+                    
+                    that.removePerformerFromRole(draggable_parent_finalcast_id, draggable_user_id);
                     ui.draggable.parent().removeAttr("finalcast_id");
                     ui.draggable.removeAttr("finalcast_id");
-                    that.removePerformerFromRole(draggable_parent_finalcast_id, draggable_user_id);
+
+                    
                     
                   } else if(draggable_parent_isRole == 'true' && droppable_isRole == 'true' && $(this).find('div.item').length === 0) { // move performer from one role to another role
-                    var draggable_parent_finalcast_id = ui.draggable.parent().attr("finalcast_id");
+                    var draggable_parent_finalcast_id = ui.draggable.attr("finalcast_id");
                     var draggable_user_id = ui.draggable.attr("user_id");     
                     var droppable_role_id = $(this).attr("role_id");   
                     if(draggable_parent_finalcast_id == undefined || draggable_parent_finalcast_id == null || draggable_user_id == undefined || draggable_user_id == null || droppable_role_id == undefined || droppable_role_id == null){ // if not foudn any required then revert back draggable performer to thier last position
@@ -938,8 +942,8 @@ export default {
       let json = [];
       await this.generateXlsJsonData().then(res=>{
         json = res;
-      });      
-      console.log("TCL: exportRoleData -> json", json)
+      });
+      
       await ExcelService.exportAsExcelFile(json,'final_cast_list');
       this.isLoading =  false;
     },
