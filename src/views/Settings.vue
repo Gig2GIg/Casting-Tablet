@@ -416,27 +416,27 @@
           <div class="flex justify-center mb-4 items-center px-3 w-full">
             <div class="w-1/3  ml-4 text-purple px-2">
             <base-input
-              v-model="form.name"
+              v-model="form.first_name"
               v-validate="'required|max:255'"
               :custom-classes="['border border-b border-gray-300']"
-              name="name"
-              placeholder="Name"
-              :message="errors.first('name')"
-              data-vv-as="name"
+              name="first_name"
+              placeholder="First Name"
+              :message="errors.first('first_name')"
+              data-vv-as="first name"
             />
             </div>
             <div class="w-1/3  ml-4 text-purple px-2">
-
-            <base-input
-              v-model="form.profesion"
-              v-validate="'required|max:255'"
-              :custom-classes="['border border-b border-gray-300']"
-              name="profesion"
-              placeholder="Job Title"
-              :message="errors.first('profesion')"
-              data-vv-as="profesion"
-            />
+              <base-input
+                v-model="form.last_name"
+                v-validate="'required|max:255'"
+                :custom-classes="['border border-b border-gray-300']"
+                name="last_name"
+                placeholder="Last Name"
+                :message="errors.first('last_name')"
+                data-vv-as="last name"
+              />
             </div>
+
           </div>
           <div class="flex justify-center mb-4 items-center px-3 w-full">
             <div class="w-1/3  ml-4 text-purple px-2">
@@ -451,16 +451,27 @@
             </div>
             <div class="w-1/3  ml-4 text-purple px-2">
               <base-input
-                v-model="form.address"
-                v-validate="'required|email'"
+                v-model="form.profesion"
+                v-validate="'required|max:255'"
                 :custom-classes="['border border-b border-gray-300']"
-                name="address"
-                placeholder="Address"
-                :message="errors.first('address')"
+                name="profesion"
+                placeholder="Job Title"
+                :message="errors.first('profesion')"
+                data-vv-as="profesion"
               />
             </div>
           </div>
           <div class="flex justify-center mb-4 items-center px-3 w-full">
+            <div class="w-1/3  ml-4 text-purple px-2">
+              <base-input
+                      v-model="form.address"
+                      v-validate="'required|email'"
+                      :custom-classes="['border border-b border-gray-300']"
+                      name="address"
+                      placeholder="Address"
+                      :message="errors.first('address')"
+              />
+            </div>
             <div class="w-1/3  ml-4 text-purple px-2">
               <base-input
                 v-model="form.agency_name"
@@ -471,6 +482,8 @@
                 :message="errors.first('agency_name')"
               />
             </div>
+          </div>
+          <div class="flex justify-center mb-4 items-center px-3 w-full">
             <div class="w-1/3  ml-4 text-purple px-2">
               <base-input
                 key="city-input"
@@ -482,8 +495,6 @@
                 :message="errors.first('city')"
               />
             </div>
-          </div>
-          <div class="flex justify-center mb-4 items-center px-3 w-full">
             <div class="w-1/3  ml-4 text-purple px-2">
                 <base-select
                   key="state-input"
@@ -503,21 +514,21 @@
                   </option>
                 </base-select>
             </div>
-            <div class="w-1/3  ml-4 text-purple px-2">
-                <base-input
-                  key="zip-input"
-                  v-model="form.zip"
-                  v-validate="'required|integer|max:5'"
-                  v-mask="'#####'"
-                  :custom-classes="['border border-b border-gray-300']"
-                  name="zip"
-                  class=""
-                  placeholder="Zip"
-                  :message="errors.first('zip')"
-                />
-              </div>
-            </div>
+          </div>
           <div class="flex justify-center mb-4 items-center px-3 w-full">
+            <div class="w-1/3  ml-4 text-purple px-2">
+              <base-input
+                key="zip-input"
+                v-model="form.zip"
+                v-validate="'required|integer|max:5'"
+                v-mask="'#####'"
+                :custom-classes="['border border-b border-gray-300']"
+                name="zip"
+                class=""
+                placeholder="Zip"
+                :message="errors.first('zip')"
+              />
+            </div>
             <div class="w-1/3  ml-4 text-purple px-2">
               <base-input
                 id="birth"
@@ -1055,7 +1066,8 @@ export default {
   async mounted() {
     await this.fetch();
     this.user.details;
-    this.form.name = this.user.details.first_name;
+    this.form.first_name = this.user.details.first_name;
+    this.form.last_name = this.user.details.last_name;
     this.form.profesion = this.user.details.profesion;
     this.form.email = this.user.email;
     this.form.address = this.user.details.address;

@@ -16,11 +16,21 @@
     >
       <template v-if="step === 1">
         <base-input
-          v-model="form.name"
+          v-model="form.first_name"
           v-validate="'required|max:255'"
-          name="name"
-          placeholder="Name"
-          :message="errors.first('name')"
+          name="first_name"
+          placeholder="First Name"
+          :message="errors.first('first_name')"
+          data-vv-as="first name"
+        />
+
+        <base-input
+          v-model="form.last_name"
+          v-validate="'required|max:255'"
+          name="last_name"
+          placeholder="Last Name"
+          :message="errors.first('last_name')"
+          data-vv-as="last name"
         />
 
         <base-input
@@ -285,7 +295,7 @@ export default {
         // );
 
         this.$toasted.show('Account created successfully.');
-        this.onRegisterSuccessRedirect();        
+        this.onRegisterSuccessRedirect();
       } catch (e) {
         console.log("TCL: handleLogin -> e.FirebaseError",e);
           if(e.code && e.code == DEFINE.firebase_permission_error.code){
@@ -298,7 +308,7 @@ export default {
             let errorMsg = this.$options.filters.getErrorMsg(e.response.data.errors);
             this.$toasted.error(errorMsg ? errorMsg : e.response.data.message);
             this.$setErrorsFromLaravel(e.response.data);
-          }        
+          }
       } finally {
         this.isLoading = false;
       }
@@ -310,12 +320,12 @@ export default {
       await messaging.requestPermission();
 
       // Update token
-      const token = await messaging.getToken();      
+      const token = await messaging.getToken();
       await this.updateDeviceToken(token);
 
       // Listen token changes
       messaging.onTokenRefresh(async () => {
-        const token = await messaging.getToken();        
+        const token = await messaging.getToken();
         await this.updateDeviceToken(token);
       });
     },
@@ -323,12 +333,12 @@ export default {
       let userAgentId = window.navigator.userAgent.replace(/\D+/g, '');
       await axios.put(`/t/notification-send-pushkey?pushkey=${device_token}&device_id=${userAgentId}`);
     },
-    onRegisterSuccessRedirect(){
-        // Redirect the user to the page he first tried to visit or to the home view
-        this.$router.push({ name: 'tour' });
-      },
+    onRegisterSuccessRedirect() {
+      // Redirect the user to the page he first tried to visit or to the home view
+      this.$router.push({ name: 'tour' });
+    },
     onCancel() {
-      console.log("User cancelled the loader.");
+      console.log('User cancelled the loader.');
     },
   },
 };

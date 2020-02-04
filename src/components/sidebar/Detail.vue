@@ -166,7 +166,7 @@
             <figure class="flex justify-center mr-4 w-6">
               <img :src="`/images/icons/person.png`" alt="Icon" class="h-6" />
             </figure>
-            <span class="font-bold text-lg">{{ data.contributor_info.details.first_name }}</span>
+            <span class="font-bold text-lg">{{ data.contributor_info.details.first_name }} {{data.contributor_info.details.last_name}}</span>
           </div>
         </div>
         <div class="w-10/12 border border-gray-300 mt-3" />
@@ -402,7 +402,7 @@
               <h1 class="text-lg text-purple font-bold text-center">Open Check In?</h1>
               <p class="text-lg text-purple text-center">Are you sure you want to open Check In for audition?</p>
             <div class="w-full flex flex-wrap justify-center overflow-hidden mt-3">
-                <div class="w-1/4">                    
+                <div class="w-1/4">
                   <base-button type="submit" expanded @click="confirmCheckInmode(false)">
                       No
                   </base-button>
@@ -418,15 +418,15 @@
     </modal>
 
     <modal class="flex flex-col w-full items-center" :width="600" height="490" name="modal_passcode_check_in_mode">
-        <div class="py-8 px-3">          
+        <div class="py-8 px-3">
             <p class="text-lg text-purple font-bold text-center mb-2">Set Passcode</p>
             <div class="flex w-full pass-code-input">
               <form class="w-full max-w-xs">
-                <input class="text-black rounded-full overflow-hidden w-full h-full py-3 pl-6 pr-10 placeholder-purple focus:outline-none border border-purple" type="password" :value="checkInPassCode"   @input="onInputChange" placeholder="Passcode" autocomplete="off"    />              
+                <input class="text-black rounded-full overflow-hidden w-full h-full py-3 pl-6 pr-10 placeholder-purple focus:outline-none border border-purple" type="password" :value="checkInPassCode"   @input="onInputChange" placeholder="Passcode" autocomplete="off"    />
               </form>
             </div>
             <div class="flex w-full mt-3">
-              <SimpleKeyboard @onChange="onChange" @onKeyPress="onKeyPress" :input="checkInPassCode" :layout="layout" :theme="theme"/>              
+              <SimpleKeyboard @onChange="onChange" @onKeyPress="onKeyPress" :input="checkInPassCode" :layout="layout" :theme="theme"/>
             </div>
             <div class="w-full flex flex-wrap justify-center overflow-hidden mt-3">
                 <div class="w-1/4">
@@ -450,7 +450,7 @@
             <h1 class="text-lg text-purple font-bold text-center">Enter Monitor Mode?</h1>
             <p class="text-lg text-purple text-center">Are you sure you want to open Monitor Mode?</p>
             <div class="w-full flex flex-wrap justify-center overflow-hidden mt-3">
-                <div class="w-1/4">                    
+                <div class="w-1/4">
                   <base-button type="submit" expanded @click="confirmMonitorInmode(false)">
                       No
                   </base-button>
@@ -465,15 +465,15 @@
     </modal>
 
     <modal class="flex flex-col w-full items-center" :width="600" height="490" name="modal_passcode_monitor_in_mode">
-        <div class="py-8 px-3">          
+        <div class="py-8 px-3">
             <p class="text-lg text-purple font-bold text-center mb-2">Set Passcode</p>
             <div class="flex w-full pass-code-input">
               <form class="w-full max-w-xs">
-                <input class="text-black rounded-full overflow-hidden w-full h-full py-3 pl-6 pr-10 placeholder-purple focus:outline-none border border-purple" type="password" :value="monitorInPassCode"   @input="onInputChangeMonitor" placeholder="Passcode" autocomplete="off"    />              
+                <input class="text-black rounded-full overflow-hidden w-full h-full py-3 pl-6 pr-10 placeholder-purple focus:outline-none border border-purple" type="password" :value="monitorInPassCode"   @input="onInputChangeMonitor" placeholder="Passcode" autocomplete="off"    />
               </form>
             </div>
             <div class="flex w-full mt-3">
-              <SimpleKeyboard @onChange="onChangeMonitor" @onKeyPress="onKeyPressMonitor" :input="monitorInPassCode" :layout="layout" :theme="theme"/>              
+              <SimpleKeyboard @onChange="onChangeMonitor" @onKeyPress="onKeyPressMonitor" :input="monitorInPassCode" :layout="layout" :theme="theme"/>
             </div>
             <div class="w-full flex flex-wrap justify-center overflow-hidden mt-3">
                 <div class="w-1/4">
@@ -491,11 +491,11 @@
         </div>
     </modal>
     <!--end: enter monitor mode in model modal-->
-        
+
 
 
   </section>
-  
+
 </template>
 
 <script>
@@ -575,7 +575,7 @@ export default {
         this.getGroupdetails();
       }
     });
-    
+
   },
   methods: {
     handleNewGroup(round_status) {
@@ -726,7 +726,7 @@ export default {
       // console.log("button", button);
     },
     onInputChange(input) {
-      this.checkInPassCode = input.target.value;      
+      this.checkInPassCode = input.target.value;
     },
     cancelSetPassCodeCheckIn(){
       this.$modal.hide("modal_passcode_check_in_mode");
@@ -743,7 +743,7 @@ export default {
       this.$modal.hide("modal_passcode_check_in_mode");
       this.checkInPassCode = "";
       this.$router.push({ name: 'auditions/checkin', params: {id: this.roundActive.id, title: this.audition.title, date: this.audition.date, auditionId: this.audition.id } });
-      
+
     },
     openConfirmMonitorInmodal() {
       this.$modal.show("modal_confirm_monitor_in_mode");
@@ -761,7 +761,7 @@ export default {
       // console.log("button", button);
     },
     onInputChangeMonitor(input) {
-      this.monitorInPassCode = input.target.value;      
+      this.monitorInPassCode = input.target.value;
     },
     cancelSetPassCodeMonitorIn(){
       this.$modal.hide("modal_passcode_monitor_in_mode");
