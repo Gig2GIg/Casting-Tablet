@@ -973,7 +973,12 @@ export default {
           finalCastPerformerList[data].time = filtered_data[j].time;
           finalCastPerformerList[data].time = filtered_data[j].time;
           finalCastPerformerList[data].birth = filtered_data[j].birth;
-          finalCastPerformerList[data].email = filtered_data[j].email;          
+          finalCastPerformerList[data].email = filtered_data[j].email;   
+          finalCastPerformerList[data].website = filtered_data[j].website;
+          finalCastPerformerList[data].union_string = filtered_data[j].union_string;
+          finalCastPerformerList[data].representation_name = filtered_data[j].representation_name;
+          finalCastPerformerList[data].representation_email = filtered_data[j].representation_email;
+          
           // this.finalCast[data].rol_id = filtered_data[j].rol;
         }
       }
@@ -995,6 +1000,10 @@ export default {
             role.time = filtered_data[0].time;
             role.birth = filtered_data[0].birth;
             role.email = filtered_data[0].email;
+            role.website = filtered_data[0].website;
+            role.union_string = filtered_data[0].union_string;
+            role.representation_name = filtered_data[0].representation_name;
+            role.representation_email = filtered_data[0].representation_email;
           } else {
             role.is_peformer = false;
             role.finalcast_id = null;
@@ -1003,6 +1012,10 @@ export default {
             role.time = '';
             role.birth = null;
             role.email = null;
+            role.website = null;
+            role.union_string = null;
+            role.representation_name = null;
+            role.representation_email = null;
 
           }          
         } else {
@@ -1013,6 +1026,10 @@ export default {
           role.time = '';
           role.birth = null;
           role.email = null;
+          role.website = null;
+          role.union_string = null;
+          role.representation_name = null;
+          role.representation_email = null;
         }
         return role;
       });
@@ -1022,12 +1039,30 @@ export default {
       let exportData = [];            
     _.each(mainRoles, member => {    
         if(member.user_id){
-          let newExprtObj = {'Role Name':member.rol,'Performer Name': member.name,'Email':	member.email,	'Date of Birth': member.birth};
+          let newExprtObj = {
+            'Role Name': member.rol,
+            'Performer Name': member.name,
+            'Email':	member.email,
+            'Date of Birth': member.birth,
+            'Website': member.website,
+            'Union Status': member.union_string,
+            'Representation Name': member.representation_name,
+            'Representation Email': member.representation_email
+            };
           exportData.push(newExprtObj);
         }
       });
       if(exportData.length == 0){
-        let newExprtObj = {'Role Name':'','Performer Name': '','Email':	'',	'Date of Birth': ''};
+        let newExprtObj = {
+          'Role Name':'',
+          'Performer Name': '',
+          'Email':	'',
+          'Date of Birth': '',
+          'Website': '',
+          'Union Status': '',
+          'Representation Name': '',
+          'Representation Email': ''
+          };
           exportData.push(newExprtObj);
       }
       return exportData;
