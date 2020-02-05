@@ -545,12 +545,13 @@ export default {
       options: {
         useKbEvents: false,
         preventClickEvent: false
-      }
+      },
+      current_round : {}
     };
   },
   watch: {
     rounds: function() {
-      if (this.rounds && this.rounds.length > 0) {
+      if (this.rounds && this.rounds.length > 0) {        
         this.lastRound = this.rounds[this.rounds.length - 1];
         this.getGroupdetails();
       }
@@ -558,6 +559,7 @@ export default {
     audition: function() {
       let currentAudition = this.audition ? this.audition : null;
       eventBus.$emit("currentAudition", currentAudition);
+      this.handleNewGroup(this.current_round.status ? this.current_round.status : null)
     }
   },
   computed: {
@@ -580,7 +582,7 @@ export default {
   methods: {
     handleNewGroup(round_status) {
       if (
-        this.audition.status == 1 &&
+        this.audition.status == 1 &&        
         this.audition.online == 0 &&
         round_status == 1
       ) {
@@ -696,6 +698,7 @@ export default {
         await this.$emit("selected", payload);
       }
       this.roundActive = payload;
+      this.current_round = payload;
     },
     async getGroupdetails() {
       try {
