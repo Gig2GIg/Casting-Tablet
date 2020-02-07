@@ -141,5 +141,8 @@ body, html {
   text-transform: capitalize
 }
 
+.v--modal-box.v--modal {
+      overflow: auto !important;
+}
 
 </style>

@@ -8,7 +8,7 @@
         <!-- <h4 class="w-full text-center text-purple font-semibold text-2xl">Auditions has been closed for this audition</h4> -->
       </div>
       <div v-if="status == 1 && userList.length == 0 " class="flex items-center flex-wrap ml-5 h-full">
-        <h4 class="w-full text-center text-purple font-semibold text-2xl">Not performers added yet</h4>
+        <h4 class="w-full text-center text-purple font-semibold text-2xl">No performers added yet</h4>
       </div>
       <div v-if="isShowPerformer && (status == 1 || finalCastState == true || round.length >0)" class=" flex flex-wrap ml-5">
         <div class="col-6">

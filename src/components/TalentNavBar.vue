@@ -43,14 +43,14 @@
       </div>
     <div class="flex items-center border-l border-white text-white ml-auto cursor-pointer login-user-details">
       <span class="mx-4">
-        {{user.details.first_name}} {{user.details.last_name}}
+        {{user.details && user.details.first_name ? user.details.first_name : ''}} {{user.details && user.details.last_name ? user.details.last_name : ''}}
       </span>
       <!-- <i class="material-icons mr-4">
         keyboard_arrow_down
       </i>-->
       <img
-        :src="user.image.url"
-        class="w-12 img-h48"
+        :src="user.image && user.image.url ? user.image.url  : ''"
+        class="w-12 img-h48 object-cover"
         alt="Avatar"
       >
     </div>

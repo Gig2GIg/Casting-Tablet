@@ -22,7 +22,7 @@
       </span>      
       <img
         :src="profile.image ? profile.image.url : ''"
-        class="w-12 img-h48"
+        class="w-12 img-h48 object-cover"
         alt="Avatar"
       >
     </div>
@@ -127,7 +127,7 @@
       <div v-if="audition.online == 1" class="w-1/3 shadow-lg">
         <p class="text-center text-2xl text-purple font-bold">Audition Documents</p>
         <div class="flex flex-wrap justify-center">
-            <div v-if="onlineMedia.length  == 0" class="text-purple font-bold h-full"> Not media added yet</div>
+            <div v-if="onlineMedia.length  == 0" class="text-purple font-bold h-full"> No media added yet</div>
             <carousel
               class="flex flex-col mt-4 w-full"
               :per-page="1"

@@ -37,7 +37,7 @@
       <img
         v-if="profile.image && profile.image.url"
         :src="profile.image.url"
-        class="w-13 img-h48"
+        class="w-13 img-h48 object-cover"
         alt="Avatar"
       >
       </div>

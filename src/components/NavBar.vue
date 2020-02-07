@@ -9,7 +9,7 @@
       </i> -->
       <img
         :src="user.image?user.image.url:''"
-        class="w-12 img-h48"
+        class="w-12 img-h48 object-cover"
         alt="Avatar"
       >
     </div>

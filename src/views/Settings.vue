@@ -14,8 +14,8 @@
           <div class="flex items-center px-3">
             <div class="mr-6">
               <img
-                :src="user.image ? user.image.url : ''"
-                class="h-24 w-24 rounded"
+                v-lazy="user.image && user.image.url ? user.image.url : ''"
+                class="h-24 w-24 rounded object-cover"
                 alt="Logo"
               >
             </div>
@@ -346,12 +346,12 @@
         </div>
       </div>
       <div
-        v-if="tabSelected === 'myinfo'"
+        v-show="tabSelected === 'myinfo'"
         class="tags w-9/12 shadow-md mx-auto px-3 py-3 mt-6"
       >
         <div
           class="cursor-pointer"
-          @click="hideMenuInfo = false; tabSelected = ''"
+          @click="cancelUpdateProfile"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -398,18 +398,37 @@
           <div class="py-4 w-full">
           <div class="flex justify-center items-center px-3 w-full">
             <div class="mr-6">
-              <img
-                :src="user.image.url"
+              <!-- <img
+                :src="user.image && user.image.url ? user.image.url: ''"
                 class="h-24 w-24 rounded"
                 alt="Logo"
+              > -->
+
+              <div
+                class="ml-2 flex items-center cursor-pointer justify-center overflow-hidden h-24 w-24 rounded"
+                @click="$refs.profileFile.click()"
               >
+                <div v-if="!previewProfile && previewProfile != ''" class="flex flex-col flex-no-wrap justify-between">                  
+                  <img src="/images/icons/upload.png" class="h-24 w-24 rounded object-cover" />
+                </div>
+                <img v-else v-lazy="previewProfile" alt="Cover" class="h-24 w-24 rounded object-cover" />
+              </div>
+
+              <input
+                ref="profileFile"
+                accept=".png, .jpg, .jpeg"
+                type="file"
+                hidden
+                @change="handleProfileFile"
+              />
             </div>
+
             <div class="w-6/12 py-8">
               <p class="font-bold">
-                {{ user.details.first_name }} {{ user.details.last_name }}
+                {{ user.details && user.details.first_name ? user.details.first_name : ''}} {{ user.details && user.details.last_name ? user.details.last_name : '' }}
               </p>
               <p class="font-bold">
-                {{ user.details.agency_name }}
+                {{ user.details && user.details.agency_name ? user.details.agency_name : '' }}
               </p>
             </div>
           </div>
@@ -445,6 +464,7 @@
                 v-validate="'required|email'"
                 :custom-classes="['border border-b border-gray-300']"
                 name="email"
+                v-bind:disabled="true"
                 placeholder="Email"
                 :message="errors.first('email')"
               />
@@ -1038,6 +1058,80 @@
     </div>
 
 
+    <modal class="flex flex-col w-full items-center mt-4" :width="1000" height="800" name="modal_crop_image">
+      <div class="content" ng-if="imgSrc">
+        <section class="cropper-area">
+          <div class="img-cropper">
+            <vue-cropper
+              ref="cropper"
+              :aspect-ratio="9/9"
+              :initial-aspect-ratio="1/1"
+              :src="imgSrc"
+              preview=".preview"
+              drag-mode="crop"
+              :minCropBoxWidth="minHeight"
+              :minCropBoxHeight="minWidth"
+              :auto-crop-area="0.5"
+              alt="Profile Picture"
+              :img-style="{ 'width': '400px', 'height': '300px' }"
+            />
+          </div>
+          <div class="actions">            
+            <a
+              href="#"
+              role="button"
+              @click.prevent="cropImage"
+            >
+              Crop
+            </a>
+            <a
+              href="#"
+              role="button"
+              @click.prevent="reset"
+            >
+              Reset
+            </a>            
+            <a
+              href="#"
+              role="button"
+              @click.prevent="showFileChooser"
+            >
+              Upload New Image
+            </a>
+            <a
+              href="#"
+              role="button"
+              @click.prevent="cropImageDone"
+            >
+              Done
+            </a>
+            <a
+              href="#"
+              role="button"
+              @click.prevent="cropImageCancel"
+            >
+              Cancel
+            </a>
+          </div>
+
+          <textarea v-model="data" />
+        </section>
+        <section class="preview-area">
+          <p>Image Preview</p>
+          <div class="preview" />
+          <p>Cropped Image</p>
+          <div class="cropped-image">
+            <img
+              v-if="cropImg"
+              :src="cropImg"
+              alt="Cropped Profile"
+            />
+            <div v-else class="crop-placeholder" />
+          </div>
+        </section>
+      </div>
+    </modal>
+
   </div>
 </template>
 
@@ -1046,8 +1140,17 @@ import axios from "axios";
 import states from "@/utils/states";
 import { mapActions, mapState } from "vuex";
 import DEFINE from '../utils/const.js';
+import VueCropper from 'vue-cropperjs';
+import 'cropperjs/dist/cropper.css';
+import firebase from 'firebase/app';
+import 'firebase/storage';
+import uuid from 'uuid/v1';
+
 
 export default {
+  components: { 
+    VueCropper
+  },
   data() {
     return {
       form: {},
@@ -1060,28 +1163,23 @@ export default {
       listAuditionFeedback: [],
       feedbackText: "",
       cmsContentDetails: {},
-      states
+      states,
+      previewProfile : null,
+      imgSrc : null,
+      updatedImageFile : null,
+      updatedImageBlob : null,
+      cropImg: '',
+      data: null,
+      minHeight : Number(200),
+      minWidth : Number(200),
     };
   },
   async mounted() {
-    await this.fetch();
-    this.user.details;
-    this.form.first_name = this.user.details.first_name;
-    this.form.last_name = this.user.details.last_name;
-    this.form.profesion = this.user.details.profesion;
-    this.form.email = this.user.email;
-    this.form.address = this.user.details.address;
-    this.form.city = this.user.details.city;
-    this.form.zip = this.user.details.zip;
-    this.form.agency_name = this.user.details.agency_name;
-    this.form.gender = this.user.details.gender;
-    this.form.state = this.user.details.state;
-    let birth = new Date(this.user.details.birth);
-    this.form.location = "12,33334 - 23,00000";
-    this.form.image = this.user.image.url;
-    birth.setDate(birth.getDate() + 1);
-    this.form.birth = birth;
-    // debugger;
+    this.getUserData();
+    
+  },
+  async created() {
+    
   },
   watch: {
     tabSelected: {
@@ -1125,13 +1223,51 @@ export default {
         this.$toasted.success(e.response.data.data);
       }
     },
+    async getUserData(){
+      await this.fetch();     
+      this.user.details;
+      this.setUserData(); 
+    },
+    setUserData(){      
+      this.form.first_name = this.user.details.first_name;
+      this.form.last_name = this.user.details.last_name;
+      this.form.profesion = this.user.details.profesion;
+      this.form.email = this.user.email;
+      this.form.address = this.user.details.address;
+      this.form.city = this.user.details.city;
+      this.form.zip = this.user.details.zip;
+      this.form.agency_name = this.user.details.agency_name;
+      this.form.gender = this.user.details.gender;
+      this.form.state = this.user.details.state;
+      let birth = new Date(this.user.details.birth);
+      this.form.location = "12,33334 - 23,00000";
+      this.form.image = this.user.image.url;
+      this.previewProfile = this.form.image;
+      birth.setDate(birth.getDate() + 1);
+      this.form.birth = birth;
+    },
     async updateData() {
       try {
+
+        // upload image
+        if(this.updatedImageBlob && this.updatedImageFile){
+          const imageName = this.updatedImageFile.name;
+          const snapshot = await firebase.storage()
+            .ref(`profileImage/${uuid()}.${imageName.split('.').pop()}`)
+            .put(this.updatedImageBlob);
+
+          this.form.image = await snapshot.ref.getDownloadURL();
+        }
         let action = await axios.put(
           `/t/users/update/${this.user.id}`,
           this.form
         );
         this.$toasted.success("The user data has updated successfully.");
+        this.cropImg = null;
+        this.updatedImageBlob = null;
+        this.updatedImageFile = null;
+        this.getUserData();
+
       } catch (e) {
         console.log(e);
         this.$toasted.error("User data not updated, try later.");
@@ -1156,6 +1292,76 @@ export default {
       } catch (e) {
         console.log(e);
       }
+    },    
+    handleProfileFile(e){
+      const file = e.target.files[0];
+      if (file.type.indexOf('image/') === -1) {
+        this.$toasted.error("Please select an image file");
+        return;
+      }
+      if (typeof FileReader === 'function') {
+        this.cropImg = null;
+        this.updatedImageBlob = null;
+        this.updatedImageFile = file;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          this.imgSrc = event.target.result;
+          // rebuild cropperjs with the updated source
+          if(this.$refs.cropper){           
+            this.$refs.cropper.replace(event.target.result);
+            this.reset();
+          }       
+          this.$modal.show('modal_crop_image');
+          
+        };
+        reader.readAsDataURL(file);
+      } else {
+        this.$toasted.error("Something went to wrong, please try again!");
+      }
+    },
+    cropImage() {
+      // get image data for post processing, e.g. upload or setting image src
+      this.cropImg = this.$refs.cropper.getCroppedCanvas().toDataURL();
+      this.$refs.cropper.getCroppedCanvas().toBlob((blob) => {
+        this.updatedImageBlob = blob;
+      }); 
+    },
+    
+    getData() {
+      this.data = JSON.stringify(this.$refs.cropper.getData(), null, 4);
+    },
+    reset() {
+      this.$refs.cropper.reset();
+      this.cropImg = null;
+    },    
+    showFileChooser() {
+      this.$refs.profileFile.click()
+    },
+    cropImageDone(){
+      if(this.cropImg){
+        this.previewProfile = this.cropImg;
+      }
+      this.imgSrc = null;
+      this.$refs.profileFile.value = '';
+      this.$modal.hide('modal_crop_image');
+    },
+    cropImageCancel(){
+      this.imgSrc = null
+      this.cropImg = null;
+      this.updatedImageBlob = null;
+      this.updatedImageFile = null;
+      this.$refs.profileFile.value = '';
+      this.$modal.hide('modal_crop_image');
+    },
+    cancelUpdateProfile(){      
+      this.hideMenuInfo = false;
+      this.tabSelected = '';
+      this.imgSrc = null
+      this.cropImg = null;
+      this.updatedImageBlob = null;
+      this.updatedImageFile = null;
+      this.$refs.profileFile.value = '';
+      this.setUserData();
     }
   }
 };
@@ -1263,5 +1469,71 @@ input:checked + .slider:before {
 }
 .custom-setting-form .bg-purple-gradient {
     width: 220px !important;
+}
+
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0 5px 0;
+}
+.header h2 {
+  margin: 0;
+}
+.header a {
+  text-decoration: none;
+  color: black;
+}
+.content {
+  display: flex;
+  justify-content: space-between;
+}
+.cropper-area {
+  width: 614px;
+}
+.actions {
+  margin-top: 1rem;
+}
+.actions a {
+  display: inline-block;
+  padding: 5px 15px;
+  background: #782541;
+  color: white;
+  text-decoration: none;
+  border-radius: 3px;
+  margin-right: 1rem;
+  margin-bottom: 1rem;
+}
+textarea {
+  width: 100%;
+  height: 100px;
+}
+.preview-area {
+  width: 307px;
+}
+.preview-area p {
+  font-size: 1.25rem;
+  margin: 0;
+  margin-bottom: 1rem;
+}
+.preview-area p:last-of-type {
+  margin-top: 1rem;
+}
+.preview {
+  width: 100%;
+  height: calc(372px * (9 / 16));
+  overflow: hidden;
+}
+.crop-placeholder {
+  width: 100%;
+  height: 200px;
+  background: #ccc;
+}
+.cropped-image img {
+  max-width: 100%;
+}
+.v--modal-box.v--modal {
+    overflow: auto !important;
 }
 </style>

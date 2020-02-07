@@ -281,7 +281,7 @@
           >
             <p
               class="flex-1 light-purple text-sm font-semibold content-center tracking-tighter flex-1"
-            >Auditions video</p>
+            >Audition Videos</p>
           </div>
         </div>
         <div v-if="audition.status == 2" class="w-full border border-gray-300 mt-6 mb-6" />
