@@ -145,4 +145,16 @@ body, html {
       overflow: auto !important;
 }
 
+.my-info-mdel .v--modal-box.v--modal {
+    top: 110px !important;
+    /* height: calc(100vh - 230px) !important; */
+    min-height: 520px !important;
+}
+.my-info-content{
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;  
+  padding: 20px;
+}
+
 </style>

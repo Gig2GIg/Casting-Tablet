@@ -408,8 +408,8 @@
                 class="ml-2 flex items-center cursor-pointer justify-center overflow-hidden h-24 w-24 rounded"
                 @click="$refs.profileFile.click()"
               >
-                <div v-if="!previewProfile && previewProfile != ''" class="flex flex-col flex-no-wrap justify-between">                  
-                  <img src="/images/icons/upload.png" class="h-24 w-24 rounded object-cover" />
+                <div v-if="!previewProfile && previewProfile != ''" class="flex flex-col flex-no-wrap justify-between">
+                  <img src="/images/icons/upload.png" class="rounded" />
                 </div>
                 <img v-else v-lazy="previewProfile" alt="Cover" class="h-24 w-24 rounded object-cover" />
               </div>
@@ -1058,8 +1058,8 @@
     </div>
 
 
-    <modal class="flex flex-col w-full items-center mt-4" :width="1000" height="800" name="modal_crop_image">
-      <div class="content" ng-if="imgSrc">
+    <modal class="flex flex-col w-full items-center my-info-mdel" :width="1000" name="modal_crop_image">
+      <div class="content my-info-content" ng-if="imgSrc">
         <section class="cropper-area">
           <div class="img-cropper">
             <vue-cropper
