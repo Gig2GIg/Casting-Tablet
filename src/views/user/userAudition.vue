@@ -374,7 +374,7 @@
       <img
         :src="data.image"
         alt="Icon"
-        class="-ml-3 h-300"
+        class="-ml-3 h-300 object-cover"
       >
       <p class="text-purple text-xl font-bold mt-4 w-full">{{data.name}}</p>
       <p class="text-purple text-m font-bold mt-2 w-full">{{performerDetails.details && performerDetails.details.city ? performerDetails.details.city : ""}}</p>

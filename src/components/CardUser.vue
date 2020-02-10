@@ -8,7 +8,7 @@
         class="h-32"
         alt="Image"
       > -->
-      <img v-lazy="image"  class="h-32" alt="Image" >
+      <img v-lazy="image"  class="h-32 object-cover" alt="Image" >
 
       <div
         class="flex flex-col justify-center px-4 py-2 w-32"
