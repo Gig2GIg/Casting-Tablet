@@ -25,6 +25,36 @@
             Mark as Walk-In Appointment
           </p>
         </div>
+        <div class="flex items-center justify-around px-8" v-if="appointments.slots && appointments.slots.length > 0">
+            <div class="flex items-center justify-around px-8" >
+              <p class="text-purple text-lg w-24">
+                Select All
+              </p>
+            </div>
+            <div
+            class="w-10 h-10 flex justify-center items-center rounded-full border border-purple cursor-pointer ml-4 mt-3"            
+            :class="{ 'bg-purple': checkAll }"
+            @click="checkedSlotManage"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="21.182"
+              height="15.893"
+              viewBox="0 0 21.182 15.893"
+            >
+              <path
+                id="Path_3054"
+                data-name="Path 3054"
+                d="M17717.283,10215.319l6.916,6.856,10.027-11.582"
+                transform="translate(-17715.162 -10208.479)"
+                fill="none"
+                stroke="#fff"
+                stroke-linecap="round"
+                stroke-width="3"
+              />
+            </svg>
+          </div>
+        </div>
         <ul class="h-full pb-24 overflow-y-scroll">
           <SlotItem
             v-for="(slot, index) in appointments.slots"
@@ -155,6 +185,7 @@ export default {
   data() {
     return {
       appointments: {},
+      checkAll : false
     };
   },
   created() {
@@ -175,7 +206,6 @@ export default {
       for (let i = 0; i < spaces; i++) {
         let isWalk = i >= checkedCount  ? true : false;
         this.appointments.slots.push({        
-          index : i,
           time: counter,          
           number: this.appointments.type == 1 ? null : i + 1,
           status: false,
@@ -202,6 +232,13 @@ export default {
     },
     getSlotsCheckedCount(spaces){
       return parseInt(spaces - Math.floor(spaces/3));
+    },
+    checkedSlotManage(e){
+      this.checkAll = !this.checkAll;      
+      this.appointments.slots.map(value=>{
+        value.is_walk = this.checkAll;
+        return value;
+      });
     },
     handleDone() {
       if (!parseInt(this.appointments.spaces)) {

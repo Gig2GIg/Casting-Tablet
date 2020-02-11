@@ -118,6 +118,36 @@
             Mark as Walk-In Appointment
           </p>
         </div>
+        <div class="flex items-center justify-around px-8 mt-2" v-if="appointments.slots && appointments.slots.length > 0">
+            <div class="flex items-center justify-around px-8" >
+              <p class="text-purple text-lg w-24">
+                Select All
+              </p>
+            </div>
+            <div
+            class="w-10 h-10 flex justify-center items-center rounded-full border border-purple cursor-pointer mt-3 check-all-margin-left"            
+            :class="{ 'bg-purple': checkAll }"
+            @click="checkedSlotManage"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="21.182"
+              height="15.893"
+              viewBox="0 0 21.182 15.893"
+            >
+              <path
+                id="Path_3054"
+                data-name="Path 3054"
+                d="M17717.283,10215.319l6.916,6.856,10.027-11.582"
+                transform="translate(-17715.162 -10208.479)"
+                fill="none"
+                stroke="#fff"
+                stroke-linecap="round"
+                stroke-width="3"
+              />
+            </svg>
+          </div>
+        </div>
         <ul class="h-full pb-24 overflow-y-scroll">
           <SlotItem
             v-for="(slot, index) in appointments.slots"
@@ -263,7 +293,7 @@ export default {
         length: 10,
         start: '08:00',
         end: '',
-        slots: [],
+        slots: [],        
       }),
     },
   },
@@ -294,7 +324,8 @@ export default {
       markers: [],
       places: [],
       currentPlace: null,
-      fullPage : true
+      fullPage : true,
+      checkAll : false
     };
   },
   watch: {
@@ -350,6 +381,13 @@ export default {
     },
     getSlotsCheckedCount(spaces){
       return parseInt(spaces - Math.floor(spaces/3));
+    },
+    checkedSlotManage(e){
+      this.checkAll = !this.checkAll;      
+      this.appointments.slots.map(value=>{
+        value.is_walk = this.checkAll;
+        return value;
+      });
     },
     openLocationModel() {
         this.$modal.show("location_model");
@@ -501,5 +539,8 @@ button {
 .location-icon {background-image: url('../../../public/images/icons/location-icon.svg');background-repeat: no-repeat;background-position: right 12px top 14px;}
 .location-close-button {
   background: transparent;
+}
+.check-all-margin-left{
+  margin-right: -58px !important;
 }
 </style>
