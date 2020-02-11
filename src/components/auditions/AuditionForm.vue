@@ -472,6 +472,81 @@
                 @destroy="handleDeleteRole"
                 @close="manageRoles = false"
         />
+        <!-- Cover image crop modal -->
+        <modal class="flex flex-col w-full items-center my-info-mdel" :width="1000" name="modal_crop_image">
+            <div class="content my-info-content" ng-if="imgSrc">
+                <section class="cropper-area">
+                <div class="img-cropper">
+                    <vue-cropper
+                    ref="cropper"
+                    :aspect-ratio="14/12"
+                    :initial-aspect-ratio="2/1"
+                    :src="imgSrc"
+                    preview=".preview"
+                    drag-mode="crop"
+                    :minCropBoxWidth="minHeight"
+                    :minCropBoxHeight="minWidth"
+                    :auto-crop-area="0.5"
+                    alt="Profile Picture"
+                    :img-style="{ 'width': '400px', 'height': '300px' }"
+                    />
+                </div>
+                <div class="actions">            
+                    <a
+                    href="#"
+                    role="button"
+                    @click.prevent="cropImage"
+                    >
+                    Crop
+                    </a>
+                    <a
+                    href="#"
+                    role="button"
+                    @click.prevent="reset"
+                    >
+                    Reset
+                    </a>            
+                    <a
+                    href="#"
+                    role="button"
+                    @click.prevent="showFileChooser"
+                    >
+                    Upload New Image
+                    </a>
+                    <a
+                    href="#"
+                    role="button"
+                    @click.prevent="cropImageDone"
+                    >
+                    Done
+                    </a>
+                    <a
+                    href="#"
+                    role="button"
+                    @click.prevent="cropImageCancel"
+                    >
+                    Cancel
+                    </a>
+                </div>
+
+                <textarea v-model="data" />
+                </section>
+                <section class="preview-area">
+                <p>Image Preview</p>
+                <div class="preview" />
+                <p>Cropped Image</p>
+                <div class="cropped-image">
+                    <img
+                    v-if="cropImg"
+                    :src="cropImg"
+                    alt="Cropped Profile"
+                    />
+                    <div v-else class="crop-placeholder" />
+                </div>
+                </section>
+            </div>
+        </modal>
+            
     </form>
 </template>
 
@@ -508,6 +583,10 @@
         }
     });
 
+    import VueCropper from 'vue-cropperjs';
+    import 'cropperjs/dist/cropper.css';
+
+
     export default {
         name: "AuditionForm",
         components: {
@@ -516,7 +595,8 @@
             ContributorItem,
             DocumentItem,
             Loading,
-            VueClockPicker
+            VueClockPicker,
+            VueCropper
         },
         data() {
             return {
@@ -624,7 +704,14 @@
                 center: {lat: 45.508, lng: -73.587},
                 markers: [],
                 places: [],
-                currentPlace: null
+                currentPlace: null,
+                imgSrc : null,
+                updatedImageFile : null,
+                updatedImageBlob : null,
+                cropImg: '',
+                data: null,
+                minHeight : Number(192),
+                minWidth : Number(328),
             };
         },
         watch: {
@@ -723,12 +810,30 @@
 
             handleCoverFile(e) {
                 const file = e.target.files[0];
+                if (file.type.indexOf('image/') === -1) {
+                    this.$toasted.error("Please select an image file");
+                    return;
+                }
+                if (typeof FileReader === 'function') {
+                    this.cropImg = null;
+                    this.updatedImageBlob = null;
+                    this.updatedImageFile = file;
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                    this.imgSrc = event.target.result;
+                    // rebuild cropperjs with the updated source
+                    if(this.$refs.cropper){           
+                        this.$refs.cropper.replace(event.target.result);
+                        this.reset();
+                    }       
+                    this.$modal.show('modal_crop_image');
+                    
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    this.$toasted.error("Something went to wrong, please try again!");
+                }
 
-                this.previewCover = URL.createObjectURL(file);
-                this.form.cover = file;
-                this.form.cover_name = file.name;
-
-                this.$refs.coverFile.value = "";
             },
 
             onCancel() {
@@ -763,6 +868,14 @@
                     if(this.form.dates[1].from && !this.form.dates[1].to){
                         this.$toasted.error("The rehearsal end date field is required.");
                         return;
+                    }
+
+                    if(this.updatedImageBlob && this.updatedImageFile){
+                        this.updatedImageBlob.name = this.updatedImageFile.name;
+                        this.form.cover = this.updatedImageBlob;
+                        this.form.cover_name = this.updatedImageFile.name;
+                    } else {
+                        this.form.cover = null;
                     }
 
                     if (!this.form.cover) {
@@ -900,6 +1013,46 @@
             },
             imgUrlAlt(event) {
                 event.target.src = DEFINE.role_placeholder;
+            },            
+            cropImage() {
+                // get image data for post processing, e.g. upload or setting image src
+                this.cropImg = this.$refs.cropper.getCroppedCanvas().toDataURL();
+                this.$refs.cropper.getCroppedCanvas().toBlob((blob) => {
+                    this.updatedImageBlob = blob;
+                }); 
+            },    
+            reset() {
+                this.$refs.cropper.reset();
+                this.cropImg = null;
+            },    
+            showFileChooser() {
+                this.$refs.coverFile.click()
+            },
+            cropImageDone(){
+                if(this.cropImg){
+                    this.previewCover = this.cropImg;
+                }
+                this.imgSrc = null;
+                this.$refs.coverFile.value = '';
+                this.$modal.hide('modal_crop_image');
+            },
+            cropImageCancel(){
+                this.imgSrc = null
+                this.cropImg = null;
+                this.updatedImageBlob = null;
+                this.updatedImageFile = null;
+                this.$refs.coverFile.value = '';
+                this.$modal.hide('modal_crop_image');
+            },
+            cancelUpdateProfile(){      
+                this.hideMenuInfo = false;
+                this.tabSelected = '';
+                this.imgSrc = null
+                this.cropImg = null;
+                this.updatedImageBlob = null;
+                this.updatedImageFile = null;
+                this.$refs.coverFile.value = '';
+                this.setUserData();
             }
         }
     };
@@ -931,4 +1084,73 @@
     .VueCarousel-navigation-button{
         color: #592543!important;
     }
+/** cropper image modal style */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0 5px 0;
+}
+.header h2 {
+  margin: 0;
+}
+.header a {
+  text-decoration: none;
+  color: black;
+}
+.content {
+  display: flex;
+  justify-content: space-between;
+}
+.cropper-area {
+  width: 614px;
+}
+.actions {
+  margin-top: 1rem;
+}
+.actions a {
+  display: inline-block;
+  padding: 5px 15px;
+  background: #782541;
+  color: white;
+  text-decoration: none;
+  border-radius: 3px;
+  margin-right: 1rem;
+  margin-bottom: 1rem;
+}
+textarea {
+  width: 100%;
+  height: 100px;
+}
+.preview-area {
+  width: 307px;
+}
+.preview-area p {
+  font-size: 1.25rem;
+  margin: 0;
+  margin-bottom: 1rem;
+  color: #782541;
+}
+.preview-area p:last-of-type {
+  margin-top: 1rem;
+}
+.preview {
+  width: 100%;
+  height: calc(372px * (9 / 16));
+  overflow: hidden;
+}
+.crop-placeholder {
+  width: 100%;
+  height: 200px;
+  background: #ccc;
+}
+.cropped-image img {
+  max-width: 100%;
+}
+.v--modal-box.v--modal {
+    overflow: auto !important;
+}
+.cropper-area>textarea{
+  display: none;
+}
 </style>

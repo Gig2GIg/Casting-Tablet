@@ -1325,11 +1325,7 @@ export default {
       this.$refs.cropper.getCroppedCanvas().toBlob((blob) => {
         this.updatedImageBlob = blob;
       }); 
-    },
-    
-    getData() {
-      this.data = JSON.stringify(this.$refs.cropper.getData(), null, 4);
-    },
+    },    
     reset() {
       this.$refs.cropper.reset();
       this.cropImg = null;
@@ -1535,5 +1531,8 @@ textarea {
 }
 .v--modal-box.v--modal {
     overflow: auto !important;
+}
+.cropper-area>textarea{
+  display: none;
 }
 </style>
