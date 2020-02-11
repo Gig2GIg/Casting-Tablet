@@ -320,13 +320,15 @@ export default {
       let counter = this.appointments.start;
 
       this.appointments.slots = [];
+      let checkedCount = this.getSlotsCheckedCount(spaces);
 
       for (let i = 0; i < spaces; i++) {
+        let isWalk = i >= checkedCount  ? true : false;
         this.appointments.slots.push({
           time: counter,
           number: this.appointments.type == 1 ? null : i + 1,
           status: false,
-          is_walk: false,
+          is_walk: isWalk,
         });
 
         const pivot = counter.split(':');
@@ -345,6 +347,9 @@ export default {
       }
 
       this.appointments.end = this.appointments.slots.length ? counter : '';
+    },
+    getSlotsCheckedCount(spaces){
+      return parseInt(spaces - Math.floor(spaces/3));
     },
     openLocationModel() {
         this.$modal.show("location_model");

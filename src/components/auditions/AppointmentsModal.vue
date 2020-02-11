@@ -171,14 +171,17 @@ export default {
       let counter = this.appointments.start;
 
       this.appointments.slots = [];
-
+      let checkedCount = this.getSlotsCheckedCount(spaces);
       for (let i = 0; i < spaces; i++) {
-        this.appointments.slots.push({
-          time: counter,
+        let isWalk = i >= checkedCount  ? true : false;
+        this.appointments.slots.push({        
+          index : i,
+          time: counter,          
           number: this.appointments.type == 1 ? null : i + 1,
           status: false,
-          is_walk: false,
+          is_walk: isWalk
         });
+        
 
         const pivot = counter.split(':');
         let hour = parseInt(pivot[0], 10);
@@ -192,12 +195,14 @@ export default {
           minutes = minutes === 60 ? 0 : (minutes - 60);
         }
 
-        counter = `${hour < 10 ? `0${hour}` : hour}:${minutes < 10 ? `0${minutes}` : minutes}`;
+        counter = `${hour < 10 ? `0${hour}` : hour}:${minutes < 10 ? `0${minutes}` : minutes}`;        
       }
 
       this.appointments.end = this.appointments.slots.length ? counter : '';
     },
-
+    getSlotsCheckedCount(spaces){
+      return parseInt(spaces - Math.floor(spaces/3));
+    },
     handleDone() {
       if (!parseInt(this.appointments.spaces)) {
         return;

@@ -301,7 +301,7 @@
     <div class="flex">
       <base-input
         v-model="form.phone"
-        v-validate="'required|max:255'"
+        v-validate="'max:255'"
         name="phone"
         v-mask="'(###) ###-####'"
         class="w-1/3 px-2"
@@ -311,7 +311,7 @@
       />
       <base-input
         v-model="form.email"
-        v-validate="'required|email'"
+        v-validate="'email'"
         name="email"
         class="w-1/3 px-2"
         placeholder="Email"
@@ -320,7 +320,7 @@
       />
       <base-input
         v-model="form.other_info"
-        v-validate="'required|max:255'"
+        v-validate="'max:255'"
         name="other_info"
         class="w-1/3 px-2"
         placeholder="Other"
