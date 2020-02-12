@@ -736,6 +736,7 @@ export default {
     date.setDate(date.getDate() + 1);
     this.form.date = date;
     this.form.time = this.audition.time;
+    
     this.form.description = this.audition.description;
     this.form.personal_information = this.audition.personal_information;
     this.form.additional_info = this.audition.additional_info;
@@ -743,11 +744,17 @@ export default {
     this.form.email = this.audition.email;
     this.form.other_info = this.audition.other_info;
     this.form.url = this.audition.url;
-    this.form.dates = this.audition.dates.length ? this.audition.dates : [{"from":"", "to":""},{"from":"", "to":""}];
+    this.form.dates = this.audition.dates.length ? this.audition.dates : [{"from":'', "to":''},{"from":'', "to":''}];
     this.form.online = this.audition.online && this.audition.online == 1 ? true : false;
     this.form.appointment = this.audition.apointment.general;
+
     this.form.appointment.type = this.form.appointment.type == "time" ? 1 : 2;
-    this.form.appointment.spaces = this.form.appointment.slots;
+    this.form.appointment.spaces = this.audition.apointment.slots.length;
+    this.form.appointment.slots = this.audition.apointment.slots;
+    this.form.appointment.slots.map(slot=>{
+      slot.is_walk = slot.is_walk == 1 ? true : false;
+      return slot;
+    })    
     this.changeLocationBtnTxt = true;
     this.union_status.map(items => {
       if (items.value == this.audition.union) {
@@ -781,10 +788,10 @@ export default {
 
 
 
-    this.form.dates.map(function(values) {
-      console.log("========================");
-      console.log(values);
-      console.log("========================");
+    this.form.dates.map(function(values) {    
+      // console.log("========================");
+      // console.log(values);
+      // console.log("========================");
       let start = new Date(values.from);
       start.setDate(start.getDate() + 1);
       values.from = start;
@@ -792,7 +799,7 @@ export default {
       let end = new Date(values.to);
       end.setDate(end.getDate() + 1);
       values.to = end;
-    });
+    });    
     this.form.media = this.audition.media;
     this.form.roles = this.audition.roles;
     this.form.contributors = this.audition.contributors;
@@ -994,7 +1001,9 @@ export default {
           .join(",");
 
         this.audition.apointment.general.time = this.form.time
-        data.appointment = [this.audition.apointment];
+        // data.appointment = [this.audition.apointment];
+        delete data.appointment; // delete appoiment due to it's read only same as casting tablet
+        
         // debugger;
         if (this.selectedLocation) {
           data.location = {
@@ -1005,7 +1014,7 @@ export default {
           };
         }
 
-        
+
         // Upload cover
         if (data.cover != undefined && data.cover) {
           coverSnapshot = await firebase
@@ -1030,8 +1039,9 @@ export default {
 
               rolesSnapshots.push(snapshot);
             } else {
-              role.cover = role.image.url;
+              role.cover = role.image && role.image.url ? role.image.url : role.cover;
             }
+            delete role.image;
           })
         );
 

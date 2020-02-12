@@ -31,6 +31,7 @@
             :key="index"
             v-model="slot.is_walk"
             :data="slot"
+            :is-readonly="true"  
           />
         </ul>
       </div>
@@ -45,6 +46,7 @@
             placeholder="0"
             class="w-full slots-input py-3 h-57 px-4 text-xl text-purple font-bold rounded-full border border-purple "
             @input="makeSlots"
+            readonly
           >
           <span class="appointment-label top-0 w-2/3 text-center right-0 absolute text-white rounded-r-full py-3 text-xl px-4 border border-transparent">
             Appointments 
@@ -59,7 +61,9 @@
           class="w-full"
           :custom-classes="['border border-purple']"
           @input="makeSlots"
+          :is-readonly="true"  
         >
+        
           <option value="1">
             Time
           </option>
@@ -76,6 +80,7 @@
           class="w-full"
           :custom-classes="['border border-purple']"
           @input="makeSlots"
+          :is-readonly="true"  
         >
           <option value="10">
             10 minutes
@@ -107,6 +112,7 @@
           class="w-full"
           :custom-classes="['border', 'border-purple']"
           @input="makeSlots"
+          readonly
         />
 
         <p class="pt-5 text-purple">
@@ -159,35 +165,35 @@ export default {
         return;
       }
 
-      const spaces = parseInt(this.appointments.spaces);
-      let counter = this.appointments.start;
+      // const spaces = parseInt(this.appointments.spaces);
+      // let counter = this.appointments.start;
 
-      this.appointments.slots = [];
+      // this.appointments.slots = [];
 
-      for (let i = 0; i < spaces; i++) {
-        this.appointments.slots.push({
-          time: counter,
-          number: this.appointments.type == 1 ? null : i + 1,
-          status: false,
-          is_walk: false,
-        });
+      // for (let i = 0; i < spaces; i++) {
+      //   this.appointments.slots.push({
+      //     time: counter,
+      //     number: this.appointments.type == 1 ? null : i + 1,
+      //     status: false,
+      //     is_walk: false,
+      //   });
 
-        const pivot = counter.split(':');
-        let hour = parseInt(pivot[0], 10);
-        let minutes = parseInt(pivot[1], 10);
-        minutes += parseInt(this.appointments.length, 10);
-        if (minutes >= 60) {
-          hour += 1;
-          if (hour >= 24) {
-            hour = '0';
-          }
-          minutes = minutes === 60 ? 0 : (minutes - 60);
-        }
+      //   const pivot = counter.split(':');
+      //   let hour = parseInt(pivot[0], 10);
+      //   let minutes = parseInt(pivot[1], 10);
+      //   minutes += parseInt(this.appointments.length, 10);
+      //   if (minutes >= 60) {
+      //     hour += 1;
+      //     if (hour >= 24) {
+      //       hour = '0';
+      //     }
+      //     minutes = minutes === 60 ? 0 : (minutes - 60);
+      //   }
 
-        counter = `${hour < 10 ? `0${hour}` : hour}:${minutes < 10 ? `0${minutes}` : minutes}`;
-      }
+      //   counter = `${hour < 10 ? `0${hour}` : hour}:${minutes < 10 ? `0${minutes}` : minutes}`;
+      // }
 
-      this.appointments.end = this.appointments.slots.length ? counter : '';
+      // this.appointments.end = this.appointments.slots.length ? counter : '';
     },
 
     handleDone() {

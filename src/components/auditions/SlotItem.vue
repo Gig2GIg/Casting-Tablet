@@ -19,7 +19,7 @@
       <div
         class="w-10 h-10 flex justify-center items-center rounded-full border border-purple cursor-pointer"
         :class="{ 'bg-purple': value }"
-        @click="$emit('input', !value)"
+        @click="!isReadonly ? $emit('input', !value) : ''"        
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -51,6 +51,10 @@ export default {
       required: true,
     },
     value: Boolean,
+    isReadonly :{
+      type: Boolean,
+      default: false,
+    }
   },
 };
 </script>

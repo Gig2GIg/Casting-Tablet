@@ -6,6 +6,7 @@
       class="text-purple font-bold tracking-wide rounded-full overflow-hidden w-full h-full my-2 py-3 px-6"
       :class="[...customClasses]"
       v-bind="$attrs"
+      :disabled="isReadonly"
     >
       <option
         v-if="computedValue == null"
@@ -49,6 +50,10 @@ export default {
       type: Array,
       default: () => [],
     },
+    isReadonly :{
+      type: Boolean,
+      default: false,
+    }
   },
   data() {
     return {
