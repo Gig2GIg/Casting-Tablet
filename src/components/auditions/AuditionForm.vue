@@ -224,6 +224,7 @@
             <!-- v-validate="'required|max:500'" -->
             <base-input
                     v-model="form.additional_info"
+                    v-validate="'max:500'"
                     name="additional_info"
                     class="px-2 w-full h-40"
                     type="textarea"
@@ -247,6 +248,7 @@
                     :custom-classes="['border', 'border-purple']"
                     :message="errors.first('create.contract_start_date')"
                     data-vv-as="start date"
+                    @input="handleChangeDates('contract')"
             />
             <!-- v-validate="'required'" -->
             <base-input
@@ -259,6 +261,7 @@
                     :custom-classes="['border', 'border-purple']"
                     :message="errors.first('create.contract_end_date')"
                     data-vv-as="end date"
+                    @input="handleChangeDates('contract')"
             />
         </div>
         <div class="flex w-full">
@@ -273,6 +276,7 @@
                     :custom-classes="['border', 'border-purple']"
                     :message="errors.first('create.rehearsal_start_date')"
                     data-vv-as="start date"
+                    @input="handleChangeDates('rehearsal')"
             />
             <!-- v-validate="'required'" -->
             <base-input
@@ -285,6 +289,7 @@
                     :custom-classes="['border', 'border-purple']"
                     :message="errors.first('create.rehearsal_end_date')"
                     data-vv-as="end date"
+                    @input="handleChangeDates('rehearsal')"
             />
         </div>
 
@@ -586,6 +591,7 @@
     import VueCropper from 'vue-cropperjs';
     import 'cropperjs/dist/cropper.css';
 
+    import moment from "moment";
 
     export default {
         name: "AuditionForm",
@@ -801,6 +807,7 @@
                             name: file.name,
                             type: 1,
                             url: file,
+                            file: file,
                             share: "yes"
                         });
                     });
@@ -848,37 +855,62 @@
             handleLocation(place) {
                 this.selectedLocation = place;
             },
+            handleChangeDates(type){
+                if(type == 'contract'){
+                    if(moment(this.form.dates[0].from).isAfter(this.form.dates[0].to,'day')){                    
+                    this.form.dates[0].to = '';
+                    }
+                } else if(type == 'rehearsal'){
+                    if(moment(this.form.dates[1].from).isAfter(this.form.dates[1].to,'day')){
+                    this.form.dates[1].to = '';
+                    }
+                }
+            },
 
             async handleCreate() {
                 // console.log("TCL: handleCreate -> this.form", this.form)
                 let coverSnapshot = null,
                     rolesSnapshots = [],
                     filesSnaphosts = [];
-
+                this.$toasted.clear();
                 try {
                     if (this.isLoading) {
                         return;
                     }
-
-                    if(this.form.dates[0].from && !this.form.dates[0].to){
+                    
+                    if(moment.isDate(this.form.dates[0].from) && !moment.isDate(this.form.dates[0].to)){
                         this.$toasted.error("The contract end date field is required.");
                         return;
                     }
 
-                    if(this.form.dates[1].from && !this.form.dates[1].to){
+                    if(moment.isDate(this.form.dates[1].from) && !moment.isDate(this.form.dates[1].to)){
                         this.$toasted.error("The rehearsal end date field is required.");
+                        return;
+                    }
+
+                    if(!moment.isDate(this.form.dates[0].from) && moment.isDate(this.form.dates[0].to)){
+                        this.$toasted.error("The contract from date field is required.");
+                        return;
+                    }
+
+                    if(!moment.isDate(this.form.dates[1].from) && moment.isDate(this.form.dates[1].to)){
+                        this.$toasted.error("The rehearsal from date field is required.");
+                        return;
+                    }
+                    if(this.form.roles.length == 0){
+                        this.$toasted.error("Please add at least one role.");
                         return;
                     }
 
                     if(this.updatedImageBlob && this.updatedImageFile){
                         this.updatedImageBlob.name = this.updatedImageFile.name;
-                        this.form.cover = this.updatedImageBlob;
+                        this.form.cover_file = this.updatedImageBlob;
                         this.form.cover_name = this.updatedImageFile.name;
                     } else {
-                        this.form.cover = null;
+                        this.form.cover_file = null;
                     }
 
-                    if (!this.form.cover) {
+                    if (!this.form.cover_file) {
                         this.$toasted.error("The cover field is required.");
                         return;
                     }
@@ -895,7 +927,12 @@
                             slots: null
                         }
                         : this.form.appointment;
-                    const data = Object.assign({}, this.form);
+                    if (!this.form.appointment) {
+                        this.$toasted.error("The appointments are required.");
+                        return;
+                    }
+
+                    let data = Object.assign({}, this.form);
                     this.isLoading = true;
                     data.union = this.union_status.find(x => x.selected).value;
                     data.contract = this.contract_types.find(x => x.selected).key;
@@ -915,35 +952,35 @@
                     coverSnapshot = await firebase
                         .storage()
                         .ref(`temp/${uuid()}.${data.cover_name.split(".").pop()}`)
-                        .put(data.cover);
+                        .put(data.cover_file);
 
-                    data.cover = await coverSnapshot.ref.getDownloadURL();
+                    data.cover = await coverSnapshot.ref.getDownloadURL();                    
 
                     // Upload roles
                     await Promise.all(
-                        data.roles.map(async role => {
-                            if (role.cover != undefined) {
+                        data.roles.map(async role => {                        
+                            if (role.cover_file != undefined) {
                                 const snapshot = await firebase
                                     .storage()
                                     .ref(`temp/${uuid()}.${role.name_cover.split(".").pop()}`)
-                                    .put(role.cover);
+                                    .put(role.cover_file);
 
                                 role.cover = await snapshot.ref.getDownloadURL();
 
                                 rolesSnapshots.push(snapshot);
                             }
                         })
-                    );
+                    );                    
 
                     // Upload files
                     await Promise.all(
-                        data.media.map(async media => {
+                        data.media.map(async Media => {                        
                             const snapshot = await firebase
                                 .storage()
-                                .ref(`temp/${uuid()}.${media.name.split(".").pop()}`)
-                                .put(media.url);
+                                .ref(`temp/${uuid()}.${Media.name.split(".").pop()}`)
+                                .put(Media.file);
 
-                            media.url = await snapshot.ref.getDownloadURL();
+                            Media.url = await snapshot.ref.getDownloadURL();
 
                             filesSnaphosts.push(snapshot);
                         })
@@ -959,7 +996,8 @@
                 } catch (e) {
                     console.log(e);
                     this.isLoading = false;
-                    this.$toasted.error("Audition not created, try later.");
+                    let errorMsg = e.response && e.response.data && e.response.data.errors ? this.$options.filters.getErrorMsg(e.response.data.errors) : null;
+                    this.$toasted.error(errorMsg ? errorMsg : "Audition not created, try later.");
                     coverSnapshot && coverSnapshot.ref.delete();
                     await Promise.all(rolesSnapshots.map(role => role.ref.delete()));
                     await Promise.all(filesSnaphosts.map(file => file.ref.delete()));

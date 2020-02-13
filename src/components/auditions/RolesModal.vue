@@ -230,7 +230,7 @@ export default {
     handleImage(e) {
       const file = e.target.files[0];
 
-      this.form.cover = file;
+      this.form.cover_file = file;
       this.form.name_cover = file.name;
       this.preview = URL.createObjectURL(file);
       this.form.preview = this.preview;

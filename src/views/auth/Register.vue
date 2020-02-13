@@ -416,8 +416,7 @@ export default {
             this.onRegisterSuccessRedirect();
           } else {
             let errorMsg = this.$options.filters.getErrorMsg(e.response.data.errors);
-            this.$toasted.error(errorMsg ? errorMsg : e.response.data.message);
-            this.$setErrorsFromLaravel(e.response.data);
+            this.$toasted.error(errorMsg ? errorMsg : e.response.data.message);            
           }
       } finally {
         this.isLoading = false;

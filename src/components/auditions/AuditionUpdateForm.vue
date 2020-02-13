@@ -89,12 +89,11 @@
         :message="errors.first('create.date')"
       />
       <template>
-          <div class="relative h-12 my-2">
+          <div class="relative h-12 my-2" v-if="isSetTime">
               <vue-clock-picker
                   mode="24"
-                  v-bind='{ defaultTimeHour, defaultTimeMinute }'
-                  :defaultHour="defaultTimeHour"
-                  :defaultMinute="defaultTimeMinute"
+                  :default-hour="defaultTimeHour"            
+                  :default-minute="defaultTimeMinute"
                   class="cus-des-timepicker px-2 text-left"
                   :onTimeChange="timeChangeHandler"
                   :defaultFocused="false"
@@ -105,18 +104,18 @@
                   theme="material"
               >
               </vue-clock-picker>
-          </div>
+          </div>          
+          <base-input 
+            v-if="!isSetTime"
+            v-model="form.time"
+            name="time"
+            class="w-1/3 px-2"
+            placeholder="Time"
+            :custom-classes="['border', 'border-purple']"
+            :message="errors.first('create.time')"              
+          />                       
       </template>
-      <!-- <base-input
-        v-model="form.time"
-        v-validate="'required'"
-        name="time"
-        class="w-1/3 px-2"
-        type="time"
-        placeholder="Time"
-        :custom-classes="['border', 'border-purple']"
-        :message="errors.first('create.time')"
-      /> -->
+
       <button
               class="w-1/3 location-icon border border-purple rounded-full h-full py-3 px-6 h-12 my-2 text-left text-purple"
               v-validate="'required'"
@@ -221,7 +220,7 @@
     <div class="flex w-full">
       <!-- v-model="form.additional_info" -->
       <base-input
-        v-validate="'required|max:500'"
+        v-validate="'max:500'"
         name="additional_info"
         class="px-2 w-full h-40"
         type="textarea"
@@ -236,7 +235,7 @@
     <div class="flex w-full">
       <!-- v-validate="'required'" -->
       <base-input
-        v-model="form.dates[0].from"
+        v-model="form_dates[0].from"
         name="contract_start_date"
         class="w-1/2 px-2"
         type="date"
@@ -245,14 +244,15 @@
         :custom-classes="['border', 'border-purple']"
         :message="errors.first('create.contract_start_date')"
         data-vv-as="start date"
+        @input="handleChangeDates('contract')"
       />
       <!-- v-validate="'required'" -->
       <base-input
-        v-model="form.dates[0].to"
+        v-model="form_dates[0].to"
         name="contract_end_date"
         class="w-1/2 px-2"
         type="date"
-        :mindate="form.dates[0].from"
+        :mindate="form_dates[0].from ? form_dates[0].from : null"
         placeholder="Contract End Date"
         :custom-classes="['border', 'border-purple']"
         :message="errors.first('create.contract_end_date')"
@@ -262,7 +262,7 @@
     <div class="flex w-full">
       <!-- v-validate="'required'" -->
       <base-input
-        v-model="form.dates[1].from"
+        v-model="form_dates[1].from"
         :mindate="new Date()"
         name="rehearsal_start_date"
         class="w-1/2 px-2"
@@ -271,11 +271,12 @@
         :custom-classes="['border', 'border-purple']"
         :message="errors.first('create.rehearsal_start_date')"
         data-vv-as="start date"
+        @input="handleChangeDates('rehearsal')"
       />
       <!-- v-validate="'required'" -->
       <base-input
-        v-model="form.dates[1].to"
-        :mindate="form.dates[1].from"
+        v-model="form_dates[1].to"
+        :mindate="form_dates[1].from ? form_dates[1].from : null"
         name="rehearsal_end_date"
         class="w-1/2 px-2"
         type="date"
@@ -574,7 +575,9 @@ import { setTimeout } from 'timers';
 import DEFINE from '../../utils/const.js';
 import VueCropper from 'vue-cropperjs';
 import 'cropperjs/dist/cropper.css';
-  
+
+import moment from "moment";
+
 Vue.use(VueGoogleMaps, {
   load: {
     key: DEFINE.google.key,
@@ -595,8 +598,9 @@ export default {
   },
   data() {
     return {
-      defaultTimeHour: '0',
-      defaultTimeMinute: '0',
+      defaultTimeHour: 0,
+      defaultTimeMinute: 0,
+      isSetTime : false,
       innerWidth: window.innerWidth,
       manageAppointments: false,
       manageInvitations: false,
@@ -611,6 +615,18 @@ export default {
         adding: false,
         email: ""
       },
+      form_dates: [
+          {
+            to: '',
+            from: '',
+            type: 'contract'
+          },
+          {
+            to: '',
+            from: '',
+            type: 'rehearsal'
+          }
+      ],
       form: {
         dates: [
           {
@@ -722,8 +738,8 @@ export default {
   watch: {
     audition: function() {
       let timeArr = this.audition && this.audition.time ? this.audition.time.split(":") : [];
-      this.defaultTimeHour = parseInt(timeArr[0] ? timeArr[0] : '0');
-      this.defaultTimeMinute = parseInt(timeArr[1] ? timeArr[1] : '0');
+      this.defaultTimeHour = parseInt(timeArr[0] ? timeArr[0] : 0);      
+      this.defaultTimeMinute = parseInt(timeArr[1] ? timeArr[1] : 0);
     }
   },
   created() {
@@ -731,86 +747,85 @@ export default {
   },
   async mounted() {
     await this.fetchAuditionData(this.$route.params.id);
-    this.form.title = this.audition.title;
-    let date = new Date(this.audition.date);
+
+    let auditionCopiedObject = JSON.parse(JSON.stringify(this.audition));
+
+    this.form.title = auditionCopiedObject.title;
+    let date = new Date(auditionCopiedObject.date);
     date.setDate(date.getDate() + 1);
     this.form.date = date;
-    this.form.time = this.audition.time;
-    console.log("TCL: mounted -> this.audition", this.audition)
+    this.form.time = auditionCopiedObject.time;
     
-    this.form.description = this.audition.description;
-    this.form.personal_information = this.audition.personal_information;
-    this.form.additional_info = this.audition.additional_info;
-    this.form.phone = this.audition.phone;
-    this.form.email = this.audition.email;
-    this.form.other_info = this.audition.other_info;
-    this.form.url = this.audition.url;
-    this.form.dates = this.audition.dates.length ? this.audition.dates : [{"from":'', "to":'',type:1},{"from":'', "to":'',type:2}];
-    this.form.online = this.audition.online && this.audition.online == 1 ? true : false;
-    this.form.appointment = this.audition.apointment.general;
+    this.form.description = auditionCopiedObject.description;
+    this.form.personal_information = auditionCopiedObject.personal_information;
+    this.form.additional_info = auditionCopiedObject.additional_info;
+    this.form.phone = auditionCopiedObject.phone;
+    this.form.email = auditionCopiedObject.email;
+    this.form.other_info = auditionCopiedObject.other_info;
+    this.form.url = auditionCopiedObject.url;
+    this.form.dates = auditionCopiedObject.dates.length ? auditionCopiedObject.dates : [];
+    this.form.online = auditionCopiedObject.online && auditionCopiedObject.online == 1 ? true : false;
+    this.form.appointment = auditionCopiedObject.apointment.general;
 
     this.form.appointment.type = this.form.appointment.type == "time" ? 1 : 2;
-    this.form.appointment.spaces = this.audition.apointment.slots.length;
-    this.form.appointment.slots = this.audition.apointment.slots;
+    this.form.appointment.spaces = auditionCopiedObject.apointment.slots.length;
+    this.form.appointment.slots = auditionCopiedObject.apointment.slots;
     this.form.appointment.slots.map(slot=>{
       slot.is_walk = slot.is_walk == 1 ? true : false;
       return slot;
     })    
     this.changeLocationBtnTxt = true;
     this.union_status.map(items => {
-      if (items.value == this.audition.union) {
+      if (items.value == auditionCopiedObject.union) {
         items.selected = true;
       } else {
         items.selected = false;
       }
     });
     this.contract_types.map(items => {
-      if (items.key == this.audition.contract) {
+      if (items.key == auditionCopiedObject.contract) {
         items.selected = true;
       } else {
         items.selected = false;
       }
     });
-    this.audition.production.map(value => {
+    auditionCopiedObject.production.map(value => {
       this.production_types.map(items => {
         if (items.key == value.trim()) {
           items.selected = true;
         }
       });
     });
-    this.form.contract = this.audition.contract;
-    this.form.production = this.audition.production;
+    this.form.contract = auditionCopiedObject.contract;
+    this.form.production = auditionCopiedObject.production;
 
 
-    let timeArr = this.audition && this.audition.time ? this.audition.time.split(":") : [];
-    this.defaultTimeHour = parseInt(timeArr[0] ? timeArr[0] : '0');
-    this.defaultTimeMinute = parseInt(timeArr[1] ? timeArr[1] : '0');
+    let timeArr = auditionCopiedObject && auditionCopiedObject.time ? auditionCopiedObject.time.split(":") : [];
+    this.defaultTimeHour = parseInt(timeArr[0] ? timeArr[0] : 0);
+    this.defaultTimeMinute = parseInt(timeArr[1] ? timeArr[1] : 0);
+    this.isSetTime = true;
 
 
 
+    this.form.dates.map((values) => {      
+      if(values.type == 'contract'){
+        this.form_dates[0].from = values.from ? moment(values.from).toDate() : '';
+        this.form_dates[0].to = values.to ? moment(values.to).toDate() : '';
+      } else if(values.type == 'rehearsal'){
+        this.form_dates[1].from = values.from ? moment(values.from).toDate() : '';
+        this.form_dates[1].to = values.to ? moment(values.to).toDate() : '';        
+      }
+    });
 
-    this.form.dates.map(function(values) {    
-      // console.log("========================");
-      // console.log(values);
-      // console.log("========================");
-      let start = new Date(values.from);
-      start.setDate(start.getDate() + 1);
-      values.from = start;
+    this.form.media = auditionCopiedObject.media;
+    this.form.roles = auditionCopiedObject.roles;
+    this.form.contributors = auditionCopiedObject.contributors;
 
-      let end = new Date(values.to);
-      end.setDate(end.getDate() + 1);
-      values.to = end;
-    });    
-    this.form.media = this.audition.media;
-    this.form.roles = this.audition.roles;
-    this.form.contributors = this.audition.contributors;
-    // console.log("TCL: mounted -> this.audition", this.audition)
-    // console.log("TCL: mounted -> this.form", this.form)
     this.form.roles.map(items => {
       items.preview = items.image.url;
     });
-    this.previewCover = this.audition.cover;
-    this.form.id_cover = this.audition.id_cover;
+    this.previewCover = auditionCopiedObject.cover;
+    this.form.id_cover = auditionCopiedObject.id_cover;
     // debugger;
   },
   methods: {
@@ -959,13 +974,23 @@ export default {
     handleLocation(place) {
       this.selectedLocation = place;
     },
-
+    handleChangeDates(type){    
+      if(type == 'contract'){
+        if(moment(this.form_dates[0].from).isAfter(this.form_dates[0].to,'day')){
+          this.form_dates[0].to = '';
+        }
+      } else if(type == 'rehearsal'){
+        if(moment(this.form_dates[1].from).isAfter(this.form_dates[1].to,'day')){
+          this.form_dates[1].to = '';
+        }
+      }
+    },
     async handleCreate() {
-      console.log("TCL: handleCreate -> handleCreate")
+      
       let coverSnapshot = null,
         rolesSnapshots = [],
         filesSnaphosts = [];
-
+      this.$toasted.clear();
       try {
         if (this.isLoading) {
         // if (this.isLoading || !(await this.$validator.validateAll("create"))) {
@@ -973,23 +998,33 @@ export default {
           return;
         }
 
-        if(this.form.dates[0].from && !this.form.dates[0].to){
+        if(moment.isDate(this.form_dates[0].from) && !moment.isDate(this.form_dates[0].to)){
           this.$toasted.error("The contract end date field is required.");
           return;
         }
 
-        if(this.form.dates[1].from && !this.form.dates[1].to){
+        if(moment.isDate(this.form_dates[1].from) && !moment.isDate(this.form_dates[1].to)){
           this.$toasted.error("The rehearsal end date field is required.");
+          return;
+        }
+
+        if(!moment.isDate(this.form_dates[0].from) && moment.isDate(this.form_dates[0].to)){
+          this.$toasted.error("The contract from date field is required.");
+          return;
+        }
+
+        if(!moment.isDate(this.form_dates[1].from) && moment.isDate(this.form_dates[1].to)){
+          this.$toasted.error("The rehearsal from date field is required.");
           return;
         }
 
         this.form.location = this.form.online ? null : this.form.location;
         if(this.updatedImageBlob && this.updatedImageFile){
             this.updatedImageBlob.name = this.updatedImageFile.name;
-            this.form.cover = this.updatedImageBlob;
+            this.form.cover_file = this.updatedImageBlob;
             this.form.cover_name = this.updatedImageFile.name;
         } else {
-            this.form.cover = null;
+            this.form.cover_file = null;
         }
         // this.form.appointment = this.form.online ? this.audition.apointment : this.form.appointment;
         let data = Object.assign({}, this.form);
@@ -1017,11 +1052,11 @@ export default {
 
 
         // Upload cover
-        if (data.cover != undefined && data.cover) {
+        if (data.cover_file != undefined && data.cover_file) {
           coverSnapshot = await firebase
             .storage()
             .ref(`temp/${uuid()}.${data.cover_name.split(".").pop()}`)
-            .put(data.cover);
+            .put(data.cover_file);
 
           data.cover = await coverSnapshot.ref.getDownloadURL();
         } else {
@@ -1030,11 +1065,11 @@ export default {
         // Upload roles
         await Promise.all(
           data.roles.map(async role => {          
-            if (role.cover != undefined && role.name_cover && role.name_cover != undefined) {
+            if (role.cover_file != undefined && role.name_cover && role.name_cover != undefined) {
               const snapshot = await firebase
                 .storage()
                 .ref(`temp/${uuid()}.${role.name_cover.split(".").pop()}`)
-                .put(role.cover);
+                .put(role.cover_file);
 
               role.cover = await snapshot.ref.getDownloadURL();
 
@@ -1058,19 +1093,49 @@ export default {
 
         //   filesSnaphosts.push(snapshot);
         // }));
+        
+        // update date back 
+        if(this.form_dates[0].from != '' && this.form_dates[0].to != ''){
+          let contractIndex = this.form.dates.findIndex(x => x.type ==="contract");
+          if(contractIndex > -1){
+            this.form.dates[contractIndex].from = moment.isDate(this.form_dates[0].from) ? moment(this.form_dates[0].from).format('YYYY-MM-DD') : null;
+            this.form.dates[contractIndex].to = moment.isDate(this.form_dates[0].from) ? moment(this.form_dates[0].to).format('YYYY-MM-DD') : null;
+          } else {
+            let datesData = this.form_dates[0];
+            datesData.from = moment.isDate(this.form_dates[0].from) ? moment(datesData.from).format('YYYY-MM-DD') : null;
+            datesData.to = moment.isDate(this.form_dates[0].from) ? moment(datesData.to).format('YYYY-MM-DD') : null;
+            this.form.dates.push(datesData);
+          }
+        }
+        if(this.form_dates[1].from != '' && this.form_dates[1].to != ''){
+          let rehearsalIndex = this.form.dates.findIndex(x => x.type ==="rehearsal");
+          if(rehearsalIndex > -1){
+            this.form.dates[rehearsalIndex].from = moment.isDate(this.form_dates[1].from) ? moment(this.form_dates[1].from).format('YYYY-MM-DD') : null;
+            this.form.dates[rehearsalIndex].to = moment.isDate(this.form_dates[1].to) ? moment(this.form_dates[1].to).format('YYYY-MM-DD') : null;
+            
+          } else {
+            let datesData = this.form_dates[1];
+            datesData.from = moment.isDate(this.form_dates.from) ? moment(datesData.from).format('YYYY-MM-DD') : null;
+            datesData.to = moment.isDate(this.form_dates.to) ? moment(datesData.to).format('YYYY-MM-DD') : null;
+            this.form.dates.push(datesData);            
+          }
+        }
+          
         let action = await axios.put(
           `/t/auditions/update/${this.$route.params.id}`,
-          data
+          data          
         );
         this.isLoading = false;
         this.$toasted.success("The audition has updated successfully.");
+        this.$router.push({ name: 'auditions/detail',params:{id: this.$route.params.id } });
       } catch (e) {
         console.log(e);
         this.isLoading = false;
-        this.$toasted.error("Audition not updated, try later.");
+        let errorMsg = e.response && e.response.data && e.response.data.errors ? this.$options.filters.getErrorMsg(e.response.data.errors) : null;
+        this.$toasted.error(errorMsg ? errorMsg : "Audition not updated, try later.");
         coverSnapshot && coverSnapshot.ref.delete();
         await Promise.all(rolesSnapshots.map(role => role.ref.delete()));
-        await Promise.all(filesSnaphosts.map(file => file.ref.delete()));
+        // await Promise.all(filesSnaphosts.map(file => file.ref.delete()));
       }
     },
 
@@ -1117,8 +1182,7 @@ export default {
       });
     },
     timeChangeHandler : function (event){
-      this.form.time = event.hour > 0 || event.minute > 0 ? `${event.hour}:${event.minute}` : '';
-      console.log("TCL: this.form", this.form)
+      this.form.time = event.hour > 0 || event.minute > 0 ? `${event.hour}:${event.minute}` : '';      
     },
     imgUrlAlt(event) {
         event.target.src = DEFINE.role_placeholder;
