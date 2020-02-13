@@ -8,10 +8,10 @@
           type="text"
           readonly
         >
-        <span v-if="data.number" class="absolute text-purple left-0 py-2 px-4 my-2 border border-purple rounded-l-full">
+        <span v-if="data.number" class="absolute text-purple left-0 py-2 px-4 my-2 border border-purple rounded-l-full cus-w-22">
           {{ data.number }}
         </span>
-        <span  :class="data.number ? 'absolute text-purple py-2 px-4 my-2 border border-purple v-l-42': 'absolute text-purple left-0 py-2 px-4 my-2 border border-purple rounded-l-full'">
+        <span  :class="data.number ? 'absolute text-purple py-2 px-4 my-2 border border-purple v-l-51': 'absolute text-purple left-0 py-2 px-4 my-2 border border-purple rounded-l-full'">
 
           {{ data.time }}
         </span>
@@ -59,7 +59,10 @@ export default {
 };
 </script>
 <style>
-  .v-l-42{
-    left: 42px !important;
+  .v-l-51{
+    left: 51px !important;
+  }
+  .cus-w-22{
+    width: 22% !important;
   }
 </style>

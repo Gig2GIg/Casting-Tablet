@@ -292,7 +292,7 @@
         <div class="flex">
             <base-input
                     v-model="form.url"
-                    v-validate="'required|url'"
+                    v-validate="'url'"
                     name="url"
                     class="w-full px-2"
                     placeholder="Audition URL"

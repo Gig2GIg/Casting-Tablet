@@ -290,7 +290,7 @@
     <div class="flex">
       <base-input
         v-model="form.url"
-        v-validate="'required|url'"
+        v-validate="'url'"
         name="url"
         class="w-full px-2"
         placeholder="Audition URL"
@@ -736,6 +736,7 @@ export default {
     date.setDate(date.getDate() + 1);
     this.form.date = date;
     this.form.time = this.audition.time;
+    console.log("TCL: mounted -> this.audition", this.audition)
     
     this.form.description = this.audition.description;
     this.form.personal_information = this.audition.personal_information;
@@ -744,7 +745,7 @@ export default {
     this.form.email = this.audition.email;
     this.form.other_info = this.audition.other_info;
     this.form.url = this.audition.url;
-    this.form.dates = this.audition.dates.length ? this.audition.dates : [{"from":'', "to":''},{"from":'', "to":''}];
+    this.form.dates = this.audition.dates.length ? this.audition.dates : [{"from":'', "to":'',type:1},{"from":'', "to":'',type:2}];
     this.form.online = this.audition.online && this.audition.online == 1 ? true : false;
     this.form.appointment = this.audition.apointment.general;
 

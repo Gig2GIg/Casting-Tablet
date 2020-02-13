@@ -36,14 +36,14 @@
             </div>
           </div>
         </div>
-        <div class="container flex flex-wrap justify-center w-1/2 h-96 overflow-y-auto overflow-x-hidden">
+        <div class="container flex flex-wrap custom-flex-updates w-1/2 h-96 overflow-y-auto overflow-x-hidden">
+        <p class="w-full font-bold text-purple text-lg mt-3">Updates</p>
         <p class="text-purple font-medium tracking-wide" v-if="Object.keys(updates).length>0 == 0">Updates to this audition have not yet been sent</p>
-          <div class="w-full h-32" v-for="data in updates" :key="data.id">
-            <p class="w-full font-bold text-purple text-lg m-3">Updates</p>
-            <p class="w-full text-purple text-base m-3">{{data.title}}</p>
-            <p class="w-full text-purple font-bold text-sm m-3">{{data.time}}</p>
-          </div>
+        <div class="w-full h-20 " v-for="data in updates" :key="data.id">            
+          <p class="w-full text-purple text-base m-3 description">{{data.title}}</p>
+          <p class="w-full text-purple font-bold text-sm m-3">{{data.time | custTimeFormat}}</p>
         </div>
+      </div>
     </div>
   <section class=" bg-white flex flex-col items-center h-full w-1/5 overflow-scroll">
     <div class="flex w-full mt-10 ">
@@ -360,5 +360,19 @@ body, html {
 }
 .button-detail{
   background-image: linear-gradient(#4D2545, #782541);
+}
+.custom-flex-updates {
+  justify-content: flex-start;
+  align-content: flex-start;
+
+}
+.description {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  line-height: 16px;
+  max-height: 62px;
 }
 </style>

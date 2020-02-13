@@ -57,6 +57,13 @@ Vue.filter("custTimeFormat", function (value) {
   }
 });
 
+// only time value should be pass e.g. 10:00 am or 15:30
+Vue.filter("custTimeFormat", function (value) {
+  if (value) {
+    return moment(String(value), "h:mma").format("hh:00 A");
+  }
+});
+
 // Initialize Firebase
 // firebase.initializeApp({
 //   apiKey: 'AIzaSyDTrKkhJCM4ZNbFXRTq0AE2uKzNlpo3_i4',
