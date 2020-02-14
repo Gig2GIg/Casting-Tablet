@@ -41,7 +41,7 @@
         <p class="text-purple font-medium tracking-wide" v-if="Object.keys(updates).length>0 == 0">Updates to this audition have not yet been sent</p>
         <div class="w-full h-20 " v-for="data in updates" :key="data.id">            
           <p class="w-full text-purple text-base m-3 description">{{data.title}}</p>
-          <p class="w-full text-purple font-bold text-sm m-3">{{data.time | custTimeFormat}}</p>
+          <p class="w-full text-purple font-bold text-sm m-3">{{data.time | custHoursTimeFormat}}</p>
         </div>
       </div>
     </div>
@@ -253,7 +253,7 @@ export default {
         let body = {
           "appointment":this.$route.params.id,
           "title": this.updateText,
-          "time": moment().format("hh:mm"),
+          "time": moment().format("HH:mm:ss"),
         }
         await axios.post('t/monitor/updates', body);
         this.$toasted.success('Update send successfully');

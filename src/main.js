@@ -57,12 +57,13 @@ Vue.filter("custTimeFormat", function (value) {
   }
 });
 
-// only time value should be pass e.g. 10:00 am or 15:30
-Vue.filter("custTimeFormat", function (value) {
+// only time value should be pass e.g. 10:20 am or 15:30 and display only hours with minutes 00
+Vue.filter("custHoursTimeFormat", function (value) {
   if (value) {
     return moment(String(value), "h:mma").format("hh:00 A");
   }
 });
+
 
 // Initialize Firebase
 // firebase.initializeApp({

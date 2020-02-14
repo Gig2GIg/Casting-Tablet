@@ -88,4 +88,15 @@ export default {
 select:focus {
   outline: none;
 }
+select {
+    background-repeat: no-repeat;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    -o-appearance: none;
+    -ms-appearance: none;
+    background-position: right 15px center;
+    background-image: url(/images/down-arrow.svg);
+    background-color: #fff;
+    background-size: 17px;
+}
 </style>
