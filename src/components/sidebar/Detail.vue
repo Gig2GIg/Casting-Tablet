@@ -119,31 +119,54 @@
                 class="flex m-3 content-center w-full h-16 flex justify-center truncate"
               >
                 <div class="flex justify-center w-9/12 button-detail rounded-lg">
-                  <div class="flex justify-center content-center flex-wrap w-1/2 h-full">
+                  <div class="flex flex-col flex-none items-center justify-center text-white flex-wrap w-1/5 h-full">
+                  <template v-if="data.type == 'audio'">
                     <img
-                      v-if="data.type == 'audio'"
-                      src="/images/icons/mp4Icon@3x.png"
+                      
+                      src="/images/icons/music@2x.png"
                       alt="Icon"
-                      class="h-10"
+                      class="h-8"
                     />
-                    <img
-                      v-else-if="data.type == 'video'"
-                      src="/images/icons/mp3-icon@3x.png"
-                      alt="Icon"
-                      class="h-10"
-                    />
-                    <img
-                      v-else-if="data.type == 'doc'"
-                      src="/images/icons/pdf-icon@3x.png"
-                      alt="Icon"
-                      class="h-10"
-                    />
+                    <span class="mt-1">MP3</span>
+                  </template>
+                    <template v-else-if="data.type == 'video'">
+                      <img
+                        src="/images/icons/video@2x.png"
+                        alt="Icon"
+                        class="h-8"
+                      />
+                      <span class="mt-1">MP4</span>
+                    </template>
+                    <template v-else-if="data.type == 'doc'">
+                      <img
+                        src="/images/icons/doc-icon3x.png"
+                        alt="Icon"
+                        class="h-8"
+                      />
+                      <span class="mt-1">PDF</span>
+                    </template>
+                    <template v-else-if="data.type == 'image'">
+                      <img                        
+                        src="/images/icons/pic-icon@2x.png"
+                        alt="Icon"
+                        class="h-8"
+                      />
+                      <span class="mt-1">IMAGE</span>
+                    </template>
+                    <template v-else-if="data.type == 'sheet'">
+                      <img                        
+                        src="/images/icons/link@2x.png"
+                        alt="Icon"
+                        class="h-8"
+                      />
+                      <span class="mt-1">URL</span>
+                    </template>
                   </div>
                   <div
                     class="flex content-center relative flex-wrap w-full h-full bg-white truncate"
                   >
                     <span class="text-center text-purple font-bold truncate w-96">{{ data.name }}</span>
-                    <a :href="data.url" target="_blank">
+                    <a :href="data.url" target="_blank" rel="noopener noreferrer">
                       <img
                         src="/images/icons/more-icon@3x.png"
                         alt="Icon"
@@ -504,7 +527,7 @@ import { eventBus } from "../../main";
 import axios from "axios";
 
 import SimpleKeyboard from "../shared/SimpleKeyboard";
-import DEFINE from '../../utils/const.js';
+import DEFINE from "../../utils/const.js";
 
 export default {
   components: {
@@ -546,12 +569,12 @@ export default {
         useKbEvents: false,
         preventClickEvent: false
       },
-      current_round : {}
+      current_round: {}
     };
   },
   watch: {
     rounds: function() {
-      if (this.rounds && this.rounds.length > 0) {        
+      if (this.rounds && this.rounds.length > 0) {
         this.lastRound = this.rounds[this.rounds.length - 1];
         this.getGroupdetails();
       }
@@ -559,7 +582,9 @@ export default {
     audition: function() {
       let currentAudition = this.audition ? this.audition : null;
       eventBus.$emit("currentAudition", currentAudition);
-      this.handleNewGroup(this.current_round.status ? this.current_round.status : null)
+      this.handleNewGroup(
+        this.current_round.status ? this.current_round.status : null
+      );
     }
   },
   computed: {
@@ -573,16 +598,15 @@ export default {
   created() {
     eventBus.$on("isCurrentOpenGroup", value => {
       this.isOpenGroup = value;
-      if(!value){
+      if (!value) {
         this.getGroupdetails();
       }
     });
-
   },
   methods: {
     handleNewGroup(round_status) {
       if (
-        this.audition.status == 1 &&        
+        this.audition.status == 1 &&
         this.audition.online == 0 &&
         round_status == 1
       ) {
@@ -629,9 +653,9 @@ export default {
       this.manage = false;
       this.videoSection = true;
       let videosDetails = {
-        videos : this.videos,
-        videoSection : this.videoSection
-      }
+        videos: this.videos,
+        videoSection: this.videoSection
+      };
       eventBus.$emit("auditionVideoDetails", videosDetails);
       // await this.listVideos(this.roundActive.id);
       // this.info = false;
@@ -669,9 +693,9 @@ export default {
       this.manage = false;
       this.videoSection = false;
       let videosDetails = {
-        videos : [],
-        videoSection : this.videoSection
-      }
+        videos: [],
+        videoSection: this.videoSection
+      };
       eventBus.$emit("auditionVideoDetails", videosDetails);
     },
     async changeStatus() {
@@ -731,22 +755,32 @@ export default {
     onInputChange(input) {
       this.checkInPassCode = input.target.value;
     },
-    cancelSetPassCodeCheckIn(){
+    cancelSetPassCodeCheckIn() {
       this.$modal.hide("modal_passcode_check_in_mode");
       this.checkInPassCode = "";
       localStorage.removeItem(DEFINE.set_pass_code_key);
     },
-    saveSetPassCodeCheckIn(){
+    saveSetPassCodeCheckIn() {
       this.$toasted.clear();
-      if(!this.checkInPassCode || this.checkInPassCode == ''){
+      if (!this.checkInPassCode || this.checkInPassCode == "") {
         this.$toasted.error("Please enter passcode.");
         return;
       }
-      localStorage.setItem(DEFINE.set_pass_code_key, window.btoa(this.checkInPassCode));
+      localStorage.setItem(
+        DEFINE.set_pass_code_key,
+        window.btoa(this.checkInPassCode)
+      );
       this.$modal.hide("modal_passcode_check_in_mode");
       this.checkInPassCode = "";
-      this.$router.push({ name: 'auditions/checkin', params: {id: this.roundActive.id, title: this.audition.title, date: this.audition.date, auditionId: this.audition.id } });
-
+      this.$router.push({
+        name: "auditions/checkin",
+        params: {
+          id: this.roundActive.id,
+          title: this.audition.title,
+          date: this.audition.date,
+          auditionId: this.audition.id
+        }
+      });
     },
     openConfirmMonitorInmodal() {
       this.$modal.show("modal_confirm_monitor_in_mode");
@@ -766,21 +800,27 @@ export default {
     onInputChangeMonitor(input) {
       this.monitorInPassCode = input.target.value;
     },
-    cancelSetPassCodeMonitorIn(){
+    cancelSetPassCodeMonitorIn() {
       this.$modal.hide("modal_passcode_monitor_in_mode");
       this.monitorInPassCode = "";
       localStorage.removeItem(DEFINE.set_monitor_pass_code_key);
     },
-    saveSetPassCodeMonitorIn(){
+    saveSetPassCodeMonitorIn() {
       this.$toasted.clear();
-      if(!this.monitorInPassCode || this.monitorInPassCode == ''){
+      if (!this.monitorInPassCode || this.monitorInPassCode == "") {
         this.$toasted.error("Please enter passcode.");
         return;
       }
-      localStorage.setItem(DEFINE.set_monitor_pass_code_key, window.btoa(this.monitorInPassCode));
+      localStorage.setItem(
+        DEFINE.set_monitor_pass_code_key,
+        window.btoa(this.monitorInPassCode)
+      );
       this.$modal.hide("modal_passcode_monitor_in_mode");
       this.checkInPassCode = "";
-      this.$router.push({ name: 'monitor-update', params: {id: this.roundActive.id, auditionId: this.audition.id } });
+      this.$router.push({
+        name: "monitor-update",
+        params: { id: this.roundActive.id, auditionId: this.audition.id }
+      });
     }
   }
 };

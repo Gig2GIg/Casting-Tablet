@@ -442,20 +442,11 @@
                     </carousel>
                 </div>
 
-                <input
-                        ref="inputFile"
-                        accept=".png, .jpg, .jpeg, .pdf"
-                        type="file"
-                        multiple
-                        hidden
-                        @change="handleFile"
-                />
-
                 <button
                         class="w-2/3 py-3 px-4 border-4 border-purple text-purple rounded-full focus:outline-none mb-4"
                         type="button"
                         :class="{ 'mt-4': !form.media.length }"
-                        @click="$refs.inputFile.click()"
+                        @click="openDocumentOptionModal"
                 >Manage Documents
                 </button>
 
@@ -551,6 +542,100 @@
                 </section>
             </div>
         </modal>
+        <modal class="flex flex-col items-center" :width="250" :height="250" name="modal_document_options">
+            <div class="flex flex-col items-center text-purple text-lg mt-5 mb-2">
+                <h1>Select Document</h1>
+            </div>
+            <div class="flex flex-col items-center">
+                <input
+                            ref="inputFile"
+                            accept="audio/*,video/*,image/*, .pdf"
+                            type="file"
+                            multiple
+                            hidden
+                            @change="handleFile"
+                    />
+
+                    <button
+                            class="w-2/3 py-3 px-4 border-4 border-purple text-purple rounded-full focus:outline-none mb-4"
+                            type="button"
+                            :class="{ 'mt-4': !form.media.length }"
+                            @click="$refs.inputFile.click()"
+                    >Add Files
+                    </button>
+                    <button
+                            class="w-2/3 py-3 px-4 border-4 border-purple text-purple rounded-full focus:outline-none mb-4"
+                            type="button"
+                            :class="{ 'mt-4': !form.media.length }"
+                            @click="showLinkManageModal"
+                    >Add Links
+                    </button>
+            </div>
+        </modal>
+        <modal class="flex w-full items-center link-modal" :width="500" :height="650" name="modal_document_link_manage">            
+            <div class="d-flex justify-end text-right top-add-btn" >
+                <a
+                href="#"
+                role="button"
+                @click.prevent="addNewLink"
+                class="text-purple text-mg"
+                >
+                    Add New
+                </a>
+            </div>
+            <div class="max-link-screen" id="link_container">            
+                <div>
+                    <div class="flex flex-col w-10/13 px-2 mb-5" v-for="(dlink, index) in document_links" :key="index">
+                        <div class="relative h-12 w-9/12 my-2">
+                            <base-input
+                                v-model="dlink.name"
+                                name="link_name[]"
+                                class="w-full px-2"
+                                placeholder="Name"
+                                :custom-classes="['border', 'border-purple']"
+                            />
+                        </div>
+                        <div class="relative h-12 w-10/13 my-2">
+                            <div class="input-delete-link">
+                                <base-input
+                                    v-model="dlink.url"
+                                    name="link_url[]"
+                                    class="w-full px-2 w-9/12 cus-input"
+                                    placeholder="URL"
+                                    :custom-classes="['border', 'border-purple']"
+                            />     
+                            <img
+                                src="/images/icons/icon3.png"
+                                alt="Icon"
+                                class="h-8"
+                                @click="removeLink(index)"
+                                v-if="index>0"
+                            />   
+                            </div>                    
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+
+            <div class="actions cus-action-btn">            
+                <a
+                href="#"
+                role="button"
+                @click.prevent="linkManageCancel"
+                >
+                Cancel
+                </a>
+                <a
+                href="#"
+                role="button"
+                @click.prevent="linkManageDone"
+                >
+                Done
+                </a>                
+            </div>
+            
+        </modal>
             
     </form>
 </template>
@@ -636,6 +721,14 @@
                     contributors: [],
                     media: []
                 },
+                document_links : [
+                    {
+                        name:"",
+                        url:"",
+                        type : 5,
+                        share: "yes"
+                    }
+                ],
                 union_status: [
                     // {
                     //     value: "any",
@@ -795,7 +888,69 @@
                 const index = this.form.roles.findIndex(x => x.id === role.id);
                 this.form.roles.splice(index, 1);
             },
-
+            openDocumentOptionModal(){
+                this.$modal.show('modal_document_options');
+            },
+            closeDocumentOptionModal(){
+                this.$modal.hide('modal_document_options');
+            },
+            showLinkManageModal(){                
+                this.$modal.show('modal_document_link_manage');
+                this.closeDocumentOptionModal();
+            },
+            closeLinkManageModal(){
+                this.$modal.hide('modal_document_link_manage');
+            },
+            defaultLinkData(){
+                return  {
+                        name:"",
+                        url:"",
+                        type : 5,
+                        share: "yes"
+                    };
+            },
+            async addNewLink(){                
+                this.$toasted.clear();
+                let lastRecord = this.document_links[this.document_links.length-1] ? this.document_links[this.document_links.length-1] : {};
+                if(lastRecord.name == '' || lastRecord.url == ''){
+                    this.$toasted.error('Please enter url details!')
+                } else {
+                  await  this.document_links.push(this.defaultLinkData());
+                }
+                let container = this.$el.querySelector("#link_container");
+                container.scrollTop = container.scrollHeight;
+            },
+            removeLink(index){
+                this.document_links.splice(index,1);
+            },
+            linkManageCancel(){
+                this.document_links = [this.defaultLinkData()];
+                this.closeLinkManageModal();
+            },
+            linkManageDone(){                
+                this.$toasted.clear();
+                let lastRecord = this.document_links[this.document_links.length-1] ? this.document_links[this.document_links.length-1] : {};
+                if(lastRecord.name == '' || lastRecord.url == ''){
+                    this.$toasted.error('Please enter url details!')
+                    let container = this.$el.querySelector("#link_container");
+                    container.scrollTop = container.scrollHeight;
+                } else {
+                
+                    this.document_links
+                        // .filter(file => !this.form.media.some(x => x.name === file.name))
+                        .forEach(link => {
+                            this.form.media.push({                            
+                                name: link.name,
+                                type: link.type,
+                                url: link.url,
+                                file: null,
+                                share: "yes"
+                            });
+                        });
+                    this.closeLinkManageModal();
+                    this.document_links = [this.defaultLinkData()];
+                }
+            },
             handleFile(e) {
                 const files = Array.from(e.target.files);
 
@@ -803,18 +958,35 @@
                     .filter(file => !this.form.media.some(x => x.name === file.name))
                     .forEach(file => {
                         const extension = file.name.split(".").pop();
-                        this.form.media.push({
-                            name: file.name,
-                            type: 1,
-                            url: file,
-                            file: file,
-                            share: "yes"
-                        });
+
+                        const file_type = this.getFileType(file);
+
+                        if(file_type > 0){
+                            this.form.media.push({                            
+                                name: file.name,
+                                type: file_type,
+                                url: file,
+                                file: file,
+                                share: "yes"
+                            });
+                        }
                     });
 
                 this.$refs.inputFile.value = "";
+                this.closeDocumentOptionModal();
             },
-
+            getFileType(file) {                
+                if(file.type.match('audio.*'))                
+                    return 1;            
+                else if(file.type.match('video.*'))
+                    return 2;
+                else if(file.type.match('pdf.*'))
+                    return 3;            
+                else if(file.type.match('image.*'))
+                    return 4;            
+                else 
+                    return 0;
+            },
             handleCoverFile(e) {
                 const file = e.target.files[0];
                 if (file.type.indexOf('image/') === -1) {
@@ -974,15 +1146,17 @@
 
                     // Upload files
                     await Promise.all(
-                        data.media.map(async Media => {                        
-                            const snapshot = await firebase
+                        data.media.map(async Media => {   
+                            if(Media.type != 5){
+                                const snapshot = await firebase
                                 .storage()
                                 .ref(`temp/${uuid()}.${Media.name.split(".").pop()}`)
                                 .put(Media.file);
 
-                            Media.url = await snapshot.ref.getDownloadURL();
+                                Media.url = await snapshot.ref.getDownloadURL();
 
-                            filesSnaphosts.push(snapshot);
+                                filesSnaphosts.push(snapshot);
+                            }                            
                         })
                     );
 
@@ -1191,4 +1365,26 @@ textarea {
 .cropper-area>textarea{
   display: none;
 }
+.max-link-screen{
+    /* max-height: 450px !important; */
+    height: calc(100% - 110px);
+    overflow-y: auto !important;
+}
+.input-delete-link {
+    display: flex;
+    align-items: center;
+}
+.input-delete-link .cus-input{
+    max-width: 75% !important;
+}
+.top-add-btn{
+    padding: 10px 15px 0px 0px !important;
+}
+
+.cus-action-btn{
+    display: flex;
+    justify-content: center;
+}
 </style>
+
+

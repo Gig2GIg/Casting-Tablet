@@ -3,6 +3,7 @@
   <div class="relative rounded-lg shadow flex items-center mx-3 my-1 overflow-hidden">
     <div class="selbutton flex flex-col flex-none items-center justify-center text-white h-16 w-16">
       <svg
+        v-if="icon_src == ''"
         id="noun_File_1126699"
         xmlns="http://www.w3.org/2000/svg"
         width="18.873"
@@ -51,8 +52,14 @@
           />
         </g>
       </svg>
-
-      {{ media.type }}
+      <img
+        v-if="icon_src != ''"
+        :src="icon_src"
+        alt="Icon"
+        class="h-8"
+      />
+     
+      <span class="mt-1">{{mediaType}}</span>
     </div>
     <span class="file-name text-purple truncate text-sm mx-4 flex-1 w-16">
       {{ media.name }}
@@ -85,19 +92,61 @@ export default {
   props: {
     media: {
       type: Object,
-      required: true,
-    },
+      required: true
+    }
   },
   data() {
     return {
-      menuActive: false,
+      icon_src: "",
+      menuActive: false
     };
   },
+  computed: {
+    mediaType() {
+      if (
+        this.media.type == 1 ||
+        this.media.type === "mp3" ||
+        this.media.type === "audio"
+      ) {
+        this.icon_src = "/images/icons/music@2x.png";
+        return "MP3";
+      } else if (
+        this.media.type == 2 ||
+        this.media.type === "mp4" ||
+        this.media.type === "video"
+      ) {
+        this.icon_src = "/images/icons/video@2x.png";
+        return "MP4";
+      } else if (
+        this.media.type == 3 ||
+        this.media.type === "pdf" ||
+        this.media.type === "doc"
+      ) {
+        this.icon_src = "/images/icons/doc-icon3x.png";
+        return "PDF";
+      } else if (
+        this.media.type == 4 ||
+        this.media.type === "image" ||
+        this.media.type === "jpeg" ||
+        this.media.type === "jpg" ||
+        this.media.type === "png" ||
+        this.media.type === "gif"
+      ) {
+        this.icon_src = "/images/icons/pic-icon@2x.png";
+        return "IMAGE";
+      } else if (this.media.type == 5 || this.media.type === "sheet") {
+        this.icon_src = "/images/icons/link@2x.png";
+        return "URL";
+      } else {
+        return this.media.type;
+      }
+    }
+  }
 };
 </script>
 
 <style scoped>
 .selbutton {
-  background-image: linear-gradient(#4D2545, #782541);
+  background-image: linear-gradient(#4d2545, #782541);
 }
 </style>

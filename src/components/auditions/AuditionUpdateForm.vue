@@ -428,7 +428,7 @@
             :navigation-next-label="'&#x279C;'"
           >
             <slide v-for="(media, index) in form.media" :key="index">
-              <DocumentItem :media="media" @destroy="true" />
+              <DocumentItem :media="media" @destroy="handleDeleteDocument" />
             </slide>
           </carousel>
         </div>
