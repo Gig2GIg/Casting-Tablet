@@ -166,7 +166,7 @@
                     class="flex content-center relative flex-wrap w-full h-full bg-white truncate"
                   >
                     <span class="text-center text-purple font-bold truncate w-96">{{ data.name }}</span>
-                    <a :href="data.url" target="_blank" rel="noopener noreferrer">
+                    <a :href="setUrl(data.url)" target="_blank" rel="noopener noreferrer">
                       <img
                         src="/images/icons/more-icon@3x.png"
                         alt="Icon"
@@ -821,6 +821,13 @@ export default {
         name: "monitor-update",
         params: { id: this.roundActive.id, auditionId: this.audition.id }
       });
+    },
+    setUrl(url){      
+      var pattern = /^((http|https|ftp):\/\/)/;
+      if(!pattern.test(url)) {
+          url = "http://" + url;
+      }
+      return url;
     }
   }
 };
