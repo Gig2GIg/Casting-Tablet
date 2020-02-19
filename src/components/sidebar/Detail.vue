@@ -321,6 +321,20 @@
             >Final Cast List</p>
           </div>
         </div>
+        <div v-if="audition.status == 2" class="w-full border border-gray-300 mt-6 mb-6" />
+        <div
+          v-if="audition.status == 2"
+          class="flex w-full content-center text-center justify-center flex-wrap cursor-pointer"
+          @click="exportAnalytics()"
+        >
+          <div
+            class="m-3 content-center flex items-center flex m-3 content-center border-2 rounded-sm border-purple w-48 h-10"
+          >
+            <p
+              class="flex-1 light-purple text-sm font-semibold content-center tracking-tighter flex-1"
+            >Export Analitics</p>
+          </div>
+        </div>
         <div v-if="audition.status == 1" class="w-full border border-gray-300 mt-6 mb-6" />
         <div
           v-if="audition.status == 1"
@@ -529,6 +543,8 @@ import axios from "axios";
 import SimpleKeyboard from "../shared/SimpleKeyboard";
 import DEFINE from "../../utils/const.js";
 
+import ExcelService from '@/services/ExcelService';
+
 export default {
   components: {
     SimpleKeyboard
@@ -645,6 +661,46 @@ export default {
     },
     async emmitFinalCast() {
       await this.$emit("handleFinalCast", this.audition.roles);
+    },
+    async exportAnalytics(){
+      try {
+          this.isLoading =  true;
+          const { data: { data } } = await axios.get(`/t/auditions/analytics/${this.$route.params.id}`);
+
+          let json = [];
+          
+          await this.getexportAnalyticsData(data).then(res=>{
+            json = res;
+          });
+          await ExcelService.exportAsExcelFile(json,'analytics_data');          
+          this.isLoading =  false;
+        } catch (e) {
+          this.isLoading =  false;
+          this.$toasted.error("Something went to wrong!");
+          console.log(e);
+        }
+    },
+    async getexportAnalyticsData(analyticsData ){
+      let exportData = [];            
+    _.each(analyticsData, value => {           
+          let newExprtObj = {
+            'Round': value[0],
+            'Total Auditioners': value[1],
+            'Gender breakdown':	value[2],
+            'Starred Performers': value[3],
+            };
+          exportData.push(newExprtObj);
+      });
+      if(exportData.length == 0){
+        let newExprtObj = {
+          'Round': '',
+          'Total Auditioners': '',
+          'Gender breakdown':	'',
+          'Starred Performers': '',
+        };
+          exportData.push(newExprtObj);
+      }
+      return exportData;
     },
     async auditionVideo() {
       this.audition.round = this.roundActive.round;

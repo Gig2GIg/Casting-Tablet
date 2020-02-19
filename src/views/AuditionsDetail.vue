@@ -227,8 +227,6 @@ import Loading from "vue-loading-overlay";
 import "vue-loading-overlay/dist/vue-loading.css";
 
 Vue.use(Loading);
-import * as FileSaver from 'file-saver';
-import * as XLSX from 'xlsx';
 
 import ExcelService from '@/services/ExcelService';
 

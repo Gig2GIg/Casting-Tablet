@@ -107,6 +107,12 @@
           :custom-classes="['border border-purple']"
           @input="makeSlots"
         >
+          <option value="3">
+            3 minutes
+          </option>
+          <option value="5">
+            5 minutes
+          </option>
           <option value="10">
             10 minutes
           </option>
