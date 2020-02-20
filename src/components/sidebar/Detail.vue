@@ -332,7 +332,7 @@
           >
             <p
               class="flex-1 light-purple text-sm font-semibold content-center tracking-tighter flex-1"
-            >Export Analitics</p>
+            >Export Analytics</p>
           </div>
         </div>
         <div v-if="audition.status == 1" class="w-full border border-gray-300 mt-6 mb-6" />
