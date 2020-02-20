@@ -66,7 +66,7 @@
     <div class="flex w-full">
       <div class="w-1/4 flex flex-wrap content-center justify-center calendar shadow-lg">
         <p class="text-center text-2xl text-purple font-bold">Availability</p>
-          <v-date-picker :attributes="attrs" class="border-none" :select-attribute='selectAttribute' locale="en" mode='range' v-model="dates" show-caps is-inline  :rows="2" />
+          <v-date-picker :attributes="attrs" class="border-none calendar-bar-inline" :select-attribute='selectAttribute' locale="en" mode='range' v-model="dates" show-caps is-inline  :rows="2" />
       </div>
       <div class="w-1/12"></div>
       <div class="w-1/4 shadow-lg">
@@ -787,7 +787,7 @@ export default {
         {
           bar: {
             color: 'yellow',
-            class: 'my-dot-class',
+            class: 'calender-bar-inside-line',
           },
           key: 'today',
           dates: finalList,
@@ -933,5 +933,13 @@ nav {
 }
 .h-300{
   height: 290px;
+}
+.calender-bar-inside-line {
+  margin-bottom: 15px !important;
+  background-color: #D8893A !important;
+}
+.calendar-bar-inline .vc-day-layer[data-v-47ef1cd6] {
+    left: -6px !important;
+    right: -6px !important;
 }
 </style>
