@@ -36,7 +36,7 @@
                     class="custom-perfom-list"
                   />
                   <div class="custom-btn-grp">                    
-                    <div @click="restorePerformer(data)" class="content-center rounded-full gray-back h-10 flex items-center w-8/12">
+                    <div @click="confirmRestorePerformer(data)" class="content-center rounded-full gray-back h-10 flex items-center w-8/12">
                       <img src="/images/icons/refresh.png" class="h-5 ml-3" alt="restore-icon" />
                       <button class="text-black text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide" type="button">
                         
@@ -217,6 +217,26 @@
               <button type="button" @click="dontShowStdBtn">Don’t show me this again</button>
             </form>
           </modal>
+          <!--start: enter Check in model modal-->
+          <modal class="flex flex-col w-full items-center" :width="540" height="200" name="modal_confirm_restore_performer">
+              <div class="py-8 px-3">
+                    <h1 class="text-lg text-purple font-bold text-center">Restore Performer?</h1>
+                    <p class="text-lg text-purple text-center">This will remove the performer from hidden list.</p>
+                  <div class="w-full flex flex-wrap justify-center overflow-hidden mt-3">
+                      <div class="w-1/4">
+                        <base-button type="submit" expanded @click="cancelRestorePerformer()">
+                            Cancel
+                        </base-button>
+                      </div>
+                      <div class="w-1/4 ml-3">
+                        <base-button type="submit" expanded @click="restorePerformer()">
+                            Yes
+                        </base-button>
+                      </div>
+
+                  </div>
+              </div>
+          </modal>
         </div>
       </div>      
     </div>
@@ -341,7 +361,8 @@ export default {
       currentAudition : null,
       isAuditionVideos : false,
       showHiddenPerformer : false,
-      hiddenPerformerList : []
+      hiddenPerformerList : [],
+      currentRestorUser : null
     };
   },
   destroyed:()=>{
@@ -753,8 +774,7 @@ export default {
       try {
         let groupStatusRes = await axios.get(
           `/t/group/status/${this.round.id}`
-        );
-        console.log("TCL: getGroupdetails -> groupStatusRes.data", groupStatusRes.data)
+        );        
         this.openGroupMember = groupStatusRes.data.data        
           ? groupStatusRes.data.data
           : [];
@@ -785,7 +805,15 @@ export default {
         this.$toasted.error(ex.response.data.message);
       }
     },
-    async restorePerformer(data){      
+    confirmRestorePerformer(data){
+      this.currentRestorUser = data;
+      this.$modal.show("modal_confirm_restore_performer");
+    },
+    cancelRestorePerformer(){
+      this.currentRestorUser = null;
+      this.$modal.hide("modal_confirm_restore_performer");
+    },
+    async restorePerformer(){      
       this.$toasted.clear();
       try {
         if (this.isLoading) {
@@ -793,17 +821,21 @@ export default {
         }
         this.isLoading = true;
         let params = {
-          user : data.user_id,
+          user : this.currentRestorUser.user_id ? this.currentRestorUser.user_id : '',
           appointment_id : this.round.id
         }
         let result = await axios.post(
           `t/instantfeedbacks/restore`,
           params
         );
+        this.$modal.hide("modal_confirm_restore_performer");
+        this.currentRestorUser = null;
         this.$toasted.success("Performer has been restored successfully.");
         this.getHiddenPerformer();
         this.isLoading = false;
       } catch (ex) {
+        this.currentRestorUser = null;
+        this.$modal.hide("modal_confirm_restore_performer");
         this.getHiddenPerformer();
         this.isLoading = false;
         console.log(ex);
