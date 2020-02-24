@@ -112,11 +112,11 @@
                 >
                   {{ data.callback == 1? 'Yes' :  'No' }}
                 </div>
-                <p class="text-purple text-xs justify-center w-16 font-bold tracking-tighter flex-1 w-full" v-if="data.work != ''">
+                <p class="text-purple text-xs justify-center w-16 font-bold tracking-tighter flex-1 w-full" v-if="data.work && data.work != ''">
                   Work On
                 </p>
                 <div
-                  v-if="data.work != ''"
+                  v-if="data.work && data.work != ''"
                   class="py-1 px-5 border text-xs border-purple button-detail text-white font-bold uppercase mr-2 rounded-full cursor-pointer"
                 >
                   {{ data.work }}
