@@ -10,7 +10,13 @@
             <p class="w-full text-white tracking-wide text-lg ml-5 tracking-tight truncate">{{file.name}}</p>
         </div>
       </div> -->
-
+    <div v-if="showHiddenPerformer" class=" cursor-pointer flex content-around w-100 items-center relative cmb-10" @click="backHiddenPerformer">
+      <img
+        src="/images/icons/left_arrow_white.png"
+        class="absolute left-0 pl-1"        
+      />
+      <h1 class="absolute left-0 text-white text-lg back-mrg-l">Back</h1>
+    </div>
     <div class="flex flex-col" v-if="isSearchEnable">
       <div
         class="relative h-12 my-2 ml-5 w-11/12"
@@ -128,7 +134,8 @@ export default {
       file: {
         name: 'Record Group',
       },
-      audition_data: null
+      audition_data: null,
+      showHiddenPerformer : false
     };
   },
   computed: {
@@ -160,6 +167,10 @@ export default {
       this.isShowCloseGroup = value;
       this.isShowNewGroup = this.isShowCreateGroup = !this.isShowCloseGroup;
     });
+    eventBus.$on("showHiddenPerformer", value => {      
+    console.log("TCL: created ->navbar  showHiddenPerformer")
+      this.showHiddenPerformer = value;
+    });
   },
   methods: {
     ...mapActions("audition", ["fetchUserList", "fetchAuditionDataNew"]),
@@ -180,6 +191,10 @@ export default {
       }
       this.$emit("onAdd", this.counter++);
       // this.fetchUserList();
+    },
+    backHiddenPerformer(){
+      this.showHiddenPerformer = false;
+      eventBus.$emit("showHiddenPerformer", this.showHiddenPerformer);
     },
     newGroup() {
       eventBus.$emit("newGroup", this.isShowNewGroup);
@@ -277,5 +292,8 @@ nav {
 .custom-btn-record {padding: 0 15px;margin-right: 15px;border: 1px solid #fff;}
 .img-h48{
   height: 48px;
+}
+.back-mrg-l{
+  padding-left: 30px !important;
 }
 </style>

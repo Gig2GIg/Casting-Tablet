@@ -16,10 +16,39 @@
       <div v-if="status == 1 && userList.length == 0 " class="flex items-center flex-wrap ml-5 h-full">
         <h4 class="w-full text-center text-purple font-semibold text-2xl">No performers added yet</h4>
       </div>
-      <div v-if="isShowPerformer && (status == 1 || finalCastState == true || round.length >0)" class=" flex flex-wrap ml-5">
+      <div v-else-if="showHiddenPerformer && (!hiddenPerformerList || hiddenPerformerList.length == 0)" class="flex items-center flex-wrap ml-5 h-full">
+        <h4 class="w-full text-center text-purple font-semibold text-2xl">There are no performances</h4>
+      </div>
+      <div v-if="isShowPerformer && (status == 1 || finalCastState == true || round.length >0 || showHiddenPerformer)" class=" flex flex-wrap ml-5">
         <div class="col-6">
+          <template v-if="!finalCastState && showHiddenPerformer" class="list-group flex flex-wrap">
+            <transition-group v-if="hiddenPerformerList && hiddenPerformerList.length > 0" class="flex flex-wrap justify-center content-center" type="transition">              
+            <div
+                
+                class="list-group-item"
+                v-for="(data) in hiddenPerformerList"
+                :key="data.user_id"
+              >
+               <card-user
+                    :title="data.name"
+                    :time="''"
+                    :image="data.image"
+                    class="custom-perfom-list"
+                  />
+                  <div class="custom-btn-grp">                    
+                    <div @click="restorePerformer(data)" class="content-center rounded-full gray-back h-10 flex items-center w-8/12">
+                      <img src="/images/icons/refresh.png" class="h-5 ml-3" alt="restore-icon" />
+                      <button class="text-black text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide" type="button">
+                        
+                        Restore
+                      </button>
+                    </div>
+                  </div>
+            </div>
+            </transition-group>
+          </template>
 
-          <template v-if="!finalCastState && finalUserList && finalUserList.length > 0" class="list-group flex flex-wrap">
+          <template v-else-if="!finalCastState && finalUserList && finalUserList.length > 0" class="list-group flex flex-wrap">
             <transition-group  class="flex flex-wrap justify-center content-center" type="transition" :name="!drag ? 'flip-list' : null">              
               <div
 
@@ -59,7 +88,7 @@
               </div>
             </transition-group>
           </template>
-<!-- :time="currentAudition && currentAudition.online != 1 ? data.time : ''" -->
+
           <div id="performer_box"  v-else-if="finalCastState" class="box dragArea list-group flex flex-wrap mt-2">
             <span class="final-cast-list flex flex-wrap justify-center content-start">
                 <div
@@ -122,6 +151,14 @@
               </div>
             </transition-group>
             </template>
+          <modal :width="500" height="380" :adaptive="true" name="showApproveOptionMdl" class="custom-event-popup">
+            <button @click="$modal.hide('showApproveOptionMdl')" class="popup-close-btn">
+              <i class="material-icons" style="font-size: 35px;color: black;">clear</i>
+            </button>
+            <h2 style="text-align: center;" class="text-purple">Instant Feedback</h2>
+            <base-button type="button" @click="$modal.show('showApproveMdl');$modal.hide('showApproveOptionMdl')" expanded>Custom</base-button>
+            <base-button type="button" @click="approveStdFeedback" expanded>Standard</base-button>            
+          </modal>
           <modal :width="500" height="380" :adaptive="true" name="showApproveMdl" class="custom-event-popup">
             <button @click="$modal.hide('showApproveMdl')" class="popup-close-btn">
               <i class="material-icons" style="font-size: 35px;color: black;">clear</i>
@@ -159,6 +196,25 @@
               <h2>To change feedback go to Instant Feedback in Settings.</h2>
               <base-button type="submit" expanded>Done</base-button>
               <button type="button" @click="dontShowBtn">Don’t show me this again</button>
+            </form>
+          </modal>
+          <modal :width="500" height="380" :adaptive="true" name="showApproveStandardMdl" class="custom-event-popup">
+            <button @click="$modal.hide('showApproveStandardMdl')" class="popup-close-btn">
+              <i class="material-icons" style="font-size: 35px;color: black;">clear</i>
+            </button>
+            <form @submit.prevent="handleApprMdlFrm('approved_std')">
+              <h2 style="text-align: center;" class="text-purple">Instant Feedback</h2>
+              <h2 class="text-purple">Performers who have been "green checked" will receive the message:</h2>
+              <base-input
+                type="text"
+                v-model="feedbackStdText"
+                readonly
+                class="w-full px-2"
+                :custom-classes="['border', 'border-purple']"
+              />
+              <h2>To change feedback go to Instant Feedback in Settings.</h2>
+              <base-button type="submit" expanded>Done</base-button>
+              <button type="button" @click="dontShowStdBtn">Don’t show me this again</button>
             </form>
           </modal>
         </div>
@@ -267,6 +323,7 @@ export default {
       options: [],
       selectedAudition: null,
       feedbackText: "",
+      feedbackStdText: "",
       isShowNewGroup: false,
       isClickCancelGroup: false,
       isShowCreateGroup: false,
@@ -282,7 +339,9 @@ export default {
       finalCastPerformerList : [],
       auditionData:null,
       currentAudition : null,
-      isAuditionVideos : false      
+      isAuditionVideos : false,
+      showHiddenPerformer : false,
+      hiddenPerformerList : []
     };
   },
   destroyed:()=>{
@@ -326,6 +385,16 @@ export default {
       this.isAuditionVideos = value.videoSection;
       this.isAuditionVideos ? this.manageAuditionVideoPerformer(value.videos) : this.manageSelectedPerformer();      
     });
+    eventBus.$on("showHiddenPerformer", value => {
+      this.showHiddenPerformer = value;
+      if(this.showHiddenPerformer) {
+        this.getHiddenPerformer(value);
+      } else {
+        this.getUserlist();
+        this.getGroupdetails();
+      }
+      
+    });
   },
   computed: {
     ...mapState("audition", ["userList", "finalCast"]),
@@ -342,6 +411,11 @@ export default {
   async mounted() {
     this.userId = TokenService.getUserId();
     this.auditionData = await this.fetchAuditionDataNew(this.$route.params.id);
+    let {data: {data}} = await axios.get(
+            `t/instantfeedbacks/defaultFeedback/${this.userId}`
+    );
+    this.feedbackText = data.comment ? data.comment : "Thanks for attending. That's all we need today";
+    this.feedbackStdText = data.positiveComment ? data.positiveComment : "Thanks for attending. That's all we need today";
   },
   methods: {    
     ...mapActions("audition", [
@@ -356,6 +430,11 @@ export default {
       localStorage.setItem("reject_popup_dont_show", "1");
       this.handleApprMdlFrm('rejected');
       this.$modal.hide("showRejectMdl");
+    },
+    dontShowStdBtn(){
+      localStorage.setItem("approved_std_popup_dont_show", "1");
+      this.handleApprMdlFrm('approved_std');
+      this.$modal.hide("showApproveStandardMdl");
     },
     clickFinalPerformer(event,data){
       event.preventDefault();
@@ -586,10 +665,6 @@ export default {
       if(is_feedback_sent == 1){
         this.$toasted.error("Feedback already send");
       }else {
-        let {data: {data}} = await axios.get(
-                `t/instantfeedbacks/defaultFeedback/${this.userId}`
-        );
-        this.feedbackText = data.comment ? data.comment : "Default Feedback Text";
         if (localStorage.getItem("reject_popup_dont_show") && localStorage.getItem("reject_popup_dont_show") == "1") {
           this.handleApprMdlFrm('rejected');
         } else {
@@ -601,9 +676,17 @@ export default {
       this.performer_id = performer_id;
       if(is_feedback_sent == 1){
         this.$toasted.error("Feedback already send");
-      }else{
-        this.$modal.show("showApproveMdl");
+      }else{        
+        this.$modal.show("showApproveOptionMdl");
       }
+    },
+    approveStdFeedback() {
+      this.$modal.hide("showApproveOptionMdl");
+      if (localStorage.getItem("approved_std_popup_dont_show") && localStorage.getItem("approved_std_popup_dont_show") == "1") {
+          this.handleApprMdlFrm('approved_std');
+        } else {
+          this.$modal.show("showApproveStandardMdl");
+        }
     },
     fetchOptions(search, loading) {
       loading(true);
@@ -671,10 +754,11 @@ export default {
         let groupStatusRes = await axios.get(
           `/t/group/status/${this.round.id}`
         );
-        this.openGroupMember = groupStatusRes.data.data
+        console.log("TCL: getGroupdetails -> groupStatusRes.data", groupStatusRes.data)
+        this.openGroupMember = groupStatusRes.data.data        
           ? groupStatusRes.data.data
           : [];
-        this.isOpenGroup = this.isShowCloseGroup = this.openGroupMember && this.openGroupMember.length > 0 || false;
+        this.isOpenGroup = this.isShowCloseGroup = groupStatusRes && groupStatusRes.data && groupStatusRes.data.is_group_open  ? groupStatusRes.data.is_group_open : false;        
 
         // emit for side bar audition details view for handle close current round first check group is open or not
         eventBus.$emit("isCurrentOpenGroup", this.isOpenGroup);
@@ -687,6 +771,45 @@ export default {
         console.log(ex);
         this.$toasted.error(ex.response.data.message);
       }
+    },
+    async getHiddenPerformer(){
+      
+      try {
+        let result = await axios.get(
+          `appointments/auditions/${this.round.id}/showHidden`
+        );
+        this.hiddenPerformerList = result.data.data ? result.data.data : [];        
+        console.log("TCL: getHiddenPerformer -> hiddenPerformerList", this.hiddenPerformerList)
+      } catch (ex) {
+        console.log(ex);
+        this.$toasted.error(ex.response.data.message);
+      }
+    },
+    async restorePerformer(data){      
+      this.$toasted.clear();
+      try {
+        if (this.isLoading) {
+          return;
+        }
+        this.isLoading = true;
+        let params = {
+          user : data.user_id,
+          appointment_id : this.round.id
+        }
+        let result = await axios.post(
+          `t/instantfeedbacks/restore`,
+          params
+        );
+        this.$toasted.success("Performer has been restored successfully.");
+        this.getHiddenPerformer();
+        this.isLoading = false;
+      } catch (ex) {
+        this.getHiddenPerformer();
+        this.isLoading = false;
+        console.log(ex);
+        this.$toasted.error(ex.response.data.message);
+      }
+
     },
     showCloseGroup(value) {
       this.isShowCreateGroup = false;
@@ -721,36 +844,49 @@ export default {
       });
     },
     async handleApprMdlFrm(type) {
-      if(type != "approved" && !this.feedbackText){
+      this.comment = this.comment ? this.comment.trim() : '';
+      if((type == "rejected" && !this.feedbackText) || (type == "approved_std" && !this.feedbackStdText)){
         this.$toasted.clear();
         this.$toasted.error("Please enter feedback message");
         return false;
+      } else if(type == "approved" && this.comment == ''){
+        this.$toasted.clear();
+        this.$toasted.error("Please enter feedback");
+        return false;
       }
       try {
+        if (this.isLoading) {
+          return;
+        }
+        this.isLoading = true;
         let data = {
           appointment_id: this.round.id,
           user: this.performer_id,
           evaluator: this.userId,
-          comment: type === "approved" ? this.comment : this.feedbackText,
-          accepted: type === "approved" ? 1 : 0
+          comment: type === "approved" ? this.comment : type === "approved_std" ? this.feedbackStdText : this.feedbackText,
+          accepted: type === "approved" ||  type === "approved_std" ? 1 : 0
         };
         if (this.selectedAudition) {
           data.suggested_appointment_id = this.selectedAudition.id;
         }
         let res = await axios.post(`/t/instantfeedbacks/add`, data);
         this.$toasted.success(res.data.data);
+        this.isLoading = false;
         this.getUserlist();
         this.getGroupdetails();
         this.$modal.hide("showApproveMdl");
         this.$modal.hide("showRejectMdl");
+        this.$modal.hide("showApproveStandardMdl");        
         this.comment = "";
         this.selectedAudition = null;
         this.options = [];
       } catch (ex) {
+        this.isLoading = false;
         console.log(ex);
         this.$toasted.error(ex.response.data.data);
         this.$modal.hide("showApproveMdl");
         this.$modal.hide("showRejectMdl");
+        this.$modal.hide("showApproveStandardMdl");        
         this.comment = "";
         this.selectedAudition = null;
         this.options = [];
@@ -1198,6 +1334,11 @@ export default {
 .red-back {
   background-color: #93163e;
 }
+
+.gray-back {
+  background-color: gray;
+}
+
 .custom-btn-grp {
     display: flex;
     justify-content: center;

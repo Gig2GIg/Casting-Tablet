@@ -307,6 +307,20 @@
             >Audition Videos</p>
           </div>
         </div>
+        <div v-if="roundActive.status != 0 && audition.status == 1 && roundActive.status > 0 && audition.online == 0" class="w-full border border-gray-300 mt-6 mb-6" />
+        <div
+          v-if="roundActive.status != 0 && audition.status == 1 && roundActive.status > 0 && audition.online == 0"
+          class="flex w-full content-center text-center justify-center flex-wrap cursor-pointer"
+        >
+          <button
+            @click="hiddenPerformerView"
+            class="m-3 content-center flex items-center flex m-3 content-center border-2 rounded-sm border-purple w-48 h-10"
+          >
+            <p
+              class="flex-1 text-purple text-sm font-semibold content-center tracking-tighter flex-1"
+            >Hidden</p>
+          </button>
+        </div>
         <div v-if="audition.status == 2" class="w-full border border-gray-300 mt-6 mb-6" />
         <div
           v-if="audition.status == 2"
@@ -620,6 +634,10 @@ export default {
     });
   },
   methods: {
+    hiddenPerformerView(){
+      console.log("TCL: hiddenPerformerView -> hiddenPerformerView")
+      eventBus.$emit("showHiddenPerformer", true);
+    },
     handleNewGroup(round_status) {
       if (
         this.audition.status == 1 &&

@@ -96,25 +96,27 @@
             >
             <div>
               <div class="m-3 rounded-full flex items-center w-full h-12 ">
-                <figure class="flex justify-center flex-wrap content-center w-8 h-8 border-2 border-purple rounded-sm">
+                <figure class="flex justify-center flex-wrap content-center w-8 h-8 border-2 border-purple rounded-sm" v-if="data.evaluation != null">
                   <img
                     :src="'/images/icons/'+data.evaluation+'.png'"
                     alt="Icon"
                     class="content-center h-4"
                   >
                 </figure>
-                <p class="text-purple text-xs justify-center w-16 font-bold tracking-tighter flex-1 w-full">
+                <p class="text-purple text-xs justify-center w-16 font-bold tracking-tighter flex-1 w-full"  v-if="data.callback != null">
                   Call Back
                 </p>
                 <div
+                  v-if="data.callback != null"
                   class="py-1 px-5 border text-xs border-purple button-detail text-white font-bold uppercase mr-2 rounded-full cursor-pointer"
                 >
                   {{ data.callback == 1? 'Yes' :  'No' }}
                 </div>
-                <p class="text-purple text-xs justify-center w-16 font-bold tracking-tighter flex-1 w-full">
+                <p class="text-purple text-xs justify-center w-16 font-bold tracking-tighter flex-1 w-full" v-if="data.work != ''">
                   Work On
                 </p>
                 <div
+                  v-if="data.work != ''"
                   class="py-1 px-5 border text-xs border-purple button-detail text-white font-bold uppercase mr-2 rounded-full cursor-pointer"
                 >
                   {{ data.work }}
@@ -181,14 +183,14 @@
                 <div class="flex flex-wrap justify-center w-full">
                   <figure :class="{'border-2 border-purple': emoji==1}" class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg mt-3" @click="emoji=1">
                     <img
-                      :src="'/images/icons/5.png'"
+                      :src="'/images/icons/1.png'"
                       alt="Icon"
                       class="content-center h-8"
                     >
                   </figure>
                   <figure :class="{'border-2 border-purple': emoji==2}" class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg mt-3" @click="emoji=2">
                     <img
-                      :src="'/images/icons/4.png'"
+                      :src="'/images/icons/2.png'"
                       alt="Icon"
                       class="content-center h-8"
                     >
@@ -204,7 +206,7 @@
 
                   <figure :class="{'border-2 border-purple': emoji==4}" class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg mt-3" @click="emoji=4">
                     <img
-                      :src="'/images/icons/2.png'"
+                      :src="'/images/icons/4.png'"
                       alt="Icon"
                       class="content-center h-8"
                     >
@@ -212,7 +214,7 @@
 
                   <figure :class="{'border-2 border-purple': emoji==5}" class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg mt-3" @click="emoji=5">
                     <img
-                      :src="'/images/icons/1.png'"
+                      :src="'/images/icons/5.png'"
                       alt="Icon"
                       class="content-center h-8"
                     >
@@ -574,14 +576,14 @@ export default {
       isLoading: false,
       fullPage : true,
       rol:'',
-      emoji:3,
-      callback: 1,
+      emoji:null,
+      callback: null,
       favorite:0,
       attrs: [],
       slot:'',
       tag:'',
       recommendation:'',
-      workon:1,
+      workon:null,
       currentMarketplace:'',
       marketplaceSearch:'',
       currentUser:[],
@@ -620,12 +622,13 @@ export default {
     };
     await this.fetchUserFeedback(feedback);
     let test = Object.keys(this.feedback).length;
+    console.log("TCL: mounted -> this.feedback", this.feedback)
     if(Object.keys(this.feedback).length>0){
       for(data in this.feedback){
-        this.workon = this.feedback.work == 'vocals' ? 1 :this.feedback.work == 'acting' ? 2 : 3;
+        this.workon = this.feedback.work === null ? null : (this.feedback.work == 'vocals' ? 1 :this.feedback.work == 'acting' ? 2 : 3);
         this.favorite = this.feedback.favorite;
         this.emoji = this.feedback.evaluation;
-        this.callback = this.feedback.callback == 1 ?true:false;
+        this.callback = this.feedback.callback == 1 ?true: this.feedback.callback === null ? null : false;
         this.form.comment = this.feedback.comment;
       }
     }
@@ -739,13 +742,13 @@ export default {
         this.isLoading = false;
         this.$toasted.error('This performer already has a video, try later');
       }
-      this.form.callback = this.callback == 1 ?true:false;
+      this.form.callback = this.callback && this.callback == 1 ? true : this.callback === null ? null : false;
       this.form.data = this.$route.params.audition;
       this.form.appointment_id = this.$route.params.round;
       this.form.user = this.$route.params.id;
-      this.form.work = this.workon == 1 ? 'vocals' :this.workon == 2 ? 'acting' : 'dancing';
+      this.form.work = this.workon === null ? null : (this.workon == 1 ? 'vocals' : (this.workon == 2 ? 'acting' : 'dancing'));
       this.form.favorite = this.favorite
-      this.form.evaluation = this.emoji;
+      this.form.evaluation = this.emoji ? this.emoji : null;
       this.form.slot_id = this.slot;
       // this.form.evaluator = this.profile.details.id;
       this.form.evaluator = TokenService.getUserId();

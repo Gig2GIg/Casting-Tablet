@@ -85,7 +85,7 @@
         </div>
         <div
           class="py-2 flex flex-wrap px-4 border-b-2 border-gray-300   mr-2 cursor-pointer "
-          @click="tabSelected = 'instantFeedback'; hideMenuInfo = true"
+          @click="tabSelected = 'instantFeedback'; hideMenuInfo = true; showFeedBackOptionMenu = true"
         >
           <div class="w-10/12">
             <p class="font-bold">
@@ -270,6 +270,72 @@
           </div>
         </div>
       </div>
+      <div
+            v-if="hideMenuInfo && showFeedBackOptionMenu"
+            class="tags w-2/5  mx-auto pl-5 pr-3 py-3 mt-6"
+        >
+        <img
+          src="/images/icons/left_arrow.png"
+          class="cursor-pointer mb-3"
+          @click="hideMenuInfo = false; showFeedBackOptionMenu = false; tabSelected= ''"
+        />
+        
+            <div
+                  class="py-2 flex flex-wrap px-4 border-b-2 border-gray-300   mr-2 cursor-pointer feedback-option-ml"
+                  @click="tabSelected = 'instantGreenFeedbackTab'; showFeedBackOptionMenu = false;"
+                >
+                <div class="w-10/12">
+                <p class="font-bold">
+                    Green Check
+                </p>
+                </div>
+                <div class="w-2/12">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="10.926"
+                    height="19.213"
+                >
+                    <g data-name="Grupo 1912">
+                    <g data-name="Grupo 38">
+                        <path
+                        data-name="Trazado 24"
+                        d="M7.804 9.606L.373 17.037a1.275 1.275 0 101.8 1.8l8.053-8.05a1.26 1.26 0 00.328-.231 1.267 1.267 0 00.372-.95 1.267 1.267 0 00-.369-.95 1.259 1.259 0 00-.328-.231L2.175.373a1.275 1.275 0 00-1.8 1.8z"
+                        fill="#4d2545"
+                        />
+                    </g>
+                    </g>
+                </svg>
+                </div>
+            </div>
+            <div
+                  class="py-2 flex flex-wrap px-4 border-b-2 border-gray-300   mr-2 cursor-pointer feedback-option-ml"
+                  @click="tabSelected = 'instantRejectFeedbackTab'; showFeedBackOptionMenu = false;"
+                >
+                <div class="w-10/12">
+                <p class="font-bold">
+                    Red X
+                </p>
+                </div>
+                <div class="w-2/12">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="10.926"
+                    height="19.213"
+                >
+                    <g data-name="Grupo 1912">
+                    <g data-name="Grupo 38">
+                        <path
+                        data-name="Trazado 24"
+                        d="M7.804 9.606L.373 17.037a1.275 1.275 0 101.8 1.8l8.053-8.05a1.26 1.26 0 00.328-.231 1.267 1.267 0 00.372-.95 1.267 1.267 0 00-.369-.95 1.259 1.259 0 00-.328-.231L2.175.373a1.275 1.275 0 00-1.8 1.8z"
+                        fill="#4d2545"
+                        />
+                    </g>
+                    </g>
+                </svg>
+                </div>
+            </div>
+        </div>
+
       <div
         v-if="tabSelected === 'marketplace'"
         class="tags w-2/5 shadow-lg mx-auto px-3 py-3 mt-6"
@@ -650,60 +716,44 @@
       </div>
 
       <div
-        v-if="tabSelected === 'instantFeedback'"
+        v-if="tabSelected === 'instantRejectFeedbackTab'"
         class="tags w-9/12 shadow-md mx-auto px-3 py-3 mt-6"
       >
-        <div
+       <img
+          src="/images/icons/left_arrow.png"
           class="cursor-pointer"
-          @click="hideMenuInfo = false, tabSelected = ''"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="30.049"
-            height="39.187"
-          >
-            <defs>
-              <filter
-                id="a"
-                x="0"
-                y="0"
-                width="30.049"
-                height="39.187"
-                filterUnits="userSpaceOnUse"
-              >
-                <feOffset dy="3" />
-                <feGaussianBlur
-                  stdDeviation="3"
-                  result="blur"
-                />
-                <feFlood flood-opacity=".161" />
-                <feComposite
-                  operator="in"
-                  in2="blur"
-                />
-                <feComposite in="SourceGraphic" />
-              </filter>
-            </defs>
-            <g data-name="Grupo 39">
-              <g
-                filter="url(#a)"
-                data-name="Grupo 38"
-              >
-                <path
-                  data-name="Trazado 24"
-                  d="M12.447 16.594L20.641 8.4a1.406 1.406 0 10-1.988-1.988l-8.88 8.88a1.453 1.453 0 000 2.6l8.88 8.88a1.406 1.406 0 101.988-1.988z"
-                  fill="#4d2545"
-                />
-              </g>
-            </g>
-          </svg>
-        </div>
+          @click="hideMenuInfo = true; showFeedBackOptionMenu = true; tabSelected= 'instantFeedback'"
+        />
         <div class="py-4 px-4  mr-2 font-bold">
-          <form @submit.prevent="updateFeedBackTxt()" class="custom-setting-form">
+          <form @submit.prevent="updateFeedBackTxt('negative')" class="custom-setting-form">
             <p style="text-align: center">Performers who have been hidden will receive the message:</p>
             <base-input
               type="text"
               v-model="feedbackText"
+              class="w-full px-2"
+              :custom-classes="['border', 'border-purple']"
+            />
+            <base-button type="submit" expanded>Edit</base-button>
+          </form>
+        </div>
+      </div>
+
+      <div
+        v-if="tabSelected === 'instantGreenFeedbackTab'"
+        class="tags w-9/12 shadow-md mx-auto px-3 py-3 mt-6"
+      >
+        <img
+          src="/images/icons/left_arrow.png"
+          class="cursor-pointer"
+          @click="hideMenuInfo = true; showFeedBackOptionMenu = true; tabSelected= 'instantFeedback'"
+        />
+
+        <div class="py-4 px-4  mr-2 font-bold">
+          <form @submit.prevent="updateFeedBackTxt('positive')" class="custom-setting-form">
+            <p style="text-align: center">Performers who have been "Green checked" will receive the message:</p>
+            <base-input
+              type="text"
+              v-model="feedbackStdText"
               class="w-full px-2"
               :custom-classes="['border', 'border-purple']"
             />
@@ -1157,11 +1207,13 @@ export default {
       formfeatured: {},
       selectedFile: {},
       hideMenuInfo: false,
+      showFeedBackOptionMenu: false,
       tabSelected: "",
       contact_us_email: DEFINE.contact_us,
       listNotificacions: [],
       listAuditionFeedback: [],
       feedbackText: "",
+      feedbackStdText : "",
       cmsContentDetails: {},
       states,
       previewProfile : null,
@@ -1212,10 +1264,11 @@ export default {
   },
   methods: {
     ...mapActions("profile", ["fetch"]),
-    async updateFeedBackTxt() {
+    async updateFeedBackTxt(type) {
       try {
         let res = await axios.post(`/t/instantfeedbacks/changeDefault`, {
-          feedback: this.feedbackText
+          feedback: type== 'positive' ? this.feedbackStdText : this.feedbackText,
+          type : type
         });
         this.$toasted.success("Feedback updated successfully.");
       } catch (e) {
@@ -1278,9 +1331,8 @@ export default {
         let { data: { data } } = await axios.get(
           `t/instantfeedbacks/defaultFeedback/${this.user.id}`
         );
-        this.feedbackText = data.comment
-          ? data.comment
-          : "Default Feedback Text";
+        this.feedbackText = data.comment ? data.comment : "Thanks for attending. That's all we need today";
+        this.feedbackStdText = data.positiveComment ? data.positiveComment : "Thanks for attending. That's all we need today";
       } catch (e) {
         console.log(e);
       }
@@ -1534,5 +1586,8 @@ textarea {
 }
 .cropper-area>textarea{
   display: none;
+}
+.feedback-option-ml{
+  margin-left: 50px !important;
 }
 </style>
