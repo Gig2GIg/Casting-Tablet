@@ -1,6 +1,6 @@
 <!-- eslint-disable max-len -->
 <template>
-  <section class="bg-sidebar flex flex-col items-center h-full">
+  <section class="bg-sidebar flex flex-col items-center">
     <div class="flex items-center w-full sticky" v-if="!videoSection">
       <div
         :class="{ 'border-b-4 border-gray-600 border-purple': info, 'border-b-2 border-gray-400 text-gray-500':!info }"
@@ -211,7 +211,7 @@
       </div>
     </transition>
     <transition name="fade">
-      <div v-show="manage" :class="{'hidden': !manage}">
+      <div class="manage-scroll" v-show="manage" :class="{'hidden': !manage}">
         <div v-show="manage && (audition.status == 1||audition.status == 2)">
           <div class="flex w-full content-center text-center justify-center flex-wrap">
             <dropdown
@@ -318,7 +318,7 @@
           >
             <p
               class="flex-1 text-purple text-sm font-semibold content-center tracking-tighter flex-1"
-            >Hidden</p>
+            >Hidden Performers</p>
           </button>
         </div>
         <div v-if="audition.status == 2" class="w-full border border-gray-300 mt-6 mb-6" />
@@ -634,8 +634,7 @@ export default {
     });
   },
   methods: {
-    hiddenPerformerView(){
-      console.log("TCL: hiddenPerformerView -> hiddenPerformerView")
+    hiddenPerformerView(){      
       eventBus.$emit("showHiddenPerformer", true);
     },
     handleNewGroup(round_status) {
@@ -1076,6 +1075,11 @@ ul.submanu-content > li > a {
 
 .pass-code-input {
   margin-left: 10.5rem !important;
+}
+.manage-scroll{
+  width: 100%;
+  height: calc(100vh - 110px);
+  overflow-y: auto;
 }
 </style>
 

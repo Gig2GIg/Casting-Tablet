@@ -8,6 +8,7 @@
         class="h-32"
         alt="Image"
       > -->
+      <img v-if="favorite == 1"  :src="'/images/icons/Path_56@2x.png'" class="star-performer" alt="star" >
       <img v-lazy="image"  class="h-32 object-cover" alt="Image" >
 
       <div
@@ -56,6 +57,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    favorite : {
+      type: Number,
+      default: 0,
+    }
   },
   data() {
     return {};
@@ -65,3 +70,15 @@ export default {
   methods: {},
 };
 </script>
+<style>
+.star-performer{
+  float: left;
+  position: absolute;
+  left: 7px;
+  top: 15px;
+  z-index: 1000;
+  font-weight: bold;
+  width: 20px;
+}
+</style>
+

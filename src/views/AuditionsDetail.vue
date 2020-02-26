@@ -60,7 +60,8 @@
                   <card-user
                     :title="data.name"
                     :time="currentAudition && currentAudition.online != 1 ? data.time : ''"
-                    :image="data.image"
+                    :image="data.image"        
+                    :favorite="!isAuditionVideos ? data.favorite : 0"            
                     class="custom-perfom-list"
                     v-bind:class="{ 'after-clck-new-grp' : isShowCreateGroup}"
                   />
@@ -125,6 +126,7 @@
                     :title="data.name"
                     :time="currentAudition && currentAudition.online != 1 ? data.time : ''"
                     :image="data.image"
+                    :favorite="data.favorite"
                     class="custom-perfom-list"
                     v-bind:class="{ 'after-clck-new-grp' : isShowCreateGroup}"
                   />
@@ -403,14 +405,16 @@ export default {
       this.currentAudition = value;
     });
     eventBus.$on("auditionVideoDetails", value => {
+      this.showHiddenPerformer = false;      
       this.isAuditionVideos = value.videoSection;
       this.isAuditionVideos ? this.manageAuditionVideoPerformer(value.videos) : this.manageSelectedPerformer();      
+      eventBus.$emit("showHiddenPerformer", this.showHiddenPerformer);
     });
     eventBus.$on("showHiddenPerformer", value => {
       this.showHiddenPerformer = value;
       if(this.showHiddenPerformer) {
         this.getHiddenPerformer(value);
-      } else {
+      } else if(!this.isAuditionVideos) {
         this.getUserlist();
         this.getGroupdetails();
       }
@@ -798,8 +802,7 @@ export default {
         let result = await axios.get(
           `appointments/auditions/${this.round.id}/showHidden`
         );
-        this.hiddenPerformerList = result.data.data ? result.data.data : [];        
-        console.log("TCL: getHiddenPerformer -> hiddenPerformerList", this.hiddenPerformerList)
+        this.hiddenPerformerList = result.data.data ? result.data.data : [];
       } catch (ex) {
         console.log(ex);
         this.$toasted.error(ex.response.data.message);

@@ -551,7 +551,7 @@
             <div class="w-1/3  ml-4 text-purple px-2">
               <base-input
                       v-model="form.address"
-                      v-validate="'required|email'"
+                      v-validate="'required|max:300'"
                       :custom-classes="['border border-b border-gray-300']"
                       name="address"
                       placeholder="Address"
@@ -566,6 +566,7 @@
                 name="agency_name"
                 placeholder="Agency Name"
                 :message="errors.first('agency_name')"
+                data-vv-as="agency name"
               />
             </div>
           </div>

@@ -621,8 +621,7 @@ export default {
       round:this.$route.params.round
     };
     await this.fetchUserFeedback(feedback);
-    let test = Object.keys(this.feedback).length;
-    console.log("TCL: mounted -> this.feedback", this.feedback)
+        
     if(Object.keys(this.feedback).length>0){
       for(data in this.feedback){
         this.workon = this.feedback.work === null ? null : (this.feedback.work == 'vocals' ? 1 :this.feedback.work == 'acting' ? 2 : 3);

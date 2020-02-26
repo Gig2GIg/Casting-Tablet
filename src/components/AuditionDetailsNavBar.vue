@@ -32,7 +32,7 @@
       >
       </div>
     </div>
-    <div class="flex flex-col custom-top-nav" v-if="isShowManageGroup && performerCount && performerCount > 0">
+    <div class="flex flex-col custom-top-nav" v-if="!showHiddenPerformer && !isAuditionVideos && isShowManageGroup && performerCount && performerCount > 0">
         <div
           v-if="isShowNewGroup"
           class="text-white h-6 ml-auto mr-5" >
@@ -135,7 +135,8 @@ export default {
         name: 'Record Group',
       },
       audition_data: null,
-      showHiddenPerformer : false
+      showHiddenPerformer : false,
+      isAuditionVideos : false
     };
   },
   computed: {
@@ -167,9 +168,11 @@ export default {
       this.isShowCloseGroup = value;
       this.isShowNewGroup = this.isShowCreateGroup = !this.isShowCloseGroup;
     });
-    eventBus.$on("showHiddenPerformer", value => {      
-    console.log("TCL: created ->navbar  showHiddenPerformer")
+    eventBus.$on("showHiddenPerformer", value => {
       this.showHiddenPerformer = value;
+    });
+    eventBus.$on("auditionVideoDetails", value => {
+      this.isAuditionVideos = value.videoSection;
     });
   },
   methods: {
