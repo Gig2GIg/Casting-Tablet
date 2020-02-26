@@ -13,7 +13,7 @@
       <div v-if="(status == 2 && round.length ==0) && (finalCastState == false)" class="flex items-center flex-wrap ml-5 h-full">
         <!-- <h4 class="w-full text-center text-purple font-semibold text-2xl">Auditions has been closed for this audition</h4> -->
       </div>
-      <div v-if="status == 1 && userList.length == 0 " class="flex items-center flex-wrap ml-5 h-full">
+      <div v-if="!showHiddenPerformer && status == 1 && userList.length == 0 " class="flex items-center flex-wrap ml-5 h-full">
         <h4 class="w-full text-center text-purple font-semibold text-2xl">No performers added yet</h4>
       </div>
       <div v-else-if="showHiddenPerformer && (!hiddenPerformerList || hiddenPerformerList.length == 0)" class="flex items-center flex-wrap ml-5 h-full">
@@ -405,6 +405,7 @@ export default {
       this.currentAudition = value;
     });
     eventBus.$on("auditionVideoDetails", value => {
+    console.log("TCL: created -> value", value)
       this.showHiddenPerformer = false;      
       this.isAuditionVideos = value.videoSection;
       this.isAuditionVideos ? this.manageAuditionVideoPerformer(value.videos) : this.manageSelectedPerformer();      
@@ -869,7 +870,7 @@ export default {
       });
     },
     manageAuditionVideoPerformer(videos) {
-      let userIds = _.compact(_.uniq(videos.map(video=>video.performer.user_id ? video.performer.user_id : null)));
+      let userIds = videos && videos.length > 0 ? _.compact(_.uniq(videos.map(video=>video.performer.user_id ? video.performer.user_id : null))) : [];
       this.finalUserList = [];
       _.each(userIds, user_id => {
         let entry = _.find(this.userList, user => {
