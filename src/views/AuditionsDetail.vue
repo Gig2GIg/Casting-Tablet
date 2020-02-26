@@ -12,17 +12,20 @@
       </div>
       <div v-if="(status == 2 && round.length ==0) && (finalCastState == false)" class="flex items-center flex-wrap ml-5 h-full">
         <!-- <h4 class="w-full text-center text-purple font-semibold text-2xl">Auditions has been closed for this audition</h4> -->
-      </div>
+      </div>      
       <div v-if="!showHiddenPerformer && status == 1 && userList.length == 0 " class="flex items-center flex-wrap ml-5 h-full">
         <h4 class="w-full text-center text-purple font-semibold text-2xl">No performers added yet</h4>
       </div>
       <div v-else-if="showHiddenPerformer && (!hiddenPerformerList || hiddenPerformerList.length == 0)" class="flex items-center flex-wrap ml-5 h-full">
         <h4 class="w-full text-center text-purple font-semibold text-2xl">There are no performances</h4>
       </div>
+      <div v-else-if="isAuditionVideos && (!finalUserList || finalUserList.length == 0)" class="flex items-center flex-wrap ml-5 h-full">
+        <h4 class="w-full text-center text-purple font-semibold text-2xl">There are no performances</h4>
+      </div>
       <div v-if="isShowPerformer && (status == 1 || finalCastState == true || round.length >0 || showHiddenPerformer)" class=" flex flex-wrap ml-5">
         <div class="col-6">
           <template v-if="!finalCastState && showHiddenPerformer" class="list-group flex flex-wrap">
-            <transition-group v-if="hiddenPerformerList && hiddenPerformerList.length > 0" class="flex flex-wrap justify-center content-center" type="transition">              
+            <transition-group v-if="hiddenPerformerList && hiddenPerformerList.length > 0" class="flex flex-wrap content-center" type="transition">              
             <div
                 
                 class="list-group-item"
@@ -48,8 +51,8 @@
             </transition-group>
           </template>
 
-          <template v-else-if="!finalCastState && finalUserList && finalUserList.length > 0" class="list-group flex flex-wrap">
-            <transition-group  class="flex flex-wrap justify-center content-center" type="transition" :name="!drag ? 'flip-list' : null">              
+          <template v-else-if="!finalCastState && ((finalUserList && finalUserList.length > 0) || isAuditionVideos)" class="list-group flex flex-wrap">
+            <transition-group  class="flex flex-wrap content-center" type="transition" :name="!drag ? 'flip-list' : null">              
               <div
 
                 class="list-group-item"
@@ -91,7 +94,7 @@
           </template>
 
           <div id="performer_box"  v-else-if="finalCastState" class="box dragArea list-group flex flex-wrap mt-2">
-            <span class="final-cast-list flex flex-wrap justify-center content-start">
+            <span class="final-cast-list flex flex-wrap content-start">
                 <div
                         class="slot list-group-item mr-4 mb-3"
                         v-for="(data) in finalCastListUser"
@@ -114,7 +117,7 @@
             
           </div>
           <template v-else class="list-group flex flex-wrap">
-            <transition-group  class="flex flex-wrap justify-center content-center" type="transition" :name="!drag ? 'flip-list' : null">              
+            <transition-group  class="flex flex-wrap content-center" type="transition" :name="!drag ? 'flip-list' : null">              
               <div
 
                 class="list-group-item"
@@ -404,8 +407,7 @@ export default {
     eventBus.$on("currentAudition", value => {
       this.currentAudition = value;
     });
-    eventBus.$on("auditionVideoDetails", value => {
-    console.log("TCL: created -> value", value)
+    eventBus.$on("auditionVideoDetails", value => {    
       this.showHiddenPerformer = false;      
       this.isAuditionVideos = value.videoSection;
       this.isAuditionVideos ? this.manageAuditionVideoPerformer(value.videos) : this.manageSelectedPerformer();      
