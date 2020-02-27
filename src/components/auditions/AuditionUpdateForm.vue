@@ -89,8 +89,8 @@
         :message="errors.first('create.date')"
       />
       <template>
-          <div class="relative h-12 my-2" v-if="isSetTime">
-              <vue-clock-picker
+          <div class="relative h-12 my-2" v-if="isSetTime">              
+              <custom-time-picker                    
                   mode="24"
                   :default-hour="defaultTimeHour"            
                   :default-minute="defaultTimeMinute"
@@ -102,8 +102,8 @@
                   placeholder="Time"
                   colorPalette="dark"
                   theme="material"
-              >
-              </vue-clock-picker>
+                >
+                </custom-time-picker>
           </div>          
           <base-input 
             v-if="!isSetTime"
@@ -570,13 +570,15 @@ Vue.use(VueMask);
 
 // Import Google Maps Autocomplete
 import * as VueGoogleMaps from "vue2-google-maps";
-import VueClockPicker from 'vue-clock-picker'
+// import VueClockPicker from 'vue-clock-picker'
 import { setTimeout } from 'timers';
 import DEFINE from '../../utils/const.js';
 import VueCropper from 'vue-cropperjs';
 import 'cropperjs/dist/cropper.css';
 
 import moment from "moment";
+
+import customTimePicker from '../custom/custom-clock-picker/components/customTimePicker.vue';
 
 Vue.use(VueGoogleMaps, {
   load: {
@@ -593,7 +595,7 @@ export default {
     ContributorItem,
     DocumentItem,
     Loading,
-    VueClockPicker,
+    customTimePicker,
     VueCropper
   },
   data() {

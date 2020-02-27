@@ -92,20 +92,20 @@
             />
             <template>
                 <div class="relative h-12 my-2">
-                    <vue-clock-picker
-                        mode="24"
-                        class="cus-des-timepicker px-2 text-left"
+                    <custom-time-picker                    
+                        class="timepicker-custom cus-des-timepicker px-2 text-left"
                         :onTimeChange="timeChangeHandler"
                         :defaultFocused="false"
                         v-validate="'required'"
                         :message="errors.first('create.time')"
                         placeholder="Time"
-                        :defaultHour="defaultHour"
-                        :defaultMinute="defaultMinute"
+                        :HOURS="24"
                         colorPalette="dark"
                         theme="material"
+                        :defaultHour="defaultHour"
+                        :defaultMinute="defaultMinute"
                     >
-                    </vue-clock-picker>
+                    </custom-time-picker>
                 </div>
             </template>
             <!-- <base-input
@@ -640,8 +640,7 @@
     </form>
 </template>
 
-<script>
-    import VueClockPicker from 'vue-clock-picker'
+<script>    
     import Vue from "vue";
     import uuid from "uuid/v1";
     import firebase from "firebase/app";
@@ -678,6 +677,8 @@
 
     import moment from "moment";
 
+    import customTimePicker from '../custom/custom-clock-picker/components/customTimePicker.vue';
+
     export default {
         name: "AuditionForm",
         components: {
@@ -686,11 +687,12 @@
             ContributorItem,
             DocumentItem,
             Loading,
-            VueClockPicker,
+            customTimePicker,
             VueCropper
         },
         data() {
             return {
+                clock_mode : 12,
                 defaultHour:'0',
                 defaultMinute:'0',
                 innerWidth: window.innerWidth,

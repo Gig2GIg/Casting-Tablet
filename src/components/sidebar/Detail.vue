@@ -30,8 +30,8 @@
           <div class="w-1/2 text-left">
             <h4 class="text-left text-sm">{{ $dayjs(audition.date).format('MMMM Do YYYY') }}</h4>
           </div>
-          <div class="w-1/4 text-left">
-            <h4 class="text-left text-sm">{{ audition.time }}</h4>
+          <div class="w-1/3 text-left">
+            <h4 class="text-left text-sm">{{ audition.time | custTimeFormat}}</h4>
           </div>
         </div>
         <div class="container flex w-full mb-5 mt-2">

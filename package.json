@@ -27,7 +27,7 @@
     "vee-validate-laravel-extended": "^1.0.0",
     "vue": "^2.6.10",
     "vue-carousel": "^0.18.0",
-    "vue-clock-picker": "^0.4.2",
+    "vue-clock-picker": "0.4.2",
     "vue-cropperjs": "^4.0.1",
     "vue-draggable": "^2.0.2",
     "vue-dropdowns": "^1.0.6",

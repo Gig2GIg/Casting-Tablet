@@ -21,19 +21,19 @@
         :message="errors.first('create.date')"
       />
       <template>
-        <div class="relative h-12 my-2">                    
-            <vue-clock-picker
-                mode="24"                         
-                class="cus-des-timepicker px-2 text-left"
-                :onTimeChange="timeChangeHandler"
-                :defaultFocused="false"                                
-                placeholder="Time"
-                :defaultHour="defaultHour"
-                :defaultMinute="defaultMinute"
-                colorPalette="dark"
-                theme="material"
+        <div class="relative h-12 my-2">           
+            <custom-time-picker                    
+              mode="24"                         
+              class="cus-des-timepicker px-2 text-left"
+              :onTimeChange="timeChangeHandler"
+              :defaultFocused="false"                                
+              placeholder="Time"
+              :defaultHour="defaultHour"
+              :defaultMinute="defaultMinute"
+              colorPalette="dark"
+              theme="material"
             >
-            </vue-clock-picker>
+            </custom-time-picker>
             <!-- <p v-if="isFormSubmit && (!appointments.time || appointments.time == '')" data-v-2d998ef9="" class="ml-6 mb-2">
               The time field is required.
             </p> -->
@@ -266,7 +266,6 @@
 
 <script>
 import Vue from "vue";
-import VueClockPicker from 'vue-clock-picker'
 import { mapActions, mapState, mapGetters } from "vuex";
 import SlotItem from '@/components/auditions/SlotItem.vue';
 import AuditionForm from '@/components/auditions/AuditionForm.vue';
@@ -279,6 +278,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
 // Import Google Maps Autocomplete
 import * as VueGoogleMaps from "vue2-google-maps";
 import DEFINE from '../../utils/const.js';
+import customTimePicker from '@/components/custom/custom-clock-picker/components/customTimePicker.vue';
 
 Vue.use(VueGoogleMaps, {
   load: {
@@ -289,7 +289,7 @@ Vue.use(VueGoogleMaps, {
 
 export default {
   name: 'AppointmentsModal',
-  components: { SlotItem, Loading, VueClockPicker },
+  components: { SlotItem, Loading, customTimePicker },
   props: {
     data: {
       type: Object,
