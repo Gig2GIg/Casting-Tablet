@@ -570,7 +570,6 @@ Vue.use(VueMask);
 
 // Import Google Maps Autocomplete
 import * as VueGoogleMaps from "vue2-google-maps";
-// import VueClockPicker from 'vue-clock-picker'
 import { setTimeout } from 'timers';
 import DEFINE from '../../utils/const.js';
 import VueCropper from 'vue-cropperjs';

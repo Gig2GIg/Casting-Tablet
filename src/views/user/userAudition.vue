@@ -380,6 +380,42 @@
       >
       <p class="text-purple text-xl font-bold mt-4 w-full">{{data.name}}</p>
       <p class="text-purple text-m font-bold mt-2 w-full">{{performerDetails.details && performerDetails.details.city ? performerDetails.details.city : ""}}</p>
+      <div class="flex w-full cus-cur mt-5">
+        <a class="social-a flex items-center justify-center content-center w-12 h-12" v-if="performerDetails.details && performerDetails.details.facebook" :href="setUrl(performerDetails.details.facebook)" target="_blank" rel="noopener noreferrer" >
+          <img            
+          :src="'/images/icons/fb_link.png'"
+          alt="Icon"
+          class="h-6"
+        >
+        </a>
+        <a class="social-a flex items-center justify-center content-center w-12 h-12" v-if="performerDetails.details && performerDetails.details.instagram" :href="setUrl(performerDetails.details.instagram)" target="_blank" rel="noopener noreferrer" >
+        <img
+            v-if="performerDetails.details && performerDetails.details.instagram"
+          :src="'/images/icons/instagram_link.png'"
+          alt="Icon"
+          class="h-6"
+        >
+        </a>
+        <a class="social-a flex items-center justify-center content-center w-12 h-12" v-if="performerDetails.details && performerDetails.details.twitter" :href="setUrl(performerDetails.details.twitter)" target="_blank" rel="noopener noreferrer" >
+          <img
+              v-if="performerDetails.details && performerDetails.details.twitter"
+            :src="'/images/icons/twitter_link.png'"
+            alt="Icon"
+            class="h-6"
+          >
+        </a>
+        <a class="social-a flex items-center justify-center content-center w-12 h-12" v-if="performerDetails.details && performerDetails.details.linkedin" :href="setUrl(performerDetails.details.linkedin)" target="_blank" rel="noopener noreferrer" >
+        <img
+            v-if="performerDetails.details && performerDetails.details.linkedin"
+          :src="'/images/icons/linkedin_link.png'"
+          alt="Icon"
+          class="h-6"
+        >
+        </a>
+       
+
+      </div>
+
       <div @click="getPerformerDetail('info')" class="flex w-full justify-start mt-12 cus-cur">
         <img
           :src="'/images/icons/person.png'"
@@ -388,6 +424,7 @@
         >
         <p class="text-purple text-m text-left ml-4 tracking-wide font-semibold w-1/2">Info</p>
       </div>
+      
       <div @click="getPerformerDetail('credit')" class="flex w-full justify-start mt-12 cus-cur">
         <img
           :src="'/images/icons/icon.png'"
@@ -872,7 +909,14 @@ export default {
       },
       hide () {
         this.$modal.hide('marketplace');
+      },
+      setUrl(url){      
+      var pattern = /^((http|https|ftp):\/\/)/;
+      if(!pattern.test(url)) {
+          url = "http://" + url;
       }
+      return url;
+    }
     },
 };
 </script>
@@ -943,5 +987,10 @@ nav {
 .calendar-bar-inline .vc-day-layer[data-v-47ef1cd6] {
     left: -6px !important;
     right: -6px !important;
+}
+.social-a{
+  margin-right: 5px;
+  background: #cacaca;
+  border-radius: 10040px !important;
 }
 </style>
