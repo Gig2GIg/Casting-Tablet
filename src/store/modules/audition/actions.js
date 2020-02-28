@@ -1,6 +1,7 @@
 import axios from 'axios';
 import * as types from '@/store/types';
 import AuditionService from '@/services/AuditionService';
+import _ from "lodash";
 
 export default {
   async fetch({ commit }) {
@@ -36,8 +37,9 @@ export default {
 
   async fetchUserList({ commit }, audition) {
     try {
-      const { data: { data } } = await axios.get(`/appointments/auditions/${audition}`);
+      let { data: { data } } = await axios.get(`/appointments/auditions/${audition}`);
       console.log(data);
+      data = _.orderBy(data, 'time', 'asc'); 
       commit(types.FETCH_USER_LIST_AUDITION_SUCCESS, data);
     } catch (e) {
       commit(types.FETCH_USER_LIST_AUDITION_FAILURE);

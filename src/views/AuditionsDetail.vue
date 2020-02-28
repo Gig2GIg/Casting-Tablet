@@ -94,7 +94,7 @@
           </template>
 
           <div id="performer_box"  v-else-if="finalCastState" class="box dragArea list-group flex flex-wrap mt-2">
-            <span class="final-cast-list flex flex-wrap content-start">
+            <span class="final-cast-list flex flex-wrap content-start items-center">
                 <div
                         class="slot list-group-item mr-4 mb-3"
                         v-for="(data) in finalCastListUser"
@@ -870,6 +870,7 @@ export default {
         });
         if (entry) this.finalUserList.push(entry);
       });
+      this.finalUserList = _.orderBy(this.finalUserList, 'time', 'asc'); 
     },
     manageAuditionVideoPerformer(videos) {
       let userIds = videos && videos.length > 0 ? _.compact(_.uniq(videos.map(video=>video.performer.user_id ? video.performer.user_id : null))) : [];
@@ -880,6 +881,7 @@ export default {
         });
         if (entry) this.finalUserList.push(entry);
       });
+      this.finalUserList = _.orderBy(this.finalUserList, 'time', 'asc'); 
     },
     async handleApprMdlFrm(type) {
       this.comment = this.comment ? this.comment.trim() : '';

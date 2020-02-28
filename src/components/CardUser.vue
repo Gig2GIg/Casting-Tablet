@@ -76,7 +76,7 @@ export default {
   position: absolute;
   left: 7px;
   top: 15px;
-  z-index: 1000;
+  /* z-index: 1000; */
   font-weight: bold;
   width: 20px;
 }
