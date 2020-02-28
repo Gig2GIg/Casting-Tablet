@@ -1196,7 +1196,7 @@ import 'cropperjs/dist/cropper.css';
 import firebase from 'firebase/app';
 import 'firebase/storage';
 import uuid from 'uuid/v1';
-
+import moment from 'moment';
 
 export default {
   components: { 
@@ -1225,6 +1225,7 @@ export default {
       data: null,
       minHeight : Number(200),
       minWidth : Number(200),
+      isLoading : false
     };
   },
   async mounted() {
@@ -1292,17 +1293,23 @@ export default {
       this.form.zip = this.user.details.zip;
       this.form.agency_name = this.user.details.agency_name;
       this.form.gender = this.user.details.gender;
-      this.form.state = this.user.details.state;
-      let birth = new Date(this.user.details.birth);
+      this.form.state = this.user.details.state;      
       this.form.location = "12,33334 - 23,00000";
       this.form.image = this.user.image.url;
       this.previewProfile = this.form.image;
-      birth.setDate(birth.getDate() + 1);
-      this.form.birth = birth;
+      if(this.user.details.birth){
+         const parts = this.user.details.birth.split('-');
+        this.form.birth = new Date(parts[0], parts[1] - 1, parts[2]);
+      }
+      
     },
     async updateData() {
       try {
 
+        if (this.isLoading || !await this.$validator.validateAll()) {
+          return;
+        }
+        this.isLoading = true;
         // upload image
         if(this.updatedImageBlob && this.updatedImageFile){
           const imageName = this.updatedImageFile.name;
@@ -1312,10 +1319,16 @@ export default {
 
           this.form.image = await snapshot.ref.getDownloadURL();
         }
+
+        if(this.form.birth){
+          this.form.birth = moment(this.form.birth).format("YYYY-MM-DD");
+        }
+
         let action = await axios.put(
           `/t/users/update/${this.user.id}`,
           this.form
         );
+        this.isLoading = false;
         this.$toasted.success("The user data has updated successfully.");
         this.cropImg = null;
         this.updatedImageBlob = null;
@@ -1323,6 +1336,7 @@ export default {
         this.getUserData();
 
       } catch (e) {
+        this.isLoading = false;
         console.log(e);
         this.$toasted.error("User data not updated, try later.");
       }

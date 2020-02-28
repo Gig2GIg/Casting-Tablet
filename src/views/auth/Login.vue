@@ -88,8 +88,9 @@
           } else if(e.name && e.name == DEFINE.firebase_permission_error.name){
             this.updateDeviceToken("");
             this.onLoginSuccessRedirect();
-          }
-          else if (e.response.status === 401) {
+          } else if (e.response.status === 403) {
+            this.$toasted.error(e.response.data.error ? e.response.data.error : 'These credentials do not match our records.');
+          } else if (e.response.status === 401) {
             this.$toasted.error('These credentials do not match our records.');
           }
         } finally {
