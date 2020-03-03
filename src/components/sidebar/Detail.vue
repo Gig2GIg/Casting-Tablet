@@ -96,7 +96,13 @@
         <div class="w-10/12 border border-gray-300 mt-3" />
         <div class="container flex w-full mt-3">
           <div class="flex w-full text-center justify-center flex-wrap">
-            <carousel class="flex" :per-page="4" :pagination-enabled="false">
+            <carousel class="flex-none w-90" 
+              :per-page="innerWidth < 1920 ? 3 : 4" 
+              :pagination-enabled="false"
+              :navigation-enabled="true"
+              :navigation-prev-label="'&#x279C;'"
+              :navigation-next-label="'&#x279C;'">
+
               <slide v-for="data in audition.roles" :key="data.id" class="text-center">
                 <div
                   class="m-3 rounded-full red-light flex items-center w-12 h-12 button-detail bg-cover"
@@ -599,7 +605,8 @@ export default {
         useKbEvents: false,
         preventClickEvent: false
       },
-      current_round: {}
+      current_round: {},
+      innerWidth: window.innerWidth,
     };
   },
   watch: {
@@ -632,8 +639,12 @@ export default {
         this.getGroupdetails();
       }
     });
+    window.addEventListener("resize", this.onResize);
   },
   methods: {
+    onResize() {
+      this.innerWidth = window.innerWidth;
+    },
     hiddenPerformerView(){      
       eventBus.$emit("showHiddenPerformer", true);
     },

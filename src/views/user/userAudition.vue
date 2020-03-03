@@ -72,7 +72,7 @@
       <div class="w-1/4 shadow-lg">
         <p class="text-center text-2xl text-purple font-bold">Roles</p>
         <div class="flex flex-wrap justify-center">
-            <div v-for="data in audition.roles" :key="data.id" class="text-center w-1/2 flex justify-center">
+            <div v-for="data in currentUserRoles" :key="data.id" class="text-center w-1/2 flex justify-center">
               <div>
                 <div class="m-3 rounded-full flex items-center w-12 h-12 bg-cover" :class="{'button-detail': data.id == rol, 'bg-gray-400': data.id != rol}" :style="{ backgroundImage: 'url(' + data.image.url + ')' }">
 
@@ -310,12 +310,17 @@
               />
         </div>
         <div class="m-4">
-          <div v-for="data in tags" :key="data.id" class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
-            <p class="text-purple w-1/2">{{data.title}}</p>
-            <div class="flex flex-wrap justify-end w-1/2">
-              <img src="/images/icons/garbage@3x.png" alt="Icon" class="h-6" @click="deleteTag(data)">
+          <template v-if="tags.length > 0">
+            <div v-for="data in tags" :key="data.id" class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
+              <p class="text-purple w-1/2">{{data.title}}</p>
+              <div class="flex flex-wrap justify-end w-1/2">
+                <img src="/images/icons/garbage@3x.png" alt="Icon" class="h-6" @click="deleteTag(data)">
+              </div>
             </div>
-          </div>
+          </template>
+          <div v-else class="flex flex-wrap justify-center text-left content-center w-full border-gray-500 mb-4">
+            <p class="text-purple w-full">There is no tags added</p>
+          </div>          
         </div>
       </div>
       <div class="w-1/12"></div>
@@ -336,12 +341,17 @@
           </div>
         </div>
         <div class="m-4">
-          <div v-for="data in recommendations" :key="data.id" class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
-            <p class="text-purple w-1/2">{{data.markeplace.title}}</p>
-            <div class="flex flex-wrap justify-end w-1/2">
-              <img src="/images/icons/garbage@3x.png" alt="Icon" class="h-6" @click="deleteRecommended(data)">
+          <template v-if="recommendations.length > 0">
+            <div v-for="data in recommendations" :key="data.id" class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
+              <p class="text-purple w-1/2">{{data.markeplace.title}}</p>
+              <div class="flex flex-wrap justify-end w-1/2">
+                <img src="/images/icons/garbage@3x.png" alt="Icon" class="h-6" @click="deleteRecommended(data)">
+              </div>
             </div>
-          </div>
+          </template>
+          <div v-else class="flex flex-wrap justify-center text-left content-center w-full border-gray-500 mb-4">
+              <p class="text-purple w-full">There is no marketplace added</p>
+            </div>
         </div>
       </div>
     </div>
@@ -635,7 +645,8 @@ export default {
       },
       addNumberText: "",
       isAssignedNumber:false,
-      performerDetails:{}
+      performerDetails:{},
+      currentUserRoles : []
     };
   },
   computed: {
@@ -649,7 +660,8 @@ export default {
   },
   async mounted() {
     await this.fetchAuditionData(this.$route.params.audition);
-    await this.fetchUserList(this.$route.params.round);
+    await this.fetchUserList(this.$route.params.round);    
+    this.manageCurrentUserRoles();
     await this.fetchTags({"round": this.$route.params.round, "user": this.$route.params.id,});
     await this.fetchRecommendation({"round": this.$route.params.audition, "user": this.$route.params.id,});
     await this.fetchOnlineMedia({"round": this.$route.params.round, "user": this.$route.params.id,});
@@ -688,7 +700,7 @@ export default {
     if(this.currentUser != ""){
       this.slot = this.currentUser[0].slot_id;
       this.rol = this.currentUser[0].rol;
-    }
+    }    
     let data = {"appointment_id": this.$route.params.round, "performer": this.$route.params.id}
     await this.fetchTeamFeedback(data);
     await this.myCalendar(this.$route.params.id);
@@ -716,6 +728,16 @@ export default {
       if(type == 'appearance'){
         this.$modal.show('appearance');
       }
+    },
+    manageCurrentUserRoles(){
+      this.currentUserRoles = [];
+      let currentUser = this.userList.filter(userList => userList.user_id == this.$route.params.id);      
+      let userrolesArray = currentUser.length > 0 && currentUser[0] && currentUser[0].rol ? currentUser[0].rol.split(',') : [];      
+      this.audition.roles.map(rol=>{      
+          if(userrolesArray.includes(`${rol.id}`)){
+              this.currentUserRoles.push(rol);
+          }
+      });
     },
     async addNumber() {
       try {
