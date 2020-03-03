@@ -86,44 +86,56 @@
       </div>
       <div class="w-1/12"></div>
       <div v-if="audition.online == 0" class="w-1/3 shadow-lg">
-        <p class="text-center text-2xl text-purple font-bold">Team Feedback</p>
         <div class="flex flex-wrap justify-center">
-            <div v-if="teamFeedback.length  == 0" class="text-purple font-bold h-full"> Not records created yet</div>
-            <div
-              v-for="data in teamFeedback"
-              :key="data.id"
-              class="text-center w-full flex justify-center"
-            >
-            <div>
-              <div class="m-3 rounded-full flex items-center w-full h-12 ">
-                <figure class="flex justify-center flex-wrap content-center w-8 h-8 border-2 border-purple rounded-sm" v-if="data.evaluation != null">
-                  <img
-                    :src="'/images/icons/'+data.evaluation+'.png'"
-                    alt="Icon"
-                    class="content-center h-4"
+          <p class="text-center text-2xl text-purple font-bold">Team Feedback</p>
+          <div v-if="!isRealodTeamFeedback" class="justify-end text-right cursor-pointer mt-2 mr-0 reafresh-spacing" @click="updateTeamFeedBack">
+            <img src="/images/icons/reload.png" class="h-5 ml-3" alt="Reload" />
+          </div>
+          <div v-else class="justify-end text-right mt-2 mr-0 reafresh-spacing" >
+            <img  src="/images/icons/reload_process.gif" class="h-5 ml-3" alt="Reloading..." />
+          </div>
+        </div>
+        
+        
+        <div class="flex flex-wrap justify-center">
+            <div v-if="teamFeedback.length == 0 && !isRealodTeamFeedback" class="text-purple font-bold h-full"> Not records created yet</div>
+            <template v-if="!isRealodTeamFeedback">
+              <div
+                v-for="data in teamFeedback"
+                :key="data.id"
+                class="text-center w-full flex justify-center"
+              >
+              <div>
+                <div class="m-3 rounded-full flex items-center w-full h-12 ">
+                  <figure class="flex justify-center flex-wrap content-center w-8 h-8 border-2 border-purple rounded-sm" v-if="data.evaluation != null">
+                    <img
+                      :src="'/images/icons/'+data.evaluation+'.png'"
+                      alt="Icon"
+                      class="content-center h-4"
+                    >
+                  </figure>
+                  <p class="text-purple text-xs justify-center w-16 font-bold tracking-tighter flex-1 w-full"  v-if="data.callback != null">
+                    Call Back
+                  </p>
+                  <div
+                    v-if="data.callback != null"
+                    class="py-1 px-5 border text-xs border-purple button-detail text-white font-bold uppercase mr-2 rounded-full cursor-pointer"
                   >
-                </figure>
-                <p class="text-purple text-xs justify-center w-16 font-bold tracking-tighter flex-1 w-full"  v-if="data.callback != null">
-                  Call Back
-                </p>
-                <div
-                  v-if="data.callback != null"
-                  class="py-1 px-5 border text-xs border-purple button-detail text-white font-bold uppercase mr-2 rounded-full cursor-pointer"
-                >
-                  {{ data.callback == 1? 'Yes' :  'No' }}
-                </div>
-                <p class="text-purple text-xs justify-center w-16 font-bold tracking-tighter flex-1 w-full" v-if="data.work && data.work != ''">
-                  Work On
-                </p>
-                <div
-                  v-if="data.work && data.work != ''"
-                  class="py-1 px-5 border text-xs border-purple button-detail text-white font-bold uppercase mr-2 rounded-full cursor-pointer"
-                >
-                  {{ data.work }}
+                    {{ data.callback == 1? 'Yes' :  'No' }}
+                  </div>
+                  <p class="text-purple text-xs justify-center w-16 font-bold tracking-tighter flex-1 w-full" v-if="data.work && data.work != ''">
+                    Work On
+                  </p>
+                  <div
+                    v-if="data.work && data.work != ''"
+                    class="py-1 px-5 border text-xs border-purple button-detail text-white font-bold uppercase mr-2 rounded-full cursor-pointer"
+                  >
+                    {{ data.work }}
+                  </div>
                 </div>
               </div>
-            </div>
-            </div>
+              </div>
+            </template>
           </div>
       </div>
       <div v-if="audition.online == 1" class="w-1/3 shadow-lg">
@@ -646,7 +658,8 @@ export default {
       addNumberText: "",
       isAssignedNumber:false,
       performerDetails:{},
-      currentUserRoles : []
+      currentUserRoles : [],
+      isRealodTeamFeedback : false
     };
   },
   computed: {
@@ -715,6 +728,12 @@ export default {
     goToday() {
       this.$refs.calendar.goToday()
     },
+    async updateTeamFeedBack(){
+      this.isRealodTeamFeedback = true;
+      let data = {"appointment_id": this.$route.params.round, "performer": this.$route.params.id}
+      await this.fetchTeamFeedback(data);
+      this.isRealodTeamFeedback = false; 
+    },    
     getPerformerDetail(type){
       if(type == 'info'){
         this.$modal.show('infoModal');
@@ -1015,4 +1034,10 @@ nav {
   background: #cacaca;
   border-radius: 10040px !important;
 }
+
+.reafresh-spacing{
+  margin-right: -30px;
+    padding-left: 18px;
+}
+
 </style>
