@@ -85,7 +85,7 @@ export default [
     },
 
     {
-      path: '/talent/:id/',
+      path: '/talent/:id/:code',
       name: 'talent/user',
       component: () => import(/* webpackChunkName: 'auditions.user' */ '@/views/user/userTalent'),
       props: true,

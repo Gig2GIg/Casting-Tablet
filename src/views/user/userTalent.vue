@@ -356,7 +356,9 @@ export default {
       active: false,
       videos : [],
       openId: "",
-      comments:[]
+      comments:[],
+      base_url : '',
+      encCode : ''
     };
   },
   computed: {
@@ -384,6 +386,11 @@ export default {
     await this.myCalendar(this.$route.params.id);
     this.asignEvents();
     // debugger;
+  },
+  created(){
+    this.base_url = window.location.origin;
+    this.encCode = this.$route.params.code;
+
   },
   methods: {
     ...mapActions('user', ['fetch']),
@@ -422,8 +429,9 @@ export default {
       // debugger;
 
       let data={
-        "code": this.code,
+        "code": window.atob(this.encCode),
         "email": this.invitation.email,
+        "link"  : `${this.base_url}/talent/${this.$route.params.id}/${this.$route.params.code}`
       }
 
       await axios.post(`/t/performers/code`, data);
