@@ -51,6 +51,44 @@
           </div>
           <p class="text-purple text-xl font-bold mt-4 text-center w-full">{{tuser.details ? `${tuser.details.first_name} ${tuser.details.last_name}` : ''}}</p>
           <p class="text-purple text-m font-bold mt-2 text-center w-full">{{tuser.details ? tuser.details.city : ''}}</p>
+
+          <!-- start : add social links of current performer -->
+          <div class="flex w-full mt-5 justify-center">
+            <a class="social-a flex items-center justify-center content-center w-12 h-12" v-if="tuser.details && tuser.details.facebook" :href="setUrl(tuser.details.facebook)" target="_blank" rel="noopener noreferrer" >
+              <img            
+              :src="'/images/icons/fb_link.png'"
+              alt="Icon"
+              class="h-6"
+            >
+            </a>
+            <a class="social-a flex items-center justify-center content-center w-12 h-12" v-if="tuser.details && tuser.details.instagram" :href="setUrl(tuser.details.instagram)" target="_blank" rel="noopener noreferrer" >
+            <img
+                v-if="tuser.details && tuser.details.instagram"
+              :src="'/images/icons/instagram_link.png'"
+              alt="Icon"
+              class="h-6"
+            >
+            </a>
+            <a class="social-a flex items-center justify-center content-center w-12 h-12" v-if="tuser.details && tuser.details.twitter" :href="setUrl(tuser.details.twitter)" target="_blank" rel="noopener noreferrer" >
+              <img
+                  v-if="tuser.details && tuser.details.twitter"
+                :src="'/images/icons/twitter_link.png'"
+                alt="Icon"
+                class="h-6"
+              >
+            </a>
+            <a class="social-a flex items-center justify-center content-center w-12 h-12" v-if="tuser.details && tuser.details.linkedin" :href="setUrl(tuser.details.linkedin)" target="_blank" rel="noopener noreferrer" >
+            <img
+                v-if="tuser.details && tuser.details.linkedin"
+              :src="'/images/icons/linkedin_link.png'"
+              alt="Icon"
+              class="h-6"
+            >
+            </a>
+          
+
+          </div>
+          <!-- end : add social links of current performer -->
           <div class="w-full m-8">
             <div class="flex w-full justify-start mt-2">
               <img
@@ -151,22 +189,32 @@
           <div class="w-1/2 shadow-lg ml-5 border border-gray-300 overflow-auto">
             <p class="text-center text-2xl text-purple font-bold">Tags</p>
             <div class="m-4">
-              <div v-for="data in tags" :key="data.id" class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
-                <p class="text-purple w-1/2">{{data.title}}</p>
-                <div class="flex flex-wrap justify-end w-1/2">
-                  <!-- <img src="/images/icons/garbage@3x.png" alt="Icon" class="h-6" @click="deleteTag(data)"> -->
+              <template v-if="tags.length > 0">
+                <div v-for="data in tags" :key="data.id" class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
+                  <p class="text-purple w-1/2">{{data.title}}</p>
+                  <div class="flex flex-wrap justify-end w-1/2">
+                    <!-- <img src="/images/icons/garbage@3x.png" alt="Icon" class="h-6" @click="deleteTag(data)"> -->
+                  </div>
                 </div>
+              </template>
+              <div v-else class="flex flex-wrap justify-center text-center content-center w-full border-gray-500 mb-4">
+                <p class="text-purple w-full">There is no tags added</p>
               </div>
             </div>
           </div>
           <div class="w-1/2 shadow-lg ml-5 border border-gray-300 overflow-auto">
             <p class="text-center text-2xl text-purple font-bold">Comments</p>
             <div class="m-4">
-              <div v-for="data in comments" :key="data.id" class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
-                <p class="text-purple w-1/2">{{data.comment}}</p>
-                <div class="flex flex-wrap justify-end w-1/2">
-                  <!-- <img src="/images/icons/garbage@3x.png" alt="Icon" class="h-6" @click="deleteTag(data)"> -->
+              <template v-if="comments.length > 0">
+                <div v-for="data in comments" :key="data.id" class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
+                  <p class="text-purple w-1/2">{{data.comment}}</p>
+                  <div class="flex flex-wrap justify-end w-1/2">
+                    <!-- <img src="/images/icons/garbage@3x.png" alt="Icon" class="h-6" @click="deleteTag(data)"> -->
+                  </div>
                 </div>
+              </template>
+              <div v-else class="flex flex-wrap justify-center text-center content-center w-full border-gray-500 mb-4">
+                <p class="text-purple w-full">There is no comments added</p>
               </div>
             </div>
           </div>
@@ -431,6 +479,13 @@ export default {
     },
     scrollToTop() {
       window.scrollTo(0,0);
+    },
+    setUrl(url){      
+      var pattern = /^((http|https|ftp):\/\/)/;
+      if(!pattern.test(url)) {
+          url = "http://" + url;
+      }
+      return url;
     }
   },
 };
@@ -691,4 +746,11 @@ ul.submanu-content > li > a {
     left: -6px !important;
     right: -6px !important;
 }
+// social link css
+.social-a{
+  margin-right: 5px;
+  background: #cacaca;
+  border-radius: 10040px !important;
+}
+
 </style>

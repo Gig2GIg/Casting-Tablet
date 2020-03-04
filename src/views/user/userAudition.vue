@@ -402,7 +402,7 @@
       >
       <p class="text-purple text-xl font-bold mt-4 w-full">{{data.name}}</p>
       <p class="text-purple text-m font-bold mt-2 w-full">{{performerDetails.details && performerDetails.details.city ? performerDetails.details.city : ""}}</p>
-      <div class="flex w-full cus-cur mt-5">
+      <div class="flex w-full mt-5">
         <a class="social-a flex items-center justify-center content-center w-12 h-12" v-if="performerDetails.details && performerDetails.details.facebook" :href="setUrl(performerDetails.details.facebook)" target="_blank" rel="noopener noreferrer" >
           <img            
           :src="'/images/icons/fb_link.png'"
