@@ -440,7 +440,7 @@ export default {
     },
     async updateDeviceToken(device_token) {
       let userAgentId = window.navigator.userAgent.replace(/\D+/g, '');
-      await axios.put(`/t/notification-send-pushkey?pushkey=${device_token}&device_id=${userAgentId}`);
+      await axios.put(`/t/notification-send-pushkey?pushkey=${device_token}&device_id=${userAgentId}&device_type=web`);
     },
     onRegisterSuccessRedirect() {
       // Redirect the user to the page he first tried to visit or to the home view

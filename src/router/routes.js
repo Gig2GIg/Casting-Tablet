@@ -36,6 +36,14 @@ export default [
       component: () => import(/* webpackChunkName: 'email' */ '@/views/auth/password/Resetpassword'),
     },
   ]),
+  ...mapRoutes({ layout: 'blank', allowBoth: true }, [
+    {
+      path: '/talent-shared/:id',
+      name: 'talent_shared/user',
+      component: () => import(/* webpackChunkName: 'auditions.user' */ '@/views/user/userTalentShared'),
+      props: true,
+    },
+  ]),
 
   ...mapRoutes({ layout: 'checkIn' }, [
     {
