@@ -358,7 +358,7 @@ export default {
       openId: "",
       comments:[],
       base_url : '',
-      encCode : ''
+      encCode : ''      
     };
   },
   computed: {
@@ -367,7 +367,12 @@ export default {
     ...mapState('profile', {profile:'user', tuser:'tuser', calendar:'calendar', contract:'contract'}),
   },
   async mounted() {
+
     this.image;
+    
+    await this.fetchProfile();
+    await this.myCalendar(this.$route.params.id);
+
     let { data: { data } } = await axios.get(`/t/performers/tags?user=${this.$route.params.id}`);
     this.tags = data;
     let commentsData = await axios.get(`/t/performers/comments?user=${this.$route.params.id}`);
@@ -382,8 +387,7 @@ export default {
     }
     await this.fetchContract(this.$route.params.id);
     await this.fetchData(this.$route.params.id);
-    await this.fetchProfile();
-    await this.myCalendar(this.$route.params.id);
+    
     this.asignEvents();
     // debugger;
   },
@@ -431,7 +435,7 @@ export default {
       let data={
         "code": window.atob(this.encCode),
         "email": this.invitation.email,
-        "link"  : `${this.base_url}/talent/${this.$route.params.id}/${this.$route.params.code}`
+        "link"  : `${this.base_url}/talent-shared/${window.btoa(this.$route.params.id)}`
       }
 
       await axios.post(`/t/performers/code`, data);

@@ -18,6 +18,7 @@
 <script>
 import { mapActions, mapState } from 'vuex';
 import TokenService from '../services/core/TokenService';
+import store from '@/store';
 
 export default {
   data() {
@@ -31,7 +32,11 @@ export default {
     ...mapState('profile', ['user']),
   },
   async created() {
-    this.fetch();
+    let isLogin = store.getters['auth/isAuthenticated'];
+    if(isLogin){
+      this.fetch();
+    }
+    
   },
   async mounted() {
     this.userId = TokenService.getUserId();

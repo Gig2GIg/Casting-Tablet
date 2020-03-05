@@ -22,9 +22,27 @@ export default {
     }
   },
 
+  async fetchSharedData({ commit }, id) {
+    try {
+      const { data: { data } } = await axios.get(`/talentDatabase/auditions/profile/user/${id}`);
+      commit(types.FETCH_PROFILE_T_SUCCESS, data);
+    } catch (e) {
+      commit(types.FETCH_PROFILE_T_FAILURE);
+    }
+  },
+
   async myCalendar({ commit }, id) {
     try {
       const { data: { data } } = await axios.get(`/t/user/${id}/calendar`);
+      commit(types.FETCH_MY_CALENDAR_SUCCESS, data);
+    } catch (e) {
+      commit(types.FETCH_MY_CALENDAR_FAILURE);
+    }
+  },
+
+  async sharedCalendar({ commit }, id) {
+    try {
+      const { data: { data } } = await axios.get(`/talentDatabase/user/${id}/calendar`);
       commit(types.FETCH_MY_CALENDAR_SUCCESS, data);
     } catch (e) {
       commit(types.FETCH_MY_CALENDAR_FAILURE);

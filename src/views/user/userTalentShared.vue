@@ -159,10 +159,7 @@
                           />
                         </a>
                         <div class="dropdown cus-dropdown submanu" v-bind:class="{ 'isOpen' : openId==data.id}">
-                          <ul class="submanu-content">
-                            <li>
-                              <a :href="data.url" title="Share" target="_blank">Share</a>
-                            </li>
+                          <ul class="submanu-content">                            
                             <li>
                               <a :href="data.url" title="Open in" target="_blank">Open in</a>
                             </li>
@@ -220,24 +217,25 @@ export default {
       videos : [],
       openId: "",      
       base_url : '',
-      encCode : ''
+      encCode : '',
+      userId : this.$route.params.id ? window.atob(this.$route.params.id) : ''
     };
   },
   computed: {
-    ...mapState('audition', ['audition', 'userList', 'teamFeedback']),
-    ...mapState('user', ['user']),
+    // ...mapState('audition', ['audition', 'userList']),
     ...mapState('profile', { tuser:'tuser', calendar:'calendar'}),
   },
   async mounted() {
+    this.userId = this.$route.params.id ? window.atob(this.$route.params.id) : '';
     this.image;
-    
-    let getAuditionList = await axios.get(`/t/auditions/list/${this.$route.params.id}`);
+    await this.fetchSharedData(this.userId);
+    await this.sharedCalendar(this.userId);
+
+    let getAuditionList = await axios.get(`/talentDatabase/auditions/list/${this.userId}`);
     if(getAuditionList.data.data.length){
       this.auditionList = getAuditionList.data.data;
-    }
+    }   
     
-    await this.fetchData(this.$route.params.id);
-    await this.myCalendar(this.$route.params.id);
     this.asignEvents();
     // debugger;
   },
@@ -247,9 +245,8 @@ export default {
 
   },
   methods: {
-    ...mapActions('user', ['fetch']),
-    ...mapActions('audition', ['fetchAuditionData', 'fetchUserList', 'fetchTeamFeedback','deleteVideo']),
-    ...mapActions('profile', { fetchData:"fetchData", myCalendar:'myCalendar'}),
+    // ...mapActions('audition', ['fetchAuditionData', 'fetchUserList']),
+    ...mapActions('profile', { fetchSharedData:"fetchSharedData", sharedCalendar:'sharedCalendar'}),
     goToday() {
       this.$refs.calendar.goToday()
     },
@@ -286,7 +283,7 @@ export default {
       }
       try {
         let VideoRes = await axios.get(
-          `/t/auditions/video/list/${data.id}/performer/${this.$route.params.id}`
+          `/talentDatabase/auditions/video/list/${data.id}/performer/${this.userId}`
         );
 
         this.videos = VideoRes.data.data ? VideoRes.data.data : [];
