@@ -796,6 +796,7 @@ export default {
       await this.$emit("statusSet", this.audition.status);
     },
     async methodToRunOnSelect(payload) {
+      console.log("methodToRunOnSelect -> payload", payload)
       this.handleNewGroup(payload.status);
       if (payload == "create") {
         this.$router.push({
