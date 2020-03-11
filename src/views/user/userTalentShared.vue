@@ -49,7 +49,7 @@
           </div>
           <!-- end : add social links of current performer -->
           <div class="w-full m-8">
-            <div class="flex w-full justify-start mt-2">
+            <div @click="getPerformerDetail('info')" class="flex w-full justify-start mt-2 cursor-pointer">
               <img
                 :src="'/images/icons/person.png'"
                 alt="Icon"
@@ -57,7 +57,7 @@
               >
               <p class="text-purple text-m text-left ml-4 tracking-wide w-1/2">Info</p>
             </div>
-            <div class="flex w-full justify-start mt-12">
+            <div @click="getPerformerDetail('credit')" class="flex w-full justify-start mt-12 cursor-pointer">
               <img
                 :src="'/images/icons/icon.png'"
                 alt="Icon"
@@ -65,7 +65,7 @@
               >
               <p class="text-purple text-m text-left ml-4 tracking-wide w-1/2">Credit</p>
             </div>
-            <div class="flex w-full justify-start mt-12">
+            <div @click="getPerformerDetail('eduTra')" class="flex w-full justify-start mt-12 cursor-pointer">
               <img
                 :src="'/images/icons/book.png'"
                 alt="Icon"
@@ -73,7 +73,7 @@
               >
               <p class="text-purple text-m text-left ml-4 tracking-wide w-1/2">Education & Training</p>
             </div>
-            <div class="flex w-full justify-start mt-12">
+            <div @click="getPerformerDetail('appearance')" class="flex w-full justify-start mt-12 cursor-pointer">
               <img
                 :src="'/images/icons/12-layers.png'"
                 alt="Icon"
@@ -177,6 +177,122 @@
   </div>
   </div>
   </multipane>
+  <modal :width="500" height="200" :adaptive="true" name="infoModal" class="custom-event-popup">
+    <button @click="$modal.hide('infoModal')" class="popup-close-btn">
+      <i class="material-icons" style="font-size: 35px;color: black;">clear</i>
+    </button>
+    <div class="m-4">
+      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
+        <strong class="text-purple w-full">Stage Name</strong>
+        <p class="text-purple w-full">{{tuser.details ? tuser.details.stage_name : ""}}</p>
+      </div>
+    </div>
+    <div class="m-4">
+      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
+        <strong class="text-purple w-full">Professional/ Working Title</strong>
+        <p class="text-purple w-full">{{tuser.details ? tuser.details.profesion : ""}}</p>
+      </div>
+    </div>
+  </modal>
+  <modal :width="500" height="330" :adaptive="true" name="creditModal">
+    <button @click="$modal.hide('creditModal')" class="popup-close-btn">
+      <i class="material-icons" style="font-size: 35px;color: black;">clear</i>
+    </button>
+    <div class="m-4">
+      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
+        <strong class="text-purple w-full">Production Type</strong>
+        <p class="text-purple w-full">{{tuser.credits && tuser.credits[0] ? tuser.credits[0].type : ""}}</p>
+      </div>
+    </div>
+    <div class="m-4">
+      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
+        <strong class="text-purple w-full">Project Name</strong>
+        <p class="text-purple w-full">{{tuser.credits && tuser.credits[0] ? tuser.credits[0].name : ""}}</p>
+      </div>
+    </div>
+    <div class="m-4">
+      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
+        <strong class="text-purple w-full">Role</strong>
+        <p class="text-purple w-full">{{tuser.credits && tuser.credits[0] ? tuser.credits[0].rol : ""}}</p>
+      </div>
+    </div>
+    <div class="m-4">
+      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
+        <strong class="text-purple w-full">Director/Production Company</strong>
+        <p class="text-purple w-full">{{tuser.credits && tuser.credits[0] ? tuser.credits[0].production : ""}}</p>
+      </div>
+    </div>
+  </modal>
+  <modal :width="500" height="390" :adaptive="true" name="eduTraModal">
+    <button @click="$modal.hide('eduTraModal')" class="popup-close-btn">
+      <i class="material-icons" style="font-size: 35px;color: black;">clear</i>
+    </button>
+    <div class="m-4">
+      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
+        <strong class="text-purple w-full">School</strong>
+        <p class="text-purple w-full">{{tuser.education && tuser.education[0] ? tuser.education[0].school : ""}}</p>
+      </div>
+    </div>
+    <div class="m-4">
+      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
+        <strong class="text-purple w-full">Degree/Cource</strong>
+        <p class="text-purple w-full">{{tuser.education && tuser.education[0] ? tuser.education[0].degree : ""}}</p>
+      </div>
+    </div>
+    <div class="m-4">
+      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
+        <strong class="text-purple w-full">Instructor</strong>
+        <p class="text-purple w-full">{{tuser.education && tuser.education[0] ? tuser.education[0].instructor : ""}}</p>
+      </div>
+    </div>
+    <div class="m-4">
+      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
+        <strong class="text-purple w-full">Location</strong>
+        <p class="text-purple w-full">{{tuser.education && tuser.education[0] ? tuser.education[0].location : ""}}</p>
+      </div>
+    </div>
+    <div class="m-4">
+      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
+        <strong class="text-purple w-full">Year</strong>
+        <p class="text-purple w-full">{{tuser.education && tuser.education[0] ? tuser.education[0].year : ""}}</p>
+      </div>
+    </div>
+  </modal>
+  <modal :width="500" height="390" :adaptive="true" name="appearance">
+    <button @click="$modal.hide('appearance')" class="popup-close-btn">
+      <i class="material-icons" style="font-size: 35px;color: black;">clear</i>
+    </button>
+    <div class="m-4">
+      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
+        <strong class="text-purple w-full">Height</strong>
+        <p class="text-purple w-full">{{tuser.aparence ? tuser.aparence.height : ""}}</p>
+      </div>
+    </div>
+    <div class="m-4">
+      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
+        <strong class="text-purple w-full">Weight</strong>
+        <p class="text-purple w-full">{{tuser.aparence ? tuser.aparence.weight : ""}}</p>
+      </div>
+    </div>
+    <div class="m-4">
+      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
+        <strong class="text-purple w-full">Hair Color</strong>
+        <p class="text-purple w-full">{{tuser.aparence ? tuser.aparence.hair : ""}}</p>
+      </div>
+    </div>
+    <div class="m-4">
+      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
+        <strong class="text-purple w-full">Eye Color</strong>
+        <p class="text-purple w-full">{{tuser.aparence ? tuser.aparence.eyes : ""}}</p>
+      </div>
+    </div>
+    <div class="m-4">
+      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
+        <strong class="text-purple w-full">Race</strong>
+        <p class="text-purple w-full">{{tuser.aparence ? tuser.aparence.race : ""}}</p>
+      </div>
+    </div>
+  </modal>
 </div>
 </template>
 
@@ -316,7 +432,21 @@ export default {
           url = "http://" + url;
       }
       return url;
-    }
+    },
+    getPerformerDetail(type){
+      if(type == 'info'){
+        this.$modal.show('infoModal');
+      }
+      if(type == 'credit'){
+        this.$modal.show('creditModal');
+      }
+      if(type == 'eduTra'){
+        this.$modal.show('eduTraModal');
+      }
+      if(type == 'appearance'){
+        this.$modal.show('appearance');
+      }
+    },
   },
 };
 </script>
