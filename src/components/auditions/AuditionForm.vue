@@ -355,8 +355,8 @@
                                 :HOURS="24"
                                 colorPalette="dark"
                                 theme="material"
-                                :defaultHour="defaultHour"
-                                :defaultMinute="defaultMinute"
+                                :defaultHour="round.defaultHour"
+                                :defaultMinute="round.defaultMinute"
                             >
                             </custom-time-picker>
                         </div>
@@ -369,16 +369,22 @@
                             type="button"
                             :message="errors.first('create.location')"
                             @click="openLocationModel()"
-                    >{{changeLocationBtnTxt ? 'Location Saved' : 'Location'}}
+                    >{{round.isSelected ? 'Location Saved' : 'Location'}}
                     </button>
                 </div>
                 <div class="flex" v-if="selected_round.index == index">
                     <button 
                             class="w-1/3 mt-4 py-3 px-4 border-4 border-purple text-purple rounded-full focus:outline-none"
                             type="button"
-                            @click.prevent="manageAppointments = true"
+                            @click.prevent="round.manageAppointments = true"
                     >Manage Appointments
-                    </button>                
+                    </button>    
+                    <AppointmentsModal
+                            v-if="round.manageAppointments"
+                            :data="round.appointment"
+                            @change="round.appointment = $event"
+                            @close="round.manageAppointments = false"
+                    />            
                 </div>
             </div>
             <modal width="80%" height="500px" :adaptive="true" name="location_model">
@@ -534,12 +540,12 @@
             </div>
         </div>
 
-        <AppointmentsModal
+        <!-- <AppointmentsModal
                 v-if="manageAppointments"
                 :data="form.appointment"
                 @change="form.appointment = $event"
                 @close="manageAppointments = false"
-        />
+        /> -->
 
         <RolesModal
                 v-if="manageRoles"
@@ -897,7 +903,13 @@
                     {
                         name : 'Round 1',
                         round : 1,
-                        index : 0
+                        index : 0,
+                        manageAppointments : false,
+                        defaultHour : 0,
+                        defaultMinute : 0,
+                        selectedLocation : null,
+                        isSelected : false
+
                     }
                 ],
                 selected_round: 
@@ -928,8 +940,9 @@
                 this.geolocate();
             },
 
-            closeLocationModel(type) {
+            closeLocationModelOld(type) {
                 if (type == 'save') {
+
                     this.changeLocationBtnTxt = true;
                     this.$modal.hide("location_model");
                 } else {
@@ -938,6 +951,21 @@
                     this.currentPlace = null;
                     this.selectedLocation = null;
                 }
+            },
+
+            closeLocationModel(type) {
+                if (type == 'save') {
+                    this.changeLocationBtnTxt = true;
+                    this.rounds[this.selected_round.index].selectedLocation = this.selectedLocation;
+                    console.log("closeLocationModel -> this.rounds", this.rounds)
+                    this.rounds[this.selected_round.index].isSelected = true;
+                    this.$modal.hide("location_model");
+                } else {
+                    this.changeLocationBtnTxt = false;
+                    this.$modal.hide("location_model");
+                    this.currentPlace = null;
+                }
+                this.selectedLocation = null;
             },
 
             async handleInvitation() {
@@ -1316,8 +1344,10 @@
                 });
             },
             timeChangeHandler : function (event){
-            console.log("event", event)
-                this.form.time = event.hour > 0 || event.minute > 0 ? `${event.hour}:${event.minute}` : '';
+                console.log("timeChangeHandler event ========>", event)
+                this.selected_round.defaultHour = event.hour ? event.hour : 0;
+                this.selected_round.defaultMinute = event.minute ? event.minute: 0;
+                this.selected_round.time = event.hour > 0 || event.minute > 0 ? `${event.hour}:${event.minute}` : '';
             },
             imgUrlAlt(event) {
                 event.target.src = DEFINE.role_placeholder;
@@ -1368,14 +1398,20 @@
                     let newRound = {
                             name : 'Round '+(this.rounds.length+1),
                             round : this.rounds.length+1,
-                            index : this.rounds.length
+                            index : this.rounds.length,
+                            manageAppointments : false,
+                            defaultHour : 0,
+                            defaultMinute : 0,
+                            selectedLocation : null,
+                            isSelected : false
                         }
                     this.rounds.push(newRound)
                     this.selected_round = newRound;
                 } else { //manage selected round details
-                    this.selected_round = payload;
+                    this.selected_round = payload;                    
                 }
                 console.log("methodToRunOnSelect -> this.selected_round", this.selected_round)
+                console.log("methodToRunOnSelect -> this.rounds", this.rounds)
             }
         }
     };
