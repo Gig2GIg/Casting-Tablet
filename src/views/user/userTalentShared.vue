@@ -346,13 +346,14 @@ export default {
     this.image;
     await this.fetchSharedData(this.userId);
     await this.sharedCalendar(this.userId);
-
+    this.asignEvents();
+    
     let getAuditionList = await axios.get(`/talentDatabase/auditions/list/${this.userId}`);
     if(getAuditionList.data.data.length){
       this.auditionList = getAuditionList.data.data;
     }   
     
-    this.asignEvents();
+    
     // debugger;
   },
   created(){
