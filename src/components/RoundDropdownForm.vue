@@ -1,22 +1,22 @@
 <template>
-    <div class="btn-group">
-        <li @click="toggleMenu()" class="dropdown-toggle text-purple font-bold" v-if="selectedOption.round !== undefined">
+    <div class="btn-group w-1/3 px-2 h-12">
+        <li @click="toggleMenu()" class="text-purple rounded-full overflow-hidden w-full h-full py-3 px-6 placeholder-purple focus:outline-none border border-purple" v-if="selectedOption.round !== undefined">
           Round {{ selectedOption.round }}
           <span class="caret"></span>
         </li>
 
-        <li @click="toggleMenu()" class="dropdown-toggle text-purple font-bold" v-if="selectedOption.round === undefined">
+        <li @click="toggleMenu()" class="text-purple rounded-full overflow-hidden w-full h-full py-3 px-6 placeholder-purple focus:outline-none border border-purple" v-if="selectedOption.round === undefined">
           {{placeholderText}}
           <span class="caret"></span>
         </li>
 
-        <ul class="dropdown-menu" v-if="showMenu">
-            <li v-for="option in options">
+        <ul class="dropdown-menu w-full" v-if="showMenu">
+            <li v-for="(option,index) in options" :key="index" class="w-full h-full">
                 <a href="javascript:void(0)" class="text-purple" @click="updateOption(option)">
                     Round {{ option.round }}
                 </a>
             </li>
-            <li v-if="(create || state == 0) && audition != 2">
+            <li v-if="(create || state == 0) && audition != 2" class="w-full h-full">
                 <a href="javascript:void(0)" class="text-purple" @click="emitCreate()">
                     + Create Round
                 </a>
@@ -47,13 +47,19 @@ import axios from 'axios';
             selected: {},
             placeholder: [String],
             state:[Number],
+            setround : {},
             online:[Number],
             audition:[Number],
             closeOnOutsideClick: {
               type: [Boolean],
               default: true,
             }
-        },        
+        },  
+        watch: {    
+            setround: function() {
+                this.updateOption(this.options[this.options.length-1]);
+            },  
+        },
         async mounted() {         
           if(this.options != ""){
             this.selectedOption = this.selected;
@@ -89,6 +95,7 @@ import axios from 'axios';
 
            async emitCreate(){              
                 this.$emit('updateOption', "create");
+                // this.updateOption();
             },
 
             toggleMenu() {

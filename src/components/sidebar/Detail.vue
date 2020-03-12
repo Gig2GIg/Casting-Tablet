@@ -234,11 +234,11 @@
           </div>
         </div>
         <div
-          v-if="roundActive.status != 0 && audition.status == 1 && roundActive.status > 0 && audition.online == 0"
+          v-if="roundActive.status == 1 && audition.status == 1 && roundActive.status > 0 && audition.online == 0"
           class="w-full border border-gray-300 mt-6 mb-6"
         />
         <div
-          v-if="roundActive.status != 0 && audition.status == 1 && roundActive.status > 0 && audition.online == 0"
+          v-if="roundActive.status == 1 && audition.status == 1 && roundActive.status > 0 && audition.online == 0"
           class="flex w-full content-center text-center justify-center flex-wrap cursor-pointer"
         >
           <button
@@ -251,11 +251,11 @@
           </button>
         </div>
         <div
-          v-if="roundActive.status != 0 && audition.status == 1 && roundActive.status > 0 && audition.online == 0"
+          v-if="roundActive.status == 1 && audition.status == 1 && roundActive.status > 0 && audition.online == 0"
           class="w-full border border-gray-300 mt-6 mb-6"
         />
         <div
-          v-if="roundActive.status != 0 && audition.status == 1 && roundActive.status > 0 && audition.online == 0"
+          v-if="roundActive.status == 1 && audition.status == 1 && roundActive.status > 0 && audition.online == 0"
           class="flex w-full content-center text-center justify-center flex-wrap cursor-pointer"
         >
           <!-- <router-link :to="{ name: 'monitor-update', params: {id: roundActive.id,auditionId:audition.id } }"> -->
@@ -284,11 +284,11 @@
           </div>
         </div>
         <div
-          v-if="audition.status == 1 && roundActive.status > 0"
+          v-if="audition.status == 1 && roundActive.status == 1"
           class="w-full border border-gray-300 mt-6 mb-6"
         />
         <div
-          v-if="audition.status == 1 && roundActive.status > 0"
+          v-if="audition.status == 1 && roundActive.status == 1"
           class="flex w-full content-center text-center justify-center flex-wrap cursor-pointer"
           @click="closeRounds"
         >
@@ -313,9 +313,9 @@
             >Audition Videos</p>
           </div>
         </div>
-        <div v-if="roundActive.status != 0 && audition.status == 1 && roundActive.status > 0 && audition.online == 0" class="w-full border border-gray-300 mt-6 mb-6" />
+        <div v-if="roundActive.status == 1 && audition.status == 1 && roundActive.status > 0 && audition.online == 0" class="w-full border border-gray-300 mt-6 mb-6" />
         <div
-          v-if="roundActive.status != 0 && audition.status == 1 && roundActive.status > 0 && audition.online == 0"
+          v-if="roundActive.status == 1 && audition.status == 1 && roundActive.status > 0 && audition.online == 0"
           class="flex w-full content-center text-center justify-center flex-wrap cursor-pointer"
         >
           <button
@@ -770,7 +770,9 @@ export default {
       await this.closeRound(this.roundActive.id);
       this.handleNewGroup(0);
       this.roundActive.status = 0;
-      this.sendDataToChild(0);
+      if(this.lastRound == this.roundActive.id){
+        this.sendDataToChild(0);
+      }      
     },
     resetOptions() {
       this.info = true;
@@ -789,6 +791,10 @@ export default {
     async close() {
       if (this.isOpenGroup || this.isLastRoundGroupOpen) {
         this.$toasted.error("Please close group first.");
+        return;
+      }
+      if(this.lastRound.status == 1){
+        this.$toasted.error("Please close round first.");
         return;
       }
       await this.closeAudition(this.audition.id);
@@ -812,7 +818,7 @@ export default {
     async getGroupdetails() {
       try {
         let groupStatusRes = await axios.get(
-          `/t/group/status/${this.lastRound.id}`
+          `/t/group/status/${this.roundActive.id}`
         );
         let openGroupMember = groupStatusRes.data.data
           ? groupStatusRes.data.data
