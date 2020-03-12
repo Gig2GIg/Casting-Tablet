@@ -107,13 +107,20 @@ export default [
       component: () => import(/* webpackChunkName: 'auditions.detail' */ '@/views/AuditionsDetail'),
     },
   ]),
-  ...mapRoutes({ layout: 'auditiondetails' }, [
+  ...mapRoutes({ layout: 'auditionslotlayout' }, [
     {
-      path: '/auditions/detail_old/:id',
-      name: 'auditions/detail_old',
-      component: () => import(/* webpackChunkName: 'auditions.detail' */ '@/views/AuditionsDetailOld'),
+      path: '/auditions/slot-manage/:id',
+      name: 'auditions/slot_manage',
+      component: () => import(/* webpackChunkName: 'auditions.detail' */ '@/views/AuditionSlotManage'),
     },
   ]),
+  // ...mapRoutes({ layout: 'auditiondetails' }, [
+  //   {
+  //     path: '/auditions/detail_old/:id',
+  //     name: 'auditions/detail_old',
+  //     component: () => import(/* webpackChunkName: 'auditions.detail' */ '@/views/AuditionsDetailOld'),
+  //   },
+  // ]),
   ...mapRoutes({ layout: 'tour' }, [
     {
       path: '/tour',

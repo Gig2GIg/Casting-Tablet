@@ -300,7 +300,6 @@ Vue.component("v-select", vSelect);
 import _ from "lodash";
 import BaseInput from "../components/BaseInput";
 import { eventBus } from "../main";
-import { close } from "fs";
 import { setTimeout } from 'timers';
 // Import component
 import Loading from "vue-loading-overlay";
