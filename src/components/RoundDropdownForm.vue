@@ -66,8 +66,7 @@ import axios from 'axios';
             if(this.selectedOption.length>0){
               this.create = false;
             }
-            this.selectedOption = this.selectedOption.length > 0 ? this.selectedOption[0] : this.selectedOption;
-            console.log("mounted -> this.selectedOption", this.selectedOption)
+            this.selectedOption = this.selectedOption.length > 0 ? this.selectedOption[0] : this.selectedOption;            
             this.$emit('setOption', this.selectedOption)
           }
 

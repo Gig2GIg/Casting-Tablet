@@ -59,26 +59,7 @@ import axios from 'axios';
 
         },
         async mounted() {
-         await  this.fetch(this.$route.params.id);
-          this.options = this.rounds;
-          if(this.options != ""){
-            this.selectedOption = this.options.filter(option => option.status == 1);
-            if(this.selectedOption.length>0){
-              this.create = false;
-            }
-            this.selectedOption = this.selectedOption.length > 0 ? this.selectedOption[0] : this.selectedOption;
-            this.$emit('setOption', this.selectedOption)
-          }
-
-            if (this.placeholder)
-            {
-                this.placeholderText = this.placeholder;
-                this.$emit('setOption', this.selectedOption);
-            }
-
-            if (this.closeOnOutsideClick) {
-              document.addEventListener('click', this.clickHandler);
-            }
+         await this.reloadRounds(true);
         },
 
         beforeDestroy() {
@@ -145,6 +126,30 @@ import axios from 'axios';
                 }
               }
 
+            },
+            async reloadRounds(isSetOption){
+              await  this.fetch(this.$route.params.id);
+              this.options = this.rounds;
+              if(this.options != ""){
+                if(isSetOption){
+                  this.selectedOption = this.options.filter(option => option.status == 1);
+                  if(this.selectedOption.length>0){
+                    this.create = false;
+                  }
+                  this.selectedOption = this.selectedOption.length > 0 ? this.selectedOption[0] : this.selectedOption;
+                }                
+                this.$emit('setOption', this.selectedOption)
+              }
+
+              if (this.placeholder)
+              {
+                  this.placeholderText = this.placeholder;
+                  this.$emit('setOption', this.selectedOption);
+              }
+
+              if (this.closeOnOutsideClick) {
+                document.addEventListener('click', this.clickHandler);
+              }
             },
 
             toggleMenu() {

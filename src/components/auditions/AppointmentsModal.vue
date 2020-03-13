@@ -196,7 +196,6 @@ export default {
   },
   created() {
     this.appointments = Object.assign({}, this.data);
-    console.log("created -> this.appointments", this.appointments)
     this.appointments.status = true;
   },
   methods: {
@@ -206,12 +205,12 @@ export default {
       }
 
       const spaces = parseInt(this.appointments.spaces);
-      console.log("makeSlots -> spaces", spaces)
+      
       let counter = this.appointments.start;
-      console.log("makeSlots -> counter", counter)
+      
       let OldSlots = this.appointments.slots ? Object.assign({},this.appointments.slots) : []; 
       this.appointments.slots = [];
-      console.log("makeSlots -> this.appointments.slots", this.appointments.slots)
+      
       let checkedCount = this.getSlotsCheckedCount(spaces);
       for (let i = 0; i < spaces; i++) {
         let isWalk = i >= checkedCount  ? true : false;
@@ -232,14 +231,6 @@ export default {
           }          
         }
         this.appointments.slots.push(newSlot);
-        // if(this.appointments.slots.length < i){
-        //   console.log("makeSlots -> i", i)
-        //   console.log("makeSlots -> this.appointments.slots.length", this.appointments.slots.length)
-        //   this.appointments.slots.push(newSlot);
-        // } else {
-        //   this.appointments.slots[i] = newSlot;
-        // }
-        
         
 
         const pivot = counter.split(':');
@@ -304,5 +295,8 @@ input, input:focus, .slots-input, .slots-input:focus {
 }
 button {
   background-image: linear-gradient(#4D2545, #782541);
+}
+.modal-container {
+  z-index: 1111;
 }
 </style>
