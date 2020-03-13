@@ -930,7 +930,8 @@ export default {
       return url;
     },
     goToManageAppointments(){
-      this.$router.push({ name: 'auditions/slot_manage',params:{id: this.$route.params.id } });
+      this.$router.push({ name: 'audition-slot/manage',params:{id: this.$route.params.id } });
+      // this.$router.replace(`/audition-slot/manage/${this.$route.params.id}`);
     }
   }
 };

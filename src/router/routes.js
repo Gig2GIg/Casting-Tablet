@@ -98,6 +98,12 @@ export default [
       component: () => import(/* webpackChunkName: 'auditions.user' */ '@/views/user/userTalent'),
       props: true,
     },
+    {
+      path: '/talent/:id',
+      name: 'talent/user_view',
+      component: () => import(/* webpackChunkName: 'auditions.user' */ '@/views/user/userTalent'),
+      props: true,
+    },
   ]),
 
   ...mapRoutes({ layout: 'auditiondetails' }, [
@@ -109,8 +115,8 @@ export default [
   ]),
   ...mapRoutes({ layout: 'auditionslotlayout' }, [
     {
-      path: '/auditions/slot-manage/:id',
-      name: 'auditions/slot_manage',
+      path: '/audition-slot/manage/:id',
+      name: 'audition-slot/manage',
       component: () => import(/* webpackChunkName: 'auditions.detail' */ '@/views/AuditionSlotManage'),
     },
   ]),

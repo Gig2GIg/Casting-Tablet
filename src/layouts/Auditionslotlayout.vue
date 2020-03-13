@@ -1,5 +1,5 @@
 <template>
-  <div class="flex w-full h-screen">
+  <div class="flex w-full">
     <sidebar-base />
     <div class="flex flex-col w-4/5">
       <audition-slots-nav-bar />

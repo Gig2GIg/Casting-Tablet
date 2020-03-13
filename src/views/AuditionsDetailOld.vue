@@ -21,7 +21,7 @@
                 v-for="(data) in finalUserList"
                 :key="data.user_id"
               >
-                  <router-link :to="isAuditionVideos || (currentAudition && currentAudition.status == 2) ? { name: 'talent/user', params: {id: data.user_id} } : { name: 'auditions/user', params: {id: data.user_id, round: round.id, audition:$route.params.id} }">
+                  <router-link :to="isAuditionVideos || (currentAudition && currentAudition.status == 2) ? { name: 'talent/user_view', params: {id: data.user_id} } : { name: 'auditions/user', params: {id: data.user_id, round: round.id, audition:$route.params.id} }">
                   <card-user
                     :title="data.name"
                     :time="currentAudition && currentAudition.online != 1 ? data.time : ''"
@@ -70,7 +70,7 @@
                       v-for="(data) in finalCastListUser"
                       :key="data.user_id"
               >
-                <router-link :to="currentAudition && currentAudition.status == 2 ? { name: 'talent/user', params: {id: data.user_id} } : { name: 'auditions/user', params: {id: data.user_id, round: round.id, audition:$route.params.id} }">
+                <router-link :to="currentAudition && currentAudition.status == 2 ? { name: 'talent/user_view', params: {id: data.user_id} } : { name: 'auditions/user', params: {id: data.user_id, round: round.id, audition:$route.params.id} }">
                   <card-user
                           :title="data.name"
                           :time="currentAudition && currentAudition.online != 1 ? data.time : ''"
@@ -88,7 +88,7 @@
                 v-for="(data) in userList"
                 :key="data.user_id"
               >                  
-                  <router-link v-bind:class="{ 'pointer-none' : isShowCreateGroup}" :to="!isShowCreateGroup ? (currentAudition && currentAudition.status == 2 ? { name: 'talent/user', params: {id: data.user_id} } : { name: 'auditions/user', params: {id: data.user_id, round: round.id, audition:$route.params.id} }) : { name: 'auditions/detail', params: {id: $route.params.id} }">
+                  <router-link v-bind:class="{ 'pointer-none' : isShowCreateGroup}" :to="!isShowCreateGroup ? (currentAudition && currentAudition.status == 2 ? { name: 'talent/user_view', params: {id: data.user_id} } : { name: 'auditions/user', params: {id: data.user_id, round: round.id, audition:$route.params.id} }) : { name: 'auditions/detail', params: {id: $route.params.id} }">
                   <card-user
                     :title="data.name"
                     :time="currentAudition && currentAudition.online != 1 ? data.time : ''"

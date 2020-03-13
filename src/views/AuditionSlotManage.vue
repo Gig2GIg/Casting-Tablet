@@ -49,23 +49,21 @@
         <h1 class="text-purple text-lg font-bold">Manage</h1>
       </div>
       <div class="w-full border border-gray-300 mt-1 mb-6" />
-      <div id="role_box" class="box list-group flex flex-wrap justify-center content-start w-full" :class="{'h-48':mainRoles && mainRoles.length==0}">        
+      <div id="role_box" class="box list-group flex flex-wrap justify-center content-start w-full" :class="{'h-48':slots && slots.length==0}">        
         <div
             class="slot list-group-item final-cast main-role-slot"
-            v-for="(data) in mainRoles"
-            :key="data.id"            
-            v-bind:finalcast_id="data.finalcast_id"            
-            v-bind:isRole="true"
-            v-bind:role_id="data.id"
+            v-for="(data) in slots"
+            :key="data.id"
+            v-bind:isSlot="true"
+            v-bind:slot_id="data.id"
           >
                <div v-if="data.user_id"  class="item" v-bind:user_id="data.user_id" v-bind:finalcast_id="data.finalcast_id" >                    
                       <card-user
-                              :title="data.name"
-                              :isFinalCast="true"
-                              :image="data.image.url ? data.image.url : data.image"                              
+                              :title="''"
+                              :image="''"                              
                       />
               </div>
-              <span class="role-name">{{data.user_id && data.rol ? data.rol : data.name}}</span>
+              <span class="role-name">{{data.time}}</span>
         </div>
         
       </div>
@@ -111,7 +109,8 @@ export default {
       finalCastFilter: [],
       checkedNames: [],
       openGroupMember: [],     
-      finalUserList: []
+      finalUserList: [],
+      slots : []
     };
   },
   destroyed:()=>{
@@ -122,9 +121,16 @@ export default {
   async created() {    
       await this.fetchAuditionData(this.$route.params.id);
       eventBus.$emit("auditionTitle", this.audition.title);    
+      await this.fetchAppointmentNotWalk(this.$route.params.id);
+      this.slots = this.appointmentNotWalk && this.appointmentNotWalk.slots ? this.appointmentNotWalk.slots : [];
+
+      await this.getUserList();
+
+      
   },
   computed: {
-    ...mapState("audition", ["userList", 'audition']),
+    ...mapState("audition", ["userList", 'audition', 'appointmentNotWalk']),
+    ...mapState("appointment", [ "appointmentNotWalk"]),
     ...mapState("round", ["rounds"]),
     dragOptions() {
       return {
@@ -138,12 +144,32 @@ export default {
   methods: {    
     ...mapActions("audition", [
       "fetchUserList",
-      "fetchAuditionData"
+      "fetchAuditionData",
+      "fetchAppointmentNotWalk"
     ]),
-   
+    ...mapActions("appointment", ["fetchAppointmentNotWalk"]),
+    async getUserList(){
+      await this.fetchUserList(this.$route.params.id);      
+      console.log("getUserList -> this.userList", this.userList)
+      this.finalUserList = this.userList;
+      setTimeout(() =>{
+        this.initDropdrag();
+      },100);
+    },
+    clickFinalPerformer(event,data){
+      event.preventDefault();
+    },
     backToDetails(){
       this.$router.push({ name: 'auditions/detail',params:{id: this.$route.params.id } });
       this.destroyDragDrop();
+    },
+    redirectOnDetails(user_id){
+      this.$router.replace(
+        this.$route.query.redirect || {
+          name: 'talent/user_view',
+          params: {id: user_id}
+        },
+      );
     },
     destroyDragDrop(){
       $(".ui-selected").draggable("destroy");
@@ -161,10 +187,10 @@ export default {
                 isDragging = false;
             })
             .mousemove(function() {
-                isDragging = true;
+                isDragging = true;                
             })
             .mouseup(function() {
-               var user_id = $(this).attr("performer");
+               var user_id = $(this).attr("performer");               
                 var wasDragging = isDragging;
                 isDragging = false;
                 if (!wasDragging) {
@@ -210,34 +236,36 @@ export default {
                   var draggable_user_id = ui.draggable.attr("user_id");
                   
                   var draggable_parent_isPerformer = ui.draggable.parent().attr("isPerformer");
-                  var draggable_parent_isRole = ui.draggable.parent().attr("isRole");
+                  var draggable_parent_isSlot = ui.draggable.parent().attr("isSlot");
 
                   var droppable_isPerformer = $(this).attr("isPerformer");
-                  var droppable_isRole = $(this).attr("isRole");              
+                  var droppable_isSlot = $(this).attr("isSlot");
                   
                   //  case for handle perform movement
                   if(draggable_parent_isPerformer == 'true' && droppable_isPerformer == 'true'){ // if move performer from one place to another performer place then revert it
                     console.log("revert on same list drop!");
                     ui.draggable.animate(ui.draggable.data().original,"slow");
                     return;
-                  } else if (draggable_parent_isPerformer == 'true' && droppable_isRole == 'true' && $(this).find('div.item').length === 0){ // From performer list , add performer to particular role
-                    
+                  } else if (draggable_parent_isPerformer == 'true' && droppable_isSlot == 'true' && $(this).find('div.item').length === 0){ // From performer list , add performer to particular role
+                    console.log("else if 1");
                     var draggable_user_id = ui.draggable.attr("user_id");        
-                    var droppable_role_id = $(this).attr("role_id");
-                    if(draggable_user_id == undefined || draggable_user_id == null || droppable_role_id == undefined || droppable_role_id == null){ // if not found required data then revert back draggable performer to thier back position
+                    var droppable_slot_id = $(this).attr("slot_id");
+                    if(draggable_user_id == undefined || draggable_user_id == null || droppable_slot_id == undefined || droppable_slot_id == null){ // if not found required data then revert back draggable performer to thier back position
                       ui.draggable.animate(ui.draggable.data().original,"slow");
                       return;
                     }
-                    that.addPerformerToRole(draggable_user_id, droppable_role_id).then((result) => {
-                        $(this).attr('finalcast_id',result.id);
-                        ui.draggable.attr('finalcast_id',result.id);
+                    let parentDiv = ui.draggable.parent();
+                    that.checkIn(draggable_user_id, droppable_slot_id).then((result) => {
+                      parentDiv.remove();
+                        // $(this).attr('finalcast_id',result.id);
+                        // ui.draggable.attr('finalcast_id',result.id);
                     }). 
                     catch((err) => { 
                         console.log("TCL: initDropdrag -> err", err);
                     });
                     
-                  } else if(draggable_parent_isRole == 'true' && droppable_isPerformer == 'true' && $(this).find('div.item').length === 0){ // remove performer from role list
-                    
+                  } else if(draggable_parent_isSlot == 'true' && droppable_isPerformer == 'true' && $(this).find('div.item').length === 0){ // remove performer from role list
+                    console.log("else if 2");
                     var draggable_parent_finalcast_id = ui.draggable.attr("finalcast_id");
                     var draggable_user_id = ui.draggable.attr("user_id");     
                     if(draggable_parent_finalcast_id == undefined || draggable_parent_finalcast_id == null || draggable_user_id == undefined || draggable_user_id == null){ // if not required then revert back draggable performer to thier back position
@@ -252,17 +280,18 @@ export default {
 
                     
                     
-                  } else if(draggable_parent_isRole == 'true' && droppable_isRole == 'true' && $(this).find('div.item').length === 0) { // move performer from one role to another role
+                  } else if(draggable_parent_isSlot == 'true' && droppable_isSlot == 'true' && $(this).find('div.item').length === 0) { // move performer from one role to another role
+                    console.log("else if 2");
                     var draggable_parent_finalcast_id = ui.draggable.attr("finalcast_id");
                     var draggable_user_id = ui.draggable.attr("user_id");     
-                    var droppable_role_id = $(this).attr("role_id");   
-                    if(draggable_parent_finalcast_id == undefined || draggable_parent_finalcast_id == null || draggable_user_id == undefined || draggable_user_id == null || droppable_role_id == undefined || droppable_role_id == null){ // if not foudn any required then revert back draggable performer to thier last position
+                    var droppable_slot_id = $(this).attr("slot_id");   
+                    if(draggable_parent_finalcast_id == undefined || draggable_parent_finalcast_id == null || draggable_user_id == undefined || draggable_user_id == null || droppable_slot_id == undefined || droppable_slot_id == null){ // if not foudn any required then revert back draggable performer to thier last position
                       ui.draggable.animate(ui.draggable.data().original,"slow");
                       return;
                     }                  
                     ui.draggable.parent().removeAttr("finalcast_id");
                     ui.draggable.removeAttr("finalcast_id");
-                    that.swapPerformerRoleToRole(draggable_parent_finalcast_id, draggable_user_id, droppable_role_id).then((result) => {
+                    that.swapPerformerRoleToRole(draggable_parent_finalcast_id, draggable_user_id, droppable_slot_id).then((result) => {
                         $(this).attr('finalcast_id',result.id);
                         ui.draggable.attr('finalcast_id',result.id);
                     }). 
@@ -270,6 +299,7 @@ export default {
                         console.log("TCL: initDropdrag -> err", err);
                     });
                   } else {
+
                     console.log("movement action not found!");                    
                     ui.draggable.animate(ui.draggable.data().original,"slow");
                     return;
@@ -339,19 +369,22 @@ export default {
       // End : drag and drop box jquery code
 
     },
-    async rejectBtn(performer_id, is_feedback_sent) {
-      this.performer_id = performer_id;
-      if(is_feedback_sent == 1){
-        this.$toasted.error("Feedback already send");
-      }else {
-        if (localStorage.getItem("reject_popup_dont_show") && localStorage.getItem("reject_popup_dont_show") == "1") {
-          this.handleApprMdlFrm('rejected');
-        } else {
-          this.$modal.show("showRejectMdl");
+    async checkIn(slot_id,performer_id){
+      try {
+            let requestParam = {
+              slot_id : slot_id,
+              performer_id : performer_id,
+              is_checkin :true
+            };            
+            // const { data: { data } } = await axios.post('/t/finalcast', requestParam);
+            return true;
+        } catch (e) {
+          this.$toasted.error("Something went to wrong!");
+          this.destroyDragDrop();
+          this.activeFinalCast(this.roles);
+          console.log(e);
         }
-      }
     },
-    
     manageSelectedPerformer() {
       this.finalUserList = [];
       _.each(this.openGroupMember, member => {
