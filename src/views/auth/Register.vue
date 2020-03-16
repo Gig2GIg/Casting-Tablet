@@ -257,8 +257,7 @@
               Cancel
             </a>
           </div>
-
-          <textarea v-model="data" />
+          
         </section>
         <section class="preview-area">
           <p>Image Preview</p>

@@ -603,6 +603,33 @@
       </div>
     </div>
   </modal>
+
+    <modal class="flex flex-col w-full items-center my-info-mdel" :width="1000" name="modal_thumbnail_image">
+      <div class="content my-info-content" >         
+          <p>Video Thumbnail</p>
+          <img              
+            :src="thumbnail"
+            alt="Cropped Profile"
+          />  
+        
+          <div class="actions">           
+            <a
+              href="#"
+              role="button"
+              @click.prevent="imageRenameDone"
+            >
+              Done
+            </a>
+            <a
+              href="#"
+              role="button"
+              @click.prevent="imageRenameCancel"
+            >
+              Cancel
+            </a>
+          </div>
+      </div>
+    </modal>
 </div>
 </template>
 
@@ -659,7 +686,8 @@ export default {
       isAssignedNumber:false,
       performerDetails:{},
       currentUserRoles : [],
-      isRealodTeamFeedback : false
+      isRealodTeamFeedback : false,
+      thumbnail : null
     };
   },
   computed: {
@@ -844,10 +872,83 @@ export default {
       return;
     },
     handleFile(e) {
-      const file = e.target.files[0];
+      let file = e.target.files[0];
 
       this.form.file = file;
       this.file.name = file.name;
+      
+      console.log("handleFile -> this.file", this.file)
+      this.$modal.show('modal_thumbnail_image');
+      var fileReader = new FileReader();
+      if (file.type.match('image')) {
+        fileReader.onload = () => {
+            var canvas = document.createElement('canvas');
+            canvas.width = fileReader.width;
+            canvas.height = fileReader.height;
+            // canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+            canvas.getContext('2d').drawImage(fileReader, 0, 0, 250, 250);
+            var image = canvas.toDataURL();
+            var success = image.length > 100000;
+            if (success) {
+              // var img = document.createElement('img');
+              // img.src = image;
+              // console.log("snapImage -> img", img)
+              this.thumbnail = image;
+              // console.log("snapImage -> image", image)
+              
+            }
+
+          // // var img = document.createElement('img');
+          // // img.src = fileReader.result;
+          // this.thumbnail = fileReader.result;
+          // // console.log("fileReader.onload -> img", fileReader.result)
+          // // document.getElementsByTagName('div')[0].appendChild(img);
+        };
+        fileReader.readAsDataURL(file);
+      } else {
+        fileReader.onload = () => {
+          var blob = new Blob([fileReader.result], {type: file.type});
+          var url = URL.createObjectURL(blob);
+          var video = document.createElement('video');
+          var timeupdate = () => {
+            if (snapImage()) {
+              video.removeEventListener('timeupdate', timeupdate);
+              video.pause();
+            }
+          };
+          video.addEventListener('loadeddata', () => {
+            if (snapImage()) {
+              video.removeEventListener('timeupdate', timeupdate);
+            }
+          });
+          var snapImage = () => {
+            var canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            // canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+            canvas.getContext('2d').drawImage(video, 0, 0, 250, 250);
+            var image = canvas.toDataURL();
+            var success = image.length > 100000;
+            if (success) {
+              // var img = document.createElement('img');
+              // img.src = image;
+              // console.log("snapImage -> img", img)
+              this.thumbnail = image;
+              // console.log("snapImage -> image", image)
+              
+            }
+            return success;
+          };
+          video.addEventListener('timeupdate', timeupdate);
+          video.preload = 'metadata';
+          video.src = url;
+          // Load video in Safari / IE11
+          video.muted = true;
+          video.playsInline = true;
+          video.play();
+        };
+        fileReader.readAsArrayBuffer(file);
+      }
 
       // this.preview = URL.createObjectURL(file);
     },
