@@ -205,18 +205,32 @@ export default {
       }
 
       const spaces = parseInt(this.appointments.spaces);
+      
       let counter = this.appointments.start;
-
+      
+      let OldSlots = this.appointments.slots ? Object.assign({},this.appointments.slots) : []; 
       this.appointments.slots = [];
+      
       let checkedCount = this.getSlotsCheckedCount(spaces);
       for (let i = 0; i < spaces; i++) {
         let isWalk = i >= checkedCount  ? true : false;
-        this.appointments.slots.push({        
-          time: counter,          
-          number: this.appointments.type == 1 ? null : i + 1,
-          status: false,
-          is_walk: isWalk
-        });
+        let newSlot;
+        if(OldSlots[i]){
+          newSlot = {        
+            time: counter,          
+            number: this.appointments.type == 1 ? null : i + 1,
+            status: false,
+            is_walk: OldSlots[i].is_walk
+          }          
+        } else {
+          newSlot = {        
+            time: counter,          
+            number: this.appointments.type == 1 ? null : i + 1,
+            status: false,
+            is_walk: isWalk
+          }          
+        }
+        this.appointments.slots.push(newSlot);
         
 
         const pivot = counter.split(':');
@@ -235,6 +249,7 @@ export default {
       }
 
       this.appointments.end = this.appointments.slots.length ? counter : '';
+
     },
     getSlotsCheckedCount(spaces){
       return parseInt(spaces - Math.floor(spaces/3));
@@ -280,5 +295,8 @@ input, input:focus, .slots-input, .slots-input:focus {
 }
 button {
   background-image: linear-gradient(#4D2545, #782541);
+}
+.modal-container {
+  z-index: 1111;
 }
 </style>
