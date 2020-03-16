@@ -77,80 +77,7 @@
                     :value="form.online"
             >Online Submission
             </base-checkbox>
-        </div>
-        <!-- <div class="flex" v-if="!form.online">
-            <base-input
-                    v-model="form.date"
-                    v-validate="'required'"
-                    name="date"
-                    :mindate="new Date()"
-                    class="w-1/3 px-2"
-                    type="date"
-                    placeholder="Date"
-                    :custom-classes="['border', 'border-purple']"
-                    :message="errors.first('create.date')"
-            />
-            <template>
-                <div class="relative h-12 my-2">
-                    <custom-time-picker                    
-                        class="timepicker-custom cus-des-timepicker px-2 text-left"
-                        :onTimeChange="timeChangeHandler"
-                        :defaultFocused="false"
-                        v-validate="'required'"
-                        :message="errors.first('create.time')"
-                        placeholder="Time"
-                        :HOURS="24"
-                        colorPalette="dark"
-                        theme="material"
-                        :defaultHour="defaultHour"
-                        :defaultMinute="defaultMinute"
-                    >
-                    </custom-time-picker>
-                </div>
-            </template>           
-            <button
-                    class="w-1/3 location-icon border border-purple rounded-full h-full py-3 px-6 h-12 my-2 text-left text-purple"
-                    v-validate="'required'"
-                    :custom-classes="['border', 'border-purple']"
-                    name="location"
-                    type="button"
-                    :message="errors.first('create.location')"
-                    @click="openLocationModel()"
-            >{{changeLocationBtnTxt ? 'Location Saved' : 'Location'}}
-            </button>
-            <modal width="80%" height="500px" :adaptive="true" name="location_model">
-                <template>
-                    <div class="close-btn search wrap">
-
-                        <div>
-                            <label class="search-btn-wrap">
-                                <button type="button"><i class="material-icons" @click="closeLocationModel('close')"
-                                                         style="font-size: 35px;">clear</i></button>
-                                <gmap-autocomplete class="w-1/3 px-2 border border-purple rounded-full h-full location-input" @place_changed="setPlace">
-                                </gmap-autocomplete>
-                                <button type="button" class="w-1/4 w-2btn border border-purple bg-purple-gradient text-white rounded-full h-full"
-                                        @click="closeLocationModel('save')">Save
-                                </button>
-                            </label>
-                            <br/>
-                        </div>
-                        <br>
-                        <gmap-map
-                                :center="center"
-                                :zoom="12"
-                                style="width:100%;  height: 400px;"
-                        >
-                            <gmap-marker
-                                    :key="index"
-                                    v-for="(m, index) in markers"
-                                    :position="m.position"
-                                    @click="center=m.position"
-                            ></gmap-marker>
-                        </gmap-map>
-                    </div>
-                </template>
-            </modal>            
-        </div> -->
+        </div>        
 
         <p class="px-5 text-purple font-medium py-8 pb-6">Production Information</p>
         <div class="flex w-full">
@@ -461,14 +388,7 @@
                     </div>
                 </div>
             </div>
-            <div class="managers w-3/5 flex flex-col items-end">
-                <!-- <button
-                        v-if="!form.online"
-                        class="w-2/3 mt-4 py-3 px-4 border-4 border-purple text-purple rounded-full focus:outline-none"
-                        type="button"
-                        @click.prevent="manageAppointments = true"
-                >Manage Appointments
-                </button> -->
+            <div class="managers w-3/5 flex flex-col items-end">            
 
                 <div v-if="!!form.roles.length" class="flex flex-col items-center my-5 w-2/3">
                     <p class="text-purple text-lg mb-4">Roles</p>
@@ -541,13 +461,7 @@
             </div>
         </div>
 
-        <!-- <AppointmentsModal
-                v-if="manageAppointments"
-                :data="form.appointment"
-                @change="form.appointment = $event"
-                @close="manageAppointments = false"
-        /> -->
-
+      
         <RolesModal
                 v-if="manageRoles"
                 :data="selectedRole"
@@ -964,7 +878,7 @@ export default {
         this.rounds[
           this.selected_round.index
         ].selectedLocation = this.selectedLocation;
-        console.log("closeLocationModel -> this.rounds", this.rounds);
+        
         this.rounds[this.selected_round.index].isSelected = true;
         this.$modal.hide("location_model");
       } else {
@@ -1262,10 +1176,10 @@ export default {
             }
           ];
         } else {
+            data.online = false;
             let roundHasError = false;
             let rounErrorMsg = "Please enter valid details of rounds."
-            data.rounds = this.rounds;
-            console.log("handleCreate -> data.rounds", data.rounds)
+            data.rounds = this.rounds;            
             if(!data.rounds || data.rounds.length == 0){
                 this.$toasted.error(rounErrorMsg);
                 return;
@@ -1361,7 +1275,7 @@ export default {
           })
         );
 
-        console.log("handleCreate -> data", data)
+        
         let action = await axios.post("/t/auditions/create", data);
         
         this.isLoading = false;
@@ -1479,8 +1393,7 @@ export default {
       this.$refs.coverFile.value = "";
       this.setUserData();
     },
-    async methodToRunOnSelect(payload) {
-      console.log("methodToRunOnSelect -> payload", payload);
+    async methodToRunOnSelect(payload) {      
       if (payload == "create") {
         // if select create new round then add new one in option list
         let newRound = {
@@ -1499,12 +1412,8 @@ export default {
       } else {
         //manage selected round details
         this.selected_round = payload;
-      }
-      console.log(
-        "methodToRunOnSelect -> this.selected_round",
-        this.selected_round
-      );
-      console.log("methodToRunOnSelect -> this.rounds", this.rounds);
+      }      
+      
     }
   }
 };
