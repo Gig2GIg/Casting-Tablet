@@ -22,13 +22,33 @@
       <div v-else-if="isAuditionVideos && (!finalUserList || finalUserList.length == 0)" class="flex items-center flex-wrap ml-5 h-full">
         <h4 class="w-full text-center text-purple font-semibold text-2xl">There are no performances</h4>
       </div>
-      <div v-if="isShowPerformer && (status == 1 || finalCastState == true || round.length >0 || showHiddenPerformer)" class=" flex flex-wrap ml-5">
+      <div v-else-if="isShowPerformer && (status == 1 || finalCastState == true || round.length >0) && currentAudition.status == 1 && round.status == 1 && !isAuditionVideos" class=" flex flex-wrap mt-10 mb-5 ml-2">
+        <div class="flex content-around w-8 items-center relative cmb-10 cursor-pointer"
+          v-bind:class="{ 'background-selected': !isCommentView }" 
+          >
+          <img
+            src="/images/icons/grid.png"
+            class="absolute left-0"
+            @click="changeCommentView('grid')"
+          />
+        </div>
+        <div class="flex content-around w-8 items-center relative cmb-10 cursor-pointer ml-1"
+          v-bind:class="{ 'background-selected': isCommentView }"
+          >
+          <img
+            src="/images/icons/list.png"
+            class="absolute left-0"
+            @click="changeCommentView('comment')"
+          />
+        </div>
+
+      </div>
+      <div v-if="isShowPerformer && (status == 1 || finalCastState == true || round.length >0 || showHiddenPerformer)" class=" flex flex-wrap ml-5">       
         <div class="col-6">
           <template v-if="!finalCastState && showHiddenPerformer" class="list-group flex flex-wrap">
             <transition-group v-if="hiddenPerformerList && hiddenPerformerList.length > 0" class="flex flex-wrap content-center" type="transition">              
-            <div
-                
-                class="list-group-item"
+            <div                
+                class="list-group-item"                
                 v-for="(data) in hiddenPerformerList"
                 :key="data.user_id"
               >
@@ -56,6 +76,7 @@
               <div
 
                 class="list-group-item"
+                v-bind:class="{ 'comment-box-view': isCommentView }"
                 v-for="(data) in finalUserList"
                 :key="data.user_id"
               >
@@ -69,13 +90,23 @@
                     v-bind:class="{ 'after-clck-new-grp' : isShowCreateGroup}"
                   />
                   </router-link>
-                  <div v-show="!isAuditionVideos && auditionData.online == 0 && (!currentAudition || currentAudition.status != 2)" class="custom-btn-grp">                    
+                  <div v-show="!isAuditionVideos && auditionData.online == 0 && currentAudition.status == 1 && round.status == 1" class="custom-btn-grp">                    
                     <div @click="approveBtn(data.user_id, data.is_feedback_sent)" class="m-1 content-center rounded-full grren-back h-10 flex items-center">
                       <button class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide" type="button"><img src="/images/icons/right-tick.svg" alt="right-tick" /></button>
                     </div>
                     <div @click="rejectBtn(data.user_id, data.is_feedback_sent)" class="m-1 content-center rounded-full red-back h-10 flex items-center">
                       <button class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide" type="button"><img src="/images/icons/delete-icon.svg" alt="delete-icon" /></button>
                     </div>
+                  </div>
+                  <div v-if="!isAuditionVideos && isCommentView && currentAudition.status == 1 && round.status == 1" class="flex flex-col">
+                    <comment-box
+                      v-model="casterComment[ui]"
+                      :value="casterComment[ui]"
+                      :custom-classes="['border border-b border-gray-300']"                      
+                      :name="`${ui}`"
+                      placeholder="Add Comment"
+                      @added="addCasterComment(data, ui)"
+                    />
                   </div>
                   <div class="check-grp" v-bind:class="{ 'after-check-grp' : isShowCreateGroup}">
                     <input
@@ -121,7 +152,8 @@
               <div
 
                 class="list-group-item"
-                v-for="(data) in userList"
+                v-bind:class="{ 'comment-box-view': isCommentView }"
+                v-for="(data, ui) in userList"
                 :key="data.user_id"
               >                  
                   <router-link v-bind:class="{ 'pointer-none' : isShowCreateGroup}" :to="!isShowCreateGroup ? (currentAudition && currentAudition.status == 2 ? { name: 'talent/user', params: {id: data.user_id} } : { name: 'auditions/user', params: {id: data.user_id, round: round.id, audition:$route.params.id} }) : { name: 'auditions/detail', params: {id: $route.params.id} }">
@@ -134,13 +166,23 @@
                     v-bind:class="{ 'after-clck-new-grp' : isShowCreateGroup}"
                   />
                   </router-link>
-                  <div v-if="auditionData && auditionData.online == 0 && (!currentAudition || currentAudition.status != 2)" class="custom-btn-grp">
+                  <div v-if="auditionData && auditionData.online == 0 && currentAudition.status == 1 && round.status == 1" class="custom-btn-grp">
                     <div @click="approveBtn(data.user_id, data.is_feedback_sent)" class="m-1 content-center rounded-full grren-back h-10 flex items-center">
                       <button class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide" type="button"><img src="/images/icons/right-tick.svg" alt="right-tick" /></button>
                     </div>
                     <div @click="rejectBtn(data.user_id, data.is_feedback_sent)" class="m-1 content-center rounded-full red-back h-10 flex items-center">
                       <button class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide" type="button"><img src="/images/icons/delete-icon.svg" alt="delete-icon" /></button>
                     </div>
+                  </div>
+                  <div v-if="!isAuditionVideos && isCommentView && currentAudition.status == 1 && round.status == 1" class="flex flex-col">
+                    <comment-box
+                      v-model="casterComment[ui]"
+                      :value="casterComment[ui]"
+                      :custom-classes="['border border-b border-gray-300']"                      
+                      :name="`${ui}`"
+                      placeholder="Add Comment"
+                      @added="addCasterComment(data, ui)"
+                    />
                   </div>
                   <div class="check-grp" v-bind:class="{ 'after-check-grp' : isShowCreateGroup}">
                     <input
@@ -252,8 +294,7 @@
         <h1 class="text-purple text-lg font-bold">Final Cast List</h1>
       </div>
       <div class="w-full border border-gray-300 mt-1 mb-6" />
-      <div id="role_box" class="box list-group flex flex-wrap justify-center content-start w-full" :class="{'h-48':mainRoles && mainRoles.length==0}">
-        <!-- :time="currentAudition && currentAudition.online != 1 ? data.time : ''" -->
+      <div id="role_box" class="box list-group flex flex-wrap justify-center content-start w-full" :class="{'h-48':mainRoles && mainRoles.length==0}">        
         <div
             class="slot list-group-item final-cast main-role-slot"
             v-for="(data) in mainRoles"
@@ -325,7 +366,7 @@ export default {
       status: 0,
       roles: [],
       mainRoles: [],
-      round: "",
+      round: {},
       drag: false,
       finalCastState: false,
       finalCastFilter: [],
@@ -367,7 +408,9 @@ export default {
       isAuditionVideos : false,
       showHiddenPerformer : false,
       hiddenPerformerList : [],
-      currentRestorUser : null
+      currentRestorUser : null,
+      isCommentView : false,
+      casterComment: []
     };
   },
   destroyed:()=>{
@@ -1336,6 +1379,29 @@ export default {
           this.activeFinalCast(this.roles);
           console.log(e);
         }
+    },
+    changeCommentView(type){
+      if(type == 'comment'){
+        this.isCommentView = true;
+      } else {
+        this.isCommentView = false;
+      }
+    },
+    async addCasterComment(data, index){      
+    if(this.loading){
+      return
+    }
+    this.$toasted.clear();
+    if(!this.casterComment[index] || this.casterComment[index] == ''){
+      this.$toasted.error("Please enter comment!");
+    }
+
+    this.loading = true;
+    // call comment api with try case
+
+      this.loading = false;
+      Vue.set(this.casterComment, index, '');    
+
     },
     //end: new action for drag drop handle
     onCancel() {
