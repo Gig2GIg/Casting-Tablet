@@ -1,22 +1,22 @@
 <template>
-    <div class="btn-group">
-        <li @click="toggleMenu()" class="dropdown-toggle text-purple font-bold" v-if="selectedOption.round !== undefined">
+    <div class="btn-group w-1/3 px-2 h-12">
+        <li @click="toggleMenu()" class="text-purple rounded-full overflow-hidden w-full h-full py-3 px-6 placeholder-purple focus:outline-none border border-purple" v-if="selectedOption.round !== undefined">
           Round {{ selectedOption.round }}
           <span class="caret"></span>
         </li>
 
-        <li @click="toggleMenu()" class="dropdown-toggle text-purple font-bold" v-if="selectedOption.round === undefined">
+        <li @click="toggleMenu()" class="text-purple rounded-full overflow-hidden w-full h-full py-3 px-6 placeholder-purple focus:outline-none border border-purple" v-if="selectedOption.round === undefined">
           {{placeholderText}}
           <span class="caret"></span>
         </li>
 
-        <ul class="dropdown-menu" v-if="showMenu">
-            <li v-for="option in options">
+        <ul class="dropdown-menu w-full" v-if="showMenu">
+            <li v-for="(option,index) in options" :key="index" class="w-full h-full">
                 <a href="javascript:void(0)" class="text-purple" @click="updateOption(option)">
                     Round {{ option.round }}
                 </a>
             </li>
-            <li v-if="(create || state == 0) && audition != 2">
+            <li v-if="(create || state == 0) && audition != 2" class="w-full h-full">
                 <a href="javascript:void(0)" class="text-purple" @click="emitCreate()">
                     + Create Round
                 </a>
@@ -47,109 +47,54 @@ import axios from 'axios';
             selected: {},
             placeholder: [String],
             state:[Number],
+            setround : {},
             online:[Number],
             audition:[Number],
             closeOnOutsideClick: {
               type: [Boolean],
               default: true,
-            },
+            }
+        },  
+        watch: {    
+            setround: function() {
+                this.updateOption(this.options[this.options.length-1]);
+            },  
         },
-        computed:{
-          ...mapState('round', ['rounds']),
+        async mounted() {         
+          if(this.options != ""){
+            this.selectedOption = this.selected;
+            if(this.selectedOption.length>0){
+              this.create = false;
+            }
+            this.selectedOption = this.selectedOption.length > 0 ? this.selectedOption[0] : this.selectedOption;            
+            this.$emit('setOption', this.selectedOption)
+          }
 
-        },
-        async mounted() {
-         await this.reloadRounds(true);
+            if (this.placeholder)
+            {
+                this.placeholderText = this.placeholder;
+                this.$emit('setOption', this.selectedOption);
+            }
+
+            if (this.closeOnOutsideClick) {
+              document.addEventListener('click', this.clickHandler);
+            }
         },
 
         beforeDestroy() {
             document.removeEventListener('click', this.clickHandler);
         },
 
-        methods: {
-          ...mapActions('round', ['fetch']),
+        methods: {          
             updateOption(option) {
                 this.selectedOption = option;
                 this.showMenu = false;
                 this.$emit('updateOption', this.selectedOption);
             },
 
-           async emitCreate(){
-              if(this.online == 0){
+           async emitCreate(){              
                 this.$emit('updateOption', "create");
-              }
-              else{
-                let data = {
-                  date: '',
-                  time: '0',
-                  location: {
-                      latitude: '0',
-                      latitudeDelta: '0',
-                      longitude: '0',
-                      longitudeDelta: '0'
-                  },
-                  number_slots: 0,
-                  type: 1,
-                  online: true,
-                  length: 0,
-                  start: '0',
-                  end: '0',
-                  round: this.rounds.length + 1,
-                  status: true
-                };
-                try{
-                  await axios.post(`/t/appointment/${this.$route.params.id}/rounds`, data);
-                  this.$toasted.success('The round has created successfully.');
-                  await  this.fetch(this.$route.params.id);
-                  this.options = this.rounds;
-                  if(this.options != ""){
-                    this.selectedOption = this.options.filter(option => option.status == 1);
-                    if(this.selectedOption.length>0){
-                      this.create = false;
-                    }
-                    this.selectedOption = this.selectedOption.length > 0 ? this.selectedOption[0] : this.selectedOption;
-                    this.$emit('setOption', this.selectedOption)
-                  }
-
-                    if (this.placeholder)
-                    {
-                        this.placeholderText = this.placeholder;
-                        this.$emit('setOption', this.selectedOption);
-                    }
-
-                    if (this.closeOnOutsideClick) {
-                      document.addEventListener('click', this.clickHandler);
-                    }
-                }
-                catch(e){
-                  this.$toasted.error(e);
-                }
-              }
-
-            },
-            async reloadRounds(isSetOption){
-              await  this.fetch(this.$route.params.id);
-              this.options = this.rounds;
-              if(this.options != ""){
-                if(isSetOption){
-                  this.selectedOption = this.options.filter(option => option.status == 1);
-                  if(this.selectedOption.length>0){
-                    this.create = false;
-                  }
-                  this.selectedOption = this.selectedOption.length > 0 ? this.selectedOption[0] : this.selectedOption;
-                }                
-                this.$emit('setOption', this.selectedOption)
-              }
-
-              if (this.placeholder)
-              {
-                  this.placeholderText = this.placeholder;
-                  this.$emit('setOption', this.selectedOption);
-              }
-
-              if (this.closeOnOutsideClick) {
-                document.addEventListener('click', this.clickHandler);
-              }
+                // this.updateOption();
             },
 
             toggleMenu() {
