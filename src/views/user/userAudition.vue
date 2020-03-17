@@ -607,9 +607,11 @@
     <modal class="flex flex-col w-full items-center my-info-mdel" :width="1000" name="modal_thumbnail_image">
       <div class="content my-info-content" >         
           <p>Video Thumbnail</p>
+          {{thumbnail}}
           <img              
-            :src="thumbnail"
-            alt="Cropped Profile"
+            :src="thumbnail.preview"
+            width="200"
+            alt="Thumbnail"
           />  
         
           <div class="actions">           
@@ -687,7 +689,7 @@ export default {
       performerDetails:{},
       currentUserRoles : [],
       isRealodTeamFeedback : false,
-      thumbnail : null
+      thumbnail : {}
     };
   },
   computed: {
@@ -823,17 +825,27 @@ export default {
       try{
         if (this.isLoading) {
           return;
-        }
-        
+        }        
+
         this.isLoading = true;
         if(this.file.name !='Record Audition'){
-          let file = await firebase.storage()
+        // upload thumbnail file
+        let thumbnailFile = await firebase.storage()
+        .ref(`temp/thumbnail/${uuid()}.png`)
+        .put(this.thumbnail.file);        
+        let thumbnailUrl = await thumbnailFile.ref.getDownloadURL();
+        console.log("saveFeedback -> thumbnailUrl", thumbnailUrl)
+
+        // upload video file
+        let file = await firebase.storage()
         .ref(`temp/${uuid()}.${this.file.name.split('.').pop()}`)
         .put(this.form.file);
-
         let url = await file.ref.getDownloadURL();
+        console.log("saveFeedback -> url", url)
+
         let audition_record={
           "url":url,
+          "thumbnail":thumbnailUrl,
           "appointment_id":this.$route.params.round,
           "performer":this.$route.params.id,
           "slot_id":this.slot,
@@ -844,6 +856,7 @@ export default {
         this.isLoading = false;
         }
       }catch(e){
+        console.log("saveFeedback -> e", e)
         this.isLoading = false;
         this.$toasted.error('This performer already has a video, try later');
       }
@@ -871,86 +884,119 @@ export default {
       await this.fetchTeamFeedback(data);
       return;
     },
+    GetThumbnail(e) {
+        var myCan = document.createElement('canvas');
+        var img = new Image();
+        img.src = e.target.result;
+        img.onload = () => {
+ 
+            myCan.id = "myTempCanvas";
+            // var tsize = document.getElementById("txtThumbSize").value;
+            var tsize = 200;
+            myCan.width = Number(tsize);
+            myCan.height = Number(tsize);
+            if (myCan.getContext) {
+                var cntxt = myCan.getContext("2d");
+                cntxt.drawImage(img, 0, 0, myCan.width, myCan.height);
+                var dataURL = myCan.toDataURL();
+ 
+ 
+                if (dataURL != null && dataURL != undefined) {
+                    this.thumbnail.preview = dataURL;
+                    myCan.toBlob((blob) => {
+                      this.thumbnail.file = blob;                      
+                    });               
+                    console.log("img.onload -> this.thumbnail", this.thumbnail)
+ 
+                }
+                else
+                    alert('unable to get context');
+ 
+            }
+ 
+        }
+ 
+    },    
     handleFile(e) {
+      this.thumbnail = {};
+      // this.file = null;
+      this.form.file = null;
       let file = e.target.files[0];
+      
+      var fileReader = new FileReader();
 
       this.form.file = file;
       this.file.name = file.name;
       
       console.log("handleFile -> this.file", this.file)
-      this.$modal.show('modal_thumbnail_image');
-      var fileReader = new FileReader();
+      this.$modal.show('modal_thumbnail_image');            
       if (file.type.match('image')) {
-        fileReader.onload = () => {
-            var canvas = document.createElement('canvas');
-            canvas.width = fileReader.width;
-            canvas.height = fileReader.height;
-            // canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-            canvas.getContext('2d').drawImage(fileReader, 0, 0, 250, 250);
-            var image = canvas.toDataURL();
-            var success = image.length > 100000;
-            if (success) {
-              // var img = document.createElement('img');
-              // img.src = image;
-              // console.log("snapImage -> img", img)
-              this.thumbnail = image;
-              // console.log("snapImage -> image", image)
-              
-            }
+        // start : generate thumbail
+            // var reader = new FileReader();
 
-          // // var img = document.createElement('img');
-          // // img.src = fileReader.result;
-          // this.thumbnail = fileReader.result;
-          // // console.log("fileReader.onload -> img", fileReader.result)
-          // // document.getElementsByTagName('div')[0].appendChild(img);
-        };
-        fileReader.readAsDataURL(file);
+            if (fileReader != null) {
+                fileReader.onload = this.GetThumbnail;
+                fileReader.readAsDataURL(file);
+            }
+        // end : generate thumbail
       } else {
-        fileReader.onload = () => {
-          var blob = new Blob([fileReader.result], {type: file.type});
-          var url = URL.createObjectURL(blob);
-          var video = document.createElement('video');
-          var timeupdate = () => {
-            if (snapImage()) {
-              video.removeEventListener('timeupdate', timeupdate);
-              video.pause();
-            }
-          };
-          video.addEventListener('loadeddata', () => {
-            if (snapImage()) {
-              video.removeEventListener('timeupdate', timeupdate);
-            }
-          });
-          var snapImage = () => {
-            var canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            // canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-            canvas.getContext('2d').drawImage(video, 0, 0, 250, 250);
-            var image = canvas.toDataURL();
-            var success = image.length > 100000;
-            if (success) {
-              // var img = document.createElement('img');
-              // img.src = image;
-              // console.log("snapImage -> img", img)
-              this.thumbnail = image;
-              // console.log("snapImage -> image", image)
-              
-            }
-            return success;
-          };
-          video.addEventListener('timeupdate', timeupdate);
-          video.preload = 'metadata';
-          video.src = url;
-          // Load video in Safari / IE11
-          video.muted = true;
-          video.playsInline = true;
-          video.play();
-        };
-        fileReader.readAsArrayBuffer(file);
-      }
 
-      // this.preview = URL.createObjectURL(file);
+        fileReader.onload = () => {
+            var blob = new Blob([fileReader.result], {type: file.type});            
+            var url = URL.createObjectURL(blob);
+            
+            var video = document.createElement('video');
+            var timeupdate = () => {
+              if (snapImage()) {
+                video.removeEventListener('timeupdate', timeupdate);
+                video.pause();
+              }
+            };
+            video.addEventListener('loadeddata', () => {
+              if (snapImage()) {
+                video.removeEventListener('timeupdate', timeupdate);
+              }
+            });
+            var snapImage = () => {
+              var canvas = document.createElement('canvas');
+              canvas.width = video.videoWidth;
+              canvas.height = video.videoHeight;
+              canvas.getContext('2d').drawImage(video,0,0,canvas.width, canvas.height);
+              var dataURL = canvas.toDataURL();
+              var success = dataURL.length > 100000;
+              if (success) {
+                var img = document.createElement('img');
+                img.src = dataURL;
+                console.log("snapImage -> img", img)
+                
+                // document.getElementsByTagName('div')[0].appendChild(img);
+                URL.revokeObjectURL(url);
+              }
+              if (dataURL != null && dataURL != undefined) {
+                    this.thumbnail.preview = dataURL;
+                    canvas.toBlob((blob) => {
+                      this.thumbnail.file = blob;                                            
+                    });
+                  URL.revokeObjectURL(url);
+                } else{
+                  alert('unable to get context');
+                }
+                    console.log("snapImage -> this.thumbnail", this.thumbnail)
+
+              return success;
+            };
+            video.addEventListener('timeupdate', timeupdate);
+            video.preload = 'metadata';
+            video.src = url;
+            // Load video in Safari / IE11
+            video.muted = true;
+            video.playsInline = true;
+            video.play();
+          };
+          fileReader.readAsArrayBuffer(file);
+
+
+      }
     },
     asignEvents(){
       var finalList = new Array();
@@ -1053,12 +1099,18 @@ export default {
         this.$modal.hide('marketplace');
       },
       setUrl(url){      
-      var pattern = /^((http|https|ftp):\/\/)/;
-      if(!pattern.test(url)) {
-          url = "http://" + url;
+        var pattern = /^((http|https|ftp):\/\/)/;
+        if(!pattern.test(url)) {
+            url = "http://" + url;
+        }
+        return url;
+      },
+      imageRenameDone(){
+        this.$modal.hide('modal_thumbnail_image');
+      },
+      imageRenameCancel(){
+        this.$modal.hide('modal_thumbnail_image');
       }
-      return url;
-    }
     },
 };
 </script>
