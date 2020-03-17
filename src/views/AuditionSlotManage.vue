@@ -7,7 +7,7 @@
       :is-full-page="fullPage"
     ></loading>
     <div class="w-full w-calc" >      
-      <div v-if="!finalUserList || finalUserList.length == 0" class="flex items-center flex-wrap ml-5 h-full">
+      <div v-if="!isLoading && (!finalUserList || finalUserList.length == 0)" class="flex items-center flex-wrap ml-5 mt-5">
         <h4 class="w-full text-center text-purple font-semibold text-2xl">There are no performances</h4>
       </div>
       <div class=" flex flex-wrap ml-5">
@@ -20,15 +20,16 @@
                         v-for="(data) in finalUserList"
                         :key="data.user_id"                      
                         v-bind:user_id="data.user_id"
+                        v-bind:rol="data.rol"
                         v-bind:isPerformer="true"
                 >
 
-                      <div v-if="data.user_id" v-bind:id="'item_'+data.user_id" v-bind:user_id="data.user_id" class="item" >
+                      <div v-if="data.user_id" v-bind:id="'item_'+data.user_id" v-bind:user_id="data.user_id" v-bind:rol="data.rol" class="item" >
                         <a class="performer-view" v-bind:performer="data.user_id" v-on:click="clickFinalPerformer($event,data)">  
                               <card-user
                                       :title="data.name"
                                       :isFinalCast="true"
-                                      :image="data.image && !data.image.url ? data.image : ''"
+                                      :image="data.image"
                               />
                           </a>
                     </div>
@@ -57,10 +58,11 @@
             v-bind:isSlot="true"
             v-bind:slot_id="data.id"
           >
-               <div v-if="data.user_id"  class="item" v-bind:user_id="data.user_id" v-bind:finalcast_id="data.finalcast_id" >                    
+               <div v-if="data.user_slot"  class="item" v-bind:user_id="data.user_slot.user_id" >                    
                       <card-user
-                              :title="''"
-                              :image="''"                              
+                          :isFinalCast="true"
+                          :title="data.user_slot.user.details.first_name +' '+data.user_slot.user.details.last_name"
+                          :image="data.user_slot.user.image.url"                              
                       />
               </div>
               <span class="role-name">{{data.time}}</span>
@@ -120,17 +122,15 @@ export default {
   },
   async created() {    
       await this.fetchAuditionData(this.$route.params.id);
-      eventBus.$emit("auditionTitle", this.audition.title);    
-      await this.fetchAppointmentNotWalk(this.$route.params.id);
-      this.slots = this.appointmentNotWalk && this.appointmentNotWalk.slots ? this.appointmentNotWalk.slots : [];
-
+      eventBus.$emit("auditionTitle", this.audition.title);          
+      await this.getSlotList();
       await this.getUserList();
 
       
   },
   computed: {
-    ...mapState("audition", ["userList", 'audition', 'appointmentNotWalk']),
-    ...mapState("appointment", [ "appointmentNotWalk"]),
+    ...mapState("audition", ["userList", 'audition']),
+    ...mapState("appointment", ["appointments"]),
     ...mapState("round", ["rounds"]),
     dragOptions() {
       return {
@@ -145,16 +145,20 @@ export default {
     ...mapActions("audition", [
       "fetchUserList",
       "fetchAuditionData",
-      "fetchAppointmentNotWalk"
+      "fetchIndividualUserList"
     ]),
-    ...mapActions("appointment", ["fetchAppointmentNotWalk"]),
+    ...mapActions("appointment", ["fetchAllAppointments"]),
     async getUserList(){
-      await this.fetchUserList(this.$route.params.id);      
+      await this.fetchIndividualUserList(this.$route.params.id);      
       console.log("getUserList -> this.userList", this.userList)
       this.finalUserList = this.userList;
       setTimeout(() =>{
         this.initDropdrag();
       },100);
+    },
+    async getSlotList(){
+      await this.fetchAllAppointments(this.$route.params.id);
+      this.slots = this.appointments && this.appointments.slots ? this.appointments.slots : [];
     },
     clickFinalPerformer(event,data){
       event.preventDefault();
@@ -249,13 +253,15 @@ export default {
                   } else if (draggable_parent_isPerformer == 'true' && droppable_isSlot == 'true' && $(this).find('div.item').length === 0){ // From performer list , add performer to particular role
                     console.log("else if 1");
                     var draggable_user_id = ui.draggable.attr("user_id");        
+                    var draggable_role = ui.draggable.attr("rol");        
+                    console.log("initDropdrag -> draggable_role", draggable_role)
                     var droppable_slot_id = $(this).attr("slot_id");
                     if(draggable_user_id == undefined || draggable_user_id == null || droppable_slot_id == undefined || droppable_slot_id == null){ // if not found required data then revert back draggable performer to thier back position
                       ui.draggable.animate(ui.draggable.data().original,"slow");
                       return;
                     }
                     let parentDiv = ui.draggable.parent();
-                    that.checkIn(draggable_user_id, droppable_slot_id).then((result) => {
+                    that.checkIn(draggable_user_id, droppable_slot_id, draggable_role).then((result) => {
                       parentDiv.remove();
                         // $(this).attr('finalcast_id',result.id);
                         // ui.draggable.attr('finalcast_id',result.id);
@@ -265,41 +271,12 @@ export default {
                     });
                     
                   } else if(draggable_parent_isSlot == 'true' && droppable_isPerformer == 'true' && $(this).find('div.item').length === 0){ // remove performer from role list
-                    console.log("else if 2");
-                    var draggable_parent_finalcast_id = ui.draggable.attr("finalcast_id");
-                    var draggable_user_id = ui.draggable.attr("user_id");     
-                    if(draggable_parent_finalcast_id == undefined || draggable_parent_finalcast_id == null || draggable_user_id == undefined || draggable_user_id == null){ // if not required then revert back draggable performer to thier back position
-                      ui.draggable.animate(ui.draggable.data().original,"slow");
-                      return;
-                    }        
-                    
-                    
-                    that.removePerformerFromRole(draggable_parent_finalcast_id, draggable_user_id);
-                    ui.draggable.parent().removeAttr("finalcast_id");
-                    ui.draggable.removeAttr("finalcast_id");
-
-                    
-                    
+                    ui.draggable.animate(ui.draggable.data().original,"slow");
+                    return;                    
                   } else if(draggable_parent_isSlot == 'true' && droppable_isSlot == 'true' && $(this).find('div.item').length === 0) { // move performer from one role to another role
-                    console.log("else if 2");
-                    var draggable_parent_finalcast_id = ui.draggable.attr("finalcast_id");
-                    var draggable_user_id = ui.draggable.attr("user_id");     
-                    var droppable_slot_id = $(this).attr("slot_id");   
-                    if(draggable_parent_finalcast_id == undefined || draggable_parent_finalcast_id == null || draggable_user_id == undefined || draggable_user_id == null || droppable_slot_id == undefined || droppable_slot_id == null){ // if not foudn any required then revert back draggable performer to thier last position
-                      ui.draggable.animate(ui.draggable.data().original,"slow");
-                      return;
-                    }                  
-                    ui.draggable.parent().removeAttr("finalcast_id");
-                    ui.draggable.removeAttr("finalcast_id");
-                    that.swapPerformerRoleToRole(draggable_parent_finalcast_id, draggable_user_id, droppable_slot_id).then((result) => {
-                        $(this).attr('finalcast_id',result.id);
-                        ui.draggable.attr('finalcast_id',result.id);
-                    }). 
-                    catch((err) => { 
-                        console.log("TCL: initDropdrag -> err", err);
-                    });
+                    ui.draggable.animate(ui.draggable.data().original,"slow");
+                    return;
                   } else {
-
                     console.log("movement action not found!");                    
                     ui.draggable.animate(ui.draggable.data().original,"slow");
                     return;
@@ -369,266 +346,31 @@ export default {
       // End : drag and drop box jquery code
 
     },
-    async checkIn(slot_id,performer_id){
+    async checkIn(performer_id, slot_id, roles){
       try {
-            let requestParam = {
-              slot_id : slot_id,
-              performer_id : performer_id,
-              is_checkin :true
+          this.isLoading = true;
+          let requestParam = {
+              auditions: this.$route.params.id,
+              appointment_id : this.audition.appointment_id,
+              slot: slot_id,
+              user: performer_id,
+              rol : roles,
+              nonRevert : false
             };            
-            // const { data: { data } } = await axios.post('/t/finalcast', requestParam);
-            return true;
+            const { data: { data } } = await axios.post('/appointments/auditions', requestParam);
+            this.isLoading = false;
+            return data;
         } catch (e) {
+          console.log("checkIn -> e", e)
+          this.isLoading = false;
           this.$toasted.error("Something went to wrong!");
-          this.destroyDragDrop();
-          this.activeFinalCast(this.roles);
+          this.finalUserList = [];
+          this.slots = [];
+          await this.destroyDragDrop();     
+          await this.getSlotList();
+          await this.getUserList();
           console.log(e);
         }
-    },
-    manageSelectedPerformer() {
-      this.finalUserList = [];
-      _.each(this.openGroupMember, member => {
-        let entry = _.find(this.userList, user => {
-          return user.user_id == member.user_id;
-        });
-        if (entry) this.finalUserList.push(entry);
-      });
-      this.finalUserList = _.orderBy(this.finalUserList, 'time', 'asc'); 
-    },
-    manageAuditionVideoPerformer(videos) {
-      let userIds = videos && videos.length > 0 ? _.compact(_.uniq(videos.map(video=>video.performer.user_id ? video.performer.user_id : null))) : [];
-      this.finalUserList = [];
-      _.each(userIds, user_id => {
-        let entry = _.find(this.userList, user => {
-          return user.user_id == user_id;
-        });
-        if (entry) this.finalUserList.push(entry);
-      });
-      this.finalUserList = _.orderBy(this.finalUserList, 'time', 'asc'); 
-    },
-     
-    async chargeUsers(value) {
-      this.round = value;
-      // this.finalCastPerformerList
-      await this.fetchUserList(value.id);
-      await this.fetchFinalCastList(this.$route.params.id);
-      this.finalCastPerformerList = _.cloneDeep(this.$store.getters[
-        "audition/listFinalCasts"
-      ]);
-      for (let data in this.finalCast) {
-        let filtered_data = this.userList.filter(
-          user => user.user_id == this.finalCast[data].user_id
-        );
-        for (let j in filtered_data) {
-          this.finalCastPerformerList[data].image = filtered_data[j].image;
-          this.finalCastPerformerList[data].name = filtered_data[j].name;
-          this.finalCastPerformerList[data].time = filtered_data[j].time;
-          // this.finalCast[data].rol_id = filtered_data[j].rol;
-        }
-      }
-      if (this.finalCastPerformerList && this.finalCastPerformerList.length > 0) {
-        this.finalCastFilter = this.finalCastPerformerList;
-      }
-    }, 
-    async chargeFinalCast() {
-      this.isLoading = true;
-      await this.fetchFinalCastList(this.$route.params.id);
-      this.finalCastPerformerList = _.cloneDeep(this.$store.getters[
-        "audition/listFinalCasts"
-      ]);
-
-      await this.fetch(this.$route.params.id);
-      let lastRound = this.rounds.slice(-1);
-      if (lastRound && lastRound.length > 0) {
-        await this.fetchUserList(lastRound[0].id);
-        this.round = lastRound[0];
-      }
-      for (let data in this.finalCastPerformerList) {
-        let filtered_data = _.cloneDeep(this.userList.filter(        
-          user => user.user_id == this.finalCastPerformerList[data].user_id
-        ));
-        
-        for (let j in filtered_data) {
-          this.finalCastPerformerList[data].image = filtered_data[j].image;          
-          this.finalCastPerformerList[data].name = filtered_data[j].name;
-          this.finalCastPerformerList[data].time = filtered_data[j].time;
-          this.finalCastPerformerList[data].time = filtered_data[j].time;
-          this.finalCastPerformerList[data].birth = filtered_data[j].birth;
-          this.finalCastPerformerList[data].email = filtered_data[j].email;          
-          // this.finalCast[data].rol_id = filtered_data[j].rol;
-        }
-      }
-      
-      this.mainRoles = _.cloneDeep(this.roles);
-            
-      await this.mainRoles.map(async role => {
-        if (this.finalCastPerformerList && this.finalCastPerformerList.length > 0) {
-          let filtered_data = await this.finalCastPerformerList.filter(
-                user => user.rol_id === role.id
-            );        
-          if (filtered_data && filtered_data.length > 0) {
-            role.name = filtered_data[0].name;
-            role.image = filtered_data[0].image;
-            role.rol = filtered_data[0].rol_name;
-            role.is_peformer = true;
-            role.finalcast_id = filtered_data[0].id;
-            role.user_id = filtered_data[0].user_id;
-            role.time = filtered_data[0].time;
-            role.birth = filtered_data[0].birth;
-            role.email = filtered_data[0].email;
-          } else {
-            role.is_peformer = false;
-            role.finalcast_id = null;
-            role.user_id = null;
-            role.image = role.image.url;
-            role.time = '';
-            role.birth = null;
-            role.email = null;
-
-          }          
-        } else {
-          role.is_peformer = false;
-          role.finalcast_id = null;
-          role.user_id = null;
-          role.image = role.image.url;
-          role.time = '';
-          role.birth = null;
-          role.email = null;
-        }
-        return role;
-      });
-        
-      await this.toggleFinalCastListUser();
-      if (this.finalCastPerformerList && this.finalCastPerformerList.length > 0) {
-        this.finalCastFilter = this.finalCastPerformerList;
-      }
-      // setTimeout(() =>{
-      //   // $(".slot").droppable(dropOption);
-      //   this.initDropdrag();
-      // },100);
-      this.isLoading = false;
-    },
-    async activeFinalCast(item) {
-      this.isLoading = true;
-      this.roles = item;
-      await this.fetchFinalCastList(this.$route.params.id);
-      this.finalCastPerformerList = _.cloneDeep(this.$store.getters[      
-        "audition/listFinalCasts"
-      ]);
-
-      await this.fetch(this.$route.params.id);
-      let lastRound = this.rounds.slice(-1);
-      if (lastRound && lastRound.length > 0) {
-        await this.fetchUserList(lastRound[0].id);
-        this.round = lastRound[0];
-      }
-      for (let data in this.finalCastPerformerList) {
-        let filtered_data = _.cloneDeep(this.userList.filter(        
-          user => user.user_id == this.finalCastPerformerList[data].user_id
-        ));
-        
-        for (let j in filtered_data) {
-          this.finalCastPerformerList[data].image = filtered_data[j].image;          
-          this.finalCastPerformerList[data].name = filtered_data[j].name;
-          this.finalCastPerformerList[data].time = filtered_data[j].time;
-          // this.finalCast[data].rol_id = filtered_data[j].rol;
-        }
-      }
-      
-      this.mainRoles = _.cloneDeep(this.roles);
-            
-      await this.mainRoles.map(async role => {
-        if (this.finalCastPerformerList && this.finalCastPerformerList.length > 0) {
-          let filtered_data = await this.finalCastPerformerList.filter(
-                user => user.rol_id === role.id
-            );        
-          if (filtered_data && filtered_data.length > 0) {
-            role.name = filtered_data[0].name;
-            role.image = filtered_data[0].image;
-            role.rol = filtered_data[0].rol_name;
-            role.is_peformer = true;
-            role.finalcast_id = filtered_data[0].id;
-            role.user_id = filtered_data[0].user_id;
-            role.time = filtered_data[0].time;
-            role.birth = filtered_data[0].birth;
-            role.email = filtered_data[0].email;
-          } else {
-            role.is_peformer = false;
-            role.finalcast_id = null;
-            role.user_id = null;
-            role.image = role.image.url;
-            role.time = '';
-            role.birth = null;
-            role.email = null;
-
-          }          
-        } else {
-          role.is_peformer = false;
-          role.finalcast_id = null;
-          role.user_id = null;
-          role.image = role.image.url;
-          role.time = '';
-          role.birth = null;
-          role.email = null;
-        }
-        return role;
-      });
-
-      await this.toggleFinalCastListUser();
-      if (this.finalCastPerformerList && this.finalCastPerformerList.length > 0) {
-        this.finalCastFilter = this.finalCastPerformerList;
-      }
-      this.finalCastState = true;
-      
-      setTimeout(() =>{
-        // $(".slot").droppable(dropOption);
-        this.initDropdrag();
-      },100);
-      this.isLoading = false;
-    },
-    
-    async verifyRegisters(item) {
-      if(item && item.added && item.added.element){
-      item.added.element.rol_id = item.added.element.rol;
-      let data = {
-        audition_id: this.$route.params.id,
-        performer_id: item.added.element.user_id,
-        rol_id: item.added.element.rol_id
-      };
-      await this.addPerformer(data);
-        try {
-          let filtered_data = this.finalCastFilter.filter(
-            user =>
-              user.rol_id == item.added.element.rol &&
-              user.user_id != item.added.element.user_id
-          );
-          if (filtered_data && filtered_data.length > 0) {
-            this.finalCastFilter = this.finalCastFilter.filter(
-              user => user.user_id != filtered_data[0].user_id
-            );
-            await this.removePerformer(filtered_data[0].id);
-          }
-          await this.chargeFinalCast();
-        } catch (e) {
-          console.log(e);
-        }
-      }      
-    },
-    async toggleFinalCastListUser(){
-      this.finalCastListUser = [];
-      this.finalUserList = [];
-      let finalCastUserIds = this.finalCast && this.finalCast.length > 0 ? this.finalCast.map(cast=>cast.user_id) : [];
-      await _.each(this.userList, member => {    
-          if(finalCastUserIds.indexOf(member.user_id) == -1){
-            this.finalCastListUser.push(member);
-          } else {
-            this.finalCastListUser.push({user_id : null});          
-          }
-          return member;
-        });
-    },
-    async changeView(status) {
-      this.status = status;
     },
     cloneDog({ id }) {;
       // return {
