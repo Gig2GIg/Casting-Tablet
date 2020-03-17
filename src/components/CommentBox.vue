@@ -2,7 +2,7 @@
 <template>
   <div class="flex flex-col">
     <div      
-      class="flex-1 my-2 rounded-large w-full h-full overflow-hidden"
+      class="flex-1 my-2 rounded-large w-full h-full overflow-hidden border-2 border-purple comment-text"
       :class="customClasses"
     >
       <img        
@@ -52,9 +52,13 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 .top-1\/2 {
   top: 50%;
   transform: translateY(-50%);
+}
+.comment-text{
+  display: flex !important;
+  align-items: flex-start !important;
 }
 </style>

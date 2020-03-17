@@ -2,7 +2,7 @@
 <template>
 <!--   -->
   <div class="relative w-40" :class="{'py-2 pr-2 ml-1 mr-4':!isFinalCast}">
-    <div class="flex flex-col h-full shadow-md overflow-hidden">
+    <div class="flex flex-col h-full shadow-md overflow-hidden card-img">
       <!-- <img
         :src="image"
         class="h-32"
@@ -12,7 +12,7 @@
       <img v-lazy="image"  class="h-32 object-cover" alt="Image" >
 
       <div
-        class="flex flex-col justify-center px-4 py-2 w-32"
+        class="flex flex-col  justify-start px-4 py-2 w-32"
       >
         <span class="font-medium text-xs truncate">
           {{ title }}
