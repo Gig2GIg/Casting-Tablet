@@ -604,17 +604,38 @@
     </div>
   </modal>
 
-    <modal class="flex flex-col w-full items-center my-info-mdel" :width="1000" name="modal_thumbnail_image">
+    <modal class="flex flex-col w-full items-center" :width="450" :height="200" name="modal_thumbnail_image">
       <div class="content my-info-content" >         
-          <p>Video Thumbnail</p>
-          {{thumbnail}}
+        <section class="image-preview-area">            
+            <!-- <div class="flex justify-center items-center px-3 w-full">
+              <div class="mr-6">
+                <div
+                  class="ml-2 flex items-center cursor-pointer justify-center overflow-hidden h-200 w-200 rounded"
+                  >
+                  <div class="flex flex-col flex-no-wrap justify-between">
           <img              
             :src="thumbnail.preview"
             width="200"
             alt="Thumbnail"
+                      class="mt-5 mb-5"
           />  
-        
-          <div class="actions">           
+                  </div>
+                </div>
+              </div>
+            </div> -->
+            <div class="flex justify-center mb-4 items-center px-3 w-full">
+              <div class="w-full  ml-4 text-purple px-2">
+                  <base-input
+                    v-model="videoFileName"
+                    :custom-classes="['border border-b border-gray-300']"
+                    name="file_name"
+                    placeholder="File Name"
+                    data-vv-as="file name"
+                  />
+              </div>
+            </div>
+            <div class="container flex w-full mt-3 cursor-pointer">
+              <div class="flex w-full text-center justify-center flex-wrap actions">
             <a
               href="#"
               role="button"
@@ -630,6 +651,8 @@
               Cancel
             </a>
           </div>
+      </div>
+        </section>
       </div>
     </modal>
 </div>
@@ -647,6 +670,7 @@ import 'firebase/storage';
 import uuid from 'uuid/v1';
 import 'vue-sweet-calendar/dist/SweetCalendar.css'
 import TokenService from "../../services/core/TokenService";
+import Vue from "vue";
 
 // Import component
 import Loading from 'vue-loading-overlay';
@@ -689,7 +713,8 @@ export default {
       performerDetails:{},
       currentUserRoles : [],
       isRealodTeamFeedback : false,
-      thumbnail : {}
+      thumbnail : {},
+      videoFileName : null
     };
   },
   computed: {
@@ -830,30 +855,32 @@ export default {
         this.isLoading = true;
         if(this.file.name !='Record Audition'){
         // upload thumbnail file
-        let thumbnailFile = await firebase.storage()
-        .ref(`temp/thumbnail/${uuid()}.png`)
-        .put(this.thumbnail.file);        
-        let thumbnailUrl = await thumbnailFile.ref.getDownloadURL();
-        console.log("saveFeedback -> thumbnailUrl", thumbnailUrl)
+          let thumbnailFile = await firebase.storage()
+          .ref(`temp/thumbnail/${uuid()}.png`)
+          .put(this.thumbnail.file);        
+          let thumbnailUrl = await thumbnailFile.ref.getDownloadURL();
+          console.log("saveFeedback -> thumbnailUrl", thumbnailUrl)
 
-        // upload video file
-        let file = await firebase.storage()
-        .ref(`temp/${uuid()}.${this.file.name.split('.').pop()}`)
-        .put(this.form.file);
-        let url = await file.ref.getDownloadURL();
-        console.log("saveFeedback -> url", url)
+          // upload video file
+          let file = await firebase.storage()
+          .ref(`temp/${uuid()}_${this.file.name.split('.').pop()}.mp4`)
+          .put(this.form.file);
+          let url = await file.ref.getDownloadURL();
+          console.log("saveFeedback -> url", url)
 
-        let audition_record={
-          "url":url,
-          "thumbnail":thumbnailUrl,
-          "appointment_id":this.$route.params.round,
-          "performer":this.$route.params.id,
-          "slot_id":this.slot,
-          "name": this.file.name || time()+".mp4"
-        };
-        let files = await axios.post('/t/auditions/video/save', audition_record);
-        this.$toasted.success('Audition record saved');
-        this.isLoading = false;
+          let audition_record={
+            "url":url,
+            "thumbnail":thumbnailUrl,
+            "appointment_id":this.$route.params.round,
+            "performer":this.$route.params.id,
+            "slot_id":this.slot,
+            "name": this.file.name
+          };
+          let files = await axios.post('/t/auditions/video/save', audition_record);
+          this.$toasted.success('Audition record saved');
+          this.isLoading = false;
+          this.$refs.inputFile.value = null;
+          this.file.name = 'Record Audition';
         }
       }catch(e){
         console.log("saveFeedback -> e", e)
@@ -884,14 +911,12 @@ export default {
       await this.fetchTeamFeedback(data);
       return;
     },
-    GetThumbnail(e) {
+    async GetThumbnail(e) {
         var myCan = document.createElement('canvas');
         var img = new Image();
         img.src = e.target.result;
-        img.onload = () => {
- 
-            myCan.id = "myTempCanvas";
-            // var tsize = document.getElementById("txtThumbSize").value;
+        img.onload = () => { 
+            myCan.id = "myTempCanvas";            
             var tsize = 200;
             myCan.width = Number(tsize);
             myCan.height = Number(tsize);
@@ -902,9 +927,11 @@ export default {
  
  
                 if (dataURL != null && dataURL != undefined) {
-                    this.thumbnail.preview = dataURL;
+                    // this.thumbnail.preview = dataURL;
+                    Vue.set(this.thumbnail, 'preview', dataURL)
                     myCan.toBlob((blob) => {
                       this.thumbnail.file = blob;                      
+                      Vue.set(this.thumbnail, 'file', blob)                     
                     });               
                     console.log("img.onload -> this.thumbnail", this.thumbnail)
  
@@ -917,7 +944,7 @@ export default {
         }
  
     },    
-    handleFile(e) {
+    async handleFile(e) {
       this.thumbnail = {};
       // this.file = null;
       this.form.file = null;
@@ -927,18 +954,15 @@ export default {
 
       this.form.file = file;
       this.file.name = file.name;
-      
-      console.log("handleFile -> this.file", this.file)
-      this.$modal.show('modal_thumbnail_image');            
-      if (file.type.match('image')) {
-        // start : generate thumbail
-            // var reader = new FileReader();
 
+      this.videoFileName = JSON.parse(JSON.stringify(this.file.name));
+      if (file.type.match('image')) {
+        // start : generate thumbail of image
             if (fileReader != null) {
-                fileReader.onload = this.GetThumbnail;
+              fileReader.onload = await this.GetThumbnail;
                 fileReader.readAsDataURL(file);
             }
-        // end : generate thumbail
+        // end : generate thumbail of image
       } else {
 
         fileReader.onload = () => {
@@ -967,15 +991,12 @@ export default {
               if (success) {
                 var img = document.createElement('img');
                 img.src = dataURL;
-                console.log("snapImage -> img", img)
-                
-                // document.getElementsByTagName('div')[0].appendChild(img);
                 URL.revokeObjectURL(url);
               }
               if (dataURL != null && dataURL != undefined) {
-                    this.thumbnail.preview = dataURL;
+                    Vue.set(this.thumbnail, 'preview', dataURL);
                     canvas.toBlob((blob) => {
-                      this.thumbnail.file = blob;                                            
+                      Vue.set(this.thumbnail, 'file', blob)                              
                     });
                   URL.revokeObjectURL(url);
                 } else{
@@ -995,8 +1016,23 @@ export default {
           };
           fileReader.readAsArrayBuffer(file);
 
-
       }
+      this.$modal.show('modal_thumbnail_image');
+      console.log("snapImage -> final ", this.thumbnail)
+    },
+    imageRenameDone(){
+      this.$toasted.clear();
+        if(!this.videoFileName || this.videoFileName == '' || this.videoFileName.trim() == ''){
+          this.$toasted.error('Please enter file name!');
+          return;
+        }
+        this.file.name = JSON.parse(JSON.stringify(this.videoFileName));
+        this.videoFileName = null;
+        this.$modal.hide('modal_thumbnail_image');
+    },
+    imageRenameCancel(){
+      this.videoFileName = null;
+      this.$modal.hide('modal_thumbnail_image');
     },
     asignEvents(){
       var finalList = new Array();
@@ -1104,13 +1140,7 @@ export default {
             url = "http://" + url;
         }
         return url;
-      },
-      imageRenameDone(){
-        this.$modal.hide('modal_thumbnail_image');
-      },
-      imageRenameCancel(){
-        this.$modal.hide('modal_thumbnail_image');
-      }
+      }      
     },
 };
 </script>
@@ -1192,5 +1222,25 @@ nav {
   margin-right: -30px;
     padding-left: 18px;
 }
+.image-preview-area {
+  width: 400px;
+}
+.actions {
+  margin-top: 1rem;
+}
+.actions a {
+  display: inline-block;
+  padding: 5px 15px;
+  background: #782541;
+  color: white;
+  text-decoration: none;
+  border-radius: 3px;
+  margin-right: 1rem;
+  margin-bottom: 1rem;
+}
 
+.v--modal-box.v--modal {
+    overflow: auto !important;
+    min-height: 200px !important;
+}
 </style>

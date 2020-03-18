@@ -1597,9 +1597,6 @@ textarea {
 .v--modal-box.v--modal {
     overflow: auto !important;
 }
-.cropper-area>textarea{
-  display: none;
-}
 .feedback-option-ml{
   margin-left: 50px !important;
 }
