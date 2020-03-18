@@ -37,7 +37,7 @@
         <h4 class="w-full text-center text-purple font-semibold text-2xl">There are no performances</h4>
       </div>
       <div
-        v-else-if="isShowPerformer && (status == 1 || finalCastState == true || round.length >0) && currentAudition.status == 1 && round.status == 1 && !isAuditionVideos"
+        v-else-if="isShowPerformer && !showHiddenPerformer && (status == 1 || round.length >0) && (currentAudition && currentAudition.status == 1) && (round && round.status == 1) && !isAuditionVideos && !finalCastState"
         class="flex flex-wrap mt-10 mb-5 ml-2 view-btn-design"
       >
         <div
@@ -58,8 +58,10 @@
           </a>
         </div>
       </div>
+
+
       <div
-        v-if="isShowPerformer && (status == 1 || finalCastState == true || round.length >0 || showHiddenPerformer)"
+        v-if="isShowPerformer && (status == 1 || finalCastState == true || round.length >0 || showHiddenPerformer) && currentAudition.status != 0"
         class="flex flex-wrap ml-5"
       >
         <div class="col-6">
@@ -78,7 +80,7 @@
                   :title="data.name"
                   :time="''"
                   :image="data.image"
-                  class="custom-perfom-list"
+                  class="custom-perfom-list relative"
                 />
                 <div class="custom-btn-grp">
                   <div
@@ -108,27 +110,27 @@
               <div
                 class="list-group-item"
                 v-bind:class="{ 'comment-box-view': isCommentView }"
-                v-for="(data) in finalUserList"
+                v-for="(data, fi) in finalUserList"
                 :key="data.user_id"
               >
                 <router-link
                   :to="isAuditionVideos || (currentAudition && currentAudition.status == 2) ? { name: 'talent/user', params: {id: data.user_id} } : { name: 'auditions/user', params: {id: data.user_id, round: round.id, audition:$route.params.id} }"
                 >
+                  <div class="btn-card-wrap">
                   <card-user
                     :title="data.name"
                     :time="currentAudition && currentAudition.online != 1 ? data.time : ''"
                     :image="data.image"
                     :favorite="!isAuditionVideos ? data.favorite : 0"
-                    class="custom-perfom-list"
-                    v-bind:class="{ 'after-clck-new-grp' : isShowCreateGroup}"
+                        class="custom-perfom-list card-grid-view"
+                        v-bind:class="{ 'after-clck-new-grp' : isShowCreateGroup, 'relative' : !isCommentView}"
                   />
-                </router-link>
                 <div
-                  v-show="!isAuditionVideos && auditionData.online == 0 && currentAudition.status == 1 && round.status == 1"
+                        v-show="!isAuditionVideos && auditionData.online == 0 && currentAudition.status == 1 && round && round.status == 1"
                   class="custom-btn-grp"
                 >
                   <div
-                    @click="approveBtn(data.user_id, data.is_feedback_sent)"
+                          @click="approveBtn(data.user_id, data.is_feedback_sent, $event)"
                     class="m-1 content-center rounded-full grren-back h-10 flex items-center"
                   >
                     <button
@@ -139,7 +141,7 @@
                     </button>
                   </div>
                   <div
-                    @click="rejectBtn(data.user_id, data.is_feedback_sent)"
+                          @click="rejectBtn(data.user_id, data.is_feedback_sent, $event)"
                     class="m-1 content-center rounded-full red-back h-10 flex items-center"
                   >
                     <button
@@ -150,17 +152,20 @@
                     </button>
                   </div>
                 </div>
+                    </div>
+                </router-link>
+                
                 <div
-                  v-if="!isAuditionVideos && isCommentView && currentAudition.status == 1 && round.status == 1"
-                  class="flex flex-col"
+                  v-if="!isAuditionVideos && isCommentView && currentAudition.status == 1 && round && round.status == 1"
+                  class="flex flex-col comment-box"
                 >
                   <comment-box
-                    v-model="casterComment[ui]"
-                    :value="casterComment[ui]"
+                    v-model="casterComment[fi]"
+                    :value="casterComment[fi]"
                     :custom-classes="['border border-b border-gray-300']"
-                    :name="`${ui}`"
+                    :name="`${fi}`"
                     placeholder="Add Comment"
-                    @added="addCasterComment(data, ui)"
+                    @added="addCasterComment(data, fi)"
                   />
                 </div>
                 <div class="check-grp" v-bind:class="{ 'after-check-grp' : isShowCreateGroup}">
@@ -206,6 +211,7 @@
                       :title="data.name"
                       :isFinalCast="true"
                       :image="data.image && !data.image.url ? data.image : ''"
+                      class="relative"
                     />
                   </a>
                 </div>
@@ -218,6 +224,7 @@
               type="transition"
               :name="!drag ? 'flip-list' : null"
             >
+            
               <div
                 class="list-group-item"
                 v-bind:class="{ 'comment-box-view': isCommentView }"
@@ -235,14 +242,14 @@
                       :image="data.image"
                       :favorite="data.favorite"
                       class="custom-perfom-list card-grid-view"
-                      v-bind:class="{ 'after-clck-new-grp' : isShowCreateGroup}"
+                      v-bind:class="{ 'after-clck-new-grp' : isShowCreateGroup, 'relative' : !isCommentView}"
                     />
                     <div
-                      v-if="auditionData && auditionData.online == 0 && currentAudition.status == 1 && round.status == 1"
+                      v-if="auditionData && auditionData.online == 0 && currentAudition && currentAudition.status == 1 && round && round.status == 1"
                       class="custom-btn-grp"
                     >
                       <div
-                        @click="approveBtn(data.user_id, data.is_feedback_sent)"
+                        @click="approveBtn(data.user_id, data.is_feedback_sent, $event)"
                         class="m-1 content-center rounded-full grren-back h-10 flex items-center"
                       >
                         <button
@@ -253,7 +260,7 @@
                         </button>
                       </div>
                       <div
-                        @click="rejectBtn(data.user_id, data.is_feedback_sent)"
+                        @click="rejectBtn(data.user_id, data.is_feedback_sent, $event)"
                         class="m-1 content-center rounded-full red-back h-10 flex items-center"
                       >
                         <button
@@ -275,8 +282,8 @@
                     </div>
                 </div>-->
                 <div
-                  v-if="!isAuditionVideos && isCommentView && currentAudition.status == 1 && round.status == 1"
-                  class="flex flex-col"
+                  v-if="!isAuditionVideos && isCommentView && currentAudition && currentAudition.status == 1 && round && round.status == 1"
+                  class="flex flex-col comment-box"
                 >
                   <comment-box
                     v-model="casterComment[ui]"
@@ -469,6 +476,7 @@
               :title="data.name"
               :isFinalCast="true"
               :image="data.image.url ? data.image.url : data.image"
+              class="relative"
             />
           </div>
           <span class="role-name">{{data.user_id && data.rol ? data.rol : data.name}}</span>
@@ -982,7 +990,8 @@ export default {
       });
       // End : drag and drop box jquery code
     },
-    async rejectBtn(performer_id, is_feedback_sent) {
+    async rejectBtn(performer_id, is_feedback_sent, event) {
+      event.preventDefault();
       this.performer_id = performer_id;
       if (is_feedback_sent == 1) {
         this.$toasted.error("Feedback already send");
@@ -997,7 +1006,8 @@ export default {
         }
       }
     },
-    approveBtn(performer_id, is_feedback_sent) {
+    approveBtn(performer_id, is_feedback_sent, event) {
+      event.preventDefault();
       this.performer_id = performer_id;
       if (is_feedback_sent == 1) {
         this.$toasted.error("Feedback already send");
@@ -1051,6 +1061,7 @@ export default {
         this.$toasted.success(res.data.message);
         this.showCloseGroup(true);
         this.getGroupdetails();
+        this.casterComment = [];
         this.checkedNames = [];
       } catch (ex) {
         console.log(ex);
@@ -1068,6 +1079,7 @@ export default {
         eventBus.$emit("isCurrentOpenGroup", false);
         this.openGroupMember = [];
         this.finalUserList = [];
+        this.casterComment = [];
         this.getUserlist();
       } catch (ex) {
         console.log(ex);
@@ -1689,7 +1701,8 @@ export default {
         this.isCommentView = false;
       }
     },
-    async addCasterComment(data, index) {
+    async addCasterComment(user_data, index) {
+      console.log("addCasterComment -> user_data", user_data)
       if (this.loading) {
         return;
       }
@@ -1700,9 +1713,26 @@ export default {
 
       this.loading = true;
       // call comment api with try case
+      try {
+        let requestParam = {
+          appointment_id: this.round.id,
+          user_id: user_data.user_id,
+          comment:this.casterComment[index]
+        };
 
+        const {data: { data }} = await axios.post(`/t/feedbacks/addIndividualComment`, requestParam);
       this.loading = false;
+        console.log("addCasterComment -> data", data)
+        this.$toasted.success(data);        
       Vue.set(this.casterComment, index, "");
+      } catch (ex) {
+        this.loading = false;
+        console.log(ex);
+        this.$toasted.error(ex.response.data.message);
+      }
+
+      
+      
     },
     //end: new action for drag drop handle
     onCancel() {
@@ -1890,9 +1920,9 @@ export default {
   display: inline-block;
   cursor: pointer;
 }
-.custom-perfom-list {
+/* .custom-perfom-list {
   position: relative !important;
-}
+} */
 .custom-perfom-list .check-grp {
   opacity: 0;
   visibility: hidden;
@@ -2012,6 +2042,7 @@ export default {
     margin-bottom: 15px;
     padding: 10px;
     border-radius: 6px;
+    position: relative;
   }
   .comment-box-view:nth-child(2n){
     margin-right: 0;
@@ -2021,7 +2052,7 @@ export default {
   align-items: center;
 }
 .comment-box-view .btn-card-wrap .card-grid-view {
-  width: 450px !important;
+  width: 310px !important;
   margin-right: 0 !important;
 }
 .comment-box-view
@@ -2036,8 +2067,17 @@ export default {
   left: 154px;
   top: 80px;
 }
-.comment-box-view .btn-card-wrap .card-grid-view .card-img img {
+.comment-box-view .btn-card-wrap .card-grid-view .card-img .user-image {
   width: 152px !important;
+}
+.comment-box-view .btn-card-wrap .card-grid-view .card-img .star-performer{
+  float: left;
+  position: absolute;
+  left: 23px;
+  top: 26px;
+  /* z-index: 1000; */
+  font-weight: bold;
+  width: 20px!important;
 }
 .view-btn-design .cus-btn {
   margin-bottom: 0 !important;
@@ -2062,5 +2102,32 @@ export default {
 }
 .view-btn-design .cus-btn.background-selected a img{
   filter: contrast(0) brightness(100); 
+}
+
+.comment-box-view .custom-perfom-list.after-clck-new-grp::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+.comment-box-view .custom-perfom-list::after{
+  position: absolute;
+  content: "";
+  left: 0;
+  right: 0px;
+  top: 0px;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  visibility: visible;
+  border-radius: 4px;
+  z-index: -1;
+}
+
+.router-link-exact-active.router-link-active.pointer-none .btn-card-wrap .custom-perfom-list img{
+  z-index: -11;
+}
+
+.router-link-exact-active.router-link-active.pointer-none ~ .comment-box .comment-text{
+    z-index: -11;
 }
 </style>
