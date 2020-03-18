@@ -24,7 +24,7 @@
                         v-bind:isPerformer="true"
                 >
 
-                      <div v-if="data.user_id" v-bind:id="'item_'+data.user_id" v-bind:user_id="data.user_id" v-bind:rol="data.rol" class="item" >
+                      <div v-if="data.user_id" v-bind:id="'item_'+data.user_id" v-bind:user_id="data.user_id" v-bind:rol="data.rol" v-bind:user_auditions_id="data.id" class="item" >
                         <a class="performer-view" v-bind:performer="data.user_id" v-on:click="clickFinalPerformer($event,data)">  
                               <card-user
                                       :title="data.name"
@@ -42,8 +42,6 @@
         </div>
       </div>      
     </div>
-    <!-- <sidebar-detail :class="{'hidden': finalCastState}"  @selected="chargeUsers" @statusSet="changeView" @handleFinalCast="activeFinalCast" class="float-right w-1/2 ml-2"/> -->
-
     <section class="float-right w-1/2 ml-2 bg-sidebar flex flex-col items-center h-full w-370">
       <div class="flex content-center justify-center relative w-1/2 mt-2" @click="backToDetails">
         <img src="/images/icons/left_arrow.png" class="absolute left-0 " >
@@ -253,6 +251,7 @@ export default {
                   } else if (draggable_parent_isPerformer == 'true' && droppable_isSlot == 'true' && $(this).find('div.item').length === 0){ // From performer list , add performer to particular role
                     console.log("else if 1");
                     var draggable_user_id = ui.draggable.attr("user_id");        
+                    var draggable_user_auditions_id = ui.draggable.attr("user_auditions_id");        
                     var draggable_role = ui.draggable.attr("rol");        
                     console.log("initDropdrag -> draggable_role", draggable_role)
                     var droppable_slot_id = $(this).attr("slot_id");
@@ -261,7 +260,7 @@ export default {
                       return;
                     }
                     let parentDiv = ui.draggable.parent();
-                    that.checkIn(draggable_user_id, droppable_slot_id, draggable_role).then((result) => {
+                    that.checkIn(draggable_user_id, droppable_slot_id, draggable_role, draggable_user_auditions_id).then((result) => {
                       parentDiv.remove();
                         // $(this).attr('finalcast_id',result.id);
                         // ui.draggable.attr('finalcast_id',result.id);
@@ -346,7 +345,7 @@ export default {
       // End : drag and drop box jquery code
 
     },
-    async checkIn(performer_id, slot_id, roles){
+    async checkIn(performer_id, slot_id, roles, user_auditions_id){
       try {
           this.isLoading = true;
           let requestParam = {
@@ -355,6 +354,7 @@ export default {
               slot: slot_id,
               user: performer_id,
               rol : roles,
+              user_audition_id : user_auditions_id,
               nonRevert : false
             };            
             const { data: { data } } = await axios.post('/appointments/auditions', requestParam);
