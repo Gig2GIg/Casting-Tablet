@@ -33,6 +33,17 @@ export default {
     }
   },
 
+  async fetchAllAppointments({ commit }, appointment) {
+    try {
+      const {data: { data }} = await axios.get(`appointments/show/${appointment}/allWithUsers`);
+
+      console.log(data);
+      commit(types.FETCH_APPOINTMENTS_SUCCESS, data);
+    } catch (e) {
+      commit(types.FETCH_APPOINTMENTS_FAILURE);
+    }
+  },
+
   async saveCheckIn({ commit }, userData) {
     try {
       const {data: { data }} = await axios.post("appointments/auditions", userData);

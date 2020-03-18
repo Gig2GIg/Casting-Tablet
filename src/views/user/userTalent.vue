@@ -24,7 +24,7 @@
             </base-button>
           </div>
       </div>
-      <img :src="'/images/icons/12-layers@3x.png'" class="h-10  ml-auto mr-5" alt="star" @click="invitation.adding =invitation.adding == true?false:true">
+      <img v-if="this.encCode" :src="'/images/icons/12-layers@3x.png'" class="h-10  ml-auto mr-5" alt="star" @click="invitation.adding =invitation.adding == true?false:true">
       </div>
     <div class="flex items-center border-l border-white text-white float-right cursor-pointer">
       <span class="mx-4">

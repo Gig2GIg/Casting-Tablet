@@ -518,8 +518,6 @@ Vue.component("v-select", vSelect);
 import _ from "lodash";
 import BaseInput from "../components/BaseInput";
 import { eventBus } from "../main";
-import { close } from "fs";
-import { setTimeout } from "timers";
 // Import component
 import Loading from "vue-loading-overlay";
 // Import stylesheet
@@ -705,9 +703,9 @@ export default {
       if (this.currentAudition && this.currentAudition.status == 2) {
         this.$router.replace(
           this.$route.query.redirect || {
-            name: "talent/user",
-            params: { id: user_id }
-          }
+            name: 'talent/user_view',
+            params: {id: user_id}
+          },
         );
       } else {
         this.$router.replace(

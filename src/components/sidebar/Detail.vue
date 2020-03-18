@@ -284,6 +284,22 @@
             >Open Auditions</p>
           </div>
         </div>
+        <!-- v-if="audition.status == 0" -->
+        <div v-if="audition.status == 0"  class="w-full border border-gray-300 mt-6 mb-6" />
+        <!-- v-if="audition.status == 0" -->
+        <div
+          v-if="audition.status == 0"
+          class="flex w-full content-center text-center justify-center flex-wrap cursor-pointer"
+        >
+          <div
+            class="m-3 content-center flex items-center flex m-3 content-center border-2 rounded-sm border-purple w-48 h-10"
+            @click="goToManageAppointments"
+          >
+            <p
+              class="flex-1 light-purple text-sm font-semibold content-center tracking-tighter flex-1"
+            >Appointments</p>
+          </div>
+        </div>
         <div
           v-if="audition.status == 1 && roundActive.status == 1"
           class="w-full border border-gray-300 mt-6 mb-6"
@@ -923,6 +939,10 @@ export default {
           url = "http://" + url;
       }
       return url;
+    },
+    goToManageAppointments(){
+      this.$router.push({ name: 'audition-slot/manage',params:{id: this.$route.params.id } });
+      // this.$router.replace(`/audition-slot/manage/${this.$route.params.id}`);
     }
   }
 };
