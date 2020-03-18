@@ -45,6 +45,16 @@ export default {
       commit(types.FETCH_USER_LIST_AUDITION_FAILURE);
     }
   },
+  async fetchIndividualUserList({ commit }, audition) {
+    try {
+      let { data: { data } } = await axios.get(`/t/auditions/${audition}/individualPerformers`);
+      console.log(data);
+      data = _.orderBy(data, 'time', 'asc'); 
+      commit(types.FETCH_USER_LIST_AUDITION_SUCCESS, data);
+    } catch (e) {
+      commit(types.FETCH_USER_LIST_AUDITION_FAILURE);
+    }
+  },
 
   async fetchFinalCastList({ commit }, audition) {
     try {
