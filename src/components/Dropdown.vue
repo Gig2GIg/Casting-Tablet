@@ -11,7 +11,7 @@
         </li>
 
         <ul class="dropdown-menu" v-if="showMenu">
-            <li v-for="option in options">
+            <li v-for="(option,index) in options" :key="index">
                 <a href="javascript:void(0)" class="text-purple" @click="updateOption(option)">
                     Round {{ option.round }}
                 </a>

@@ -132,11 +132,11 @@ export default {
       performerCount: 0,
       form: {},
       file: {
-        name: 'Record Group',
+        name: "Record Group"
       },
       audition_data: null,
-      showHiddenPerformer : false,
-      isAuditionVideos : false
+      showHiddenPerformer: false,
+      isAuditionVideos: false
     };
   },
   computed: {
@@ -195,7 +195,7 @@ export default {
       this.$emit("onAdd", this.counter++);
       // this.fetchUserList();
     },
-    backHiddenPerformer(){
+    backHiddenPerformer() {
       this.showHiddenPerformer = false;
       eventBus.$emit("showHiddenPerformer", this.showHiddenPerformer);
     },
@@ -238,7 +238,9 @@ export default {
           let url = await file.ref.getDownloadURL();
           let audition_record = {
             url: url,
-            appointment_id: auditionData.appointment_id ? auditionData.appointment_id : "",
+            appointment_id: auditionData.appointment_id
+              ? auditionData.appointment_id
+              : "",
             performer: "",
             slot_id: "",
             name: this.file.name || time() + ".mp4"
@@ -249,8 +251,8 @@ export default {
           );
           this.$toasted.success("Group record saved");
         }
-      } catch (e) {
-        this.$toasted.error(e.response.data.data);
+      } catch (error) {
+        this.$toasted.error(error.response.data.data);
       }
     },
     closeGroup() {
@@ -265,38 +267,42 @@ nav {
   background-image: linear-gradient(#4d2545, #782541);
 }
 .custom-top-nav {
-    width: 100%;
+  width: 100%;
 }
 .custom-btn-group {
-    display: flex;
-    border: 1px solid #fff;
-    padding: 5px 18px;
-    align-items: center;
-    font-size: 16px;
+  display: flex;
+  border: 1px solid #fff;
+  padding: 5px 18px;
+  align-items: center;
+  font-size: 16px;
 }
 .custom-btn-group img {
-    width: 32px;
-    margin-right: 5px;
+  width: 32px;
+  margin-right: 5px;
 }
 .custom-top-nav .text-white.h-6 {
-    height: auto !important;
+  height: auto !important;
 }
 .custom-btn {
-    border: 1px solid #fff;
-    padding: 5px 18px;
-    font-size: 16px;
-    display: inline-block;
-    border-radius: 4px;
+  border: 1px solid #fff;
+  padding: 5px 18px;
+  font-size: 16px;
+  display: inline-block;
+  border-radius: 4px;
 }
 .custom-btn.btn-fill {
-    background-color: #fff;
-    color: #4D2545;
+  background-color: #fff;
+  color: #4d2545;
 }
-.custom-btn-record {padding: 0 15px;margin-right: 15px;border: 1px solid #fff;}
-.img-h48{
+.custom-btn-record {
+  padding: 0 15px;
+  margin-right: 15px;
+  border: 1px solid #fff;
+}
+.img-h48 {
   height: 48px;
 }
-.back-mrg-l{
+.back-mrg-l {
   padding-left: 30px !important;
 }
 </style>

@@ -877,13 +877,13 @@ export default {
           let url = await file.ref.getDownloadURL();
           console.log("saveFeedback -> url", url)
 
-          let audition_record={
-            "url":url,
-            "thumbnail": thumbnailUrl ? thumbnailUrl : null,
-            "appointment_id":this.$route.params.round,
-            "performer":this.$route.params.id,
-            "slot_id":this.slot,
-            "name": this.file.name
+          let audition_record = {
+            'url':url,
+            'thumbnail': thumbnailUrl ? thumbnailUrl : null,
+            'appointment_id':this.$route.params.round,
+            'performer':this.$route.params.id,
+            'slot_id':this.slot,
+            'name': this.file.name
           };
           let files = await axios.post('/t/auditions/video/save', audition_record);
           this.$toasted.success('Audition record saved');
@@ -907,7 +907,7 @@ export default {
       this.form.slot_id = this.slot;
       // this.form.evaluator = this.profile.details.id;
       this.form.evaluator = TokenService.getUserId();
-      let data = {"appointment_id": this.$route.params.round, "performer": this.$route.params.id}
+      let data = { 'appointment_id' : this.$route.params.round, 'performer': this.$route.params.id };
       this.isLoading = false;
       if(Object.keys(this.feedback).length==0){
         let status = await axios.post('/t/feedbacks/add', this.form);
