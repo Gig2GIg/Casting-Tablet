@@ -1629,8 +1629,9 @@ export default {
         return member;
       });
     },
-    async changeView(status) {
+    async changeView(status) {      
       this.status = status;
+      this.fetchUserList(this.round.id);
     },
     log: function(evt) {
       // window.console.log(evt);
@@ -1700,6 +1701,7 @@ export default {
       this.$toasted.clear();
       if (!this.casterComment[index] || this.casterComment[index] == "") {
         this.$toasted.error("Please enter comment!");
+        return;
       }
 
       this.loading = true;
@@ -2064,9 +2066,8 @@ export default {
 .comment-box-view .btn-card-wrap .card-grid-view .card-img .star-performer{
   float: left;
   position: absolute;
-  left: 23px;
-  top: 26px;
-  /* z-index: 1000; */
+  left: 7px;
+  top: 10px;
   font-weight: bold;
   width: 20px!important;
 }

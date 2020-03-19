@@ -2,7 +2,7 @@
 <template>
 <!--   -->
   <div class="w-40" :class="[(!isFinalCast ? 'py-2 pr-2 ml-1 mr-4' : '')]" >
-    <div class="flex flex-col h-full shadow-md overflow-hidden card-img">
+    <div class="relative flex flex-col h-full shadow-md overflow-hidden card-img">
       <!-- <img
         :src="image"
         class="h-32"
@@ -75,8 +75,7 @@ export default {
   float: left;
   position: absolute;
   left: 7px;
-  top: 15px;
-  /* z-index: 1000; */
+  top: 10px;
   font-weight: bold;
   width: 20px!important;
 }
