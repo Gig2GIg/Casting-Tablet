@@ -856,7 +856,7 @@ export default {
         this.isLoading = true;
         if(this.file.name !='Record Audition'){
         // upload thumbnail file
-        let thumbnailUrl
+        let thumbnailUrl;
         if(this.thumbnail.file){
           let thumbnailFile = await firebase.storage()
           .ref(`temp/thumbnail/${uuid()}.png`)

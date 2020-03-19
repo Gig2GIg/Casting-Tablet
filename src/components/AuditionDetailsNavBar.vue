@@ -71,7 +71,7 @@
           ref="inputFile"
           accept=".mp4"
           type="file"
-          @change="recordGroup"
+          @change="handleFile"
           hidden
           >
 
@@ -96,9 +96,44 @@
         alt="Avatar"
       >
     </div>
-
+    <modal class="flex flex-col w-full items-center" :width="450" :height="200" name="modal_thumbnail_image">
+      <div class="content my-info-content" >         
+        <section class="image-preview-area">            
+            <div class="flex justify-center mb-4 items-center px-3 w-full">
+              <div class="w-full  ml-4 text-purple px-2">
+                  <base-input
+                    v-model="videoFileName"
+                    :custom-classes="['border border-b border-gray-300']"
+                    name="file_name"
+                    placeholder="File Name"
+                    data-vv-as="file name"
+                  />
+              </div>
+            </div>
+            <div class="container flex w-full mt-3 cursor-pointer">
+              <div class="flex w-full text-center justify-center flex-wrap actions">
+            <a
+              href="#"
+              role="button"
+              @click.prevent="imageRenameDone"
+            >
+              Done
+            </a>
+            <a
+              href="#"
+              role="button"
+              @click.prevent="imageRenameCancel"
+            >
+              Cancel
+            </a>
+          </div>
+      </div>
+        </section>
+      </div>
+    </modal>
 
   </nav>
+  
 
 </template>
 
@@ -107,7 +142,10 @@ import { mapActions, mapState, mapGetters } from "vuex";
 import axios from "axios";
 import { eventBus } from "../main";
 import firebase from "firebase/app";
-import uuid from "uuid/v1";
+import uuid from 'uuid/v1';
+import ThumbService from '@/services/ThumbService';
+import DEFINE from "@/utils/const.js";
+import Vue from "vue";
 
 export default {
   data() {
@@ -136,7 +174,9 @@ export default {
       },
       audition_data: null,
       showHiddenPerformer: false,
-      isAuditionVideos: false
+      isAuditionVideos: false,
+      thumbnail : {},
+      videoFileName : null
     };
   },
   computed: {
@@ -222,36 +262,108 @@ export default {
       this.isClickCreateGroup = true;
       eventBus.$emit("clickCreateGroup", this.isClickCreateGroup);
     },
-    async recordGroup(e) {
-      let auditionData = await this.fetchAuditionDataNew(this.$route.params.id);
-      eventBus.$emit("clickRecordGroup", this.isClickRecordGroup);
-      const file = e.target.files[0];
+    async handleFile(e) {
+      this.thumbnail = {};
+      this.form.file = null;
+      let file = e.target.files[0];
       this.form.file = file;
       this.file.name = file.name;
+      this.file.org_name = file.name;
+      
+      if(file.type.match('video')) {
+        this.videoFileName = JSON.parse(JSON.stringify(this.file.name));
+        await ThumbService.videoThumbnail(file,DEFINE.thumbSize.videoThumbWidth).then(thumb_data=>{
+          console.log("handleFile -> video thumb_data return", thumb_data)
+          Vue.set(this.thumbnail, 'preview', thumb_data.preview);
+          Vue.set(this.thumbnail, 'file', thumb_data.file) 
+        });
+        this.$modal.show('modal_thumbnail_image');
+      } else{        
+        this.$toasted.error('Please upload valid video file!');
+        this.$refs.inputFile.value = null;
+        this.file.name = 'Record Audition';
+        this.videoFileName = null;
+      }      
+      console.log("snapImage -> final ", this.thumbnail)
+    },
+    imageRenameDoneOld(){
+      this.$toasted.clear();
+        if(!this.videoFileName || this.videoFileName == '' || this.videoFileName.trim() == ''){
+          this.$toasted.error('Please enter file name!');
+          return;
+        } else if(this.videoFileName && this.videoFileName.length > 150){
+          this.$toasted.error('File name is too long, it should not be more than 150 characters!');
+          return;
+        }
+        this.file.name = JSON.parse(JSON.stringify(this.videoFileName));
+        this.videoFileName = null;
+        this.$modal.hide('modal_thumbnail_image');
+    },
+    imageRenameCancel(){
+      this.videoFileName = null;
+      this.$modal.hide('modal_thumbnail_image');
+    },
+    async imageRenameDone() {
+      this.$toasted.clear();
+      if(!this.videoFileName || this.videoFileName == '' || this.videoFileName.trim() == ''){
+        this.$toasted.error('Please enter file name!');
+        return;
+      } else if(this.videoFileName && this.videoFileName.length > 150){
+        this.$toasted.error('File name is too long, it should not be more than 150 characters!');
+        return;
+      }
+      this.file.name = JSON.parse(JSON.stringify(this.videoFileName));
+      this.$modal.hide('modal_thumbnail_image');
+
+      let auditionData = await this.fetchAuditionDataNew(this.$route.params.id);
+      eventBus.$emit("clickRecordGroup", this.isClickRecordGroup);      
       try {
         if (this.file.name != "Record Group") {
+
+           // upload thumbnail file
+          let thumbnailUrl;
+          if(this.thumbnail.file){
+            let thumbnailFile = await firebase.storage()
+            .ref(`temp/thumbnail/${uuid()}.png`)
+            .put(this.thumbnail.file);        
+            thumbnailUrl = await thumbnailFile.ref.getDownloadURL();
+            console.log("saveFeedback -> thumbnailUrl", thumbnailUrl)
+          }
+          
+          // upload video file
+          var extension = this.file.org_name.substring(this.file.org_name.lastIndexOf('.')+1);
+          console.log("saveFeedback -> extension", extension)
+          let filePath = this.file.name.includes(`${extension}`) ? `temp/${uuid()}_${this.file.name}` : `temp/${uuid()}_${this.file.name}.${extension}`;          
+          console.log("saveFeedback -> filePath", filePath)
+
           let file = await firebase
             .storage()
-            .ref(`temp/${uuid()}.${this.file.name.split(".").pop()}`)
+            .ref(filePath)
             .put(this.form.file);
 
           let url = await file.ref.getDownloadURL();
+
           let audition_record = {
             url: url,
+            thumbnail: thumbnailUrl ? thumbnailUrl : null,
             appointment_id: auditionData.appointment_id
               ? auditionData.appointment_id
               : "",
             performer: "",
             slot_id: "",
-            name: this.file.name || time() + ".mp4"
+            'name': this.file.name
           };
           let files = await axios.post(
             "/t/auditions/video/save",
             audition_record
           );
+          this.$refs.inputFile.value = null;
+          this.videoFileName = null;
+          this.file.name = 'Record Group';
           this.$toasted.success("Group record saved");
         }
       } catch (error) {
+        console.log("imageRenameDone -> error", error)
         this.$toasted.error(error.response.data.data);
       }
     },
@@ -304,5 +416,26 @@ nav {
 }
 .back-mrg-l {
   padding-left: 30px !important;
+}
+.image-preview-area {
+  width: 400px;
+}
+.actions {
+  margin-top: 1rem;
+}
+.actions a {
+  display: inline-block;
+  padding: 5px 15px;
+  background: #782541;
+  color: white;
+  text-decoration: none;
+  border-radius: 3px;
+  margin-right: 1rem;
+  margin-bottom: 1rem;
+}
+
+.v--modal-box.v--modal {
+    overflow: auto !important;
+    min-height: 200px !important;
 }
 </style>
