@@ -1912,9 +1912,6 @@ export default {
   display: inline-block;
   cursor: pointer;
 }
-/* .custom-perfom-list {
-  position: relative !important;
-} */
 .custom-perfom-list .check-grp {
   opacity: 0;
   visibility: hidden;
@@ -2028,17 +2025,17 @@ export default {
   margin-bottom: 110px !important;
 }
 .comment-box-view{
-   margin-right: 15px;     
-   border: 1px solid #c0c0c0;
-   box-shadow: 0 1px 6px 0 rgba(32,33,36,0.08);
-    margin-bottom: 15px;
-    padding: 10px;
-    border-radius: 6px;
-    position: relative;
-  }
-  .comment-box-view:nth-child(2n){
-    margin-right: 0;
-  }
+  margin-right: 15px;     
+  border: 1px solid #c0c0c0;
+  box-shadow: 0 1px 6px 0 rgba(32,33,36,0.08);
+  margin-bottom: 15px;
+  padding: 10px;
+  border-radius: 6px;
+  position: relative;
+}
+.comment-box-view:nth-child(2n){
+  margin-right: 0;
+}
 .comment-box-view .btn-card-wrap {
   display: flex;
   align-items: center;
