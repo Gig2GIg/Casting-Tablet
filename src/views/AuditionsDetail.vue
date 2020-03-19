@@ -512,7 +512,6 @@ import draggable from "vuedraggable";
 import BaseButton from "../components/BaseButton";
 import axios from "axios";
 import TokenService from "../services/core/TokenService";
-let idGlobal = 8;
 import vSelect from "vue-select";
 Vue.component("v-select", vSelect);
 import _ from "lodash";
@@ -1632,12 +1631,6 @@ export default {
     },
     async changeView(status) {
       this.status = status;
-    },
-    cloneDog({ id }) {
-      // return {
-      //   id: idGlobal++,
-      //   name: `cat ${id}`
-      // };
     },
     log: function(evt) {
       // window.console.log(evt);

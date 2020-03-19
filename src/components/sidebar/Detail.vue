@@ -284,11 +284,9 @@
             >Open Auditions</p>
           </div>
         </div>
-        <!-- v-if="audition.status == 0" -->
-        <div v-if="audition.status == 0"  class="w-full border border-gray-300 mt-6 mb-6" />
-        <!-- v-if="audition.status == 0" -->
+        <div v-if="audition.online != 1 && audition.status == 0 "  class="w-full border border-gray-300 mt-6 mb-6" />
         <div
-          v-if="audition.status == 0"
+          v-if="audition.online != 1 && audition.status == 0"
           class="flex w-full content-center text-center justify-center flex-wrap cursor-pointer"
         >
           <div
