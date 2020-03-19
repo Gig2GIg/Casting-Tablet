@@ -566,26 +566,6 @@ export default {
     display: inline-block;
     cursor: pointer;
 }
-.custom-perfom-list {
-    position: relative !important;
-}
-.custom-perfom-list .check-grp {opacity: 0;
-    visibility: hidden;}
-.custom-perfom-list::after {
-    position: absolute;
-    content: "";
-    left: 0;
-    right: 7px;
-    top: 7px;
-    bottom: -47px;
-    background-color: rgba(0,0,0,0.5);
-    opacity: 0;
-    visibility: hidden;
-}
-.custom-perfom-list.after-clck-new-grp::after {
-  opacity: 1;
-  visibility: visible;
-}
 .check-grp.after-check-grp {
   opacity: 1;
   visibility: visible
