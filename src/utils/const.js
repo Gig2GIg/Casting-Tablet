@@ -5,6 +5,12 @@ const DEFINE = {
     set_pass_code_key : 'checkin_set_pass_code',
     set_monitor_pass_code_key : 'monitor_set_pass_code',
     contact_us : "support@gig2gig.com",
+    thumbSize :{
+        defaultWidth : 200,
+        defaultHeight : 200,
+        videoThumbWidth : 250,
+        imageThumbWidth : 250
+    },
     google : {
         key: "AIzaSyCBwvwOsPR82AjeUx5o3FUvr4syuoNFrLI", // old one => AIzaSyCNwa9Hpkf463makeiBW_vSMH2Y0sY23q0
         libraries: "places"

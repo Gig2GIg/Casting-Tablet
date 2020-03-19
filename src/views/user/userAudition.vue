@@ -613,12 +613,11 @@
                   class="ml-2 flex items-center cursor-pointer justify-center overflow-hidden h-200 w-200 rounded"
                   >
                   <div class="flex flex-col flex-no-wrap justify-between">
-          <img              
-            :src="thumbnail.preview"
-            width="200"
-            alt="Thumbnail"
-                      class="mt-5 mb-5"
-          />  
+                    <img              
+                      :src="thumbnail.preview"
+                      alt="Thumbnail"
+                                class="mt-5 mb-5"
+                    />  
                   </div>
                 </div>
               </div>
@@ -674,6 +673,8 @@ import Vue from "vue";
 
 // Import component
 import Loading from 'vue-loading-overlay';
+import ThumbService from '@/services/ThumbService';
+import DEFINE from "@/utils/const.js";
 
 export default {
   // ...
@@ -855,22 +856,30 @@ export default {
         this.isLoading = true;
         if(this.file.name !='Record Audition'){
         // upload thumbnail file
+        let thumbnailUrl
+        if(this.thumbnail.file){
           let thumbnailFile = await firebase.storage()
           .ref(`temp/thumbnail/${uuid()}.png`)
           .put(this.thumbnail.file);        
-          let thumbnailUrl = await thumbnailFile.ref.getDownloadURL();
+          thumbnailUrl = await thumbnailFile.ref.getDownloadURL();
           console.log("saveFeedback -> thumbnailUrl", thumbnailUrl)
+        }
+          
 
           // upload video file
+          var extension = this.file.org_name.substring(this.file.org_name.lastIndexOf('.')+1);
+          console.log("saveFeedback -> extension", extension)
+          let filePath = this.file.name.includes(`${extension}`) ? `temp/${uuid()}_${this.file.name}` : `temp/${uuid()}_${this.file.name}.${extension}`;          
+          console.log("saveFeedback -> filePath", filePath)
           let file = await firebase.storage()
-          .ref(`temp/${uuid()}_${this.file.name.split('.').pop()}.mp4`)
+          .ref(filePath)
           .put(this.form.file);
           let url = await file.ref.getDownloadURL();
           console.log("saveFeedback -> url", url)
 
           let audition_record={
             "url":url,
-            "thumbnail":thumbnailUrl,
+            "thumbnail": thumbnailUrl ? thumbnailUrl : null,
             "appointment_id":this.$route.params.round,
             "performer":this.$route.params.id,
             "slot_id":this.slot,
@@ -880,6 +889,7 @@ export default {
           this.$toasted.success('Audition record saved');
           this.isLoading = false;
           this.$refs.inputFile.value = null;
+          this.videoFileName = null;
           this.file.name = 'Record Audition';
         }
       }catch(e){
@@ -910,120 +920,38 @@ export default {
       this.$toasted.success('Feedback Updated');      
       await this.fetchTeamFeedback(data);
       return;
-    },
-    async GetThumbnail(e) {
-        var myCan = document.createElement('canvas');
-        var img = new Image();
-        img.src = e.target.result;
-        img.onload = () => { 
-            myCan.id = "myTempCanvas";            
-            var tsize = 200;
-            myCan.width = Number(tsize);
-            myCan.height = Number(tsize);
-            if (myCan.getContext) {
-                var cntxt = myCan.getContext("2d");
-                cntxt.drawImage(img, 0, 0, myCan.width, myCan.height);
-                var dataURL = myCan.toDataURL();
- 
- 
-                if (dataURL != null && dataURL != undefined) {
-                    // this.thumbnail.preview = dataURL;
-                    Vue.set(this.thumbnail, 'preview', dataURL)
-                    myCan.toBlob((blob) => {
-                      this.thumbnail.file = blob;                      
-                      Vue.set(this.thumbnail, 'file', blob)                     
-                    });               
-                    console.log("img.onload -> this.thumbnail", this.thumbnail)
- 
-                }
-                else
-                    alert('unable to get context');
- 
-            }
- 
-        }
- 
-    },    
+    },     
     async handleFile(e) {
       this.thumbnail = {};
-      // this.file = null;
       this.form.file = null;
       let file = e.target.files[0];
-      
-      var fileReader = new FileReader();
-
       this.form.file = file;
       this.file.name = file.name;
-
-      this.videoFileName = JSON.parse(JSON.stringify(this.file.name));
-      if (file.type.match('image')) {
-        // start : generate thumbail of image
-            if (fileReader != null) {
-              fileReader.onload = await this.GetThumbnail;
-                fileReader.readAsDataURL(file);
-            }
-        // end : generate thumbail of image
-      } else {
-
-        fileReader.onload = () => {
-            var blob = new Blob([fileReader.result], {type: file.type});            
-            var url = URL.createObjectURL(blob);
-            
-            var video = document.createElement('video');
-            var timeupdate = () => {
-              if (snapImage()) {
-                video.removeEventListener('timeupdate', timeupdate);
-                video.pause();
-              }
-            };
-            video.addEventListener('loadeddata', () => {
-              if (snapImage()) {
-                video.removeEventListener('timeupdate', timeupdate);
-              }
-            });
-            var snapImage = () => {
-              var canvas = document.createElement('canvas');
-              canvas.width = video.videoWidth;
-              canvas.height = video.videoHeight;
-              canvas.getContext('2d').drawImage(video,0,0,canvas.width, canvas.height);
-              var dataURL = canvas.toDataURL();
-              var success = dataURL.length > 100000;
-              if (success) {
-                var img = document.createElement('img');
-                img.src = dataURL;
-                URL.revokeObjectURL(url);
-              }
-              if (dataURL != null && dataURL != undefined) {
-                    Vue.set(this.thumbnail, 'preview', dataURL);
-                    canvas.toBlob((blob) => {
-                      Vue.set(this.thumbnail, 'file', blob)                              
-                    });
-                  URL.revokeObjectURL(url);
-                } else{
-                  alert('unable to get context');
-                }
-                    console.log("snapImage -> this.thumbnail", this.thumbnail)
-
-              return success;
-            };
-            video.addEventListener('timeupdate', timeupdate);
-            video.preload = 'metadata';
-            video.src = url;
-            // Load video in Safari / IE11
-            video.muted = true;
-            video.playsInline = true;
-            video.play();
-          };
-          fileReader.readAsArrayBuffer(file);
-
-      }
-      this.$modal.show('modal_thumbnail_image');
+      this.file.org_name = file.name;
+      
+      if(file.type.match('video')) {
+        this.videoFileName = JSON.parse(JSON.stringify(this.file.name));
+        await ThumbService.videoThumbnail(file,DEFINE.thumbSize.videoThumbWidth).then(thumb_data=>{
+          console.log("handleFile -> video thumb_data return", thumb_data)
+          Vue.set(this.thumbnail, 'preview', thumb_data.preview);
+          Vue.set(this.thumbnail, 'file', thumb_data.file) 
+        });
+        this.$modal.show('modal_thumbnail_image');
+      } else{        
+        this.$toasted.error('Please upload valid video file!');
+        this.$refs.inputFile.value = null;
+        this.file.name = 'Record Audition';
+        this.videoFileName = null;
+      }      
       console.log("snapImage -> final ", this.thumbnail)
     },
     imageRenameDone(){
       this.$toasted.clear();
         if(!this.videoFileName || this.videoFileName == '' || this.videoFileName.trim() == ''){
           this.$toasted.error('Please enter file name!');
+          return;
+        } else if(this.videoFileName && this.videoFileName.length > 150){
+          this.$toasted.error('File name is too long, it should not be more than 150 characters!');
           return;
         }
         this.file.name = JSON.parse(JSON.stringify(this.videoFileName));
