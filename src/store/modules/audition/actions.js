@@ -7,7 +7,6 @@ export default {
   async fetch({ commit }) {
     try {
       const { data } = await AuditionService.all();
-      console.log(data);
       commit(types.FETCH_AUDITIONS_SUCCESS, data);
     } catch (e) {
       commit(types.FETCH_AUDITIONS_FAILURE);
@@ -17,7 +16,6 @@ export default {
   async fetchUpcoming({ commit }) {
     try {
       const { data: { data } } = await axios.get('/t/auditions/upcoming');
-      console.log(data);
       commit(types.FETCH_UPCOMING_AUDITIONS_SUCCESS, data);
     } catch (e) {
       console.log(e);
@@ -28,7 +26,6 @@ export default {
   async fetchPassed({ commit }) {
     try {
       const { data: { data } } = await axios.get('/t/auditions/passed');
-      console.log(data);
       commit(types.FETCH_PASSED_AUDITIONS_SUCCESS, data);
     } catch (e) {
       commit(types.FETCH_PASSED_AUDITIONS_FAILURE);
@@ -38,7 +35,6 @@ export default {
   async fetchUserList({ commit }, audition) {
     try {
       let { data: { data } } = await axios.get(`/appointments/auditions/${audition}`);
-      console.log(data);
       data = _.orderBy(data, 'time', 'asc'); 
       commit(types.FETCH_USER_LIST_AUDITION_SUCCESS, data);
     } catch (e) {
@@ -48,7 +44,6 @@ export default {
   async fetchIndividualUserList({ commit }, audition) {
     try {
       let { data: { data } } = await axios.get(`/t/auditions/${audition}/individualPerformers`);
-      console.log(data);
       data = _.orderBy(data, 'time', 'asc'); 
       commit(types.FETCH_USER_LIST_AUDITION_SUCCESS, data);
     } catch (e) {
@@ -59,7 +54,6 @@ export default {
   async fetchFinalCastList({ commit }, audition) {
     try {
       const { data: { data } } = await axios.get(`/t/finalcast/${audition}/audition`);
-      console.log(data);
       commit(types.FETCH_FINAL_CAST_LIST_AUDITION_SUCCESS, data);
     } catch (e) {
       commit(types.FETCH_FINAL_CAST_LIST_AUDITION_FAILURE);
@@ -69,7 +63,6 @@ export default {
   async fetchAuditionData({ commit }, audition) {
     try {
       const { data: { data } } = await axios.get(`/auditions/show/${audition}`);
-      console.log(data);
 
       commit(types.FETCH_AUDITION_DATA_SUCCESS, data);z
     } catch (e) {
@@ -80,7 +73,6 @@ export default {
   async fetchAuditionDataNew({ commit }, audition) {
     try {
       const { data: { data } } = await axios.get(`/auditions/show/${audition}`);
-      console.log(data);
 
       commit(types.FETCH_AUDITION_DATA_SUCCESS, data);
       return data;
@@ -93,7 +85,6 @@ export default {
   async fetchOnlineMedia({ commit }, item) {
     try {
       const { data: { data } } = await axios.get(`/media/online?appointment_id=${item.round}&performer_id=${item.user}`);
-      console.log(data);
       commit(types.FETCH_ONLINE_MEDIA_SUCCESS, data);
     } catch (e) {
       console.log(e);
@@ -107,7 +98,6 @@ export default {
       //   "audition", audition
       // );
       const { data: { data } } = await axios.get(`/t/audition/${audition.id}/round/${audition.round}/videos`);
-      console.log(data);
 
       commit(types.FETCH_AUDITION_VIDEOS_SUCCESS, data);
     } catch (e) {
@@ -118,8 +108,6 @@ export default {
   async deleteVideo({ commit }, params) {
     try {
       const { data: { data } } = await axios.delete(`/t/auditions/video/delete/${params.id}/${params.audition_id}`);
-      // console.log(data);
-
       commit(types.VIDEO_DELETE_SUCCESS, data);
     } catch (e) {
       commit(types.VIDEO_DELETE_FAILURE);
@@ -129,8 +117,6 @@ export default {
   async listVideos({ commit }, audition) {
     try {
       const { data: { data } } = await axios.get(`/t/auditions/video/list/${audition}`);
-      console.log(data);
-
       commit(types.FETCH_AUDITION_VIDEOS_SUCCESS, data);
     } catch (e) {
       commit(types.FETCH_AUDITION_VIDEOS_FAILURE);

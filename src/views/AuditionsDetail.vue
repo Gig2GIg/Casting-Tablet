@@ -1714,8 +1714,7 @@ export default {
         };
 
         const {data: { data }} = await axios.post(`/t/feedbacks/addIndividualComment`, requestParam);
-      this.loading = false;
-        console.log("addCasterComment -> data", data)
+        this.loading = false;
         this.$toasted.success(data);        
       Vue.set(this.casterComment, index, "");
       } catch (ex) {
