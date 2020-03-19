@@ -6,7 +6,6 @@ export default {
   async fetchUserFeedback({ commit }, audition) {
     try {
       const { data: { data } } = await axios.get(`/t/auditions/${audition.round}/feedbacks/details?user_id=${audition.user}`);
-      console.log(data);
       commit(types.FETCH_USER_FEEDBACK_SUCCESS, data);
     } catch (e) {
       commit(types.FETCH_USER_FEEDBACK_FAILURE);
@@ -38,7 +37,6 @@ export default {
   async fetchTags({ commit }, audition) {
     try {
       const { data: { data } } = await axios.get(`/t/auditions/${audition.round}/user/tags?user_id=${audition.user}`);
-      console.log(data);
       commit(types.FETCH_TAGS_SUCCESS, data);
     } catch (e) {
       commit(types.FETCH_TAGS_FAILURE);
@@ -57,7 +55,6 @@ export default {
   async searchMarketplace({ commit }, search) {
     try {
       const { data: { data } } = await axios.get(`/t/marketplaces/search?value=${search}`);
-      console.log(data);
       commit(types.SEARCH_MARKETPLACE_SUCCESS, data);
     } catch (e) {
       commit(types.SEARCH_MARKETPLACE_FAILURE);
