@@ -65,6 +65,18 @@
         hidden
         @change="handleImage"
       >
+    </div>    
+    <div v-show="(preview != null)" class="w-full">
+      <base-input        
+        v-model="form.name_cover"
+        v-validate="'required|max:200'"
+        name="name_cover"
+        class="w-full"
+        :custom-classes="['border', 'border-purple']"
+        :message="errors.first('role.name_cover')"
+        placeholder="File Name"        
+        data-vv-as="file name"
+      />
     </div>
 
     <base-input
@@ -166,6 +178,9 @@
 
 <script>
 import uuid from 'uuid/v1';
+import ThumbService from '@/services/ThumbService';
+import DEFINE from "@/utils/const.js";
+import Vue from "vue";
 
 export default {
   name: 'RolesModal',
@@ -210,30 +225,34 @@ export default {
           this.form.id = uuid();
         }
 
-        this.$emit('save', this.form);
-
+        this.$emit('save', this.form);        
         if (!preventClose) {
           this.$emit('close');
         } else {
-          this.form = {};
           this.preview = null;
+          this.form = {};          
           this.$refs.inputFile.value = '';
           this.$refs.inputName.focus();
-        }
-
+        }        
         return true;
       }
 
       return false;
     },
 
-    handleImage(e) {
+    async handleImage(e) {
       const file = e.target.files[0];
 
       this.form.cover_file = file;
       this.form.name_cover = file.name;
-      this.preview = URL.createObjectURL(file);
-      this.form.preview = this.preview;
+      // this.preview = URL.createObjectURL(file);
+      // this.form.preview = this.preview;
+      await ThumbService.imageThumbnail(file, DEFINE.thumbSize.roleImageThumbWidth).then((thumb_data) => {
+          console.log("handleFile -> role cover thumb_data return", thumb_data);
+          this.preview = thumb_data.preview;
+          Vue.set(this.form, 'preview', thumb_data.preview);
+          Vue.set(this.form, 'thumb_file', thumb_data.file);
+        });
     },
 
     handleDelete() {

@@ -113,10 +113,10 @@ class ThumbService {
           }
           if (dataURL != null && dataURL != undefined) {
             canvas.toBlob((blob) => {
-              this.imageThumbnail(blob, targetWidth, targetHeight).then(thumb_data => {
-                console.log("handleFile -> ThumbService video thumb_data return", thumb_data)
+              this.imageThumbnail(blob, targetWidth, targetHeight).then((thumb_data) => {
+                console.log("handleFile -> ThumbService video thumb_data return", thumb_data);
                 returnRes.preview = thumb_data.preview;
-                returnRes.file = thumb_data.file;  
+                returnRes.file = thumb_data.file;
                 resolve(returnRes);              
               });
             });

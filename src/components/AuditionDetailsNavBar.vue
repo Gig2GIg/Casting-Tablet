@@ -272,10 +272,9 @@ export default {
       
       if(file.type.match('video')) {
         this.videoFileName = JSON.parse(JSON.stringify(this.file.name));
-        await ThumbService.videoThumbnail(file,DEFINE.thumbSize.videoThumbWidth).then(thumb_data=>{
-          console.log("handleFile -> video thumb_data return", thumb_data)
+        await ThumbService.videoThumbnail(file,DEFINE.thumbSize.videoThumbWidth).then((thumb_data) => {          
           Vue.set(this.thumbnail, 'preview', thumb_data.preview);
-          Vue.set(this.thumbnail, 'file', thumb_data.file) 
+          Vue.set(this.thumbnail, 'file', thumb_data.file);
         });
         this.$modal.show('modal_thumbnail_image');
       } else{        

@@ -867,14 +867,14 @@ export default {
           
 
           // upload video file
-          var extension = this.file.org_name.substring(this.file.org_name.lastIndexOf('.')+1);
+          const extension = this.file.org_name.substring(this.file.org_name.lastIndexOf('.')+1);
           console.log("saveFeedback -> extension", extension)
-          let filePath = this.file.name.includes(`${extension}`) ? `temp/${uuid()}_${this.file.name}` : `temp/${uuid()}_${this.file.name}.${extension}`;          
+          const filePath = this.file.name.includes(`${extension}`) ? `temp/${uuid()}_${this.file.name}` : `temp/${uuid()}_${this.file.name}.${extension}`;          
           console.log("saveFeedback -> filePath", filePath)
-          let file = await firebase.storage()
+          const file = await firebase.storage()
           .ref(filePath)
           .put(this.form.file);
-          let url = await file.ref.getDownloadURL();
+          const url = await file.ref.getDownloadURL();
           console.log("saveFeedback -> url", url)
 
           let audition_record = {
@@ -931,10 +931,10 @@ export default {
       
       if(file.type.match('video')) {
         this.videoFileName = JSON.parse(JSON.stringify(this.file.name));
-        await ThumbService.videoThumbnail(file,DEFINE.thumbSize.videoThumbWidth).then(thumb_data=>{
-          console.log("handleFile -> video thumb_data return", thumb_data)
+        await ThumbService.videoThumbnail(file,DEFINE.thumbSize.videoThumbWidth).then((thumb_data) => {
+          console.log("handleFile -> video thumb_data return", thumb_data);
           Vue.set(this.thumbnail, 'preview', thumb_data.preview);
-          Vue.set(this.thumbnail, 'file', thumb_data.file) 
+          Vue.set(this.thumbnail, 'file', thumb_data.file);
         });
         this.$modal.show('modal_thumbnail_image');
       } else{        
@@ -946,12 +946,12 @@ export default {
       console.log("snapImage -> final ", this.thumbnail)
     },
     imageRenameDone(){
-      this.$toasted.clear();
+        this.$toasted.clear();
         if(!this.videoFileName || this.videoFileName == '' || this.videoFileName.trim() == ''){
-          this.$toasted.error('Please enter file name!');
+          this.$toasted.error('Please enter filename!');
           return;
         } else if(this.videoFileName && this.videoFileName.length > 150){
-          this.$toasted.error('File name is too long, it should not be more than 150 characters!');
+          this.$toasted.error('Filename is too long, it should not be more than 150 characters!');
           return;
         }
         this.file.name = JSON.parse(JSON.stringify(this.videoFileName));

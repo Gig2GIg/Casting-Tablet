@@ -499,7 +499,7 @@
                     <a
                     href="#"
                     role="button"
-                    @click.prevent="reset"
+                    @click.prevent="resetCropImage"
                     >
                     Reset
                     </a>            
@@ -525,6 +525,14 @@
                     Cancel
                     </a>
                 </div>
+                <base-input
+                    v-model="coverFileName"
+                    :custom-classes="['border border-b border-gray-300']"
+                    name="cover_file_name"
+                    placeholder="Cover Name"
+                    data-vv-as="cover name"
+                    class="w-8/12"
+                  />
                 
                 </section>
                 <section class="preview-area">
@@ -572,7 +580,39 @@
                     </button>
             </div>
         </modal>
-        <modal class="flex w-full items-center link-modal" :width="500" :height="650" name="modal_document_link_manage">            
+        <modal class="flex w-full items-center link-modal" :width="500" :height="650" name="modal_document_file_manage" :clickToClose="false">                        
+          <div class="flex flex-col items-center text-purple text-lg mt-5 mb-2">
+                <h1>Manage Documents Name</h1>
+            </div>
+            <div class="max-link-screen" id="link_container">            
+                <div class="mt-5">
+                    <div class="flex flex-col w-10/13 px-2 mb-5" v-for="(media, index) in form.media" :key="index">
+                        <span class="relative px-2 text-purple"> Document {{(index+1)}} :</span>
+                        <div class="relative h-12 w-9/12 my-2">
+                            <base-input
+                                v-model="media.name"
+                                name="media_name[]"
+                                class="w-full px-2"
+                                placeholder="Name"
+                                :custom-classes="['border', 'border-purple']"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="actions cus-action-btn">                           
+                <a
+                href="#"
+                role="button"
+                @click.prevent="documentFileManageDone"
+                >
+                Done
+                </a>                
+            </div>
+            
+        </modal>
+        <modal class="flex w-full items-center link-modal" :width="500" :height="650" name="modal_document_link_manage" :clickToClose="false">            
             <div class="d-flex justify-end text-right top-add-btn" >
                 <a
                 href="#"
@@ -678,6 +718,7 @@ import "cropperjs/dist/cropper.css";
 import moment from "moment";
 
 import customTimePicker from "../custom/custom-clock-picker/components/customTimePicker.vue";
+import ThumbService from '@/services/ThumbService';
 
 import _ from "lodash";
 
@@ -837,6 +878,9 @@ export default {
         round: 1,
         index: 0
       },
+      coverThumbnail : {},
+      coverFileName :  null,
+      coveNameObject : {},
     };
   },
   watch: {
@@ -923,7 +967,7 @@ export default {
       if (index !== -1) {
         this.$set(this.form.roles, index, role);
       } else {
-        this.form.roles.push(role);
+        this.form.roles.push(role);        
       }
     },
 
@@ -943,6 +987,13 @@ export default {
     },
     closeLinkManageModal() {
       this.$modal.hide("modal_document_link_manage");
+    },
+    showDocFileManageModal() {
+      this.$modal.show("modal_document_file_manage");
+      this.closeDocumentOptionModal();
+    },
+    closeDocFileManageModal() {
+      this.$modal.hide("modal_document_file_manage");
     },
     defaultLinkData() {
       return {
@@ -972,6 +1023,28 @@ export default {
       this.document_links = [this.defaultLinkData()];
       this.closeLinkManageModal();
     },
+    documentFileManageDone() {
+      this.$toasted.clear();
+      let documentHasError = false;
+      let documentHasErrorMsg = 'Any documents should not be without a filename!';      
+      for (var di = 0; di < this.form.media.length; di++) {
+        if(!this.form.media[di].name || this.form.media[di].name == '' || this.form.media[di].name == ''){
+          documentHasErrorMsg = 'Any documents should not be without a filename!';
+          documentHasError = true;
+          break;
+        } else if(this.form.media[di].name && this.form.media[di].name.length > 150){
+          documentHasErrorMsg = 'Any document filename is too long, it should not be more than 150 characters!';
+          documentHasError = true;
+          break;
+        }
+      }
+      if(documentHasError){
+          this.$toasted.error(documentHasErrorMsg);
+          return;
+      }
+      
+      this.closeDocFileManageModal();
+    },    
     linkManageDone() {
       this.$toasted.clear();
       let lastRecord = this.document_links[this.document_links.length - 1]
@@ -997,29 +1070,42 @@ export default {
         this.document_links = [this.defaultLinkData()];
       }
     },
-    handleFile(e) {
+    async handleFile(e) {
       const files = Array.from(e.target.files);
 
-      files
-        .filter(file => !this.form.media.some(x => x.name === file.name))
-        .forEach(file => {
+      await files
+        .filter((file) => !this.form.media.some(x => x.name === file.name))
+        .forEach(async (file) => {
           const extension = file.name.split(".").pop();
 
           const file_type = this.getFileType(file);
 
           if (file_type > 0) {
-            this.form.media.push({
+            let currentMedia = {
               name: file.name,
+              org_name: file.name,
               type: file_type,
               url: file,
               file: file,
               share: "yes"
-            });
+            };
+
+            if (file.type.match('image')) {
+              await ThumbService.imageThumbnail(file, DEFINE.thumbSize.docImageThumbWidth).then((thumb_data) => {              
+                currentMedia.thumb_file = thumb_data.file;
+                currentMedia.preview = thumb_data.preview;
+              });
+            } else if(file.type.match('video')) {
+              await ThumbService.videoThumbnail(file, DEFINE.thumbSize.videoThumbWidth).then((thumb_data) => {
+                currentMedia.thumb_file = thumb_data.file;
+                currentMedia.preview = thumb_data.preview;
+              });
+            }
+            await this.form.media.push(currentMedia);
           }
         });
-
-      this.$refs.inputFile.value = "";
-      this.closeDocumentOptionModal();
+      this.$refs.inputFile.value = "";    
+      this.showDocFileManageModal();  
     },
     getFileType(file) {
       if (file.type.match("audio.*")) return 1;
@@ -1037,9 +1123,13 @@ export default {
       if (typeof FileReader === "function") {
         this.cropImg = null;
         this.updatedImageBlob = null;
+        this.coverFileName = null;
         this.updatedImageFile = file;
+        this.coveNameObject.name = file.name;
+        this.coveNameObject.org_name = file.name;
+        this.coverFileName = JSON.parse(JSON.stringify(this.updatedImageFile.name));
         const reader = new FileReader();
-        reader.onload = event => {
+        reader.onload = (event) => {
           this.imgSrc = event.target.result;
           // rebuild cropperjs with the updated source
           if (this.$refs.cropper) {
@@ -1086,6 +1176,8 @@ export default {
       // console.log("TCL: handleCreate -> this.form", this.form)
       let coverSnapshot = null,
         rolesSnapshots = [],
+        rolesThumbailSnapshots = [],
+        filesThumbailSnaphosts = [],
         filesSnaphosts = [];
       this.$toasted.clear();
       try {
@@ -1130,11 +1222,14 @@ export default {
         }
 
         if (this.updatedImageBlob && this.updatedImageFile) {
-          this.updatedImageBlob.name = this.updatedImageFile.name;
+          this.updatedImageBlob.name = this.coveNameObject.name;
           this.form.cover_file = this.updatedImageBlob;
-          this.form.cover_name = this.updatedImageFile.name;
+          this.form.cover_name = this.coveNameObject.name;
+          this.form.cover_org_name = this.coveNameObject.org_name;
         } else {
           this.form.cover_file = null;
+          this.form.cover_name = null;
+          this.form.cover_org_name = null;
         }
 
         if (!this.form.cover_file) {
@@ -1142,23 +1237,6 @@ export default {
           return;
         }
 
-        // this.form.location = this.form.online ? null : this.form.location;
-        // this.form.appointment = this.form.online
-        //   ? {
-        //       spaces: 10,
-        //       type: 1,
-        //       length: "20",
-        //       start: "10:00",
-        //       end: "18:00",
-        //       slots: null
-        //     }
-        //   : this.form.appointment;
-        // if (!this.form.appointment) {
-        //   this.$toasted.error("The appointments are required.");
-        //   return;
-        // }
-
-       
         let data = Object.assign({}, this.form);
         if (data.online) {
           data.rounds = [
@@ -1209,6 +1287,7 @@ export default {
                         latitudeDelta: 0.0043,
                         longitudeDelta: 0.0043
                     };
+                    delete data.rounds[i].selectedLocation;
                 }
             }
 
@@ -1218,41 +1297,59 @@ export default {
             }
         }
 
-        this.isLoading = true;
+        // this.isLoading = true;
         data.union = this.union_status.find(x => x.selected).value;
         data.contract = this.contract_types.find(x => x.selected).key;
         data.production = this.production_types
-          .filter(x => x.selected)
-          .map(x => x.key)
+          .filter((x) => x.selected)
+          .map((x) => x.key)
           .join(",");
 
-        // if (this.selectedLocation) {
-        //   data.location = {
-        //     latitude: this.selectedLocation.geometry.location.lat(),
-        //     longitude: this.selectedLocation.geometry.location.lng(),
-        //     latitudeDelta: 0.0043,
-        //     longitudeDelta: 0.0043
-        //   };
-        // }
+        // upload cover thumbnail file
+        let coverThumbnailUrl;
+        if(this.coverThumbnail.file){
+          const thumbnailFileSnapshot = await firebase.storage()
+          .ref(`audition_cover/thumbnail/${uuid()}.png`)
+          .put(this.coverThumbnail.file);        
+          coverThumbnailUrl = await thumbnailFileSnapshot.ref.getDownloadURL();          
+        }
         // Upload cover
+        const coverRxtension = this.form.cover_org_name.substring(this.form.cover_org_name.lastIndexOf('.')+1);
+        const coverFilePath = data.cover_name.includes(`${coverRxtension}`) ? `audition_cover/${uuid()}_${data.cover_name}` : `audition_cover/${uuid()}_${data.cover_name}.${coverRxtension}`;
         coverSnapshot = await firebase
           .storage()
-          .ref(`temp/${uuid()}.${data.cover_name.split(".").pop()}`)
+          .ref(coverFilePath)
           .put(data.cover_file);
 
-        data.cover = await coverSnapshot.ref.getDownloadURL();
+        data.cover = await coverSnapshot.ref.getDownloadURL();        
+        data.cover_thumbnail = coverThumbnailUrl ? coverThumbnailUrl : null;
+        data.cover_name = data.cover_name;
 
         // Upload roles
         await Promise.all(
-          data.roles.map(async role => {
+          data.roles.map(async (role) => {
             if (role.cover_file != undefined) {
+              delete role.preview;
+              // Upload role cover thumbnail
+              let roleThumbnailUrl = null;
+              if(role.thumb_file && role.thumb_file != undefined){
+                const thumbnailFileSnapshot = await firebase.storage()
+                .ref(`audition_role_cover/thumbnail/${uuid()}.png`)
+                .put(role.thumb_file);        
+                roleThumbnailUrl = await thumbnailFileSnapshot.ref.getDownloadURL();                
+                rolesThumbailSnapshots.push(thumbnailFileSnapshot);
+              }
+
+              // Upload role cover
+              const roleCoverExtension = role.cover_file.name.substring(role.cover_file.name.lastIndexOf('.')+1);
+              const roleCoverFilePath = role.name_cover.includes(`${roleCoverExtension}`) ? `audition_role_cover/${uuid()}_${role.name_cover}` : `audition_role_cover/${uuid()}_${role.name_cover}.${roleCoverExtension}`;
               const snapshot = await firebase
                 .storage()
-                .ref(`temp/${uuid()}.${role.name_cover.split(".").pop()}`)
+                .ref(roleCoverFilePath)
                 .put(role.cover_file);
 
               role.cover = await snapshot.ref.getDownloadURL();
-
+              role.cover_thumbnail = roleThumbnailUrl ? roleThumbnailUrl : null;
               rolesSnapshots.push(snapshot);
             }
           })
@@ -1260,20 +1357,35 @@ export default {
 
         // Upload files
         await Promise.all(
-          data.media.map(async Media => {
+          data.media.map(async (Media) => {
             if (Media.type != 5) {
+              if(Media.preview){
+                delete Media.preview;
+              }
+              // Upload doc thumbnail if image or video file
+              let fileThumbnailUrl = null;              
+              if(Media.thumb_file && Media.thumb_file != undefined){
+                const thumbnailFileSnapshot = await firebase.storage()
+                .ref(`audition_doc/thumbnail/${uuid()}.png`)
+                .put(Media.thumb_file);        
+                fileThumbnailUrl = await thumbnailFileSnapshot.ref.getDownloadURL();
+                filesThumbailSnaphosts.push(thumbnailFileSnapshot);
+              }
+
+              // uplaod doc file
+              const docExtension = Media.file.name.substring(Media.file.name.lastIndexOf('.')+1);
+              const docFilePath = Media.name.includes(`${docExtension}`) ? `audition_doc/${uuid()}_${Media.name}` : `audition_doc/${uuid()}_${Media.name}.${docExtension}`;
               const snapshot = await firebase
                 .storage()
-                .ref(`temp/${uuid()}.${Media.name.split(".").pop()}`)
+                .ref(docFilePath)
                 .put(Media.file);
 
               Media.url = await snapshot.ref.getDownloadURL();
-
+              Media.thumbnail = fileThumbnailUrl ? fileThumbnailUrl : null;
               filesSnaphosts.push(snapshot);
             }
           })
         );
-
         
         let action = await axios.post("/t/auditions/create", data);
         
@@ -1294,8 +1406,13 @@ export default {
           errorMsg ? errorMsg : "Audition not created, try later."
         );
         coverSnapshot && coverSnapshot.ref.delete();
+        if(thumbnailFileSnapshot){
+          thumbnailFileSnapshot.ref.delete();
+        }
         await Promise.all(rolesSnapshots.map(role => role.ref.delete()));
+        await Promise.all(rolesThumbailSnapshots.map(role => role.ref.delete()));        
         await Promise.all(filesSnaphosts.map(file => file.ref.delete()));
+        await Promise.all(filesThumbailSnaphosts.map(role => role.ref.delete()));        
       }
     },
 
@@ -1352,24 +1469,40 @@ export default {
     imgUrlAlt(event) {
       event.target.src = DEFINE.role_placeholder;
     },
-    cropImage() {
+    async cropImage() {
+      this.coverThumbnail = {};
       // get image data for post processing, e.g. upload or setting image src
       this.cropImg = this.$refs.cropper.getCroppedCanvas().toDataURL();
-      this.$refs.cropper.getCroppedCanvas().toBlob(blob => {
+      this.$refs.cropper.getCroppedCanvas().toBlob(async (blob) => {
         this.updatedImageBlob = blob;
+        await ThumbService.imageThumbnail(this.updatedImageBlob, DEFINE.thumbSize.imageThumbWidth).then((thumb_data) => {
+          Vue.set(this.coverThumbnail, 'preview', thumb_data.preview);
+          Vue.set(this.coverThumbnail, 'file', thumb_data.file);
+        });
       });
     },
-    reset() {
+    resetCropImage() {
       this.$refs.cropper.reset();
       this.cropImg = null;
+      this.coverFileName = null;
+      this.coverFileName = JSON.parse(JSON.stringify(this.coveNameObject.name));
     },
     showFileChooser() {
       this.$refs.coverFile.click();
     },
     cropImageDone() {
+      this.$toasted.clear();
+      if(!this.coverFileName || this.coverFileName == '' || this.coverFileName.trim() == ''){
+        this.$toasted.error('Please enter cover filename!');
+        return;
+      } else if(this.coverFileName && this.coverFileName.length > 150){
+        this.$toasted.error('Cover filename is too long, it should not be more than 150 characters!');
+        return;
+      }
       if (this.cropImg) {
         this.previewCover = this.cropImg;
       }
+      this.coveNameObject.name = this.coverFileName;
       this.imgSrc = null;
       this.$refs.coverFile.value = "";
       this.$modal.hide("modal_crop_image");
@@ -1378,7 +1511,8 @@ export default {
       this.imgSrc = null;
       this.cropImg = null;
       this.updatedImageBlob = null;
-      this.updatedImageFile = null;
+      this.coveNameObject = {};
+      this.coverFileName = null;
       this.$refs.coverFile.value = "";
       this.$modal.hide("modal_crop_image");
     },

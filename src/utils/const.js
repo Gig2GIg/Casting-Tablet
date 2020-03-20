@@ -8,8 +8,10 @@ const DEFINE = {
     thumbSize :{
         defaultWidth : 200,
         defaultHeight : 200,
-        videoThumbWidth : 250,
-        imageThumbWidth : 250
+        videoThumbWidth : 200,
+        imageThumbWidth : 250,
+        docImageThumbWidth : 200,
+        roleImageThumbWidth : 150
     },
     google : {
         key: "AIzaSyCBwvwOsPR82AjeUx5o3FUvr4syuoNFrLI", // old one => AIzaSyCNwa9Hpkf463makeiBW_vSMH2Y0sY23q0
