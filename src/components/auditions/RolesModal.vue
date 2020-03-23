@@ -69,7 +69,7 @@
     <div v-show="(preview != null)" class="w-full">
       <base-input        
         v-model="form.name_cover"
-        v-validate="'required|max:200'"
+        v-validate="'max:200'"
         name="name_cover"
         class="w-full"
         :custom-classes="['border', 'border-purple']"

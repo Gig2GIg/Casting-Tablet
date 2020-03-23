@@ -288,10 +288,10 @@ export default {
     imageRenameDoneOld(){
       this.$toasted.clear();
         if(!this.videoFileName || this.videoFileName == '' || this.videoFileName.trim() == ''){
-          this.$toasted.error('Please enter file name!');
+          this.$toasted.error('Please enter filename!');
           return;
         } else if(this.videoFileName && this.videoFileName.length > 150){
-          this.$toasted.error('File name is too long, it should not be more than 150 characters!');
+          this.$toasted.error('Filename is too long, it should not be more than 150 characters!');
           return;
         }
         this.file.name = JSON.parse(JSON.stringify(this.videoFileName));
@@ -305,10 +305,10 @@ export default {
     async imageRenameDone() {
       this.$toasted.clear();
       if(!this.videoFileName || this.videoFileName == '' || this.videoFileName.trim() == ''){
-        this.$toasted.error('Please enter file name!');
+        this.$toasted.error('Please enter filename!');
         return;
       } else if(this.videoFileName && this.videoFileName.length > 150){
-        this.$toasted.error('File name is too long, it should not be more than 150 characters!');
+        this.$toasted.error('Filename is too long, it should not be more than 150 characters!');
         return;
       }
       this.file.name = JSON.parse(JSON.stringify(this.videoFileName));

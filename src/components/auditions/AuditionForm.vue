@@ -54,7 +54,7 @@
                     :key="contributor.email"
                     class="-mx-3"
                     :contributor="contributor"
-                    @destroy="handleDeleteContributor"
+                    @destroy="handleDeleteContributor"                    
             />
         </form>
 
@@ -444,7 +444,7 @@
                             :navigation-next-label="'&#x279C;'"
                     >
                         <slide v-for="(media, index) in form.media" :key="index">
-                            <DocumentItem :media="media" @destroy="handleDeleteDocument"/>
+                            <DocumentItem :media="media" @destroy="handleDeleteDocument" @renamedoc="handleRenameDoc" />
                         </slide>
                     </carousel>
                 </div>
@@ -676,6 +676,38 @@
             </div>
             
         </modal>
+        <modal class="flex flex-col w-full items-center" :width="450" :height="200" name="rename_file_name" :clickToClose="false">
+            <div class="flex flex-col items-center text-purple text-lg mt-5 mb-2">
+                  <h1>Document Rename</h1>
+            </div>
+            <div class="content my-info-content" >              
+              <section class="image-preview-area">                
+                  <div class="flex justify-center mb-4 items-center px-3 w-full">
+                    <div class="w-full  ml-4 text-purple px-2">
+                        <base-input
+                          v-if="currentDoc && currentDoc.index != null"
+                          v-model="form.media[currentDoc.index].name"
+                          :custom-classes="['border border-b border-gray-300']"
+                          name="file_name"
+                          placeholder="File Name"
+                          data-vv-as="file name"
+                        />
+                    </div>
+                  </div>
+                  <div class="container flex w-full mt-3 cursor-pointer">
+                    <div class="flex w-full text-center justify-center flex-wrap actions">
+                  <a
+                    href="#"
+                    role="button"
+                    @click.prevent="fileRenameDone"
+                  >
+                    Done
+                  </a>
+                </div>
+            </div>
+          </section>
+        </div>
+      </modal>
             
     </form>
 </template>
@@ -881,6 +913,7 @@ export default {
       coverThumbnail : {},
       coverFileName :  null,
       coveNameObject : {},
+      currentDoc : {},
     };
   },
   watch: {
@@ -894,6 +927,14 @@ export default {
     window.addEventListener("resize", this.onResize);
   },
   methods: {
+    handleRenameDoc(media){      
+      const index = this.form.media.indexOf(media);
+      Vue.set(this.currentDoc, 'index', index);
+      this.$modal.show('rename_file_name');
+    },
+    fileRenameDone(){
+      this.$modal.hide('rename_file_name');
+    },
     onResize() {
       this.innerWidth = window.innerWidth;
     },
@@ -1297,7 +1338,7 @@ export default {
             }
         }
 
-        // this.isLoading = true;
+        this.isLoading = true;
         data.union = this.union_status.find(x => x.selected).value;
         data.contract = this.contract_types.find(x => x.selected).key;
         data.production = this.production_types
@@ -1548,7 +1589,7 @@ export default {
       }      
       
     }
-  }
+  }  
 };
 </script>
 

@@ -62,7 +62,14 @@
       <span class="mt-1" v-if="!isImageIcon">{{mediaType}}</span>
     </div>
     <span class="file-name text-purple truncate text-sm mx-4 flex-1 w-16">
-      {{ media.name }}
+      
+      <li
+        class="cursor-pointer py-2 px-4 hover:bg-gray-200"
+        @click="$emit('renamedoc', media)"
+        title="Rename Ducument"
+      >
+        {{ media.name }}
+      </li>
     </span>
 
     <i
@@ -84,6 +91,8 @@
         Delete
       </li>
     </ul>
+    
+
   </div>
 </template>
 
