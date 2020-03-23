@@ -21,19 +21,32 @@ class AuthService extends BaseService {
   }
 
   async register(user) {
-    const userData = user;
+    let userData = user;
+    console.log("AuthService -> register -> userData", userData)
+    // upload cover thumbnail file
+    let profileThumbnailUrl;
+    if(user.profileThumbnail && user.profileThumbnail.file){
+      const thumbnailFileSnapshot = await firebase.storage()
+      .ref(`profileImage/thumbnail/${uuid()}.png`)
+      .put(user.profileThumbnail.file);        
+      profileThumbnailUrl = await thumbnailFileSnapshot.ref.getDownloadURL();          
+    }
 
     // Upload avatar
-    const imageName = userData.image.name;
+    // const imageName = userData.image.name;
+    const profileExtension = userData.profileNameObject.org_name.substring(userData.profileNameObject.org_name.lastIndexOf('.')+1);
+    const profileFilePath = userData.profileNameObject.name.includes(`${profileExtension}`) ? `profileImage/${uuid()}_${userData.profileNameObject.name}` : `profileImage/${uuid()}_${userData.profileNameObject.name}.${profileExtension}`;
+
     const snapshot = await firebase.storage()
-      .ref(`profileImage/${uuid()}.${imageName.split('.').pop()}`)
+      .ref(profileFilePath)
       .put(userData.image);
 
     userData.image = await snapshot.ref.getDownloadURL();
+    userData.thumbnail = profileThumbnailUrl ? profileThumbnailUrl : null;
 
     const { data: { data } } = await this.post('/users/create', {
       ...userData,
-      resource_name: imageName,
+      resource_name: userData.profileNameObject.name,
       type: '1',
     });
 

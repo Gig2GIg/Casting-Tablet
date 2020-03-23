@@ -257,7 +257,14 @@
               Cancel
             </a>
           </div>
-          
+          <base-input
+            v-model="profileFileName"
+            :custom-classes="['border border-b border-gray-300']"
+            name="cover_file_name"
+            placeholder="Cover Name"
+            data-vv-as="cover name"
+            class="w-8/12"
+          />
         </section>
         <section class="preview-area">
           <p>Image Preview</p>
@@ -296,6 +303,7 @@ import axios from "axios";
 
 import VueCropper from 'vue-cropperjs';
 import 'cropperjs/dist/cropper.css';
+import ThumbService from '@/services/ThumbService';
 
 export default {
   components: {
@@ -317,6 +325,9 @@ export default {
       data: null,
       minHeight : Number(200),
       minWidth : Number(200),
+      profileFileName :  null,
+      profileNameObject : {},
+      profileThumbnail : {}
     };
   },
   methods: {
@@ -340,7 +351,11 @@ export default {
       if (typeof FileReader === 'function') {
         this.cropImg = null;
         this.updatedImageBlob = null;
+        this.profileFileName = null;
         this.updatedImageFile = file;
+        this.profileNameObject.name = file.name;
+        this.profileNameObject.org_name = file.name;
+        this.profileFileName = JSON.parse(JSON.stringify(this.updatedImageFile.name));
         const reader = new FileReader();
         reader.onload = (event) => {
           this.imgSrc = event.target.result;
@@ -368,6 +383,8 @@ export default {
         if(this.updatedImageBlob && this.updatedImageFile){
           this.updatedImageBlob.name = this.updatedImageFile.name;
           this.form.image = this.updatedImageBlob;
+          this.form.profileThumbnail = this.profileThumbnail;
+          this.form.profileNameObject = this.profileNameObject;
         } else {
           this.form.image = null;
         }
@@ -385,8 +402,9 @@ export default {
 
         this.isLoading = true;
         this.form.address = `${this.form.address1} ${this.form.address2}`
+        console.log("handleRegister -> this.form", this.form)
         delete this.form.address1;
-        delete this.form.address2;
+        delete this.form.address2;        
         await AuthService.register(this.form);
         await this.login({
           email: this.form.email,
@@ -406,7 +424,8 @@ export default {
         this.$toasted.show('Account created successfully.');
         this.onRegisterSuccessRedirect();
       } catch (e) {
-        console.log("TCL: handleLogin -> e.FirebaseError",e);
+        console.log("handleRegister -> e", e)
+        console.log("TCL: handleLogin -> e.response",e.response);
           if(e.code && e.code == DEFINE.firebase_permission_error.code){
               this.updateDeviceToken("");
               this.onRegisterSuccessRedirect();
@@ -448,24 +467,40 @@ export default {
     onCancel() {
       console.log('User cancelled the loader.');
     },
-    cropImage() {
+    async cropImage() {
       // get image data for post processing, e.g. upload or setting image src
       this.cropImg = this.$refs.cropper.getCroppedCanvas().toDataURL();
-      this.$refs.cropper.getCroppedCanvas().toBlob((blob) => {
+      this.$refs.cropper.getCroppedCanvas().toBlob(async (blob) => {
         this.updatedImageBlob = blob;
+        await ThumbService.imageThumbnail(this.updatedImageBlob, DEFINE.thumbSize.imageThumbWidth).then((thumb_data) => {
+          Vue.set(this.profileThumbnail, 'preview', thumb_data.preview);
+          Vue.set(this.profileThumbnail, 'file', thumb_data.file);
+        });
       }); 
     },    
     reset() {
       this.$refs.cropper.reset();
       this.cropImg = null;
+      this.profileFileName = null;
+      this.profileFileName = JSON.parse(JSON.stringify(this.profileNameObject.name));
     },    
     showFileChooser() {
       this.$refs.inputFile.click()
     },
     cropImageDone(){
+      this.$toasted.clear();
+      if(!this.profileFileName || this.profileFileName == '' || this.profileFileName.trim() == ''){
+        this.$toasted.error('Please enter filename!');
+        return;
+      } else if(this.profileFileName && this.profileFileName.length > 150){
+        this.$toasted.error('Filename is too long, it should not be more than 150 characters!');
+        return;
+      }
+
       if(this.cropImg){
         this.preview = this.cropImg;
       }
+      this.profileNameObject.name = this.profileFileName;
       this.imgSrc = null;
       this.$refs.inputFile.value = '';
       this.$modal.hide('modal_crop_image');
@@ -475,6 +510,8 @@ export default {
       this.cropImg = null;
       this.updatedImageBlob = null;
       this.updatedImageFile = null;
+      this.profileNameObject = {};
+      this.profileFileName = null;
       this.$refs.inputFile.value = '';
       this.$modal.hide('modal_crop_image');
     },

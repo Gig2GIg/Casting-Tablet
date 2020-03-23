@@ -1164,6 +1164,14 @@
               Cancel
             </a>
           </div>
+          <base-input
+            v-model="profileFileName"
+            :custom-classes="['border border-b border-gray-300']"
+            name="cover_file_name"
+            placeholder="Cover Name"
+            data-vv-as="cover name"
+            class="w-8/12"
+          />
         </section>
         <section class="preview-area">
           <p>Image Preview</p>
@@ -1195,6 +1203,8 @@ import firebase from 'firebase/app';
 import 'firebase/storage';
 import uuid from 'uuid/v1';
 import moment from 'moment';
+import Vue from "vue";
+import ThumbService from '@/services/ThumbService';
 
 export default {
   components: { 
@@ -1223,7 +1233,10 @@ export default {
       data: null,
       minHeight : Number(200),
       minWidth : Number(200),
-      isLoading : false
+      isLoading : false,
+      profileFileName :  null,
+      profileNameObject : {},
+      profileThumbnail : {}
     };
   },
   async mounted() {
@@ -1310,12 +1323,27 @@ export default {
         this.isLoading = true;
         // upload image
         if(this.updatedImageBlob && this.updatedImageFile){
-          const imageName = this.updatedImageFile.name;
+          // upload cover thumbnail file
+          let profileThumbnailUrl;
+          if(this.profileThumbnail.file){
+            const thumbnailFileSnapshot = await firebase.storage()
+            .ref(`profileImage/thumbnail/${uuid()}.png`)
+            .put(this.profileThumbnail.file);        
+            profileThumbnailUrl = await thumbnailFileSnapshot.ref.getDownloadURL();          
+          }
+
+          // const imageName = this.updatedImageFile.name;
+          
+          const profileExtension = this.profileNameObject.org_name.substring(this.profileNameObject.org_name.lastIndexOf('.')+1);
+          const profileFilePath = this.profileNameObject.name.includes(`${profileExtension}`) ? `profileImage/${uuid()}_${this.profileNameObject.name}` : `profileImage/${uuid()}_${this.profileNameObject.name}.${profileExtension}`;
+
           const snapshot = await firebase.storage()
-            .ref(`profileImage/${uuid()}.${imageName.split('.').pop()}`)
+            .ref(profileFilePath)
             .put(this.updatedImageBlob);
 
           this.form.image = await snapshot.ref.getDownloadURL();
+          this.form.thumbnail = profileThumbnailUrl ? profileThumbnailUrl : null;
+          this.form.file_name = this.profileNameObject.name;
         }
 
         if(this.form.birth){
@@ -1367,7 +1395,11 @@ export default {
       if (typeof FileReader === 'function') {
         this.cropImg = null;
         this.updatedImageBlob = null;
+        this.profileFileName = null;
         this.updatedImageFile = file;
+        this.profileNameObject.name = file.name;
+        this.profileNameObject.org_name = file.name;
+        this.profileFileName = JSON.parse(JSON.stringify(this.updatedImageFile.name));
         const reader = new FileReader();
         reader.onload = (event) => {
           this.imgSrc = event.target.result;
@@ -1384,24 +1416,40 @@ export default {
         this.$toasted.error("Something went to wrong, please try again!");
       }
     },
-    cropImage() {
+    async cropImage() {
+      this.profileThumbnail = {};
       // get image data for post processing, e.g. upload or setting image src
       this.cropImg = this.$refs.cropper.getCroppedCanvas().toDataURL();
-      this.$refs.cropper.getCroppedCanvas().toBlob((blob) => {
+      this.$refs.cropper.getCroppedCanvas().toBlob(async (blob) => {
         this.updatedImageBlob = blob;
+        await ThumbService.imageThumbnail(this.updatedImageBlob, DEFINE.thumbSize.imageThumbWidth).then((thumb_data) => {
+          Vue.set(this.profileThumbnail, 'preview', thumb_data.preview);
+          Vue.set(this.profileThumbnail, 'file', thumb_data.file);
+        });
       }); 
     },    
     reset() {
       this.$refs.cropper.reset();
       this.cropImg = null;
+      this.profileFileName = null;
+      this.profileFileName = JSON.parse(JSON.stringify(this.profileNameObject.name));
     },    
     showFileChooser() {
       this.$refs.profileFile.click()
     },
     cropImageDone(){
+      this.$toasted.clear();
+      if(!this.profileFileName || this.profileFileName == '' || this.profileFileName.trim() == ''){
+        this.$toasted.error('Please enter filename!');
+        return;
+      } else if(this.profileFileName && this.profileFileName.length > 150){
+        this.$toasted.error('Filename is too long, it should not be more than 150 characters!');
+        return;
+      }
       if(this.cropImg){
         this.previewProfile = this.cropImg;
       }
+      this.profileNameObject.name = this.profileFileName;
       this.imgSrc = null;
       this.$refs.profileFile.value = '';
       this.$modal.hide('modal_crop_image');
@@ -1411,6 +1459,8 @@ export default {
       this.cropImg = null;
       this.updatedImageBlob = null;
       this.updatedImageFile = null;
+      this.profileNameObject = {};
+      this.profileFileName = null;
       this.$refs.profileFile.value = '';
       this.$modal.hide('modal_crop_image');
     },

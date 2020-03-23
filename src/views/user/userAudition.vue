@@ -21,7 +21,7 @@
         {{profile.details ? profile.details.first_name : ""}} {{profile.details ? profile.details.last_name : ""}}
       </span>      
       <img
-        :src="profile.image ? profile.image.url : ''"
+        :src="profile.image ? (profile.image.thumbnail ? profile.image.thumbnail : profile.image.url) : ''"
         class="w-12 img-h48 object-cover"
         alt="Avatar"
       >
