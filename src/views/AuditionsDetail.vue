@@ -475,7 +475,7 @@
             <card-user
               :title="data.name"
               :isFinalCast="true"
-              :image="data.image.url ? data.image.url : data.image"
+              :image="data.image.url ? (data.image.thumbnail ? data.image.thumbnail : data.image.url ): data.image"
               class="relative"
             />
           </div>
@@ -1341,7 +1341,7 @@ export default {
             role.is_peformer = false;
             role.finalcast_id = null;
             role.user_id = null;
-            role.image = role.image.url;
+            role.image = role.image.thumbnail ? role.image.thumbnail : role.image.url;
             role.time = "";
             role.birth = null;
             role.email = null;
@@ -1350,7 +1350,7 @@ export default {
           role.is_peformer = false;
           role.finalcast_id = null;
           role.user_id = null;
-          role.image = role.image.url;
+          role.image = role.image.thumbnail ? role.image.thumbnail : role.image.url;
           role.time = "";
           role.birth = null;
           role.email = null;
@@ -1424,7 +1424,7 @@ export default {
             role.is_peformer = false;
             role.finalcast_id = null;
             role.user_id = null;
-            role.image = role.image.url;
+            role.image = role.image.thumbnail ? role.image.thumbnail : role.image.url;
             role.time = "";
             role.birth = null;
             role.email = null;
@@ -1433,7 +1433,7 @@ export default {
           role.is_peformer = false;
           role.finalcast_id = null;
           role.user_id = null;
-          role.image = role.image.url;
+          role.image = role.image.thumbnail ? role.image.thumbnail : role.image.url;
           role.time = "";
           role.birth = null;
           role.email = null;
@@ -1530,7 +1530,7 @@ export default {
             role.is_peformer = false;
             role.finalcast_id = null;
             role.user_id = null;
-            role.image = role.image.url;
+            role.image = role.image.thumbnail ? role.image.thumbnail : role.image.url;
             role.time = "";
             role.birth = null;
             role.email = null;
@@ -1543,7 +1543,7 @@ export default {
           role.is_peformer = false;
           role.finalcast_id = null;
           role.user_id = null;
-          role.image = role.image.url;
+          role.image = role.image.thumbnail ? role.image.thumbnail : role.image.url;
           role.time = "";
           role.birth = null;
           role.email = null;

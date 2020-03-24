@@ -1307,7 +1307,9 @@ export default {
       this.form.state = this.user.details.state;      
       this.form.location = "12,33334 - 23,00000";
       this.form.image = this.user.image.url;
-      this.previewProfile = this.form.image;
+      this.form.thumbnailImage = this.user.image.thumbnail;
+      this.previewProfile = this.form.thumbnailImage ? this.form.thumbnailImage : this.form.image;
+
       if(this.user.details.birth){
          const parts = this.user.details.birth.split('-');
         this.form.birth = new Date(parts[0], parts[1] - 1, parts[2]);
