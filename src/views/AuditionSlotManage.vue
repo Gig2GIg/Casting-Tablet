@@ -60,7 +60,7 @@
                       <card-user
                           :isFinalCast="true"
                           :title="data.user_slot.user.details.first_name +' '+data.user_slot.user.details.last_name"
-                          :image="data.user_slot.user.image.url"                              
+                          :image="data.user_slot.user.image.thumbnail ? data.user_slot.user.image.thumbnail : data.user_slot.user.image.url"                              
                       />
               </div>
               <span class="role-name">{{data.time}}</span>
