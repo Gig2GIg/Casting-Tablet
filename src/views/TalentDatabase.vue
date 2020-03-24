@@ -54,7 +54,7 @@
             <card-user
               :title="item.details && item.details.first_name ? item.details.first_name +' '+ item.details.last_name : ''"
               time=""
-              :image="item.image"
+              :image="item.thumbnail ?  item.thumbnail : item.image"
               class="relative"
             />
           </router-link>

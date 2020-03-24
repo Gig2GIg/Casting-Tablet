@@ -73,11 +73,13 @@
             v-model="appointments.spaces"
             type="number"
             placeholder="0"
-            class="w-full slots-input py-3 h-57 px-4 text-xl text-purple font-bold rounded-full border border-purple "
+            class="w-full slots-input py-3 h-57 px-4 text-xl text-purple font-bold rounded-full border border-purple"
             @input="makeSlots"
           >
-          <span class="appointment-label w-2/3 top-0 text-center right-0 absolute text-white rounded-r-full py-3 text-xl px-4 border border-transparent">
-            Appointments 
+          <span 
+            class="appointment-label w-2/3 top-0 text-center right-0 absolute text-white rounded-r-full py-3 text-xl px-4 border border-transparent"
+          >
+            Appointments
           </span>
         </div>
 
@@ -185,13 +187,13 @@ export default {
         start: '08:00',
         end: '',
         slots: [],
-      }),
+      })
     },
   },
   data() {
     return {
       appointments: {},
-      checkAll : false
+      checkAll: false,
     };
   },
   created() {
@@ -200,38 +202,44 @@ export default {
   },
   methods: {
     makeSlots() {
-      if (!(/^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/.test(this.appointments.start))) {
+      if (
+        !/^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/.test(
+          this.appointments.start,
+        )
+      ) {
         return;
       }
 
-      const spaces = parseInt(this.appointments.spaces);
-      
+      const spaces = parseInt(this.appointments.spaces, 10);
+
       let counter = this.appointments.start;
-      
-      let OldSlots = this.appointments.slots ? Object.assign({},this.appointments.slots) : []; 
+
+      const OldSlots = this.appointments.slots
+        ? Object.assign({}, this.appointments.slots)
+        : [];
       this.appointments.slots = [];
-      
-      let checkedCount = this.getSlotsCheckedCount(spaces);
-      for (let i = 0; i < spaces; i++) {
-        let isWalk = i >= checkedCount  ? true : false;
+
+      const checkedCount = this.getSlotsCheckedCount(spaces);
+      for (let i = 0; i < spaces; i += 1) {
+        // let isWalk = (i >= checkedCount) ? true : false;
+        const isWalk = i >= checkedCount;
         let newSlot;
-        if(OldSlots[i]){
-          newSlot = {        
-            time: counter,          
-            number: this.appointments.type == 1 ? null : i + 1,
+        if (OldSlots[i]) {
+          newSlot = {
+            time: counter,
+            number: this.appointments.type === 1 ? null : i + 1,
             status: false,
-            is_walk: OldSlots[i].is_walk
-          }          
+            is_walk: OldSlots[i].is_walk,
+          };
         } else {
-          newSlot = {        
-            time: counter,          
-            number: this.appointments.type == 1 ? null : i + 1,
+          newSlot = {
+            time: counter,
+            number: this.appointments.type === 1 ? null : i + 1,
             status: false,
-            is_walk: isWalk
-          }          
+            is_walk: isWalk,
+          };
         }
         this.appointments.slots.push(newSlot);
-        
 
         const pivot = counter.split(':');
         let hour = parseInt(pivot[0], 10);
@@ -242,30 +250,30 @@ export default {
           if (hour >= 24) {
             hour = '0';
           }
-          minutes = minutes === 60 ? 0 : (minutes - 60);
+          minutes = minutes === 60 ? 0 : minutes - 60;
         }
 
-        counter = `${hour < 10 ? `0${hour}` : hour}:${minutes < 10 ? `0${minutes}` : minutes}`;        
+        counter = `${hour < 10 ? `0${hour}` : hour}:${
+          minutes < 10 ? `0${minutes}` : minutes
+        }`;
       }
 
       this.appointments.end = this.appointments.slots.length ? counter : '';
-
     },
-    getSlotsCheckedCount(spaces){
-      return parseInt(spaces - Math.floor(spaces/3));
+    getSlotsCheckedCount(spaces) {
+      return parseInt(spaces - Math.floor(spaces / 3), 10);
     },
-    checkedSlotManage(e){
-      this.checkAll = !this.checkAll;      
-      this.appointments.slots.map(value=>{
+    checkedSlotManage() {
+      this.checkAll = !this.checkAll;
+      this.appointments.slots.map((value) => {
         value.is_walk = this.checkAll;
         return value;
       });
     },
     handleDone() {
-      if (!parseInt(this.appointments.spaces)) {
+      if (!parseInt(this.appointments.spaces, 10)) {
         return;
       }
-
       this.$emit('change', this.appointments);
       this.$emit('close');
     },
@@ -286,15 +294,24 @@ export default {
   transform: translateX(-50%);
 }
 
-input, input:focus, .slots-input, .slots-input:focus {
-  outline: none
+input,
+input:focus,
+.slots-input,
+.slots-input:focus {
+  outline: none;
 }
 .appointment-label {
-  background-image: -webkit-gradient(linear, left top, left bottom, from(#4D2545), to(#782541));
-      background-image: linear-gradient(#4D2545, #782541);
+  background-image: -webkit-gradient(
+    linear,
+    left top,
+    left bottom,
+    from(#4d2545),
+    to(#782541)
+  );
+  background-image: linear-gradient(#4d2545, #782541);
 }
 button {
-  background-image: linear-gradient(#4D2545, #782541);
+  background-image: linear-gradient(#4d2545, #782541);
 }
 .modal-container {
   z-index: 1111;

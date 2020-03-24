@@ -428,7 +428,7 @@
             :navigation-next-label="'&#x279C;'"
           >
             <slide v-for="(media, index) in form.media" :key="index">
-              <DocumentItem :media="media" @destroy="handleDeleteDocument" />
+              <DocumentItem :media="media" @destroy="handleDeleteDocument"  @renamedoc="handleRenameDoc" />
             </slide>
           </carousel>
         </div>
@@ -509,8 +509,15 @@
                     Cancel
                     </a>
                 </div>
+                <base-input
+                    v-model="coverFileName"
+                    :custom-classes="['border border-b border-gray-300']"
+                    name="cover_file_name"
+                    placeholder="Cover Name"
+                    data-vv-as="cover name"
+                    class="w-8/12"
+                  />
 
-                <textarea v-model="data" />
                 </section>
                 <section class="preview-area">
                 <p>Image Preview</p>
@@ -527,6 +534,35 @@
                 </section>
             </div>
         </modal>
+        <modal class="flex flex-col w-full items-center" :width="450" :height="200" name="rename_file_name" :clickToClose="false">
+            <div class="content my-info-content" >         
+              <section class="image-preview-area">                
+                  <div class="flex justify-center mb-4 items-center px-3 w-full">
+                    <div class="w-full  ml-4 text-purple px-2">
+                        <base-input
+                          v-if="currentDoc && currentDoc.index != null"
+                          v-model="form.media[currentDoc.index].name"
+                          :custom-classes="['border border-b border-gray-300']"
+                          name="file_name"
+                          placeholder="File Name"
+                          data-vv-as="file name"
+                        />
+                    </div>
+                  </div>
+                  <div class="container flex w-full mt-3 cursor-pointer">
+                    <div class="flex w-full text-center justify-center flex-wrap actions">
+                  <a
+                    href="#"
+                    role="button"
+                    @click.prevent="fileRenameDone"
+                  >
+                    Done
+                  </a>
+                </div>
+            </div>
+          </section>
+        </div>
+      </modal>
     </div>
 
     <AppointmentsUpdModal
@@ -574,7 +610,7 @@ import { setTimeout } from 'timers';
 import DEFINE from '../../utils/const.js';
 import VueCropper from 'vue-cropperjs';
 import 'cropperjs/dist/cropper.css';
-
+import ThumbService from '@/services/ThumbService';
 import moment from "moment";
 
 import customTimePicker from '../custom/custom-clock-picker/components/customTimePicker.vue';
@@ -724,6 +760,10 @@ export default {
       data: null,
       minHeight : Number(192),
       minWidth : Number(328),
+      currentDoc : {},
+      coverFileName :  null,
+      coveNameObject : {},
+      coverThumbnail : {},
     };
   },
   watch: {
@@ -764,6 +804,9 @@ export default {
     this.form.email = auditionCopiedObject.email;
     this.form.other_info = auditionCopiedObject.other_info;
     this.form.url = auditionCopiedObject.url;
+    this.form.cover_thumbnail = auditionCopiedObject.cover_thumbnail;
+    this.coverFileName = auditionCopiedObject.cover_name ? auditionCopiedObject.cover_name : '';
+    
     this.form.dates = auditionCopiedObject.dates.length ? auditionCopiedObject.dates : [];
     this.form.online = auditionCopiedObject.online && auditionCopiedObject.online == 1 ? true : false;
     this.form.appointment = auditionCopiedObject.apointment.general;
@@ -823,9 +866,9 @@ export default {
     this.form.contributors = auditionCopiedObject.contributors;
 
     this.form.roles.map(items => {
-      items.preview = items.image.url;
+      items.preview = items.image.thumbnail ? items.image.thumbnail : items.image.url;
     });
-    this.previewCover = auditionCopiedObject.cover;
+    this.previewCover = auditionCopiedObject.cover_thumbnail ? auditionCopiedObject.cover_thumbnail : auditionCopiedObject.cover;
     this.form.id_cover = auditionCopiedObject.id_cover;
     // debugger;
   },
@@ -942,7 +985,11 @@ export default {
       if (typeof FileReader === 'function') {
           this.cropImg = null;
           this.updatedImageBlob = null;
+          this.coverFileName = null;
           this.updatedImageFile = file;
+          this.coveNameObject.name = file.name;
+          this.coveNameObject.org_name = file.name;
+          this.coverFileName = JSON.parse(JSON.stringify(this.updatedImageFile.name));
           const reader = new FileReader();
           reader.onload = (event) => {
           this.imgSrc = event.target.result;
@@ -990,6 +1037,7 @@ export default {
       
       let coverSnapshot = null,
         rolesSnapshots = [],
+        rolesThumbailSnapshots = [],
         filesSnaphosts = [];
       this.$toasted.clear();
       try {
@@ -1021,9 +1069,10 @@ export default {
 
         this.form.location = this.form.online ? null : this.form.location;
         if(this.updatedImageBlob && this.updatedImageFile){
-            this.updatedImageBlob.name = this.updatedImageFile.name;
+            this.updatedImageBlob.name = this.coveNameObject.name;
             this.form.cover_file = this.updatedImageBlob;
-            this.form.cover_name = this.updatedImageFile.name;
+            this.form.cover_name = this.coveNameObject.name;
+            this.form.cover_org_name = this.coveNameObject.org_name;
         } else {
             this.form.cover_file = null;
         }
@@ -1054,30 +1103,63 @@ export default {
 
         // Upload cover
         if (data.cover_file != undefined && data.cover_file) {
+          // upload cover thumbnail file
+          let coverThumbnailUrl;
+          if(this.coverThumbnail.file){
+            const thumbnailFileSnapshot = await firebase.storage()
+            .ref(`audition_cover/thumbnail/${uuid()}.png`)
+            .put(this.coverThumbnail.file);        
+            coverThumbnailUrl = await thumbnailFileSnapshot.ref.getDownloadURL();          
+          }
+
+          const coverRxtension = this.form.cover_org_name.substring(this.form.cover_org_name.lastIndexOf('.')+1);
+          const coverFilePath = data.cover_name.includes(`${coverRxtension}`) ? `audition_cover/${uuid()}_${data.cover_name}` : `audition_cover/${uuid()}_${data.cover_name}.${coverRxtension}`;
+          
           coverSnapshot = await firebase
             .storage()
-            .ref(`temp/${uuid()}.${data.cover_name.split(".").pop()}`)
+            .ref(coverFilePath)
             .put(data.cover_file);
 
           data.cover = await coverSnapshot.ref.getDownloadURL();
+          data.cover_thumbnail = coverThumbnailUrl ? coverThumbnailUrl : null;
+          data.cover_name = data.cover_name;
         } else {
           data.cover = this.audition.cover;
+          data.cover_thumbnail = this.audition.cover_thumbnail;
         }
         // Upload roles
         await Promise.all(
           data.roles.map(async role => {          
             if (role.cover_file != undefined && role.name_cover && role.name_cover != undefined) {
+              
+              delete role.preview;
+              // Upload role cover thumbnail
+              let roleThumbnailUrl = null;
+              if(role.thumb_file && role.thumb_file != undefined){
+                const thumbnailFileSnapshot = await firebase.storage()
+                .ref(`audition_role_cover/thumbnail/${uuid()}.png`)
+                .put(role.thumb_file);        
+                roleThumbnailUrl = await thumbnailFileSnapshot.ref.getDownloadURL();                
+                rolesThumbailSnapshots.push(thumbnailFileSnapshot);
+              }
+
+              const roleCoverExtension = role.cover_file.name.substring(role.cover_file.name.lastIndexOf('.')+1);
+              const roleCoverFilePath = role.name_cover.includes(`${roleCoverExtension}`) ? `audition_role_cover/${uuid()}_${role.name_cover}` : `audition_role_cover/${uuid()}_${role.name_cover}.${roleCoverExtension}`;
+
               const snapshot = await firebase
                 .storage()
-                .ref(`temp/${uuid()}.${role.name_cover.split(".").pop()}`)
+                .ref(roleCoverFilePath)
                 .put(role.cover_file);
 
               role.cover = await snapshot.ref.getDownloadURL();
-
+              role.cover_thumbnail = roleThumbnailUrl ? roleThumbnailUrl : null;
+              role.cover_name = role.name_cover;
               rolesSnapshots.push(snapshot);
             } else {
               role.cover = role.image && role.image.url ? role.image.url : role.cover;
+              role.cover_name = role.name_cover;
             }
+            delete role.name_cover;
             delete role.image;
           })
         );
@@ -1188,24 +1270,40 @@ export default {
     imgUrlAlt(event) {
         event.target.src = DEFINE.role_placeholder;
     },
-    cropImage() {
+    async cropImage() {
+        this.coverThumbnail = {};
         // get image data for post processing, e.g. upload or setting image src
         this.cropImg = this.$refs.cropper.getCroppedCanvas().toDataURL();
-        this.$refs.cropper.getCroppedCanvas().toBlob((blob) => {
+        this.$refs.cropper.getCroppedCanvas().toBlob(async (blob) => {
             this.updatedImageBlob = blob;
+            await ThumbService.imageThumbnail(this.updatedImageBlob, DEFINE.thumbSize.imageThumbWidth).then((thumb_data) => {
+              Vue.set(this.coverThumbnail, 'preview', thumb_data.preview);
+              Vue.set(this.coverThumbnail, 'file', thumb_data.file);
+            });
         }); 
     },    
     reset() {
         this.$refs.cropper.reset();
         this.cropImg = null;
+        this.coverFileName = null;
+        this.coverFileName = JSON.parse(JSON.stringify(this.coveNameObject.name));
     },    
     showFileChooser() {
         this.$refs.coverFile.click()
     },
     cropImageDone(){
+        this.$toasted.clear();
+        if(!this.coverFileName || this.coverFileName == '' || this.coverFileName.trim() == ''){
+          this.$toasted.error('Please enter cover filename!');
+          return;
+        } else if(this.coverFileName && this.coverFileName.length > 150){
+          this.$toasted.error('Cover filename is too long, it should not be more than 150 characters!');
+          return;
+        }
         if(this.cropImg){
             this.previewCover = this.cropImg;
         }
+        this.coveNameObject.name = this.coverFileName;
         this.imgSrc = null;
         this.$refs.coverFile.value = '';
         this.$modal.hide('modal_crop_image');
@@ -1225,8 +1323,18 @@ export default {
         this.cropImg = null;
         this.updatedImageBlob = null;
         this.updatedImageFile = null;
+        this.coveNameObject = {};
+        this.coverFileName = null;
         this.$refs.coverFile.value = '';
         this.setUserData();
+    },
+    handleRenameDoc(media){      
+      const index = this.form.media.indexOf(media);
+      Vue.set(this.currentDoc, 'index', index);
+      this.$modal.show('rename_file_name');
+    },
+    fileRenameDone(){
+      this.$modal.hide('rename_file_name');
     }
   }
 };

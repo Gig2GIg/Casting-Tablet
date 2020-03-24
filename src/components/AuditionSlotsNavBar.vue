@@ -14,7 +14,7 @@
       </span>      
       <img
         v-if="user.image && user.image.url"
-        :src="user.image.url"
+        :src="user.image.thumbnail ? user.image.thumbnail : user.image.url"
         class="w-12 img-h48 object-cover"
         alt="Avatar"
       >

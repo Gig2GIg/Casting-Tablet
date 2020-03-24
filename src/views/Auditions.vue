@@ -24,7 +24,8 @@
           :title="data.title"
           :date="data.online == 1 ? '' : data.date"
           :contributor="data.user_id == userId  ? false : true"
-          :image="data.cover"
+          :image="data.cover_thumbnail ? data.cover_thumbnail : data.cover"
+          :imagealt="data.cover_name ? data.cover_name : ''"
           actionable
           :navigate-to="data.id"
           state="upcoming"
@@ -54,7 +55,8 @@
         <card-item
           :title="data.title"
           :date="data.online == 1 ? '' : data.date"
-          :image="data.cover"
+          :image="data.cover_thumbnail ? data.cover_thumbnail : data.cover"
+          :imagealt="data.cover_name ? data.cover_name : ''"
           actionable
           :navigate-to="data.id"
           state="passed"

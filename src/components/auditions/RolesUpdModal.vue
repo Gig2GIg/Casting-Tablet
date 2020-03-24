@@ -4,7 +4,7 @@
     class="modal-container flex flex-col items-center bg-white w-2/6 rounded-large left-1/2 absolute top-1/2 shadow-2xl overflow-hidden max-h-full p-5"
     data-vv-scope="role"
     @submit.prevent="handleDone(false)"
-  >
+  >  
     <svg
       class="absolute left-0 ml-5 cursor-pointer"
       xmlns="http://www.w3.org/2000/svg"
@@ -66,6 +66,18 @@
         @change="handleImage"
       >
     </div>
+    <div v-show="(data.name_cover != '' || isUplaodFile)" class="w-full">
+      <base-input        
+        v-model="form.name_cover"
+        v-validate="'max:200'"
+        name="name_cover"
+        class="w-full"
+        :custom-classes="['border', 'border-purple']"
+        :message="errors.first('role.name_cover')"
+        placeholder="File Name"        
+        data-vv-as="file name"
+      />
+    </div>
 
     <base-input
       ref="inputName"
@@ -124,13 +136,16 @@
         class="w-full h-full object-cover"
       >
     </div>
+    <p class="mt-2 text-left w-full" v-show="(data.name_cover != '' || isUplaodFile)">
+      {{ data.image ? data.image.name : ''}}
+    </p>
 
     <p class="text-purple font-medium text-2xl truncate text-left w-full">
       {{ data.name }}
     </p>
     <p class="mt-2 text-left w-full">
       {{ data.description }}
-    </p>
+    </p>    
 
     <base-button
       class="pt-2 pb-2 w-48 mt-6"
@@ -155,6 +170,9 @@
 
 <script>
 import uuid from 'uuid/v1';
+import ThumbService from '@/services/ThumbService';
+import DEFINE from "@/utils/const.js";
+import Vue from "vue";
 
 export default {
   name: 'RolesModal',
@@ -166,15 +184,18 @@ export default {
       form: {},
       preview: null,
       editMode: true,
+      isUplaodFile : false,
     };
   },
   watch: {
     data: {
       immediate: true,
       handler(value) {
+        console.log("handler -> data", this.data)
         if (value) {
           this.editMode = false;
           this.form = Object.assign({}, value);
+          this.form.name_cover = (this.form.image && this.form.image.name) ?(this.form.image.name == 'default' ? '' : this.form.image.name) : '';
           if(this.form.cover){
             this.preview = URL.createObjectURL(this.form.cover);
             this.form.preview = this.preview;
@@ -216,13 +237,20 @@ export default {
       return false;
     },
 
-    handleImage(e) {
+    async handleImage(e) {
       const file = e.target.files[0];
 
       this.form.cover_file = file;
       this.form.name_cover = file.name;
-      this.preview = URL.createObjectURL(file);
-      this.form.preview = this.preview;
+      // this.preview = URL.createObjectURL(file);
+      // this.form.preview = this.preview;
+      this.isUplaodFile = true;
+      await ThumbService.imageThumbnail(file, DEFINE.thumbSize.roleImageThumbWidth).then(async (thumb_data) => {
+        console.log("handleFile -> role cover thumb_data return", thumb_data);
+        this.preview = thumb_data.preview;
+        Vue.set(this.form, 'preview', thumb_data.preview);
+        Vue.set(this.form, 'thumb_file', thumb_data.file);
+      });
     },
 
     handleDelete() {

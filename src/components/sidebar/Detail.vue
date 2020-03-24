@@ -106,7 +106,7 @@
               <slide v-for="data in audition.roles" :key="data.id" class="text-center">
                 <div
                   class="m-3 rounded-full red-light flex items-center w-12 h-12 button-detail bg-cover"
-                  :style="{ backgroundImage: 'url(' + data.image.url + ')' }"
+                  :style="{ backgroundImage: 'url(' + (data.image.thumbnail ? data.image.thumbnail : data.image.url) + ')' }"
                 ></div>
                 <p
                   class="text-purple text-xs justify-center w-16 font-bold tracking-tighter flex-1"
@@ -124,21 +124,28 @@
                 :key="data.id"
                 class="flex m-3 content-center w-full h-16 flex justify-center truncate"
               >
-                <div class="flex justify-center w-9/12 button-detail rounded-lg">
-                  <div class="flex flex-col flex-none items-center justify-center text-white flex-wrap w-1/5 h-full">
+                <div class="flex justify-center w-9/12 button-detail rounded-lg mx-3 my-1 overflow-hidden">
+                  <div class="flex flex-col flex-none items-center justify-center text-white flex-wrap w-1/5 h-16">
                   <template v-if="data.type == 'audio'">
                     <img
                       
                       src="/images/icons/music@2x.png"
-                      alt="Icon"
+                      :alt="data.name"
                       class="h-8"
                     />
                     <span class="mt-1">MP3</span>
                   </template>
+                  <template v-else-if="data.type == 'video' && data.thumbnail">
+                      <img
+                        :src="data.thumbnail"
+                        :alt="data.name"
+                        class="h-full w-full"
+                      />
+                    </template>
                     <template v-else-if="data.type == 'video'">
                       <img
                         src="/images/icons/video@2x.png"
-                        alt="Icon"
+                        :alt="data.name"
                         class="h-8"
                       />
                       <span class="mt-1">MP4</span>
@@ -146,23 +153,22 @@
                     <template v-else-if="data.type == 'doc'">
                       <img
                         src="/images/icons/doc-icon3x.png"
-                        alt="Icon"
+                        :alt="data.name"
                         class="h-8"
                       />
                       <span class="mt-1">PDF</span>
                     </template>
-                    <template v-else-if="data.type == 'image'">
+                    <template v-else-if="data.type == 'image' && data.thumbnail">
                       <img                        
-                        src="/images/icons/pic-icon@2x.png"
-                        alt="Icon"
-                        class="h-8"
+                        :src="data.thumbnail ? data.thumbnail : data.url"
+                        :alt="data.name"
+                        class="h-full w-full"
                       />
-                      <span class="mt-1">IMAGE</span>
                     </template>
                     <template v-else-if="data.type == 'sheet'">
                       <img                        
                         src="/images/icons/link@2x.png"
-                        alt="Icon"
+                        :alt="data.name"
                         class="h-8"
                       />
                       <span class="mt-1">URL</span>
@@ -175,7 +181,7 @@
                     <a :href="setUrl(data.url)" target="_blank" rel="noopener noreferrer">
                       <img
                         src="/images/icons/more-icon@3x.png"
-                        alt="Icon"
+                        :alt="data.name"
                         class="h-6 absolute right-0 bottom-0"
                       />
                     </a>
@@ -412,8 +418,11 @@
                 :key="data.id"
                 class="flex m-3 content-center w-full h-16 flex justify-center"
               >
-                <div class="flex justify-center w-90 h-80 button-detail rounded-lg">
-                  <div class="flex justify-center h-100 content-center flex-wrap w-1/2 h-full">
+                <div :class="[data.thumbnail ? 'flex justify-center w-90 h-80 button-detail rounded-lg my-1 overflow-hidden' : 'flex justify-center w-90 h-80 button-detail rounded-lg']">
+                  <div class="flex justify-center h-100 content-center flex-wrap w-1/2 h-full" v-if="data.thumbnail" >
+                    <img :src="data.thumbnail" alt="Icon" class="h-full w-full" />
+                  </div>
+                  <div class="flex justify-center h-100 content-center flex-wrap w-1/2 h-full" v-else>
                     <img src="/images/icons/mp4Icon@3x.png" alt="Icon" class="h-10" />
                   </div>
                   <div

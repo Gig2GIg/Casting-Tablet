@@ -137,8 +137,11 @@
                 :key="data.id"
                 class="flex m-3 content-center w-full h-16 flex justify-center custom-side-video-list"
               >
-                <div class="flex justify-center w-full h-80 button-detail rounded-lg">
-                  <div class="flex justify-center content-center flex-wrap w-1/2 h-full">
+                <div class="flex justify-center w-full h-80 button-detail rounded-lg" :class="[data.thumbnail ? 'flex justify-center w-full button-detail rounded-lg my-1 overflow-hidden' : 'flex justify-center w-full h-80 button-detail rounded-lg']">
+                  <div class="flex flex-col flex-none items-center justify-center text-white flex-wrap w-1/5 h-16" v-if="data.thumbnail">
+                    <img :src="data.thumbnail" alt="Icon" class="h-full w-full" />
+                  </div>
+                  <div class="flex justify-center content-center flex-wrap w-1/2 h-full" v-else>
                     <img src="/images/icons/mp4Icon@3x.png" alt="Icon" class="h-10" />
                   </div>
                   <div

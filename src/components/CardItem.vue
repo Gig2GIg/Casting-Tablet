@@ -28,7 +28,7 @@
       <img
         :src="image || '/images/xd.png'"
         class="h-48 object-cover"
-        alt="Image"
+        :alt="imagealt"
       >
       <div
         class="flex flex-col justify-center px-4 py-2"
@@ -75,6 +75,10 @@ export default {
     image: {
       type: String,
       default: '/images/xd.png',
+    },
+    imagealt: {
+      type: String,
+      default: 'Image',
     },
     navigateTo: {
       type: Number,

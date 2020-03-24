@@ -56,13 +56,20 @@
         v-if="icon_src != ''"
         :src="icon_src"
         alt="Icon"
-        class="h-8"
+        :class="[(isImageIcon ? 'h-full w-full' : 'h-8')]"
       />
      
-      <span class="mt-1">{{mediaType}}</span>
+      <span class="mt-1" v-if="!isImageIcon">{{mediaType}}</span>
     </div>
     <span class="file-name text-purple truncate text-sm mx-4 flex-1 w-16">
-      {{ media.name }}
+      
+      <li
+        class="cursor-pointer py-2 px-4 hover:bg-gray-200"
+        @click="$emit('renamedoc', media)"
+        title="Rename Ducument"
+      >
+        {{ media.name }}
+      </li>
     </span>
 
     <i
@@ -84,6 +91,8 @@
         Delete
       </li>
     </ul>
+    
+
   </div>
 </template>
 
@@ -98,7 +107,8 @@ export default {
   data() {
     return {
       icon_src: "",
-      menuActive: false
+      menuActive: false,
+      isImageIcon : false,
     };
   },
   computed: {
@@ -115,7 +125,8 @@ export default {
         this.media.type === "mp4" ||
         this.media.type === "video"
       ) {
-        this.icon_src = "/images/icons/video@2x.png";
+        this.icon_src = this.media.preview ? this.media.preview : (this.media.thumbnail ? this.media.thumbnail :  "/images/icons/video@2x.png") ;
+        this.isImageIcon = (this.media.preview || this.media.thumbnail) ? true : false;
         return "MP4";
       } else if (
         this.media.type == 3 ||
@@ -132,7 +143,8 @@ export default {
         this.media.type === "png" ||
         this.media.type === "gif"
       ) {
-        this.icon_src = "/images/icons/pic-icon@2x.png";
+        this.icon_src = this.media.preview ? this.media.preview : (this.media.thumbnail ? this.media.thumbnail :  "/images/icons/pic-icon@2x.png") ;
+        this.isImageIcon = (this.media.preview || this.media.thumbnail) ? true : false;
         return "IMAGE";
       } else if (this.media.type == 5 || this.media.type === "sheet") {
         this.icon_src = "/images/icons/link@2x.png";

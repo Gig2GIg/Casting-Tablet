@@ -23,8 +23,8 @@
       <!-- <i class="material-icons mr-4">
         keyboard_arrow_down
       </i>-->
-      <img
-        :src="user.image.url"
+      <img        
+        :src="user.image.thumbnail ? user.image.thumbnail : user.image.url"
         class="w-12 img-h48 object-cover"
         alt="Avatar"
       >

@@ -21,7 +21,7 @@
         {{profile.details ? profile.details.first_name : ""}} {{profile.details ? profile.details.last_name : ""}}
       </span>      
       <img
-        :src="profile.image ? profile.image.url : ''"
+        :src="profile.image ? (profile.image.thumbnail ? profile.image.thumbnail : profile.image.url) : ''"
         class="w-12 img-h48 object-cover"
         alt="Avatar"
       >
@@ -603,6 +603,57 @@
       </div>
     </div>
   </modal>
+
+    <modal class="flex flex-col w-full items-center" :width="450" :height="200" name="modal_thumbnail_image">
+      <div class="content my-info-content" >         
+        <section class="image-preview-area">            
+            <!-- <div class="flex justify-center items-center px-3 w-full">
+              <div class="mr-6">
+                <div
+                  class="ml-2 flex items-center cursor-pointer justify-center overflow-hidden h-200 w-200 rounded"
+                  >
+                  <div class="flex flex-col flex-no-wrap justify-between">
+                    <img              
+                      :src="thumbnail.preview"
+                      alt="Thumbnail"
+                                class="mt-5 mb-5"
+                    />  
+                  </div>
+                </div>
+              </div>
+            </div> -->
+            <div class="flex justify-center mb-4 items-center px-3 w-full">
+              <div class="w-full  ml-4 text-purple px-2">
+                  <base-input
+                    v-model="videoFileName"
+                    :custom-classes="['border border-b border-gray-300']"
+                    name="file_name"
+                    placeholder="File Name"
+                    data-vv-as="file name"
+                  />
+              </div>
+            </div>
+            <div class="container flex w-full mt-3 cursor-pointer">
+              <div class="flex w-full text-center justify-center flex-wrap actions">
+            <a
+              href="#"
+              role="button"
+              @click.prevent="imageRenameDone"
+            >
+              Done
+            </a>
+            <a
+              href="#"
+              role="button"
+              @click.prevent="imageRenameCancel"
+            >
+              Cancel
+            </a>
+          </div>
+      </div>
+        </section>
+      </div>
+    </modal>
 </div>
 </template>
 
@@ -618,9 +669,12 @@ import 'firebase/storage';
 import uuid from 'uuid/v1';
 import 'vue-sweet-calendar/dist/SweetCalendar.css'
 import TokenService from "../../services/core/TokenService";
+import Vue from "vue";
 
 // Import component
 import Loading from 'vue-loading-overlay';
+import ThumbService from '@/services/ThumbService';
+import DEFINE from "@/utils/const.js";
 
 export default {
   // ...
@@ -659,7 +713,9 @@ export default {
       isAssignedNumber:false,
       performerDetails:{},
       currentUserRoles : [],
-      isRealodTeamFeedback : false
+      isRealodTeamFeedback : false,
+      thumbnail : {},
+      videoFileName : null
     };
   },
   computed: {
@@ -795,27 +851,49 @@ export default {
       try{
         if (this.isLoading) {
           return;
-        }
-        
+        }        
+
         this.isLoading = true;
         if(this.file.name !='Record Audition'){
-          let file = await firebase.storage()
-        .ref(`temp/${uuid()}.${this.file.name.split('.').pop()}`)
-        .put(this.form.file);
+        // upload thumbnail file
+        let thumbnailUrl;
+        if(this.thumbnail.file){
+          let thumbnailFile = await firebase.storage()
+          .ref(`temp/thumbnail/${uuid()}.png`)
+          .put(this.thumbnail.file);        
+          thumbnailUrl = await thumbnailFile.ref.getDownloadURL();
+          console.log("saveFeedback -> thumbnailUrl", thumbnailUrl)
+        }
+          
 
-        let url = await file.ref.getDownloadURL();
-        let audition_record={
-          "url":url,
-          "appointment_id":this.$route.params.round,
-          "performer":this.$route.params.id,
-          "slot_id":this.slot,
-          "name": this.file.name || time()+".mp4"
-        };
-        let files = await axios.post('/t/auditions/video/save', audition_record);
-        this.$toasted.success('Audition record saved');
-        this.isLoading = false;
+          // upload video file
+          const extension = this.file.org_name.substring(this.file.org_name.lastIndexOf('.')+1);
+          console.log("saveFeedback -> extension", extension)
+          const filePath = this.file.name.includes(`${extension}`) ? `temp/${uuid()}_${this.file.name}` : `temp/${uuid()}_${this.file.name}.${extension}`;          
+          console.log("saveFeedback -> filePath", filePath)
+          const file = await firebase.storage()
+          .ref(filePath)
+          .put(this.form.file);
+          const url = await file.ref.getDownloadURL();
+          console.log("saveFeedback -> url", url)
+
+          let audition_record = {
+            'url':url,
+            'thumbnail': thumbnailUrl ? thumbnailUrl : null,
+            'appointment_id':this.$route.params.round,
+            'performer':this.$route.params.id,
+            'slot_id':this.slot,
+            'name': this.file.name
+          };
+          let files = await axios.post('/t/auditions/video/save', audition_record);
+          this.$toasted.success('Audition record saved');
+          this.isLoading = false;
+          this.$refs.inputFile.value = null;
+          this.videoFileName = null;
+          this.file.name = 'Record Audition';
         }
       }catch(e){
+        console.log("saveFeedback -> e", e)
         this.isLoading = false;
         this.$toasted.error('This performer already has a video, try later');
       }
@@ -829,7 +907,7 @@ export default {
       this.form.slot_id = this.slot;
       // this.form.evaluator = this.profile.details.id;
       this.form.evaluator = TokenService.getUserId();
-      let data = {"appointment_id": this.$route.params.round, "performer": this.$route.params.id}
+      let data = { 'appointment_id' : this.$route.params.round, 'performer': this.$route.params.id };
       this.isLoading = false;
       if(Object.keys(this.feedback).length==0){
         let status = await axios.post('/t/feedbacks/add', this.form);
@@ -842,14 +920,47 @@ export default {
       this.$toasted.success('Feedback Updated');      
       await this.fetchTeamFeedback(data);
       return;
-    },
-    handleFile(e) {
-      const file = e.target.files[0];
-
+    },     
+    async handleFile(e) {
+      this.thumbnail = {};
+      this.form.file = null;
+      let file = e.target.files[0];
       this.form.file = file;
       this.file.name = file.name;
-
-      // this.preview = URL.createObjectURL(file);
+      this.file.org_name = file.name;
+      
+      if(file.type.match('video')) {
+        this.videoFileName = JSON.parse(JSON.stringify(this.file.name));
+        await ThumbService.videoThumbnail(file,DEFINE.thumbSize.videoThumbWidth).then((thumb_data) => {
+          console.log("handleFile -> video thumb_data return", thumb_data);
+          Vue.set(this.thumbnail, 'preview', thumb_data.preview);
+          Vue.set(this.thumbnail, 'file', thumb_data.file);
+        });
+        this.$modal.show('modal_thumbnail_image');
+      } else{        
+        this.$toasted.error('Please upload valid video file!');
+        this.$refs.inputFile.value = null;
+        this.file.name = 'Record Audition';
+        this.videoFileName = null;
+      }      
+      console.log("snapImage -> final ", this.thumbnail)
+    },
+    imageRenameDone(){
+        this.$toasted.clear();
+        if(!this.videoFileName || this.videoFileName == '' || this.videoFileName.trim() == ''){
+          this.$toasted.error('Please enter filename!');
+          return;
+        } else if(this.videoFileName && this.videoFileName.length > 150){
+          this.$toasted.error('Filename is too long, it should not be more than 150 characters!');
+          return;
+        }
+        this.file.name = JSON.parse(JSON.stringify(this.videoFileName));
+        this.videoFileName = null;
+        this.$modal.hide('modal_thumbnail_image');
+    },
+    imageRenameCancel(){
+      this.videoFileName = null;
+      this.$modal.hide('modal_thumbnail_image');
     },
     asignEvents(){
       var finalList = new Array();
@@ -952,12 +1063,12 @@ export default {
         this.$modal.hide('marketplace');
       },
       setUrl(url){      
-      var pattern = /^((http|https|ftp):\/\/)/;
-      if(!pattern.test(url)) {
-          url = "http://" + url;
-      }
-      return url;
-    }
+        var pattern = /^((http|https|ftp):\/\/)/;
+        if(!pattern.test(url)) {
+            url = "http://" + url;
+        }
+        return url;
+      }      
     },
 };
 </script>
@@ -1039,5 +1150,25 @@ nav {
   margin-right: -30px;
     padding-left: 18px;
 }
+.image-preview-area {
+  width: 400px;
+}
+.actions {
+  margin-top: 1rem;
+}
+.actions a {
+  display: inline-block;
+  padding: 5px 15px;
+  background: #782541;
+  color: white;
+  text-decoration: none;
+  border-radius: 3px;
+  margin-right: 1rem;
+  margin-bottom: 1rem;
+}
 
+.v--modal-box.v--modal {
+    overflow: auto !important;
+    min-height: 200px !important;
+}
 </style>
