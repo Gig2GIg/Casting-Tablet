@@ -123,6 +123,21 @@ export default {
     }
   },
 
+  async renameVideo({ commit }, [currentVideo, name, audition_id]) {
+    try {
+      let requestParam = {
+        id: currentVideo.id,
+        name: name,
+        audition_id: audition_id,
+      };
+      const { data: { data } } = await axios.post("media/update/AuditionVideoName", requestParam);
+      currentVideo.name = name;
+      commit(types.UPDATE_AUDITION_VIDEO_SUCCESS, currentVideo);      
+    } catch (e) {
+      throw e;
+    }
+  },
+
   async openAudition({ commit }, audition) {
     try {
       const { data: { data } } = await axios.put(`/t/auditions/open/${audition}`);

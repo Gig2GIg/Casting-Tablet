@@ -1,4 +1,5 @@
 import * as types from '@/store/types';
+import Vue from 'vue';
 
 export default {
   [types.FETCH_AUDITIONS_SUCCESS](state, auditions) {
@@ -59,6 +60,12 @@ export default {
 
   [types.FETCH_AUDITION_VIDEOS_SUCCESS](state, videos) {
     state.videos = videos;
+  },
+  
+  [types.UPDATE_AUDITION_VIDEO_SUCCESS](state, video) {
+    let current = state.videos.find(x => x.id === video.id);
+    let index = state.videos.indexOf(current);
+    Vue.set(state.videos, index, video);
   },
 
   [types.FETCH_AUDITION_VIDEOS_FAILURE](state) {
