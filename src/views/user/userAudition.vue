@@ -142,47 +142,66 @@
         <p class="text-center text-2xl text-purple font-bold">Audition Documents</p>
         <div class="flex flex-wrap justify-center">
             <div v-if="onlineMedia.length  == 0" class="text-purple font-bold h-full"> No media added yet</div>
-            <carousel
-              class="flex flex-col mt-4 w-full"
-              :per-page="1"
-              :pagination-enabled="false"
-            >
-              <slide
-              class="flex flex-wrap justify-center content-center mt-4 w-full p-3"
-              v-for="data in onlineMedia" :key="data.id"
+              <carousel
+                class="flex flex-col mt-4 w-10/12"
+                :per-page="1"
+                :pagination-enabled="false"
+                :navigation-enabled="true"
+                :navigation-prev-label="'&#x279C;'"                            
+                :navigation-next-label="'&#x279C;'"
               >
-                <div v-if="data.type == 'video'" class="container w-full rounded-lg shadow-lg overflow-hidden mb-3 shadow-lg ">
-                  <div class="flex-col">
-                      <video class="w-full" controls><source :src="data.url" type="video/mp4"></video>
-                  </div>
-                  <div class="p-2 bg-purple">
-                      <span class="text-base truncate mb-3 text-white uppercase">{{ data.name }}</span>
-                  </div>
-                </div>
-                <div v-if="data.type == 'doc'" class="flex m-3 content-center w-full h-16 flex justify-center">
-                    <div class="flex justify-center w-9/12 button-detail rounded-lg  shadow-lg">
-                      <div class="flex justify-center content-center flex-wrap w-1/2 h-full">
-                        <img
-                          src="/images/icons/pdf-icon@3x.png"
-                          alt="Icon"
-                          class="h-10"
-                        >
-                      </div>
-                      <div class="flex content-center relative flex-wrap w-full h-full bg-white truncate">
-                        <span class="text-center text-purple font-bold w-full truncate">{{ data.name }}</span>
-                        <a target="_blank" :href="data.url">
-                        <img
-                          src="/images/icons/more-icon@3x.png"
-                          alt="Icon"
-                          class="h-6 absolute right-0 bottom-0"
-                        >
-                        </a>
-                      </div>
+                <slide
+                class="flex flex-wrap justify-center content-center mt-4 w-full p-3"
+                v-for="data in onlineMedia" :key="data.id"
+                v-if="data.type == 'video'"
+                >
+                  <div class="container w-full rounded-lg shadow-lg overflow-hidden mb-3 shadow-lg ">                    
+                    <div class="flex-col p-4">
+                      <img v-lazy="data.preview" class="w-full h-24 cursor-pointer" @click="playVideo(data)" title="Play Video"/>
                     </div>
-                </div>
-            </slide>
-          </carousel>
-            </div>
+                    <div class="p-2 bg-purple">
+                        <span class="text-base truncate mb-3 text-white uppercase">{{ data.name }}</span>
+                    </div>
+                  </div>
+                </slide>
+              </carousel>
+              <carousel
+                class="flex flex-col mt-4 w-10/12"
+                :per-page="1"
+                :pagination-enabled="false"
+                :navigation-enabled="true"
+                :navigation-prev-label="'&#x279C;'"                            
+                :navigation-next-label="'&#x279C;'"
+              >
+                <slide
+                class="flex flex-wrap justify-center content-center mt-4 w-full p-3"
+                v-for="data in onlineMedia" :key="data.id"
+                v-if="data.type == 'doc'"
+                >                  
+                  <div class="flex m-3 content-center w-full h-16 flex justify-center">
+                      <div class="flex justify-center w-full button-detail rounded-lg  shadow-lg">
+                        <div class="flex justify-center content-center flex-wrap w-1/2 h-full">
+                          <img
+                            src="/images/icons/pdf-icon@3x.png"
+                            alt="Icon"
+                            class="h-10"
+                          >
+                        </div>
+                        <div class="flex content-center relative flex-wrap w-full h-full bg-white truncate">
+                          <span class="text-center text-purple font-bold w-full truncate">{{ data.name }}</span>
+                          <a target="_blank" :href="data.url">
+                          <img
+                            src="/images/icons/more-icon@3x.png"
+                            alt="Icon"
+                            class="h-6 absolute right-0 bottom-0"
+                          >
+                          </a>
+                        </div>
+                      </div>
+                  </div>
+                </slide>
+              </carousel>
+          </div>
       </div>
     </div>
     <div class="flex w-full h-96 mt-16">
@@ -654,6 +673,26 @@
         </section>
       </div>
     </modal>
+    <modal :width="500" height="auto" :adaptive="true" name="video_modal">
+            <button @click="$modal.hide('video_modal');currentVideo = null;">
+                <i class="material-icons" style="font-size: 35px;color: purple;">clear</i>
+            </button>
+            <div class="w-full rounded-lg shadow-lg overflow-hidden mb-3">
+                <div class="flex-col p-4">
+                    <div id="load_div" v-if="!isLoadedVideo" class="w-full h-full justify-center mb-4 items-center px-3" >Video Loading Please Wait...</div>
+                    <iframe
+                        v-if="currentVideo"
+                        class="w-full h-full"
+                        id="myIframe"
+                        @load="loadedVideo"
+                        :src="currentVideo"
+                        frameborder="0"
+                        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen
+                    />
+                </div>
+            </div>
+        </modal>
 </div>
 </template>
 
@@ -715,7 +754,9 @@ export default {
       currentUserRoles : [],
       isRealodTeamFeedback : false,
       thumbnail : {},
-      videoFileName : null
+      videoFileName : null,
+      isLoadedVideo : false,
+      currentVideo : null,
     };
   },
   computed: {
@@ -734,6 +775,7 @@ export default {
     await this.fetchTags({"round": this.$route.params.round, "user": this.$route.params.id,});
     await this.fetchRecommendation({"round": this.$route.params.audition, "user": this.$route.params.id,});
     await this.fetchOnlineMedia({"round": this.$route.params.round, "user": this.$route.params.id,});
+    console.log("mounted -> this.onlineMedia", this.onlineMedia)
     let feedback = {
       user:this.$route.params.id,
       round:this.$route.params.round
@@ -1068,7 +1110,15 @@ export default {
             url = "http://" + url;
         }
         return url;
-      }      
+      },
+      loadedVideo(){
+          this.isLoadedVideo = true;
+      },
+      playVideo(videoData){
+          this.isLoadedVideo = false;
+          this.currentVideo = videoData.url;
+          this.$modal.show('video_modal');
+      },
     },
 };
 </script>
