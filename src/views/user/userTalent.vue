@@ -266,15 +266,15 @@
                 :key="data.id"
                 class="flex m-3 content-center w-full h-16 flex justify-center custom-side-video-list"
               >
-                <div :class="[data.thumbnail ? 'flex justify-center w-full button-detail rounded-lg my-1 overflow-hidden' : 'flex justify-center w-full h-80 button-detail rounded-lg']">
+                <div :class="[data.thumbnail ? 'flex justify-center w-full button-detail rounded-lg my-1' : 'flex justify-center w-full h-80 button-detail rounded-lg']">
                   <div class="flex flex-col flex-none items-center justify-center text-white flex-wrap w-1/5 h-16" v-if="data.thumbnail">
-                    <img :src="data.thumbnail" alt="Icon" class="h-full w-full" />
+                    <img :src="data.thumbnail" alt="Icon" class="h-full w-full image-rounded" />
                   </div>
                   <div class="flex justify-center content-center flex-wrap w-1/2 h-full" v-else>
                     <img src="/images/icons/mp4Icon@3x.png" alt="Icon" class="h-10" />
                   </div>
                   <div
-                    class="flex content-center items-center relative w-full h-full bg-white mp-box custom-side-video-info"
+                    class="flex content-center items-center relative w-1/5 h-16 bg-white mp-box custom-side-video-info"
                   >
                     <span class="text-center cus-spn-cls text-purple font-bold w-full">{{ data.name }}</span>
                     <ul id="navigation">
@@ -297,6 +297,13 @@
                             </li>
                             <li>
                               <a :href="data.url" title="Open in" target="_blank">Open in</a>
+                            </li>
+                            <li>
+                              <a
+                                href="javascript:void(0);"
+                                @click="renameAuditionVideo(data)"
+                                title="Rename"
+                              >Rename</a>
                             </li>
                           </ul>
                         </div>
@@ -430,6 +437,45 @@
     </div>
   </modal>
 
+  <modal class="flex flex-col w-full items-center" :width="360" :height="300" name="modal_file_name_manage">
+        <div class="flex flex-col items-center text-purple text-lg mt-5 mb-2">
+                <h1>File Rename</h1>
+        </div>
+        <div class="content my-info-content" >         
+          <section class="image-preview-area">           
+            <div class="flex justify-center mb-4 items-center px-3 w-full">
+              <div class="w-full  ml-4 text-purple px-2">
+                  <base-input
+                      v-model="videoFileName"
+                      :custom-classes="['border border-b border-gray-300']"
+                      name="file_name"
+                      placeholder="File Name"
+                      data-vv-as="file name"
+                  />
+              </div>
+            </div>
+            <div class="container flex w-full mt-3 cursor-pointer">
+              <div class="flex w-full text-center justify-center flex-wrap actions">
+                  <a
+                  href="#"
+                  role="button"
+                  @click.prevent="mediaFileRenameDone"
+                  >
+                  Done
+                  </a>
+                  <a
+                  href="#"
+                  role="button"
+                  @click.prevent="mediaFileRenameCancel"
+                  >
+                  Cancel
+                  </a>
+              </div>
+            </div>
+          </section>
+        </div>
+      </modal>
+
 
 </div>
 
@@ -484,7 +530,10 @@ export default {
       openId: "",
       comments:[],
       base_url : '',
-      encCode : ''      
+      encCode : '',
+      videoFileName : '',
+      currentVideo : null,
+      currentAdition : null,
     };
   },
   computed: {
@@ -526,7 +575,7 @@ export default {
   },
   methods: {
     ...mapActions('user', ['fetch']),
-    ...mapActions('audition', ['fetchAuditionData', 'fetchUserList', 'fetchTeamFeedback','deleteVideo']),
+    ...mapActions('audition', ['fetchAuditionData', 'fetchUserList', 'fetchTeamFeedback','deleteVideo', 'renameVideo']),
     ...mapActions('profile', {fetchProfile: "fetch", fetchData:"fetchData", myCalendar:'myCalendar', fetchContract:'fetchContract'}),
     goToday() {
       this.$refs.calendar.goToday()
@@ -587,6 +636,7 @@ export default {
 
     },
     async getVideoList(data){
+      this.currentAdition = data;
       if(!data.videos || data.videos == 0){
         this.isShowAuditionVideo = false;
         return;
@@ -640,6 +690,45 @@ export default {
       if(type == 'appearance'){
         this.$modal.show('appearance');
       }
+    },
+    renameAuditionVideo(videoData){
+      this.videoFileName = videoData.name;
+      this.currentVideo = videoData;
+      this.$modal.show("modal_file_name_manage");
+      this.openId = null;
+    },
+    async mediaFileRenameDone() {
+      this.$toasted.clear();
+      if (
+        !this.videoFileName ||
+        this.videoFileName == "" ||
+        this.videoFileName.trim() == ""
+      ) {
+        this.$toasted.error("Please enter filename!");
+        return;
+      } else if (this.videoFileName && this.videoFileName.length > 150) {
+        this.$toasted.error(
+          "Filename is too long, it should not be more than 150 characters!"
+        );
+        return;
+      }
+      try {        
+        let currentVideo = JSON.parse((JSON.stringify(this.currentVideo)));
+        await this.renameVideo([currentVideo, this.videoFileName, this.currentAdition.id]);
+        this.getVideoList(this.currentAdition);
+        this.$toasted.success("Filename updated successfully");        
+        this.videoFileName = '';
+        this.currentVideo = '';
+        this.$modal.hide("modal_file_name_manage");         
+      } catch (ex) {
+        this.$toasted.error("Filename not updated successfully, please try again!");
+        console.log(ex);
+      }
+    },
+    mediaFileRenameCancel() {
+      this.videoFileName = '';
+      this.currentVideo = null;
+      this.$modal.hide("modal_file_name_manage");
     },
   },
 };
@@ -815,6 +904,7 @@ ul#navigation {
 }
 .submanu-content li a[title="Share"]::after,
 .submanu-content li a[title="Open in"]::after,
+.submanu-content li a[title="Rename"]::after,
 .submanu-content li a[title="Delete"]::after {
   content: "";
   background-repeat: no-repeat;
@@ -830,6 +920,9 @@ ul#navigation {
 }
 .submanu-content li a[title="Open in"]::after {
   background-image: url(/images/icons/icon2.png);
+}
+.submanu-content li a[title="Rename"]::after {
+  background-image: url(/images/icons/edit2.png);
 }
 .submanu-content li a[title="Delete"]::after {
   background-image: url(/images/icons/icon3.png);
@@ -905,6 +998,30 @@ ul.submanu-content > li > a {
   margin-right: 5px;
   background: #cacaca;
   border-radius: 10040px !important;
+}
+
+.image-rounded {
+  border-radius: 10px 0 0 10px;
+  overflow: hidden;
+}
+
+.file-name-area {
+  width: 400px;
+}
+
+.actions {
+  margin-top: 1rem;
+}
+
+.actions a {
+  display: inline-block;
+  padding: 5px 15px;
+  background: #782541;
+  color: white;
+  text-decoration: none;
+  border-radius: 3px;
+  margin-right: 1rem;
+  margin-bottom: 1rem;
 }
 
 </style>

@@ -854,7 +854,7 @@ export default {
         return;
       }
       try {        
-        let currentVideo = JSON.parse((JSON.stringify(this.currentVideo)))
+        let currentVideo = JSON.parse((JSON.stringify(this.currentVideo)));
         await this.renameVideo([currentVideo, this.videoFileName, this.$route.params.id]);
 
         this.$toasted.success("Filename updated successfully");        
