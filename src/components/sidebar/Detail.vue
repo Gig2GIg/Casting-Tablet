@@ -419,11 +419,11 @@
                 class="flex m-3 content-center w-full h-16 flex justify-center"
               >
               <!--  -->
-                <div :class="[data.thumbnail ? 'flex justify-center h-80 button-detail rounded-lg my-1 custom-video-list-w' : 'flex justify-center w-90 h-80 button-detail rounded-lg']">
-                  <div class="flex justify-center h-100 content-center flex-wrap w-1/2 h-full" v-if="data.thumbnail" >
-                    <img :src="data.thumbnail" alt="Icon" class="h-full w-full image-rounded" />
+                <div :class="[data.thumbnail ? 'flex justify-center h-80 rounded-lg my-1 custom-video-list-w' : 'flex justify-center custom-video-list-w h-80 button-detail rounded-lg']">
+                  <div class="flex justify-center h-100 content-center flex-wrap w-1/3 h-full" v-if="data.thumbnail" >
+                    <img :src="data.thumbnail" alt="Icon" class="h-full w-full image-border" />
                   </div>
-                  <div class="flex justify-center h-100 content-center flex-wrap w-1/2 h-full" v-else>
+                  <div class="flex justify-center h-100 content-center flex-wrap w-1/3 h-full" v-else>
                     <img src="/images/icons/mp4Icon@3x.png" alt="Icon" class="h-10" />
                   </div>
                   <div
@@ -1250,5 +1250,12 @@ ul.submanu-content > li > a {
 .custom-video-list-w {
   width: 319px !important;
 }
+
+.image-border {
+  border-bottom-left-radius: 10px;
+  border-top-left-radius: 10px;
+}
+
+
 </style>
 
