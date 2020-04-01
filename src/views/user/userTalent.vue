@@ -45,7 +45,7 @@
     </div>
   </nav>
   <multipane class="custom-resizer h-full " layout="vertical">
-    <div class="flex p-5" :style="isShowAuditionVideo? { minWidth: '75%', width: '75%', maxWidth: '100%' } : { minWidth: '75%', width: '100%', maxWidth: '100%' }">
+    <div class="flex p-5" :style="isShowAuditionVideo? { minWidth: '68%', width: '68%', maxWidth: '100%' } : { minWidth: '75%', width: '100%', maxWidth: '100%' }">
       <div class="flex flex-wrap justify-center content-start w-1/2 shadow-2xl rounded-lg">
           <div v-if="tuser && tuser.image && tuser.image.url" class="w-full bg-cover rounded-t-lg user-profile" :style="{ backgroundImage: 'url(' + tuser.image.url + ')'}">
           </div>
@@ -266,8 +266,8 @@
                 :key="data.id"
                 class="flex m-3 content-center w-full h-16 flex justify-center custom-side-video-list"
               >
-                <div :class="[data.thumbnail ? 'flex justify-center w-full button-detail rounded-lg my-1' : 'flex justify-center w-full h-80 button-detail rounded-lg']">
-                  <div class="flex flex-col flex-none items-center justify-center text-white flex-wrap w-1/5 h-16" v-if="data.thumbnail">
+                <div :class="[data.thumbnail ? 'flex justify-center custom-video-list-w button-detail rounded-lg my-1' : 'flex justify-center w-full h-80 button-detail rounded-lg']">
+                  <div class="flex flex-col flex-none items-center justify-center text-white flex-wrap w-1/5 h-14" v-if="data.thumbnail">
                     <img :src="data.thumbnail" alt="Icon" class="h-full w-full image-rounded" />
                   </div>
                   <div class="flex justify-center content-center flex-wrap w-1/2 h-full" v-else>
@@ -1026,6 +1026,9 @@ ul.submanu-content > li > a {
 .user-profile {
   background-position: center;
   height: 18rem !important;
+}
+.custom-video-list-w {
+  width: 319px !important;
 }
 
 </style>

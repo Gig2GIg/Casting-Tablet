@@ -419,7 +419,7 @@
                 class="flex m-3 content-center w-full h-16 flex justify-center"
               >
               <!--  -->
-                <div :class="[data.thumbnail ? 'flex justify-center w-90 h-80 button-detail rounded-lg my-1' : 'flex justify-center w-90 h-80 button-detail rounded-lg']">
+                <div :class="[data.thumbnail ? 'flex justify-center h-80 button-detail rounded-lg my-1 custom-video-list-w' : 'flex justify-center w-90 h-80 button-detail rounded-lg']">
                   <div class="flex justify-center h-100 content-center flex-wrap w-1/2 h-full" v-if="data.thumbnail" >
                     <img :src="data.thumbnail" alt="Icon" class="h-full w-full image-rounded" />
                   </div>
@@ -1247,6 +1247,8 @@ ul.submanu-content > li > a {
   margin-right: 1rem;
   margin-bottom: 1rem;
 }
-
+.custom-video-list-w {
+  width: 319px !important;
+}
 </style>
 

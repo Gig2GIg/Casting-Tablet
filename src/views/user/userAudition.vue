@@ -61,7 +61,7 @@
       </div>
   </modal>
  <multipane class="custom-resizer h-full " layout="vertical">
-  <div class="pane bg-white overflow-scroll" :style="{ minWidth: '80%', width: '75%', maxWidth: '100%' }">
+  <div class="pane bg-white overflow-scroll" :style="{ minWidth: '75%', width: '68%', maxWidth: '100%' }">
   <div class="flex flex-wrap  h-full">
     <div class="flex w-full">
       <div class="w-1/4 flex flex-wrap content-center justify-center calendar shadow-lg">
