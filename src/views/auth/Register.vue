@@ -6,9 +6,7 @@
       :on-cancel="onCancel"
       :is-full-page="fullPage"
     ></loading>
-    <p class="text-2xl">
-      Create Your Account
-    </p>
+    <p class="text-2xl">Create Your Account</p>
 
     <form
       class="w-full max-w-xs mt-16"
@@ -105,9 +103,7 @@
               v-for="state in states"
               :key="state.value"
               :value="state.value"
-            >
-              {{ state.label }}
-            </option>
+            >{{ state.label }}</option>
           </base-select>
           <base-input
             key="zip-input"
@@ -130,7 +126,7 @@
           placeholder="Birth Date"
           :message="errors.first('birth')"
           data-vv-as="birth date"
-        /> -->
+        />-->
       </template>
 
       <template v-else>
@@ -139,11 +135,7 @@
           class="flex items-center rounded-full bg-white h-32 w-32 mx-auto mb-6 cursor-pointer"
           @click="$refs.inputFile.click()"
         >
-          <img
-            src="/images/icons/upload.png"
-            alt="Upload"
-            class="h-16 mx-auto ml-8 -mt-2"
-          >
+          <img src="/images/icons/upload.png" alt="Upload" class="h-16 mx-auto ml-8 -mt-2" />
         </div>
 
         <img
@@ -152,15 +144,9 @@
           alt="Image"
           class="rounded-full h-32 w-32 mx-auto mb-6 cursor-pointer"
           @click="$refs.inputFile.click()"
-        >
+        />
 
-        <input
-          ref="inputFile"
-          accept=".png, .jpg, .jpeg"
-          type="file"
-          hidden
-          @change="handleImage"
-        >
+        <input ref="inputFile" accept=".png, .jpg, .jpeg" type="file" hidden @change="handleImage" />
 
         <base-input
           v-model="form.agency_name"
@@ -180,29 +166,28 @@
           data-vv-as="job title"
         />
         <base-select
-            key="gender-input"
-            v-model="form.gender"
-            v-validate="'required'"
-            name="gender"
-            class="w-full"
-            placeholder="Gender"
-            :message="errors.first('gender')"
-          >
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="other">Other</option>
-          </base-select>
+          key="gender-input"
+          v-model="form.gender"
+          v-validate="'required'"
+          name="gender"
+          class="w-full"
+          placeholder="Gender"
+          :message="errors.first('gender')"
+        >
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="other">Other</option>
+        </base-select>
       </template>
 
-      <base-button
-        class="mt-16"
-        type="submit"
-        expanded
-      >
-        Next
-      </base-button>
+      <base-button class="mt-16" type="submit" expanded>Next</base-button>
     </form>
-    <modal class="flex flex-col w-full items-center my-info-mdel" :width="1000" name="modal_crop_image">
+    <modal
+      class="flex flex-col w-full items-center my-info-mdel"
+      :width="600"
+      :height="480"
+      name="modal_crop_image"
+    >
       <div class="content my-info-content" ng-if="imgSrc">
         <section class="cropper-area">
           <div class="img-cropper">
@@ -220,8 +205,9 @@
               :img-style="{ 'width': '400px', 'height': '300px' }"
             />
           </div>
-          <div class="actions">            
-            <a
+          <div class="actions">
+            <a href="#" role="button" @click.prevent="cropSaveImage">Crop & Save</a>
+            <!-- <a
               href="#"
               role="button"
               @click.prevent="cropImage"
@@ -248,14 +234,8 @@
               @click.prevent="cropImageDone"
             >
               Done
-            </a>
-            <a
-              href="#"
-              role="button"
-              @click.prevent="cropImageCancel"
-            >
-              Cancel
-            </a>
+            </a>-->
+            <a href="#" role="button" @click.prevent="cropImageCancel">Cancel</a>
           </div>
           <base-input
             v-model="profileFileName"
@@ -266,19 +246,15 @@
             class="w-8/12"
           />
         </section>
-        <section class="preview-area">
+        <!-- <section class="preview-area">
           <p>Image Preview</p>
           <div class="preview" />
           <p>Cropped Image</p>
           <div class="cropped-image">
-            <img
-              v-if="cropImg"
-              :src="cropImg"
-              alt="Cropped Profile"
-            />
+            <img v-if="cropImg" :src="cropImg" alt="Cropped Profile" />
             <div v-else class="crop-placeholder" />
           </div>
-        </section>
+        </section>-->
       </div>
     </modal>
   </div>
@@ -286,24 +262,23 @@
 
 <script>
 import Vue from "vue";
-import AuthService from '@/services/AuthService';
-import states from '@/utils/states';
-import DEFINE from '../../utils/const.js';
-import { mapActions } from 'vuex';
+import AuthService from "@/services/AuthService";
+import states from "@/utils/states";
+import DEFINE from "../../utils/const.js";
+import { mapActions } from "vuex";
 // Import component
 import Loading from "vue-loading-overlay";
 // Import stylesheet
 import "vue-loading-overlay/dist/vue-loading.css";
 Vue.use(Loading);
 
-
-import firebase from 'firebase/app';
-import 'firebase/messaging';
+import firebase from "firebase/app";
+import "firebase/messaging";
 import axios from "axios";
 
-import VueCropper from 'vue-cropperjs';
-import 'cropperjs/dist/cropper.css';
-import ThumbService from '@/services/ThumbService';
+import VueCropper from "vue-cropperjs";
+import "cropperjs/dist/cropper.css";
+import ThumbService from "@/services/ThumbService";
 
 export default {
   components: {
@@ -318,20 +293,20 @@ export default {
       fullPage: true,
       preview: null,
       states,
-      imgSrc : null,
-      updatedImageFile : null,
-      updatedImageBlob : null,
-      cropImg: '',
+      imgSrc: null,
+      updatedImageFile: null,
+      updatedImageBlob: null,
+      cropImg: "",
       data: null,
-      minHeight : Number(200),
-      minWidth : Number(200),
-      profileFileName :  null,
-      profileNameObject : {},
-      profileThumbnail : {}
+      minHeight: Number(200),
+      minWidth: Number(200),
+      profileFileName: null,
+      profileNameObject: {},
+      profileThumbnail: {}
     };
   },
   methods: {
-    ...mapActions('auth', ['login']),
+    ...mapActions("auth", ["login"]),
     async nextStep() {
       if (await this.$validator.validateAll()) {
         this.step += 1;
@@ -344,43 +319,43 @@ export default {
 
     handleImage(e) {
       const file = e.target.files[0];
-      if (file.type.indexOf('image/') === -1) {
+      if (file.type.indexOf("image/") === -1) {
         this.$toasted.error("Please select an image file");
         return;
       }
-      if (typeof FileReader === 'function') {
+      if (typeof FileReader === "function") {
         this.cropImg = null;
         this.updatedImageBlob = null;
         this.profileFileName = null;
         this.updatedImageFile = file;
         this.profileNameObject.name = file.name;
         this.profileNameObject.org_name = file.name;
-        this.profileFileName = JSON.parse(JSON.stringify(this.updatedImageFile.name));
+        this.profileFileName = JSON.parse(
+          JSON.stringify(this.updatedImageFile.name)
+        );
         const reader = new FileReader();
-        reader.onload = (event) => {
+        reader.onload = event => {
           this.imgSrc = event.target.result;
           // rebuild cropperjs with the updated source
-          if(this.$refs.cropper){           
+          if (this.$refs.cropper) {
             this.$refs.cropper.replace(event.target.result);
             this.reset();
-          }       
-          this.$modal.show('modal_crop_image');
-          
+          }
+          this.$modal.show("modal_crop_image");
         };
         reader.readAsDataURL(file);
       } else {
         this.$toasted.error("Something went to wrong, please try again!");
       }
-
     },
 
     async handleRegister() {
       try {
-        if (this.isLoading || !await this.$validator.validateAll()) {
+        if (this.isLoading || !(await this.$validator.validateAll())) {
           return;
         }
 
-        if(this.updatedImageBlob && this.updatedImageFile){
+        if (this.updatedImageBlob && this.updatedImageFile) {
           this.updatedImageBlob.name = this.updatedImageFile.name;
           this.form.image = this.updatedImageBlob;
           this.form.profileThumbnail = this.profileThumbnail;
@@ -390,7 +365,7 @@ export default {
         }
         // Validate image
         if (!this.form.image) {
-          this.$toasted.error('The image field is required.');
+          this.$toasted.error("The image field is required.");
           return;
         }
 
@@ -401,15 +376,15 @@ export default {
         // }
 
         this.isLoading = true;
-        this.form.address = `${this.form.address1} ${this.form.address2}`
-        console.log("handleRegister -> this.form", this.form)
+        this.form.address = `${this.form.address1} ${this.form.address2}`;
+        console.log("handleRegister -> this.form", this.form);
         delete this.form.address1;
-        delete this.form.address2;        
+        delete this.form.address2;
         await AuthService.register(this.form);
         await this.login({
           email: this.form.email,
           password: this.form.password,
-          type: DEFINE.caster_type,
+          type: DEFINE.caster_type
         });
 
         if (firebase.messaging.isSupported()) {
@@ -421,21 +396,23 @@ export default {
         //   this.$route.query.redirect || { name: 'auditions' },
         // );
 
-        this.$toasted.show('Account created successfully.');
+        this.$toasted.show("Account created successfully.");
         this.onRegisterSuccessRedirect();
       } catch (e) {
-        console.log("handleRegister -> e", e)
-        console.log("TCL: handleLogin -> e.response",e.response);
-          if(e.code && e.code == DEFINE.firebase_permission_error.code){
-              this.updateDeviceToken("");
-              this.onRegisterSuccessRedirect();
-          } else if(e.name && e.name == DEFINE.firebase_permission_error.name){
-            this.updateDeviceToken("");
-            this.onRegisterSuccessRedirect();
-          } else {
-            let errorMsg = this.$options.filters.getErrorMsg(e.response.data.errors);
-            this.$toasted.error(errorMsg ? errorMsg : e.response.data.message);            
-          }
+        console.log("handleRegister -> e", e);
+        console.log("TCL: handleLogin -> e.response", e.response);
+        if (e.code && e.code == DEFINE.firebase_permission_error.code) {
+          this.updateDeviceToken("");
+          this.onRegisterSuccessRedirect();
+        } else if (e.name && e.name == DEFINE.firebase_permission_error.name) {
+          this.updateDeviceToken("");
+          this.onRegisterSuccessRedirect();
+        } else {
+          let errorMsg = this.$options.filters.getErrorMsg(
+            e.response.data.errors
+          );
+          this.$toasted.error(errorMsg ? errorMsg : e.response.data.message);
+        }
       } finally {
         this.isLoading = false;
       }
@@ -457,75 +434,124 @@ export default {
       });
     },
     async updateDeviceToken(device_token) {
-      let userAgentId = window.navigator.userAgent.replace(/\D+/g, '');
-      await axios.put(`/t/notification-send-pushkey?pushkey=${device_token}&device_id=${userAgentId}&device_type=web`);
+      let userAgentId = window.navigator.userAgent.replace(/\D+/g, "");
+      await axios.put(
+        `/t/notification-send-pushkey?pushkey=${device_token}&device_id=${userAgentId}&device_type=web`
+      );
     },
     onRegisterSuccessRedirect() {
       // Redirect the user to the page he first tried to visit or to the home view
-      this.$router.push({ name: 'tour' });
+      this.$router.push({ name: "tour" });
     },
     onCancel() {
-      console.log('User cancelled the loader.');
+      console.log("User cancelled the loader.");
     },
-    async cropImage() {
-      // get image data for post processing, e.g. upload or setting image src
-      this.cropImg = this.$refs.cropper.getCroppedCanvas().toDataURL();
-      this.$refs.cropper.getCroppedCanvas().toBlob(async (blob) => {
-        this.updatedImageBlob = blob;
-        await ThumbService.imageThumbnail(this.updatedImageBlob, DEFINE.thumbSize.imageThumbWidth).then((thumb_data) => {
-          Vue.set(this.profileThumbnail, 'preview', thumb_data.preview);
-          Vue.set(this.profileThumbnail, 'file', thumb_data.file);
-        });
-      }); 
-    },    
-    reset() {
-      this.$refs.cropper.reset();
-      this.cropImg = null;
-      this.profileFileName = null;
-      this.profileFileName = JSON.parse(JSON.stringify(this.profileNameObject.name));
-    },    
-    showFileChooser() {
-      this.$refs.inputFile.click()
-    },
-    cropImageDone(){
+    async cropSaveImage() {
       this.$toasted.clear();
-      if(!this.profileFileName || this.profileFileName == '' || this.profileFileName.trim() == ''){
-        this.$toasted.error('Please enter filename!');
+      if (
+        !this.profileFileName ||
+        this.profileFileName == "" ||
+        this.profileFileName.trim() == ""
+      ) {
+        this.$toasted.error("Please enter filename!");
         return;
-      } else if(this.profileFileName && this.profileFileName.length > 150){
-        this.$toasted.error('Filename is too long, it should not be more than 150 characters!');
+      } else if (this.profileFileName && this.profileFileName.length > 150) {
+        this.$toasted.error(
+          "Filename is too long, it should not be more than 150 characters!"
+        );
         return;
       }
+      // get image data for post processing, e.g. upload or setting image src
+      this.cropImg = this.$refs.cropper.getCroppedCanvas().toDataURL();
+      await this.$refs.cropper.getCroppedCanvas().toBlob(async blob => {
+        this.updatedImageBlob = blob;
+        await ThumbService.imageThumbnail(
+          this.updatedImageBlob,
+          DEFINE.thumbSize.imageThumbWidth
+        ).then(thumb_data => {
+          Vue.set(this.profileThumbnail, "preview", thumb_data.preview);
+          Vue.set(this.profileThumbnail, "file", thumb_data.file);
+        });
+      });
 
-      if(this.cropImg){
+      if (this.cropImg) {
         this.preview = this.cropImg;
       }
       this.profileNameObject.name = this.profileFileName;
       this.imgSrc = null;
-      this.$refs.inputFile.value = '';
-      this.$modal.hide('modal_crop_image');
+      this.$refs.inputFile.value = "";
+      this.$modal.hide("modal_crop_image");
     },
-    cropImageCancel(){
-      this.imgSrc = null
+    async cropImage() {
+      // get image data for post processing, e.g. upload or setting image src
+      this.cropImg = this.$refs.cropper.getCroppedCanvas().toDataURL();
+      this.$refs.cropper.getCroppedCanvas().toBlob(async blob => {
+        this.updatedImageBlob = blob;
+        await ThumbService.imageThumbnail(
+          this.updatedImageBlob,
+          DEFINE.thumbSize.imageThumbWidth
+        ).then(thumb_data => {
+          Vue.set(this.profileThumbnail, "preview", thumb_data.preview);
+          Vue.set(this.profileThumbnail, "file", thumb_data.file);
+        });
+      });
+    },
+    reset() {
+      this.$refs.cropper.reset();
+      this.cropImg = null;
+      this.profileFileName = null;
+      this.profileFileName = JSON.parse(
+        JSON.stringify(this.profileNameObject.name)
+      );
+    },
+    showFileChooser() {
+      this.$refs.inputFile.click();
+    },
+    cropImageDone() {
+      this.$toasted.clear();
+      if (
+        !this.profileFileName ||
+        this.profileFileName == "" ||
+        this.profileFileName.trim() == ""
+      ) {
+        this.$toasted.error("Please enter filename!");
+        return;
+      } else if (this.profileFileName && this.profileFileName.length > 150) {
+        this.$toasted.error(
+          "Filename is too long, it should not be more than 150 characters!"
+        );
+        return;
+      }
+
+      if (this.cropImg) {
+        this.preview = this.cropImg;
+      }
+      this.profileNameObject.name = this.profileFileName;
+      this.imgSrc = null;
+      this.$refs.inputFile.value = "";
+      this.$modal.hide("modal_crop_image");
+    },
+    cropImageCancel() {
+      this.imgSrc = null;
       this.cropImg = null;
       this.updatedImageBlob = null;
       this.updatedImageFile = null;
       this.profileNameObject = {};
       this.profileFileName = null;
-      this.$refs.inputFile.value = '';
-      this.$modal.hide('modal_crop_image');
+      this.$refs.inputFile.value = "";
+      this.$modal.hide("modal_crop_image");
     },
-    cancelUpdateProfile(){      
+    cancelUpdateProfile() {
       this.hideMenuInfo = false;
-      this.tabSelected = '';
-      this.imgSrc = null
+      this.tabSelected = "";
+      this.imgSrc = null;
       this.cropImg = null;
       this.updatedImageBlob = null;
       this.updatedImageFile = null;
-      this.$refs.inputFile.value = '';
+      this.$refs.inputFile.value = "";
       this.setUserData();
     }
-  },
+  }
 };
 </script>
 <style>
@@ -551,6 +577,10 @@ export default {
 }
 .actions {
   margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
 }
 .actions a {
   display: inline-block;
@@ -592,9 +622,9 @@ textarea {
   max-width: 100%;
 }
 .v--modal-box.v--modal {
-    overflow: auto !important;
+  overflow: auto !important;
 }
-.cropper-area>textarea{
+.cropper-area > textarea {
   display: none;
 }
 </style>

@@ -470,7 +470,7 @@
                 @close="manageRoles = false"
         />
         <!-- Cover image crop modal -->
-        <modal class="flex flex-col w-full items-center my-info-mdel" :width="1000" name="modal_crop_image">
+        <modal class="flex flex-col w-full items-center my-info-mdel" :width="600" :height="480" name="modal_crop_image">
             <div class="content my-info-content" ng-if="imgSrc">
                 <section class="cropper-area">
                 <div class="img-cropper">
@@ -489,7 +489,8 @@
                     />
                 </div>
                 <div class="actions">            
-                    <a
+                  <a href="#" role="button" @click.prevent="cropSaveImage">Crop & Save</a>
+                    <!-- <a
                     href="#"
                     role="button"
                     @click.prevent="cropImage"
@@ -516,7 +517,7 @@
                     @click.prevent="cropImageDone"
                     >
                     Done
-                    </a>
+                    </a> -->
                     <a
                     href="#"
                     role="button"
@@ -535,7 +536,7 @@
                   />
                 
                 </section>
-                <section class="preview-area">
+                <!-- <section class="preview-area">
                 <p>Image Preview</p>
                 <div class="preview" />
                 <p>Cropped Image</p>
@@ -547,7 +548,7 @@
                     />
                     <div v-else class="crop-placeholder" />
                 </div>
-                </section>
+                </section> -->
             </div>
         </modal>
         <modal class="flex flex-col items-center" :width="250" :height="250" name="modal_document_options">
@@ -1510,6 +1511,35 @@ export default {
     imgUrlAlt(event) {
       event.target.src = DEFINE.role_placeholder;
     },
+    async cropSaveImage() {
+      this.$toasted.clear();
+      if(!this.coverFileName || this.coverFileName == '' || this.coverFileName.trim() == ''){
+        this.$toasted.error('Please enter cover filename!');
+        return;
+      } else if(this.coverFileName && this.coverFileName.length > 150){
+        this.$toasted.error('Cover filename is too long, it should not be more than 150 characters!');
+        return;
+      }
+      
+      this.coverThumbnail = {};
+      // get image data for post processing, e.g. upload or setting image src
+      this.cropImg = this.$refs.cropper.getCroppedCanvas().toDataURL();
+      await this.$refs.cropper.getCroppedCanvas().toBlob(async (blob) => {
+        this.updatedImageBlob = blob;
+        await ThumbService.imageThumbnail(this.updatedImageBlob, DEFINE.thumbSize.imageThumbWidth).then((thumb_data) => {
+          Vue.set(this.coverThumbnail, 'preview', thumb_data.preview);
+          Vue.set(this.coverThumbnail, 'file', thumb_data.file);
+        });
+      });
+
+      if (this.cropImg) {
+        this.previewCover = this.cropImg;
+      }
+      this.coveNameObject.name = this.coverFileName;
+      this.imgSrc = null;
+      this.$refs.coverFile.value = "";
+      this.$modal.hide("modal_crop_image");
+    },
     async cropImage() {
       this.coverThumbnail = {};
       // get image data for post processing, e.g. upload or setting image src
@@ -1663,6 +1693,10 @@ export default {
 }
 .actions {
   margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
 }
 .actions a {
   display: inline-block;
