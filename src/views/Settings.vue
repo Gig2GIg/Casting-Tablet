@@ -1079,6 +1079,7 @@ export default {
       this.form.location = "12,33334 - 23,00000";
       this.form.image = this.user.image.url;
       this.form.thumbnailImage = this.user.image.thumbnail;
+      this.form.file_name = this.user.image.name;
       this.previewProfile = this.form.thumbnailImage
         ? this.form.thumbnailImage
         : this.form.image;
