@@ -24,7 +24,7 @@
   
     <router-link :to="{ name: 'register' }" class="mt-16">
       <!-- Create Account -->
-      <span class="text-2xl"> Create an Account</span>
+      <span class="text-2xl"> Getting started Now!</span>
     </router-link>
   </div>
 </template>

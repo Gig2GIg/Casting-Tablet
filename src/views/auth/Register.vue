@@ -6,13 +6,14 @@
       :on-cancel="onCancel"
       :is-full-page="fullPage"
     ></loading>
-    <p class="text-2xl">Create Your Account</p>
-
-    <form
+    <p class="text-2xl" v-if="selectedPlan" >Create Your Account</p>
+    <PlanDetails v-if="!selectedPlan" :from="'signup'" @select_plan="handleSelectPlan" />
+    <form 
+      v-else
       class="w-full max-w-xs mt-16"
       @submit.prevent="step === 3 ? handleRegister() : nextStep()"
     >
-      <template v-if="step === 1">
+      <template v-if="step === 1">        
         <base-input
           v-model="form.first_name"
           v-validate="'required|max:255'"
@@ -279,11 +280,13 @@ import axios from "axios";
 import VueCropper from "vue-cropperjs";
 import "cropperjs/dist/cropper.css";
 import ThumbService from "@/services/ThumbService";
+import PlanDetails from "../../components/shared/PlanDetails";
 
 export default {
   components: {
     Loading,
-    VueCropper
+    VueCropper,
+    PlanDetails
   },
   data() {
     return {
@@ -302,7 +305,8 @@ export default {
       minWidth: Number(200),
       profileFileName: null,
       profileNameObject: {},
-      profileThumbnail: {}
+      profileThumbnail: {},
+      selectedPlan : null
     };
   },
   methods: {
@@ -550,6 +554,15 @@ export default {
       this.updatedImageFile = null;
       this.$refs.inputFile.value = "";
       this.setUserData();
+    },
+    handleSelectPlan(selectedPlan) {
+    console.log("handleSelectPlan -> selectedPlan", selectedPlan)
+      if(selectedPlan){
+        this.selectedPlan = selectedPlan
+      } else {
+        this.selectedPlan = null;
+      }
+
     }
   }
 };
