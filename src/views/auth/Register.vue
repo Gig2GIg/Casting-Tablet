@@ -6,14 +6,14 @@
       :on-cancel="onCancel"
       :is-full-page="fullPage"
     ></loading>
-    <p class="text-2xl" v-if="selectedPlan" >Create Your Account</p>
-    <PlanDetails v-if="!selectedPlan" :from="'signup'" @select_plan="handleSelectPlan" />
-    <form 
+    <p class="text-2xl" v-if="selectedPlan">Create Your Account</p>
+    <PlanDetails v-if="!selectedPlan" :from="'signup'" @select_plan="handleSelectPlan" />    
+    <form
       v-else
       class="w-full max-w-xs mt-16"
-      @submit.prevent="step === 3 ? handleRegister() : nextStep()"
+      @submit.prevent="step === 4 ? handleRegister() : nextStep()"
     >
-      <template v-if="step === 1">        
+      <template v-if="step === 1">
         <base-input
           v-model="form.first_name"
           v-validate="'required|max:255'"
@@ -62,8 +62,47 @@
           autocomplete="false"
         />
       </template>
-
       <template v-else-if="step === 2">
+        <base-input
+          v-model="form.name_on_card"
+          v-validate="'required|max:255'"
+          name="name_on_card"
+          placeholder="Name on Card"
+          :message="errors.first('name_on_card')"
+          data-vv-as="name on card"
+        />
+        <base-input
+          v-model="form.card_number"
+          v-validate="'required'"
+          name="card_number"
+          placeholder="Card Number"
+          :type="'stripe_element'"
+          :stripe_cardformat="'formatCardNumber'"
+          :message="errors.first('card_number')"
+          data-vv-as="card number"
+        />
+        <base-input
+          v-model="form.card_expiry"
+          v-validate="'required'"
+          name="card_expiry"
+          placeholder="Card Expiry"
+          type="month"
+          :stripe_cardformat="'formatCardExpiry'"
+          :message="errors.first('card_expiry')"
+          data-vv-as="card expiry"
+        />
+        <base-input
+          v-model="form.card_cvc"
+          v-validate="'required'"
+          name="card_cvc"
+          placeholder="Card CVC"
+          :type="'stripe_element'"
+          :stripe_cardformat="'formatCardCVC'"
+          :message="errors.first('card_cvc')"
+          data-vv-as="card cvc"
+        />
+      </template>
+      <template v-else-if="step === 3">
         <base-input
           key="address1-input"
           v-model="form.address1"
@@ -281,6 +320,7 @@ import VueCropper from "vue-cropperjs";
 import "cropperjs/dist/cropper.css";
 import ThumbService from "@/services/ThumbService";
 import PlanDetails from "../../components/shared/PlanDetails";
+import moment from "moment";
 
 export default {
   components: {
@@ -306,7 +346,8 @@ export default {
       profileFileName: null,
       profileNameObject: {},
       profileThumbnail: {},
-      selectedPlan : null
+      selectedPlan: null,
+      minmonthdate: moment()
     };
   },
   methods: {
@@ -556,13 +597,12 @@ export default {
       this.setUserData();
     },
     handleSelectPlan(selectedPlan) {
-    console.log("handleSelectPlan -> selectedPlan", selectedPlan)
-      if(selectedPlan){
-        this.selectedPlan = selectedPlan
+      console.log("handleSelectPlan -> selectedPlan", selectedPlan);
+      if (selectedPlan) {
+        this.selectedPlan = selectedPlan;
       } else {
         this.selectedPlan = null;
       }
-
     }
   }
 };
@@ -639,5 +679,8 @@ textarea {
 }
 .cropper-area > textarea {
   display: none;
+}
+.credit-card-inputs.complete {
+  border: 2px solid green;
 }
 </style>

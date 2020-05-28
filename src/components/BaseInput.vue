@@ -1,10 +1,7 @@
 <!-- eslint-disable max-len -->
 <template>
   <div class="flex flex-col">
-    <div
-      v-if="type !== 'textarea'"
-      class="relative h-12 my-2"
-    >
+    <div v-if="type !== 'textarea'" class="relative h-12 my-2">
       <svg
         v-if="type === 'location'"
         xmlns="http://www.w3.org/2000/svg"
@@ -12,13 +9,15 @@
         width="21"
         height="21"
         viewBox="0 0 21.862 32.752"
-      ><path
-        d="M28.976,10.35a.456.456,0,1,0,.085.907A9.527,9.527,0,0,1,38.585,20.8c0,2.617-1.245,6.169-3.118,9.85a76.4,76.4,0,0,1-6.406,10.19,76.4,76.4,0,0,1-6.406-10.19c-1.873-3.681-3.118-7.234-3.118-9.85,0-4.36,2.23-8.064,6.215-9.2a.456.456,0,0,0-.241-.879C21.143,11.961,18.63,16.03,18.63,20.8c0,2.9,1.313,6.518,3.217,10.261a78.122,78.122,0,0,0,6.845,10.856.454.454,0,0,0,.737,0,78.12,78.12,0,0,0,6.845-10.856c1.9-3.744,3.217-7.363,3.217-10.261A10.448,10.448,0,0,0,29.061,10.35h-.085Zm.085,4.535a5.9,5.9,0,1,0,5.9,5.9A5.9,5.9,0,0,0,29.061,14.885Zm0,.907a4.989,4.989,0,1,1-4.989,4.989A4.982,4.982,0,0,1,29.061,15.792Z"
-        transform="translate(-18.13 -9.85)"
-        fill="#4d2545"
-        stroke="#4d2545"
-        stroke-width="1"
-      /></svg>
+      >
+        <path
+          d="M28.976,10.35a.456.456,0,1,0,.085.907A9.527,9.527,0,0,1,38.585,20.8c0,2.617-1.245,6.169-3.118,9.85a76.4,76.4,0,0,1-6.406,10.19,76.4,76.4,0,0,1-6.406-10.19c-1.873-3.681-3.118-7.234-3.118-9.85,0-4.36,2.23-8.064,6.215-9.2a.456.456,0,0,0-.241-.879C21.143,11.961,18.63,16.03,18.63,20.8c0,2.9,1.313,6.518,3.217,10.261a78.122,78.122,0,0,0,6.845,10.856.454.454,0,0,0,.737,0,78.12,78.12,0,0,0,6.845-10.856c1.9-3.744,3.217-7.363,3.217-10.261A10.448,10.448,0,0,0,29.061,10.35h-.085Zm.085,4.535a5.9,5.9,0,1,0,5.9,5.9A5.9,5.9,0,0,0,29.061,14.885Zm0,.907a4.989,4.989,0,1,1-4.989,4.989A4.982,4.982,0,0,1,29.061,15.792Z"
+          transform="translate(-18.13 -9.85)"
+          fill="#4d2545"
+          stroke="#4d2545"
+          stroke-width="1"
+        />
+      </svg>
 
       <img
         v-if="type === 'add'"
@@ -65,13 +64,10 @@
             y1="-8.03"
             y2="30.77"
             gradientUnits="userSpaceOnUse"
-          ><stop
-            offset="0"
-            stop-color="#4d2545"
-          /><stop
-            offset="1"
-            stop-color="#782541"
-          /></linearGradient>
+          >
+            <stop offset="0" stop-color="#4d2545" />
+            <stop offset="1" stop-color="#782541" />
+          </linearGradient>
         </defs>
         <path
           fill="url(#v0rca)"
@@ -92,6 +88,20 @@
         @input="$emit('input', $event)"
       />
 
+      <vue-monthly-picker
+        v-else-if="type === 'month'"
+        :value="value"
+        :min="minmonthdate"
+        :dateFormat="'YY/MM'"
+        :clearOption="false"
+        :selectedBackgroundColor="'#007bff'"
+        :placeHolder="$attrs.placeholder ? $attrs.placeholder : ''"
+        :class="[{ 'pr-8': type === 'location' }, ...customClasses]"
+        :inputClass="`text-black rounded-full overflow-hidden w-full h-full py-3 px-6 placeholder-purple focus:outline-none`"
+        @input="$emit('input', $event)"
+        >
+        </vue-monthly-picker>
+
       <vue-timepicker
         v-else-if="type === 'time'"
         v-bind="$attrs"
@@ -103,7 +113,16 @@
         close-on-complete
         @change="$emit('input', $event.displayTime)"
       />
-
+      <input
+        v-else-if="type === 'stripe_element'"
+        ref="inputTag"
+        class="text-black rounded-full overflow-hidden w-full h-full py-3 px-6 placeholder-purple focus:outline-none"
+        :class="[{ 'pr-8': type === 'location' }, ...customClasses]"
+        :value="value"
+        v-bind="$attrs"
+        v-cardformat:[stripe_cardformat]
+        @input="$emit('input', $event.target.value)"
+      />
       <input
         v-else
         ref="inputTag"
@@ -113,7 +132,7 @@
         :type="type"
         v-bind="$attrs"
         @input="$emit('input', $event.target.value)"
-      >
+      />
     </div>
 
     <div
@@ -129,28 +148,34 @@
       />
     </div>
 
-    <p
-      v-if="message"
-      class="ml-6 mb-2"
-    >
-      {{ message }}
-    </p>
+    <p v-if="message" class="ml-6 mb-2">{{ message }}</p>
   </div>
 </template>
 
 <script>
-import VueTimepicker from 'vue2-timepicker';
-import 'vue2-timepicker/dist/VueTimepicker.css';
+import Vue from "vue";
+import VueTimepicker from "vue2-timepicker";
+import "vue2-timepicker/dist/VueTimepicker.css";
+import VueCardFormat from "vue-credit-card-validation";
+Vue.use(VueCardFormat);
+import VueMonthlyPicker from 'vue-monthly-picker'
+import moment from "moment";
 
 export default {
   inheritAttrs: false,
   components: {
     VueTimepicker,
+    VueMonthlyPicker
+  },
+  data(){
+    return {
+      minmonthdate : moment()
+    }
   },
   props: {
     name: {
       type: String,
-      default: null,
+      default: null
     },
     mindate: {
       type: Date,
@@ -158,61 +183,69 @@ export default {
     },
     value: {
       type: [String, Date, Object],
-      default: null,
+      default: null
     },
     type: {
       type: String,
-      default: 'text',
-      validator: value => [
-        'text',
-        'password',
-        'location',
-        'date',
-        'number',
-        'textarea',
-        'time',
-        'add'
-      ].indexOf(value) >= 0,
+      default: "text",
+      validator: value =>
+        [
+          "text",
+          "password",
+          "location",
+          "date",
+          "number",
+          "textarea",
+          "time",
+          "add",
+          "stripe_element",
+          "month"
+        ].indexOf(value) >= 0
+    },
+    stripe_cardformat: {
+      type: String,
+      default: null
     },
     message: {
       type: String,
-      default: null,
+      default: null
     },
     customClasses: {
       type: Array,
-      default: () => [],
+      default: () => []
     },
     time: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
   },
   mounted() {
-    if (this.type === 'location') {
+    if (this.type === "location") {
       /* global google */
-      const input = new google.maps.places.Autocomplete(
-        (this.$refs.inputTag),
-        { types: ['geocode'] },
-      );
+      const input = new google.maps.places.Autocomplete(this.$refs.inputTag, {
+        types: ["geocode"]
+      });
 
-      input.addListener('place_changed', () => {
+      input.addListener("place_changed", () => {
         const place = input.getPlace();
-        this.$emit('input', place.formatted_address);
-        this.$emit('place', place);
+        this.$emit("input", place.formatted_address);
+        this.$emit("place", place);
       });
     }
   },
   methods: {
     focus() {
       this.$refs.inputTag.focus();
-    },
-  },
+    }
+  }
 };
 </script>
 
 <style>
-.vue__time-picker .dropdown ul li:not([disabled]).active, .vue__time-picker .dropdown ul li:not([disabled]).active:focus, .vue__time-picker .dropdown ul li:not([disabled]).active:hover {
-  background-color: #4D2545;
+.vue__time-picker .dropdown ul li:not([disabled]).active,
+.vue__time-picker .dropdown ul li:not([disabled]).active:focus,
+.vue__time-picker .dropdown ul li:not([disabled]).active:hover {
+  background-color: #4d2545;
 }
 </style>
 
@@ -222,9 +255,9 @@ export default {
   transform: translateY(-50%);
 }
 
-input[type=number]::-webkit-inner-spin-button,
-input[type=number]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 </style>
