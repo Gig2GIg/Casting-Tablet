@@ -3,7 +3,7 @@
     <div v-for="plan of planList" :key="plan.id" class="col-6 w-11/8 bg-white h-full mr-5 mb-5 border-radius-6">
       <div  class="border-radius-6 box">
           <div  class="relative flex flex-col h-48 items-center justify-center bg-cus-orange border-tl-radius-6 border-tr-radius-6">      
-            <span class="text-xl text-white">Tier 1</span>
+            <span class="text-xl text-white">{{plan.name}}</span>
           </div>
           <div class="relative flex flex-col h-full shadow-md">
             <div class="flex flex-col px-4 py-2 w-full h-50 items-center justify-center">

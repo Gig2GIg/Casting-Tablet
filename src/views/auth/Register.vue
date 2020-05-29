@@ -7,11 +7,10 @@
       :is-full-page="fullPage"
     ></loading>
     <p class="text-2xl" v-if="selectedPlan">Create Your Account</p>
-    <PlanDetails v-if="!selectedPlan" :from="'signup'" @select_plan="handleSelectPlan" />    
-    <form
-      v-else
+    <!-- <PlanDetails v-if="!selectedPlan" :from="'signup'" @select_plan="handleSelectPlan" /> -->
+    <form      
       class="w-full max-w-xs mt-16"
-      @submit.prevent="step === 4 ? handleRegister() : nextStep()"
+      @submit.prevent="step === 3 ? handleRegister() : nextStep()"
     >
       <template v-if="step === 1">
         <base-input
@@ -62,8 +61,9 @@
           autocomplete="false"
         />
       </template>
-      <template v-else-if="step === 2">
+      <!-- <template v-else-if="step === 2">
         <base-input
+          key="name_on_card-input"
           v-model="form.name_on_card"
           v-validate="'required|max:255'"
           name="name_on_card"
@@ -72,6 +72,7 @@
           data-vv-as="name on card"
         />
         <base-input
+          key="card_number-input"
           v-model="form.card_number"
           v-validate="'required'"
           name="card_number"
@@ -82,6 +83,7 @@
           data-vv-as="card number"
         />
         <base-input
+          key="card_expiry-input"
           v-model="form.card_expiry"
           v-validate="'required'"
           name="card_expiry"
@@ -92,17 +94,18 @@
           data-vv-as="card expiry"
         />
         <base-input
+          key="card_cvc-input"
           v-model="form.card_cvc"
           v-validate="'required'"
           name="card_cvc"
-          placeholder="Card CVC"
+          placeholder="CSV"
           :type="'stripe_element'"
           :stripe_cardformat="'formatCardCVC'"
           :message="errors.first('card_cvc')"
-          data-vv-as="card cvc"
+          data-vv-as="csv"
         />
-      </template>
-      <template v-else-if="step === 3">
+      </template> -->
+      <template v-else-if="step === 2">
         <base-input
           key="address1-input"
           v-model="form.address1"
@@ -247,34 +250,6 @@
           </div>
           <div class="actions">
             <a href="#" role="button" @click.prevent="cropSaveImage">Crop & Save</a>
-            <!-- <a
-              href="#"
-              role="button"
-              @click.prevent="cropImage"
-            >
-              Crop
-            </a>
-            <a
-              href="#"
-              role="button"
-              @click.prevent="reset"
-            >
-              Reset
-            </a>            
-            <a
-              href="#"
-              role="button"
-              @click.prevent="showFileChooser"
-            >
-              Upload New Image
-            </a>
-            <a
-              href="#"
-              role="button"
-              @click.prevent="cropImageDone"
-            >
-              Done
-            </a>-->
             <a href="#" role="button" @click.prevent="cropImageCancel">Cancel</a>
           </div>
           <base-input
@@ -286,15 +261,6 @@
             class="w-8/12"
           />
         </section>
-        <!-- <section class="preview-area">
-          <p>Image Preview</p>
-          <div class="preview" />
-          <p>Cropped Image</p>
-          <div class="cropped-image">
-            <img v-if="cropImg" :src="cropImg" alt="Cropped Profile" />
-            <div v-else class="crop-placeholder" />
-          </div>
-        </section>-->
       </div>
     </modal>
   </div>
@@ -321,6 +287,7 @@ import "cropperjs/dist/cropper.css";
 import ThumbService from "@/services/ThumbService";
 import PlanDetails from "../../components/shared/PlanDetails";
 import moment from "moment";
+import TokenService from "../../services/core/TokenService";
 
 export default {
   components: {
@@ -421,6 +388,7 @@ export default {
         // }
 
         this.isLoading = true;
+        let data = JSON.parse(JSON.stringify(this.form));
         this.form.address = `${this.form.address1} ${this.form.address2}`;
         console.log("handleRegister -> this.form", this.form);
         delete this.form.address1;
@@ -431,6 +399,10 @@ export default {
           password: this.form.password,
           type: DEFINE.caster_type
         });
+
+        // start : create subscription plan
+        // await this.subscribePlan(data);
+        // end : create subscription plan
 
         if (firebase.messaging.isSupported()) {
           await this.askForPermissionToReceiveNotifications();
@@ -483,6 +455,20 @@ export default {
       await axios.put(
         `/t/notification-send-pushkey?pushkey=${device_token}&device_id=${userAgentId}&device_type=web`
       );
+    },
+    async subscribePlan(data) {
+      const Request = {
+        exp_year: moment(data.card_expiry).format("YYYY"),
+        exp_month: moment(data.card_expiry).format("MM"),
+        number: data.card_number,
+        cvc: data.card_cvc,
+        user_id: TokenService.getUserId(),
+        stripe_plan_id: this.selectedPlan.id,
+        stripe_plan_name: this.selectedPlan.name
+      };
+      const {
+        result: { result }
+      } = await axios.post(`/t/users/subscribe`, data);
     },
     onRegisterSuccessRedirect() {
       // Redirect the user to the page he first tried to visit or to the home view

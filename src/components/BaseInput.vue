@@ -120,8 +120,8 @@
         :class="[{ 'pr-8': type === 'location' }, ...customClasses]"
         :value="value"
         v-bind="$attrs"
-        v-cardformat:[stripe_cardformat]
         @input="$emit('input', $event.target.value)"
+        v-cardformat:[stripe_cardformat]        
       />
       <input
         v-else
