@@ -26,7 +26,7 @@
         </div>
         <div
           class="py-2 flex flex-wrap px-4 border-b-2 border-gray-300 mr-2 cursor-pointer"
-          @click="tabSelected = 'myinfo'; hideMenuInfo = true"
+          @click="manageSelectedTab('myinfo')"
         >
           <div class="w-10/12">
             <p class="font-bold">My info</p>
@@ -47,7 +47,28 @@
         </div>
         <div
           class="py-2 flex flex-wrap px-4 border-b-2 border-gray-300 mr-2 cursor-pointer"
-          @click="tabSelected = 'notifications'; hideMenuInfo = true"
+          @click="manageSelectedTab('subscription')"
+        >
+          <div class="w-10/12">
+            <p class="font-bold">Subscription</p>
+          </div>
+          <div class="w-2/12">
+            <svg xmlns="http://www.w3.org/2000/svg" width="10.926" height="19.213">
+              <g data-name="Grupo 1912">
+                <g data-name="Grupo 38">
+                  <path
+                    data-name="Trazado 24"
+                    d="M7.804 9.606L.373 17.037a1.275 1.275 0 101.8 1.8l8.053-8.05a1.26 1.26 0 00.328-.231 1.267 1.267 0 00.372-.95 1.267 1.267 0 00-.369-.95 1.259 1.259 0 00-.328-.231L2.175.373a1.275 1.275 0 00-1.8 1.8z"
+                    fill="#4d2545"
+                  />
+                </g>
+              </g>
+            </svg>
+          </div>
+        </div>
+        <div
+          class="py-2 flex flex-wrap px-4 border-b-2 border-gray-300 mr-2 cursor-pointer"
+          @click="manageSelectedTab('notifications')"
         >
           <div class="w-10/12">
             <p class="font-bold">Push Notifications</p>
@@ -68,7 +89,7 @@
         </div>
         <div
           class="py-2 flex flex-wrap px-4 border-b-2 border-gray-300 mr-2 cursor-pointer"
-          @click="tabSelected = 'instantFeedback'; hideMenuInfo = true; showFeedBackOptionMenu = true"
+          @click="manageSelectedTab('notifications')"
         >
           <div class="w-10/12">
             <p class="font-bold">Instant Feedback</p>
@@ -89,7 +110,7 @@
         </div>
         <div
           class="mt-4 flex flex-wrap py-2 px-4 border-b-2 border-gray-300 mr-2 cursor-pointer font-bold"
-          @click="tabSelected = 'marketplace'; hideMenuInfo = true"
+          @click="manageSelectedTab('marketplace')"
         >
           <div class="w-10/12">
             <p class="font-bold">QR Code</p>
@@ -110,7 +131,7 @@
         </div>
         <div
           class="mt-4 flex flex-wrap py-2 px-4 border-b-2 border-gray-300 mr-2 cursor-pointer font-bold"
-          @click="tabSelected = 'appinfo'; hideMenuInfo = true"
+          @click="manageSelectedTab('appinfo')"
         >
           <div class="w-10/12">
             <p class="font-bold">App Info</p>
@@ -158,7 +179,7 @@
         </div>-->
         <div
           class="mt-4 flex flex-wrap py-2 px-4 border-b-2 border-gray-300 mr-2 cursor-pointer font-bold"
-          @click="tabSelected = 'termsofuse'; hideMenuInfo = true"
+          @click="manageSelectedTab('termsofuse')"
         >
           <div class="w-10/12">
             <p class="font-bold">Terms of Use</p>
@@ -205,7 +226,7 @@
         </div>
         <div
           class="mt-4 flex flex-wrap py-2 px-4 border-b-2 border-gray-300 mr-2 cursor-pointer font-bold"
-          @click="tabSelected = 'policy'; hideMenuInfo = true"
+          @click="manageSelectedTab('policy')"
         >
           <div class="w-10/12">
             <p class="font-bold">Privacy Policy</p>
@@ -548,6 +569,12 @@
             </div>
           </div>
         </div>
+      </div>
+      <div
+        v-if="tabSelected === 'subscription' && hideMenuInfo == true"
+        class="tags w-80 shadow-md mx-auto px-3 py-3 mt-6"
+      >
+        <invite-user-list />
       </div>
       <div
         v-if="tabSelected === 'notifications'"
@@ -978,6 +1005,7 @@ import uuid from "uuid/v1";
 import moment from "moment";
 import Vue from "vue";
 import ThumbService from "@/services/ThumbService";
+import { eventBus } from "../main";
 
 export default {
   components: {
@@ -1015,7 +1043,11 @@ export default {
   async mounted() {
     this.getUserData();
   },
-  async created() {},
+  async created() {
+    eventBus.$on("settingNavViewChange", value => {
+      this.hideMenuInfo = value;
+    });
+  },
   watch: {
     tabSelected: {
       immediate: true,
@@ -1047,6 +1079,30 @@ export default {
   },
   methods: {
     ...mapActions("profile", ["fetch"]),
+    manageSelectedTab(tab) {
+      this.$toasted.clear();
+      const isPrimeUser = this.user && this.user.is_premium ? true : false;
+      if (
+        !isPrimeUser &&
+        (tab == "instantFeedback" ||
+          tab == "marketplace" ||
+          tab == "notifications")
+      ) {
+        this.$toasted.info(DEFINE.no_plan_subscirbed_error);
+      } else {
+        this.tabSelected = tab;
+        this.hideMenuInfo = true;
+        if (this.tabSelected == "instantFeedback") {
+          this.showFeedBackOptionMenu = true;
+        } else if (this.tabSelected == "subscription") {
+          console.log(
+            "manageSelectedTab -> this.hideMenuInfo",
+            this.hideMenuInfo
+          );
+          eventBus.$emit("settingNavViewChange", this.hideMenuInfo);
+        }
+      }
+    },
     async updateFeedBackTxt(type) {
       try {
         let res = await axios.post(`/t/instantfeedbacks/changeDefault`, {

@@ -6,11 +6,18 @@
       :on-cancel="onCancel"
       :is-full-page="fullPage"
     ></loading>
-    <p class="text-2xl" v-if="selectedPlan">Create Your Account</p>
-    <!-- <PlanDetails v-if="!selectedPlan" :from="'signup'" @select_plan="handleSelectPlan" /> -->
-    <form      
+    <p class="text-2xl" v-if="selectedPlan && step !== 3">Create Your Account</p>
+    <p class="text-2xl" v-if="step === 3">Payment Details</p>
+    <PlanDetails
+      v-if="!selectedPlan"
+      :from="'signup'"
+      @select_plan="handleSelectPlan"
+      @child_loder="handleChildLoader"
+    />
+    <form
+      v-else
       class="w-full max-w-xs mt-16"
-      @submit.prevent="step === 3 ? handleRegister() : nextStep()"
+      @submit.prevent="step === 4 ? handleRegister() : nextStep()"
     >
       <template v-if="step === 1">
         <base-input
@@ -61,7 +68,57 @@
           autocomplete="false"
         />
       </template>
-      <!-- <template v-else-if="step === 2">
+      <template v-else-if="step === 2">
+        <div
+          v-if="!preview"
+          class="flex items-center rounded-full bg-white h-32 w-32 mx-auto mb-6 cursor-pointer"
+          @click="$refs.inputFile.click()"
+        >
+          <img src="/images/icons/upload.png" alt="Upload" class="h-16 mx-auto ml-8 -mt-2" />
+        </div>
+
+        <img
+          v-else
+          :src="preview"
+          alt="Image"
+          class="rounded-full h-32 w-32 mx-auto mb-6 cursor-pointer"
+          @click="$refs.inputFile.click()"
+        />
+
+        <input ref="inputFile" accept=".png, .jpg, .jpeg" type="file" hidden @change="handleImage" />
+
+        <base-input
+          v-model="form.agency_name"
+          v-validate="'required|max:255'"
+          name="agency_name"
+          placeholder="Agency Name"
+          :message="errors.first('agency_name')"
+          data-vv-as="agency name"
+        />
+
+        <base-input
+          v-model="form.profesion"
+          v-validate="'required|max:255'"
+          name="profesion"
+          placeholder="Job Title"
+          :message="errors.first('profesion')"
+          data-vv-as="job title"
+        />
+        <base-select
+          key="gender-input"
+          v-model="form.gender"
+          v-validate="'required'"
+          name="gender"
+          class="w-full"
+          placeholder="Gender"
+          :message="errors.first('gender')"
+        >
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="other">Other</option>
+        </base-select>
+      </template>
+      <template v-else-if="step === 3">
         <base-input
           key="name_on_card-input"
           v-model="form.name_on_card"
@@ -104,8 +161,8 @@
           :message="errors.first('card_cvc')"
           data-vv-as="csv"
         />
-      </template> -->
-      <template v-else-if="step === 2">
+      </template>
+      <template v-else>
         <base-input
           key="address1-input"
           v-model="form.address1"
@@ -159,71 +216,9 @@
             :message="errors.first('zip')"
           />
         </div>
-
-        <!-- <base-input
-          key="birth-input"
-          v-model="form.birth"
-          v-validate="'required'"
-          name="birth"
-          type="date"
-          placeholder="Birth Date"
-          :message="errors.first('birth')"
-          data-vv-as="birth date"
-        />-->
       </template>
 
-      <template v-else>
-        <div
-          v-if="!preview"
-          class="flex items-center rounded-full bg-white h-32 w-32 mx-auto mb-6 cursor-pointer"
-          @click="$refs.inputFile.click()"
-        >
-          <img src="/images/icons/upload.png" alt="Upload" class="h-16 mx-auto ml-8 -mt-2" />
-        </div>
-
-        <img
-          v-else
-          :src="preview"
-          alt="Image"
-          class="rounded-full h-32 w-32 mx-auto mb-6 cursor-pointer"
-          @click="$refs.inputFile.click()"
-        />
-
-        <input ref="inputFile" accept=".png, .jpg, .jpeg" type="file" hidden @change="handleImage" />
-
-        <base-input
-          v-model="form.agency_name"
-          v-validate="'required|max:255'"
-          name="agency_name"
-          placeholder="Agency Name"
-          :message="errors.first('agency_name')"
-          data-vv-as="agency name"
-        />
-
-        <base-input
-          v-model="form.profesion"
-          v-validate="'required|max:255'"
-          name="profesion"
-          placeholder="Job Title"
-          :message="errors.first('profesion')"
-          data-vv-as="job title"
-        />
-        <base-select
-          key="gender-input"
-          v-model="form.gender"
-          v-validate="'required'"
-          name="gender"
-          class="w-full"
-          placeholder="Gender"
-          :message="errors.first('gender')"
-        >
-          <option value="male">Male</option>
-          <option value="female">Female</option>
-          <option value="other">Other</option>
-        </base-select>
-      </template>
-
-      <base-button class="mt-16" type="submit" expanded>Next</base-button>
+      <base-button class="mt-16" type="submit" expanded>{{ step === 4 ? 'Get Started' : 'Next' }}</base-button>
     </form>
     <modal
       class="flex flex-col w-full items-center my-info-mdel"
@@ -288,6 +283,8 @@ import ThumbService from "@/services/ThumbService";
 import PlanDetails from "../../components/shared/PlanDetails";
 import moment from "moment";
 import TokenService from "../../services/core/TokenService";
+import { eventBus } from "../../main";
+const $ = require("jquery");
 
 export default {
   components: {
@@ -314,14 +311,31 @@ export default {
       profileNameObject: {},
       profileThumbnail: {},
       selectedPlan: null,
-      minmonthdate: moment()
+      minmonthdate: moment(),
+      isSignUpDone: false
     };
+  },
+  created() {
+    eventBus.$on("signupBack", value => {
+      if (value === 0) {
+        this.selectedPlan = null;
+        this.step = 1;
+      } else {
+        this.step = value;
+      }
+
+      console.log("created -> this.step", this.step);
+    });
   },
   methods: {
     ...mapActions("auth", ["login"]),
     async nextStep() {
+      console.log("handleRegister -> this.form", this.form);
       if (await this.$validator.validateAll()) {
         this.step += 1;
+
+        console.log("nextStep -> this.step", this.step);
+        eventBus.$emit("signupNext", this.step);
       }
     },
 
@@ -366,34 +380,36 @@ export default {
         if (this.isLoading || !(await this.$validator.validateAll())) {
           return;
         }
-
-        if (this.updatedImageBlob && this.updatedImageFile) {
-          this.updatedImageBlob.name = this.updatedImageFile.name;
-          this.form.image = this.updatedImageBlob;
-          this.form.profileThumbnail = this.profileThumbnail;
-          this.form.profileNameObject = this.profileNameObject;
-        } else {
-          this.form.image = null;
-        }
-        // Validate image
-        if (!this.form.image) {
-          this.$toasted.error("The image field is required.");
-          return;
-        }
-
-        // Validate location
-        // if (!this.form.location) {
-        //   this.$toasted.error('The location selected is invalid.');
-        //   return;
-        // }
-
-        this.isLoading = true;
         let data = JSON.parse(JSON.stringify(this.form));
-        this.form.address = `${this.form.address1} ${this.form.address2}`;
-        console.log("handleRegister -> this.form", this.form);
-        delete this.form.address1;
-        delete this.form.address2;
-        await AuthService.register(this.form);
+        if (!this.isSignUpDone) {
+          if (this.updatedImageBlob && this.updatedImageFile) {
+            this.updatedImageBlob.name = this.updatedImageFile.name;
+            this.form.image = this.updatedImageBlob;
+            this.form.profileThumbnail = this.profileThumbnail;
+            this.form.profileNameObject = this.profileNameObject;
+          } else {
+            this.form.image = null;
+          }
+          // Validate image
+          if (!this.form.image) {
+            this.$toasted.error("The image field is required.");
+            return;
+          }
+
+          // Validate location
+          // if (!this.form.location) {
+          //   this.$toasted.error('The location selected is invalid.');
+          //   return;
+          // }
+
+          this.isLoading = true;
+          this.form.address = `${this.form.address1} ${this.form.address2}`;
+          console.log("handleRegister -> this.form", this.form);
+          delete this.form.address1;
+          delete this.form.address2;
+          await AuthService.register(this.form);
+          this.isSignUpDone = true;
+        }
         await this.login({
           email: this.form.email,
           password: this.form.password,
@@ -401,7 +417,18 @@ export default {
         });
 
         // start : create subscription plan
-        // await this.subscribePlan(data);
+        const Request = {
+          name_on_card: data.name_on_card,
+          exp_year: moment(data.card_expiry).format("YYYY"),
+          exp_month: moment(data.card_expiry).format("MM"),
+          number: data.card_number.replace(/\s/g, ""),
+          cvc: data.card_cvc,
+          user_id: TokenService.getUserId(),
+          stripe_plan_id: this.selectedPlan.id,
+          stripe_plan_name: this.selectedPlan.name
+        };
+
+        await axios.post(`/t/users/subscribe`, Request);
         // end : create subscription plan
 
         if (firebase.messaging.isSupported()) {
@@ -456,23 +483,10 @@ export default {
         `/t/notification-send-pushkey?pushkey=${device_token}&device_id=${userAgentId}&device_type=web`
       );
     },
-    async subscribePlan(data) {
-      const Request = {
-        exp_year: moment(data.card_expiry).format("YYYY"),
-        exp_month: moment(data.card_expiry).format("MM"),
-        number: data.card_number,
-        cvc: data.card_cvc,
-        user_id: TokenService.getUserId(),
-        stripe_plan_id: this.selectedPlan.id,
-        stripe_plan_name: this.selectedPlan.name
-      };
-      const {
-        result: { result }
-      } = await axios.post(`/t/users/subscribe`, data);
-    },
     onRegisterSuccessRedirect() {
       // Redirect the user to the page he first tried to visit or to the home view
-      this.$router.push({ name: "tour" });
+      // this.$router.push({ name: "tour" });
+      this.$router.push({ name: "invite_user", params: { type: btoa("signup") } });
     },
     onCancel() {
       console.log("User cancelled the loader.");
@@ -586,9 +600,14 @@ export default {
       console.log("handleSelectPlan -> selectedPlan", selectedPlan);
       if (selectedPlan) {
         this.selectedPlan = selectedPlan;
+        eventBus.$emit("signupNext", this.step);
+        console.log("handleSelectPlan -> this.step", this.step);
       } else {
         this.selectedPlan = null;
       }
+    },
+    handleChildLoader(value) {
+      this.isLoading = value;
     }
   }
 };

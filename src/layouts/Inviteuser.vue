@@ -1,13 +1,6 @@
 <template>
   <div class="flex flex-col min-h-full cover">    
-    <auth-nav-bar v-if="showNavBar" />
-    <div v-if="signupStep !== 4" class=" cursor-pointer flex content-around w-100 items-center relative cmb-10 back-div ml-5" @click="back">
-      <img
-        src="/images/icons/left_arrow_white.png"
-        class="absolute left-0 pl-5"        
-      />
-      <h1 class="absolute text-white text-md back-mrg-l ml-5 left-0 pl-5">Back</h1>
-    </div>
+    <auth-nav-bar v-if="showNavBar" />    
     <transition
       name="page"
       mode="out-in"
@@ -36,21 +29,11 @@ export default {
     },
   },
   created() {
-    eventBus.$on("signupNext", value => {
-      this.signupStep = value;
-      console.log("created -> this.signupStep", this.signupStep)
-    });
+    this.getSubscriptionDetails()
   },
   methods: {
-    back() {
-      if(this.signupStep == 0){
-        this.$router.push({ name: 'login'});
-      } else {
-        this.signupStep--;
-        console.log("back -> this.signupStep", this.signupStep)
-        eventBus.$emit("signupBack", this.signupStep);
-      }
-      
+    getSubscriptionDetails(){
+
     }
   }
 };

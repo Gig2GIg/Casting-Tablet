@@ -56,11 +56,13 @@ export default {
       this.$emit('select_plan', plan);        
     },
     async getPlanList() {
+      this.$emit('child_loder', true);        
       const {
         data: { data }
       } = await axios.get(`/users/listSubscriptionPlans`);
       console.log("getPlanList -> data", data);
       this.planList = data.data && data.data.length > 0 ? data.data : [];
+      this.$emit('child_loder', false);        
     }
   }
 };

@@ -1,8 +1,8 @@
 <template>
   <router-link
     tag="nav"
-    to="/"
-    class="flex justify-center items-center h-12 cursor-pointer"
+    to=""
+    class="flex justify-center items-center h-12"
   >
     <img
       src="/images/logo.png"

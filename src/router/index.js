@@ -2,7 +2,7 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import store from '@/store';
 import routes from './routes';
-
+import DEFINE from './../utils/const';
 Vue.use(VueRouter);
 
 const router = new VueRouter({
@@ -25,6 +25,7 @@ const router = new VueRouter({
 
     // Wait for the out transition to complete (if necessary)
     router.app.$root.$once('triggerScroll', () => {
+      console.log("router triggerScroll")
       router.app.$nextTick(() => resolve(position));
     });
   }),
@@ -35,11 +36,16 @@ router.beforeEach((to, from, next) => {
   const isPublic = to.matched.some(record => record.meta.public);
   const onlyWhenLoggedOut = to.matched.some(record => record.meta.onlyWhenLoggedOut);
   const allowBoth = to.matched.some(record => record.meta.allowBoth);
-  
-  if(allowBoth){
+  const isPrimeModule = to.matched.some(record => record.meta.isPrimeModule);
+  console.log("isPrimeModule", isPrimeModule)
+
+
+  if (allowBoth) {
     return next();
   }
   const loggedIn = store.getters['auth/isAuthenticated'];
+  const currentUser = store.getters['profile/currentUser'];
+  console.log("currentUser", currentUser)
 
   if (!isPublic && !onlyWhenLoggedOut && !loggedIn) {
     return next({
@@ -53,7 +59,25 @@ router.beforeEach((to, from, next) => {
     return next({ name: 'auditions' });
   }
 
+  if (isPrimeModule && (!currentUser || !currentUser.is_premium || currentUser.is_premium === 0)) {
+    Vue.toasted.clear();    
+    Vue.toasted.info(DEFINE.no_plan_subscirbed_error);
+    // Vue.toasted.info(DEFINE.no_plan_subscirbed_error,  {
+    //   action : {
+    //       text : 'Subscribe',
+    //       onClick : (e, toastObject) => {            
+    //         that.$router.push({name: 'my.settings'});
+    //       }
+    //     }
+    //   });
+    return next({ name: 'my.settings' });
+  }
+
   return next();
+});
+router.afterEach((to, from, next) => {
+  const currentUser = store.getters['profile/currentUser'];
+  console.log("currentUser", currentUser)
 });
 
 export default router;

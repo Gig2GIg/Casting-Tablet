@@ -1,8 +1,10 @@
 import * as types from '@/store/types';
+import TokenService from '../../../services/core/TokenService';
 
 export default {
   [types.FETCH_PROFILE_SUCCESS](state, user) {
     state.user = user;
+    TokenService.setUserData(state.user);
   },
 
   [types.FETCH_PROFILE_FAILURE](state) {

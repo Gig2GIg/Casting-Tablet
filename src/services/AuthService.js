@@ -8,10 +8,13 @@ import 'firebase/storage';
 class AuthService extends BaseService {
   async login(credentials) {
     // eslint-disable-next-line camelcase
-    const { data: { data: { id }, access_token } } = await this.post('/login', credentials);
+    const { data: { data , access_token } } = await this.post('/login', credentials);    
+    // const { data: { data } } = await this.post('/login', credentials);
     // debugger;
     // Save token
-    TokenService.setToken(id, access_token);
+    TokenService.setToken(data.id, access_token);
+    // user data
+    TokenService.setUserData(data);
     // Configure HttpClient with the new token
     HttpService.setAuthorizationHeader(access_token);
     HttpService.mount401Interceptor();
@@ -22,7 +25,6 @@ class AuthService extends BaseService {
 
   async register(user) {
     let userData = user;
-    console.log("AuthService -> register -> userData", userData)
     // upload cover thumbnail file
     let profileThumbnailUrl;
     if(user.profileThumbnail && user.profileThumbnail.file){
