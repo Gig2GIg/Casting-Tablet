@@ -1,7 +1,7 @@
 <template>
   <router-link
     tag="nav"
-    to="/"
+    to="/my/settings"
     class="flex justify-center items-center h-12 cursor-pointer"
   >
     <img

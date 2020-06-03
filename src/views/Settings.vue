@@ -46,6 +46,7 @@
           </div>
         </div>
         <div
+          v-if="!user.is_invited"
           class="py-2 flex flex-wrap px-4 border-b-2 border-gray-300 mr-2 cursor-pointer"
           @click="manageSelectedTab('subscription')"
         >
@@ -571,7 +572,7 @@
         </div>
       </div>
       <div
-        v-if="tabSelected === 'subscription' && hideMenuInfo == true"
+        v-if="!user.is_invited && tabSelected === 'subscription' && hideMenuInfo == true"
         class="tags w-80 shadow-md mx-auto px-3 py-3 mt-6"
       >
         <invite-user-list />
@@ -1041,6 +1042,10 @@ export default {
     };
   },
   async mounted() {
+    const tab = this.$route.query.tab    
+    if(tab && tab != ''){
+      this.manageSelectedTab(tab);
+    }
     this.getUserData();
   },
   async created() {

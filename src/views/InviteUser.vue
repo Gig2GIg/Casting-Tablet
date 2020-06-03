@@ -174,11 +174,17 @@ export default {
       if (this.commingFrom == "signup") {
         this.$router.push({ name: "tour" });
       } else {
-        this.$router.push({ name: "my.settings" });
+        this.$router.push({
+          name: "my.settings",
+          query: { tab: "subscription" }
+        });
       }
     },
     backToSetting() {
-      this.$router.push({ name: "my.settings" });
+      this.$router.push({
+        name: "my.settings",
+        query: { tab: "subscription" }
+      });
     },
     onCancel() {
       console.log("User cancelled the loader.");

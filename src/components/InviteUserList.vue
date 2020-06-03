@@ -21,7 +21,7 @@
             <div class="w-2/8 text-purple px-2 text-sm capitalize">
               <a
                 class="social-a flex items-center justify-center content-center cursor-pointer"
-                @click="changePlan()"
+                @click="changePaymentDetails()"
               >Change</a>
             </div>
           </div>
@@ -82,7 +82,7 @@
                 </div>
                 <div
                   v-else
-                  class="cursor-pointer content-center rounded-full red-light w-full h-8 flex items-center button-detail accept-decline-btn"
+                  class="cursor-pointer m-3 content-center rounded-full red-light w-full h-8 flex items-center button-detail accept-decline-btn"
                   @click="activateUser(user)"
                 >
                   <p class="text-white text-sm text-center content-center flex-1">Activate</p>
@@ -93,6 +93,24 @@
         </div>
       </div>
     </div>
+    <modal
+      class="flex flex-col w-full items-center mt-4"
+      :width="540"
+      height="175"
+      name="modal_confirm_status_change"
+    >
+      <div class="py-8 px-3">
+        <p class="text-lg text-purple font-bold text-center">{{statusConfirmMsg}}</p>
+        <div class="w-full flex flex-wrap justify-center overflow-hidden mt-3">
+          <div class="w-1/4">
+            <base-button type="button" expanded @click="onCancelStatusChange()">No</base-button>
+          </div>
+          <div class="w-1/4 ml-3">
+            <base-button type="button" expanded @click="onStatusChangeConfirm()">Yes</base-button>
+          </div>
+        </div>
+      </div>
+    </modal>
   </div>
 </template>
 
@@ -104,10 +122,12 @@ import axios from "axios";
 import Loading from "vue-loading-overlay";
 // Import stylesheet
 import "vue-loading-overlay/dist/vue-loading.css";
+Vue.use(Loading);
+
 import TokenService from "../services/core/TokenService";
 import DEFINE from "../utils/const";
-
-Vue.use(Loading);
+import store from "@/store";
+import { eventBus } from "../main";
 
 export default {
   components: {
@@ -124,29 +144,36 @@ export default {
         }
       ],
       inviteUserList: [],
-      subscriptionDetails: null
+      subscriptionDetails: null,
+      statusConfirmMsg: "",
+      statusConfirmUser: null,
+      newStatus: null
     };
   },
   async mounted() {
-    this.getInviteUser();
+    await this.getInviteUser();
+    const currentUser = store.getters["profile/currentUser"];
+    if (currentUser.is_invited) {
+      // invited user can not access right of invite user or invite user list
+      this.hideMenuInfo = false;
+      eventBus.$emit("settingNavViewChange", this.hideMenuInfo);
+    }
   },
   methods: {
+    /**
+     * Get list of invited user
+     */
     async getInviteUser() {
       this.isLoading = true;
       try {
         const {
           data: { data }
         } = await axios.get(`/users/subscriptionDetails`);
-        console.log("getInviteUser -> data", data);
         if (data) {
           this.subscriptionDetails = data.subscription
             ? data.subscription
             : null;
           this.inviteUserList = data.invitedUsers ? data.invitedUsers : [];
-          console.log(
-            "getInviteUser -> this.subscriptionDetails",
-            this.subscriptionDetails
-          );
         } else {
           this.subscriptionDetails = null;
           this.inviteUserList = [];
@@ -163,21 +190,87 @@ export default {
         this.isLoading = false;
       }
     },
-    deactivateUser(user) {},
-    activateUser(user) {},
+    /**
+     * On click deactivate user action button, it's used for set selected user details with new status and confirm message
+     */
+    deactivateUser(user) {
+      this.statusConfirmUser = user;
+      this.newStatus = 0;
+      this.statusConfirmMsg = "Do you want deactivate this user?";
+      this.$modal.show("modal_confirm_status_change");
+    },
+    /**
+     * On click activate user action button, it's used for set selected user details with new status and confirm message
+     */
+    activateUser(user) {
+      this.statusConfirmUser = user;
+      this.newStatus = 1;
+      this.statusConfirmMsg = "Do you want activate this user?";
+      this.$modal.show("modal_confirm_status_change");
+    },
+    /**
+     * On cancel reset selected user object and hide modal
+     */
+    onCancelStatusChange() {
+      this.statusConfirmUser = null;
+      this.newStatus = null;
+      this.statusConfirmMsg = null;
+      this.$modal.hide("modal_confirm_status_change");
+    },
+    /**
+     * On user confirmation api call for new status change and handle response of api
+     */
+    async onStatusChangeConfirm() {
+      if (this.statusConfirmUser == null || this.newStatus == null) {
+        this.$modal.hide("modal_confirm_status_change");
+        this.$toasted.error(DEFINE.common_error_message);
+        return false;
+      }
+      this.isLoading = true;
+      try {
+        this.$modal.hide("modal_confirm_status_change");
+        const requestParam = {
+          id: this.statusConfirmUser.id,
+          status: this.newStatus
+        };
+        const {
+          data: { data }
+        } = await axios.post(`/users/changeStatus`, requestParam);
+        this.isLoading = false;
+        this.getInviteUser();
+        const successMsg =
+          this.newStatus == 0
+            ? "User has been deactivated successfully."
+            : "User has been activated successfully.";
+        this.$toasted.success(successMsg);
+      } catch (e) {
+        this.$toasted.error(DEFINE.common_error_message);
+      } finally {
+        this.isLoading = false;
+      }
+    },
+    /**
+     * On invite button click route navigate to invite user screen
+     */
     inviteUsers() {
       this.$router.push({
         name: "invite_user",
         params: { type: btoa("settings") }
       });
     },
-    changePlan() {
+    /**
+     * On change payment details open payment  details page for change current card details for next subscription used
+     */
+    changePaymentDetails() {
       this.$toasted.clear();
       console.log("changePlan -> changePlan");
     },
-    subscribePlan() {      
+    /**
+     * When user don't have any tier plan then give to option for subscription new tier (plan)
+     */
+    subscribePlan() {
       this.$toasted.clear();
-      this.$router.push({name : 'subscribe_plan'});
+      this.$router.push({ name: "subscribe_plan" });
     },
     onCancel() {
       console.log("User cancelled the loader.");

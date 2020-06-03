@@ -39,8 +39,8 @@ export default {
    *
    * @param {object} token
    */
-  setUserData(user_data) {
-    Cookies.set(USER_DETAILS_KEY, btoa(JSON.stringify(user_data)), { expires: EXPIRATION_DAYS });
+  async setUserData(user_data) {
+    await Cookies.set(USER_DETAILS_KEY, btoa(JSON.stringify(user_data)), { expires: EXPIRATION_DAYS });
   },
 
   /**

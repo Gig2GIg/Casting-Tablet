@@ -33,11 +33,13 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
+console.log("to", to)
+console.log("from", from)
   const isPublic = to.matched.some(record => record.meta.public);
   const onlyWhenLoggedOut = to.matched.some(record => record.meta.onlyWhenLoggedOut);
   const allowBoth = to.matched.some(record => record.meta.allowBoth);
   const isPrimeModule = to.matched.some(record => record.meta.isPrimeModule);
-  console.log("isPrimeModule", isPrimeModule)
+  // console.log("isPrimeModule", isPrimeModule)
 
 
   if (allowBoth) {
@@ -45,7 +47,7 @@ router.beforeEach((to, from, next) => {
   }
   const loggedIn = store.getters['auth/isAuthenticated'];
   const currentUser = store.getters['profile/currentUser'];
-  console.log("currentUser", currentUser)
+  console.log("router currentUser", currentUser)
 
   if (!isPublic && !onlyWhenLoggedOut && !loggedIn) {
     return next({
@@ -60,7 +62,7 @@ router.beforeEach((to, from, next) => {
   }
 
   if (isPrimeModule && (!currentUser || !currentUser.is_premium || currentUser.is_premium === 0)) {
-    Vue.toasted.clear();    
+    Vue.toasted.clear();
     Vue.toasted.info(DEFINE.no_plan_subscirbed_error);
     // Vue.toasted.info(DEFINE.no_plan_subscirbed_error,  {
     //   action : {
@@ -70,14 +72,19 @@ router.beforeEach((to, from, next) => {
     //       }
     //     }
     //   });
-    return next({ name: 'my.settings' });
+    if(from.name){
+      return next({ name: from.name });
+    } else {
+      return next({ name: 'my.settings' });
+    }
+    
   }
 
   return next();
 });
 router.afterEach((to, from, next) => {
   const currentUser = store.getters['profile/currentUser'];
-  console.log("currentUser", currentUser)
+  // console.log("currentUser", currentUser)
 });
 
 export default router;

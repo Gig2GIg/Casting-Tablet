@@ -50,7 +50,7 @@ import Loading from "vue-loading-overlay";
 // Import stylesheet
 import "vue-loading-overlay/dist/vue-loading.css";
 import TokenService from "../../services/core/TokenService";
-import store from '@/store';
+import store from "@/store";
 
 Vue.use(Loading);
 
@@ -63,7 +63,8 @@ export default {
       email: "",
       password: "",
       isLoading: false,
-      fullPage: true
+      fullPage: true,
+      logingResult: null
     };
   },
   methods: {
@@ -77,18 +78,17 @@ export default {
 
         this.isLoading = true;
 
-        await this.login({
+        this.logingResult = await this.login({
           email: this.email,
           password: this.password,
           type: DEFINE.caster_type
         });
-
         if (firebase.messaging.isSupported()) {
           await this.askForPermissionToReceiveNotifications();
         }
 
         // Redirect the user to the page he first tried to visit or to the home view
-        this.onLoginSuccessRedirect();
+        await this.onLoginSuccessRedirect();
       } catch (e) {
         console.log("TCL: handleLogin -> e.FirebaseError", e);
         if (e.code && e.code == DEFINE.firebase_permission_error.code) {
@@ -134,18 +134,41 @@ export default {
     },
     onLoginSuccessRedirect() {
       // Redirect the user to the page he first tried to visit or to the home view
-      const currentUser = store.getters['profile/currentUser'];
-      console.log("currentUser", currentUser)
-      if(!this.$route.query.redirect && (!currentUser || !currentUser.is_premium || currentUser.is_premium === 0)) {
-        this.$router.push({ name: "my.settings"});
+      const currentUser =
+        this.logingResult && this.logingResult.user
+          ? this.logingResult.user
+          : null;      
+      if (
+        !this.$route.query.redirect &&
+        (!currentUser ||
+          !currentUser.is_premium ||
+          currentUser.is_premium === 0)
+      ) {
+        Vue.toasted.info(DEFINE.no_plan_subscirbed_error);
+        // no prime user redirect on subscribe settings screen
+        this.$router.push({
+          name: "my.settings",
+          query: { tab: "subscription" }
+        });
       } else {
-        this.$router.replace(
-        this.$route.query.redirect || {
-          name: "auditions"
+        if (
+          currentUser.is_premium === 1 &&
+          currentUser.is_invited &&
+          (!currentUser.details || !currentUser.details.agency_name)
+        ) {
+          // prime invited user redirect on settings with profile update page          
+          this.$router.push({
+            name: "my.settings",
+            query: { tab: "myinfo" }
+          });
+        } else {
+          this.$router.replace(
+            this.$route.query.redirect || {
+              name: "auditions"
+            }
+          );
         }
-      );
       }
-      
     },
     onCancel() {
       console.log("User cancelled the loader.");

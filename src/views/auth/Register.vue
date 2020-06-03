@@ -163,7 +163,7 @@
         />
       </template>
       <template v-else>
-        <base-input
+        <!-- <base-input
           key="address1-input"
           v-model="form.address1"
           v-validate="'required|max:255'"
@@ -187,9 +187,9 @@
           name="city"
           placeholder="City"
           :message="errors.first('city')"
-        />
+        /> -->
 
-        <div class="flex items-start w-full">
+        <!-- <div class="flex items-start w-full">
           <base-select
             key="state-input"
             v-model="form.state"
@@ -215,7 +215,35 @@
             placeholder="Zip"
             :message="errors.first('zip')"
           />
-        </div>
+        </div> -->
+        <base-select
+            key="country-input"
+            v-model="form.country"
+            v-validate="'required'"
+            name="country"            
+            placeholder="Country"
+            :message="errors.first('country')"
+          >
+            <option
+              v-for="country in countries"
+              :key="country.id"
+              :value="country.id"
+            >
+              {{ country.name }}
+            </option>
+          </base-select>
+
+        <base-input
+          key="birth-input"
+          v-model="form.birth"
+          name="birth"
+          type="date"
+          :max-date="new Date(new Date().getFullYear() - 18, new Date().getMonth(), new Date().getDate())"
+          placeholder="Birth Date"
+          :message="errors.first('birth')"
+          data-vv-as="birth date"
+        />
+
       </template>
 
       <base-button class="mt-16" type="submit" expanded>{{ step === 4 ? 'Get Started' : 'Next' }}</base-button>
@@ -264,7 +292,8 @@
 <script>
 import Vue from "vue";
 import AuthService from "@/services/AuthService";
-import states from "@/utils/states";
+// import states from "@/utils/states";
+import countries from '@/utils/countries';
 import DEFINE from "../../utils/const.js";
 import { mapActions } from "vuex";
 // Import component
@@ -299,7 +328,8 @@ export default {
       isLoading: false,
       fullPage: true,
       preview: null,
-      states,
+      // states,
+      countries,
       imgSrc: null,
       updatedImageFile: null,
       updatedImageBlob: null,
@@ -312,10 +342,12 @@ export default {
       profileThumbnail: {},
       selectedPlan: null,
       minmonthdate: moment(),
-      isSignUpDone: false
+      isSignUpDone: false,
+      logingResult: null
     };
   },
   created() {
+    eventBus.$emit("signupNext", this.step);
     eventBus.$on("signupBack", value => {
       if (value === 0) {
         this.selectedPlan = null;
@@ -403,14 +435,14 @@ export default {
           // }
 
           this.isLoading = true;
-          this.form.address = `${this.form.address1} ${this.form.address2}`;
+          // this.form.address = `${this.form.address1} ${this.form.address2}`;
           console.log("handleRegister -> this.form", this.form);
-          delete this.form.address1;
-          delete this.form.address2;
+          // delete this.form.address1;
+          // delete this.form.address2;
           await AuthService.register(this.form);
           this.isSignUpDone = true;
         }
-        await this.login({
+        this.logingResult = await this.login({
           email: this.form.email,
           password: this.form.password,
           type: DEFINE.caster_type
@@ -486,7 +518,10 @@ export default {
     onRegisterSuccessRedirect() {
       // Redirect the user to the page he first tried to visit or to the home view
       // this.$router.push({ name: "tour" });
-      this.$router.push({ name: "invite_user", params: { type: btoa("signup") } });
+      this.$router.push({
+        name: "invite_user",
+        params: { type: btoa("signup") }
+      });
     },
     onCancel() {
       console.log("User cancelled the loader.");
