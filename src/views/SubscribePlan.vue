@@ -39,6 +39,7 @@
         v-model="form.card_expiry"
         v-validate="'required'"
         name="card_expiry"
+        class="month-picker"
         placeholder="Card Expiry"
         type="month"
         :stripe_cardformat="'formatCardExpiry'"
@@ -242,5 +243,24 @@ textarea {
 }
 .credit-card-inputs.complete {
   border: 2px solid green;
+}
+.month-picker .month-year-display{
+  background-color: #ffffff;
+}
+.month-picker .month-year-display .picker .flexbox div{color: #ffffff;}
+.vue-monthly-picker .picker .flexbox div {
+    color: #000000;
+    font-weight: 600;
+}
+.vue-monthly-picker .date-popover{
+  border-radius: 15px !important;
+}
+.vue-monthly-picker .picker .monthItem .item.active:hover {
+    background-color: transparent !important;
+    background-image: linear-gradient(#4D2545, #782541) !important;
+    color: #ffffff !important;
+}
+.vue-monthly-picker .picker .monthItem .item.deactive{
+  color: #999 !important;
 }
 </style>
