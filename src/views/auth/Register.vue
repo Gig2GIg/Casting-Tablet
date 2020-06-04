@@ -355,18 +355,14 @@ export default {
       } else {
         this.step = value;
       }
-
-      console.log("created -> this.step", this.step);
     });
   },
   methods: {
     ...mapActions("auth", ["login"]),
+    ...mapActions('profile', ['fetch']),
     async nextStep() {
-      console.log("handleRegister -> this.form", this.form);
       if (await this.$validator.validateAll()) {
         this.step += 1;
-
-        console.log("nextStep -> this.step", this.step);
         eventBus.$emit("signupNext", this.step);
       }
     },
@@ -462,6 +458,7 @@ export default {
 
         await axios.post(`/t/users/subscribe`, Request);
         // end : create subscription plan
+        await this.fetch()
 
         if (firebase.messaging.isSupported()) {
           await this.askForPermissionToReceiveNotifications();
@@ -476,7 +473,7 @@ export default {
         this.onRegisterSuccessRedirect();
       } catch (e) {
         console.log("handleRegister -> e", e);
-        console.log("TCL: handleLogin -> e.response", e.response);
+        console.log("TCL: handleRegister -> e.response", e.response);
         if (e.code && e.code == DEFINE.firebase_permission_error.code) {
           this.updateDeviceToken("");
           this.onRegisterSuccessRedirect();
@@ -631,12 +628,10 @@ export default {
       this.$refs.inputFile.value = "";
       this.setUserData();
     },
-    handleSelectPlan(selectedPlan) {
-      console.log("handleSelectPlan -> selectedPlan", selectedPlan);
+    handleSelectPlan(selectedPlan) {      
       if (selectedPlan) {
         this.selectedPlan = selectedPlan;
         eventBus.$emit("signupNext", this.step);
-        console.log("handleSelectPlan -> this.step", this.step);
       } else {
         this.selectedPlan = null;
       }

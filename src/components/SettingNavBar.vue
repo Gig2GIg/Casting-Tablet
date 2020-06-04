@@ -2,7 +2,7 @@
   <nav class="flex justify-center items-center h-12 text-white">
     <div
       v-if="hideMenuInfo"
-      class="cursor-pointer flex content-around w-1/2 items-center relative cmb-10"
+      class="cursor-pointer flex content-around w-2/5 items-center relative cmb-10"
       @click="backToSetting"
     >
       <img src="/images/icons/left_arrow_white.png" class="absolute left-0 pl-1" />
@@ -10,7 +10,7 @@
     </div>
     <div v-else class="cursor-pointer flex content-around w-1/2 items-center relative cmb-10"></div>
 
-    <div class="text-center">{{hideMenuInfo ? 'Subsciptions' : 'Settings'}}</div>
+    <div class="text-center">{{hideMenuInfo ? 'Subsciption' : 'Settings'}}</div>
 
     <div class="flex items-center border-l border-white text-white ml-auto cursor-pointer">
       <span
@@ -42,7 +42,6 @@ export default {
   },
   async created() {
     eventBus.$on("settingNavViewChange", value => {
-      console.log("created -> value", value);
       this.hideMenuInfo = value;
     });
     let isLogin = store.getters["auth/isAuthenticated"];

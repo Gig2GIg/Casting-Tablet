@@ -154,11 +154,9 @@ export default {
     onCancel() {
       console.log("User cancelled the loader.");
     },
-    handleSelectPlan(selectedPlan) {
-      console.log("handleSelectPlan -> selectedPlan", selectedPlan);
+    handleSelectPlan(selectedPlan) {      
       if (selectedPlan) {
         this.selectedPlan = selectedPlan;
-        console.log("handleSelectPlan -> this.step", this.step);
       } else {
         this.selectedPlan = null;
       }
