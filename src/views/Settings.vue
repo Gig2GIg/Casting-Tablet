@@ -582,7 +582,7 @@
         class="tags w-9/12 shadow-md mx-auto px-3 py-3 mt-6"
       >
         <div class="cursor-pointer" @click="hideMenuInfo = false; tabSelected = ''">
-          <svg xmlns="http://www.w3.org/2000/svg" width="30.049" height="39.187">
+          <svg xmlns="http://www.w3.org/2000/svg"  width="30.049" height="39.187">
             <defs>
               <filter
                 id="a"

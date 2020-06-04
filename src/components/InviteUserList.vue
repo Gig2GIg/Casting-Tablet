@@ -10,7 +10,7 @@
       <div class="py-4 px-4 mr-2 flex flex-wrap justify-center">
         <div class="w-full mr-2">
           <div class="flex justify-center mb-4 items-center px-3 w-full">
-            <div class="w-1/2 text-purple px-2 text-lg">Subscription</div>
+            <div class="w-1/2 text-purple px-2 text-lg text-bold-500">Subscription</div>
             <div class="w-1/2 text-purple px-2 text-md"></div>
           </div>
           <div class="flex justify-right mb-4 items-right px-3 w-full" v-if="subscriptionDetails">
@@ -20,7 +20,7 @@
             >Payment: {{subscriptionDetails.card_brand}} Card {{subscriptionDetails.card_last_four}}</div>
             <div class="w-2/8 text-purple px-2 text-sm capitalize">
               <a
-                class="social-a flex items-center justify-center content-center cursor-pointer"
+                class="social-a flex items-center justify-center content-center cursor-pointer text-bold-500"
                 @click="changePaymentDetails()"
               >Change</a>
             </div>
@@ -38,7 +38,7 @@
         </div>
         <div class="w-full mr-2">
           <div class="flex mb-4 items-center px-3 w-full">
-            <div class="w-2/5 text-purple px-2 text-lg">Users</div>
+            <div class="w-2/5 text-purple px-2 text-lg text-bold-500">Users</div>
             <div class="w-2/5 text-purple px-2 text-lg"></div>
             <div class="w-2/10 text-purple px-2 text-md">
               <div
@@ -51,23 +51,23 @@
             </div>
           </div>
         </div>
-        <div class="w-full mr-2 border-2 border-gray-300">
-          <div class="flex justify-center mb-4 items-center px-3 w-full bg-grey-500">
+        <div class="w-full mr-2 border-grey-1 border-raduis-8">
+          <div class="flex justify-center mb-4 items-center px-3 w-full bg-grey-500 border-tl-8 ptb-10">
             <div class="w-2/5 ml-4 text-purple px-2 text-md">Name</div>
             <div class="w-2/5 ml-4 text-purple px-2 text-md">Joined</div>
             <div class="w-2/10 ml-4 text-purple px-2"></div>
           </div>
           <div class="w-full mr-2" v-for="(user, index) of inviteUserList" :key="index">
             <div class="flex justify-center mb-4 items-center px-3 w-full">
-              <div class="w-2/5 ml-4 text-purple px-2 text-sm">
+              <div class="w-2/5 ml-4 text-purple px-2 text-sm user-img">
                 <img
                   v-lazy="user.image && user.image.url ? user.image.url : ''"
                   class="h-10 w-10 rounded object-cover"
                   alt="Logo"
                 />
-                {{user.details.first_name +' '+ (user.details.last_name ? user.details.last_name : '')}}
+                <span>{{user.details.first_name +' '+ (user.details.last_name ? user.details.last_name : '')}}
                 <br />
-                {{user.email}}
+                {{user.email}}</span>
               </div>
               <div
                 class="w-2/5 ml-4 text-purple px-2 text-sm"
@@ -282,5 +282,34 @@ export default {
 .invite-block-hieght {
   min-height: 500px;
   min-height: 500px;
+}
+.bg-grey-500{
+  background-color: #F0F0F0;
+}
+.border-grey-1{
+  border: 1px solid #F0F0F0;
+}
+.border-raduis-8{
+  border-radius: 8px !important;
+}
+.border-tl-8{
+      border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+.ptb-10 {
+  padding: 10px 0;
+}
+.user-img{
+  display: flex;
+  align-items: center;
+}
+.user-img span{
+  margin-left: 10px;
+}
+.user-img img{
+  border-radius: 50% !important;
+}
+.text-bold-500{
+      font-weight: 500;
 }
 </style>

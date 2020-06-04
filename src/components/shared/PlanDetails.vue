@@ -61,7 +61,8 @@ export default {
         data: { data }
       } = await axios.get(`/users/listSubscriptionPlans`);
       console.log("getPlanList -> data", data);
-      this.planList = data.data && data.data.length > 0 ? data.data : [];
+      this.planList = data && data.length > 0 ? data : [];
+      console.log("this.planList -> data", this.planList);
       this.$emit('child_loder', false);        
     }
   }
