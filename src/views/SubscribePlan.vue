@@ -265,4 +265,10 @@ textarea {
 .vue-monthly-picker .picker .monthItem .item.deactive{
   color: #999 !important;
 }
+.vue-monthly-picker .picker .monthItem .item.active.selected {
+    background-color: transparent !important;
+    background-image: linear-gradient(#4D2545, #782541) !important;
+    color: #ffffff !important;
+}
+.month-picker-wrapper .display-text.display-text-left{color: #4D2545 !important;}
 </style>

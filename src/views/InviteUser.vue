@@ -22,7 +22,7 @@
             </div>
           </div>
           <div class="w-full mr-2" v-for="(user, index) of form" :key="index">
-            <div class="flex justify-center mb-4 items-center px-3 w-full">
+            <div class="flex justify-center mb-4 items-start px-3 w-full">
               <div class="w-3/5 ml-4 text-purple px-2">
                 <base-input
                   v-model="user.email"
