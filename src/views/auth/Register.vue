@@ -349,7 +349,7 @@ export default {
     eventBus.$on("signupBack", value => {
       if (value === 0) {
         this.selectedPlan = null;
-        this.step = 1;
+        this.step = value;
       } else {
         this.step = value;
       }
@@ -629,7 +629,7 @@ export default {
     },
     handleSelectPlan(selectedPlan) {
       if (selectedPlan) {
-        this.step++;
+        this.step += 1;
         this.selectedPlan = selectedPlan;
         eventBus.$emit("signupNext", this.step);
       } else {

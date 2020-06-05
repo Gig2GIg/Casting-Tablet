@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col min-h-full cover">
-    <auth-nav-bar v-if="showNavBar" />
+    <auth-nav-bar v-if="showNavBar" :isRouteNavigate="signupStep === 4 ? true : false" />
     <div
       v-if="signupStep !== 4"
       class="cursor-pointer flex content-around w-100 items-center relative cmb-10 back-div ml-5"
@@ -40,7 +40,7 @@ export default {
   },
   methods: {
     back() {
-      this.signupStep--;
+      this.signupStep -= 1;
       console.log("back -> this.signupStep", this.signupStep);
       if (this.signupStep < 0) {
         this.$router.push({ name: "login" });

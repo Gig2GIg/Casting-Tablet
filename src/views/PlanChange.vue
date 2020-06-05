@@ -82,7 +82,8 @@ export default {
     return {
       form: {},
       step: 1,
-      isLoading: false
+      isLoading: false,
+      fullPage: true
     };
   },
   methods: {
@@ -152,64 +153,6 @@ export default {
 .content {
   display: flex;
   justify-content: space-between;
-}
-.cropper-area {
-  width: 614px;
-}
-.actions {
-  margin-top: 1rem;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-}
-.actions a {
-  display: inline-block;
-  padding: 5px 15px;
-  background: #782541;
-  color: white;
-  text-decoration: none;
-  border-radius: 3px;
-  margin-right: 1rem;
-  margin-bottom: 1rem;
-}
-textarea {
-  width: 100%;
-  height: 100px;
-}
-.preview-area {
-  width: 307px;
-}
-.preview-area p {
-  font-size: 1.25rem;
-  margin: 0;
-  margin-bottom: 1rem;
-  color: #782541;
-}
-.preview-area p:last-of-type {
-  margin-top: 1rem;
-}
-.preview {
-  width: 100%;
-  height: calc(372px * (9 / 16));
-  overflow: hidden;
-}
-.crop-placeholder {
-  width: 100%;
-  height: 200px;
-  background: #ccc;
-}
-.cropped-image img {
-  max-width: 100%;
-}
-.v--modal-box.v--modal {
-  overflow: auto !important;
-}
-.cropper-area > textarea {
-  display: none;
-}
-.credit-card-inputs.complete {
-  border: 2px solid green;
 }
 .month-picker .month-year-display {
   background-color: #ffffff;
