@@ -1,18 +1,15 @@
 <template>
-  <div class="flex flex-col min-h-full cover">    
+  <div class="flex flex-col min-h-full cover">
     <auth-nav-bar v-if="showNavBar" />
-    <div v-if="signupStep !== 4" class=" cursor-pointer flex content-around w-100 items-center relative cmb-10 back-div ml-5" @click="back">
-      <img
-        src="/images/icons/left_arrow_white.png"
-        class="absolute left-0 pl-5"        
-      />
+    <div
+      v-if="signupStep !== 4"
+      class="cursor-pointer flex content-around w-100 items-center relative cmb-10 back-div ml-5"
+      @click="back"
+    >
+      <img src="/images/icons/left_arrow_white.png" class="absolute left-0 pl-5" />
       <h1 class="absolute text-white text-md back-mrg-l ml-5 left-0 pl-5">Back</h1>
     </div>
-    <transition
-      name="page"
-      mode="out-in"
-      @after-leave="$root.$emit('triggerScroll')"
-    >
+    <transition name="page" mode="out-in" @after-leave="$root.$emit('triggerScroll')">
       <router-view class="flex flex-col flex-1 justify-center items-center text-white py-16" />
     </transition>
   </div>
@@ -24,33 +21,32 @@ export default {
   data() {
     return {
       showNavBar: true,
-      signupStep : 0
+      signupStep: 0
     };
   },
   watch: {
     $route: {
       immediate: true,
       handler(to) {
-        this.showNavBar = to.name !== 'login';
-      },
-    },
+        this.showNavBar = to.name !== "login";
+      }
+    }
   },
   created() {
     eventBus.$on("signupNext", value => {
       this.signupStep = value;
-      console.log("created -> this.signupStep", this.signupStep)
+      console.log("created -> signupNext this.signupStep ", this.signupStep);
     });
   },
   methods: {
     back() {
-      if(this.signupStep == 0){
-        this.$router.push({ name: 'login'});
+      this.signupStep--;
+      console.log("back -> this.signupStep", this.signupStep);
+      if (this.signupStep < 0) {
+        this.$router.push({ name: "login" });
       } else {
-        this.signupStep--;
-        console.log("back -> this.signupStep", this.signupStep)
         eventBus.$emit("signupBack", this.signupStep);
       }
-      
     }
   }
 };
@@ -58,7 +54,7 @@ export default {
 
 <style scoped>
 .cover {
-  background-image: url('/images/background.jpg');
+  background-image: url("/images/background.jpg");
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;

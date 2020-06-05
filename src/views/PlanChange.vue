@@ -6,14 +6,8 @@
       :on-cancel="onCancel"
       :is-full-page="fullPage"
     ></loading>
-    <p class="text-2xl" v-if="selectedPlan">Payment Details</p>
-    <PlanDetails
-      v-if="!selectedPlan"
-      :from="'subsribe_plan'"
-      @select_plan="handleSelectPlan"
-      @child_loder="handleChildLoader"
-    />
-    <form v-else class="w-full max-w-xs mt-16" @submit.prevent="handleSubscription()">
+    <p class="text-2xl">Payment Details</p>
+    <form class="w-full max-w-xs mt-16" @submit.prevent="handleChangePlan()">
       <base-input
         key="name_on_card-input"
         v-model="form.name_on_card"
@@ -58,7 +52,7 @@
         data-vv-as="csv"
       />
 
-      <base-button class="mt-16" type="submit" expanded>Subscribe Plan</base-button>
+      <base-button class="mt-16" type="submit" expanded>Change</base-button>
     </form>
   </div>
 </template>
@@ -78,39 +72,21 @@ Vue.use(Loading);
 import axios from "axios";
 import moment from "moment";
 import TokenService from "../services/core/TokenService";
-import PlanDetails from "../components/shared/PlanDetails.vue";
 const $ = require("jquery");
 
 export default {
   components: {
-    Loading,
-    PlanDetails
+    Loading
   },
   data() {
     return {
       form: {},
       step: 1,
-      isLoading: false,
-      fullPage: true,
-      preview: null,
-      states,
-      imgSrc: null,
-      updatedImageFile: null,
-      updatedImageBlob: null,
-      cropImg: "",
-      data: null,
-      minHeight: Number(200),
-      minWidth: Number(200),
-      profileFileName: null,
-      profileNameObject: {},
-      profileThumbnail: {},
-      selectedPlan: null,
-      minmonthdate: moment(),
-      isSignUpDone: false
+      isLoading: false
     };
   },
   methods: {
-    async handleSubscription() {
+    async handleChangePlan() {
       try {
         if (this.isLoading || !(await this.$validator.validateAll())) {
           return;
@@ -118,23 +94,21 @@ export default {
         this.isLoading = true;
         let data = JSON.parse(JSON.stringify(this.form));
 
-        // start : create subscription plan
+        // start : change payment details
         const Request = {
           name_on_card: data.name_on_card,
           exp_year: moment(data.card_expiry).format("YYYY"),
           exp_month: moment(data.card_expiry).format("MM"),
           number: data.card_number.replace(/\s/g, ""),
-          cvc: data.card_cvc,
-          user_id: TokenService.getUserId(),
-          stripe_plan_id: this.selectedPlan.stripe_plan,
-          stripe_plan_name: this.selectedPlan.name,
-          plan_id: this.selectedPlan.id
+          cvc: data.card_cvc
         };
 
-        await axios.post(`/t/users/subscribe`, Request);
-        // end : create subscription plan
+        await axios.post(`/users/changeDefaultPaymentMethod`, Request);
+        // end : change payment details
 
-        this.$toasted.show("Your plan subscription has been successful.");
+        this.$toasted.show(
+          "Your payment detail has been changed successfully."
+        );
         this.$router.push({
           name: "my.settings",
           query: { tab: "subscription" }
@@ -157,16 +131,6 @@ export default {
     },
     onCancel() {
       console.log("User cancelled the loader.");
-    },
-    handleSelectPlan(selectedPlan) {
-      if (selectedPlan) {
-        this.selectedPlan = selectedPlan;
-      } else {
-        this.selectedPlan = null;
-      }
-    },
-    handleChildLoader(value) {
-      this.isLoading = value;
     }
   }
 };

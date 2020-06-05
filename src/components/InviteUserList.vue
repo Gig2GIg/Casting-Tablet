@@ -90,6 +90,9 @@
               </div>
             </div>
           </div>
+          <div class="w-full mr-2 text-center" v-if="inviteUserList.length == 0">
+            No invited user found!
+          </div>
         </div>
       </div>
     </div>
@@ -263,7 +266,8 @@ export default {
      */
     changePaymentDetails() {
       this.$toasted.clear();
-      console.log("changePlan -> changePlan");
+      console.log("plan_change -> plan_change");
+      this.$router.push({ name: "plan_change" });
     },
     /**
      * When user don't have any tier plan then give to option for subscription new tier (plan)
