@@ -91,8 +91,22 @@ export default {
       form: {},
       step: 1,
       isLoading: false,
-      fullPage: true,      
-      selectedPlan: null
+      fullPage: true,
+      preview: null,
+      states,
+      imgSrc: null,
+      updatedImageFile: null,
+      updatedImageBlob: null,
+      cropImg: "",
+      data: null,
+      minHeight: Number(200),
+      minWidth: Number(200),
+      profileFileName: null,
+      profileNameObject: {},
+      profileThumbnail: {},
+      selectedPlan: null,
+      minmonthdate: moment(),
+      isSignUpDone: false
     };
   },
   methods: {
@@ -112,19 +126,16 @@ export default {
           number: data.card_number.replace(/\s/g, ""),
           cvc: data.card_cvc,
           user_id: TokenService.getUserId(),
-          stripe_plan_id: this.selectedPlan.stripe_plan,
-          stripe_plan_name: this.selectedPlan.name,
-          plan_id: this.selectedPlan.id
+          stripe_plan_id: this.selectedPlan.id,
+          stripe_plan_name: this.selectedPlan.name
         };
 
         await axios.post(`/t/users/subscribe`, Request);
         // end : create subscription plan
+        
+        this.$toasted.show("Plan subscribe successfully.");
+        this.$router.push({ name: "my.settings" });
 
-        this.$toasted.show("Your plan subscription has been successful.");
-        this.$router.push({
-          name: "my.settings",
-          query: { tab: "subscription" }
-        });
       } catch (e) {
         let errorMsg;
         if (e.response && e.response.data) {
@@ -145,8 +156,10 @@ export default {
       console.log("User cancelled the loader.");
     },
     handleSelectPlan(selectedPlan) {
+      console.log("handleSelectPlan -> selectedPlan", selectedPlan);
       if (selectedPlan) {
         this.selectedPlan = selectedPlan;
+        console.log("handleSelectPlan -> this.step", this.step);
       } else {
         this.selectedPlan = null;
       }
@@ -175,19 +188,81 @@ export default {
   display: flex;
   justify-content: space-between;
 }
-.vue-monthly-picker .picker .flexbox div {
-  color: #000000;
-  font-weight: 600;
+.cropper-area {
+  width: 614px;
 }
-.vue-monthly-picker .date-popover {
+.actions {
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+}
+.actions a {
+  display: inline-block;
+  padding: 5px 15px;
+  background: #782541;
+  color: white;
+  text-decoration: none;
+  border-radius: 3px;
+  margin-right: 1rem;
+  margin-bottom: 1rem;
+}
+textarea {
+  width: 100%;
+  height: 100px;
+}
+.preview-area {
+  width: 307px;
+}
+.preview-area p {
+  font-size: 1.25rem;
+  margin: 0;
+  margin-bottom: 1rem;
+  color: #782541;
+}
+.preview-area p:last-of-type {
+  margin-top: 1rem;
+}
+.preview {
+  width: 100%;
+  height: calc(372px * (9 / 16));
+  overflow: hidden;
+}
+.crop-placeholder {
+  width: 100%;
+  height: 200px;
+  background: #ccc;
+}
+.cropped-image img {
+  max-width: 100%;
+}
+.v--modal-box.v--modal {
+  overflow: auto !important;
+}
+.cropper-area > textarea {
+  display: none;
+}
+.credit-card-inputs.complete {
+  border: 2px solid green;
+}
+.month-picker .month-year-display{
+  background-color: #ffffff;
+}
+.month-picker .month-year-display .picker .flexbox div{color: #ffffff;}
+.vue-monthly-picker .picker .flexbox div {
+    color: #000000;
+    font-weight: 600;
+}
+.vue-monthly-picker .date-popover{
   border-radius: 15px !important;
 }
 .vue-monthly-picker .picker .monthItem .item.active:hover {
-  background-color: transparent !important;
-  background-image: linear-gradient(#4d2545, #782541) !important;
-  color: #ffffff !important;
+    background-color: transparent !important;
+    background-image: linear-gradient(#4D2545, #782541) !important;
+    color: #ffffff !important;
 }
-.vue-monthly-picker .picker .monthItem .item.deactive {
+.vue-monthly-picker .picker .monthItem .item.deactive{
   color: #999 !important;
 }
 .vue-monthly-picker .picker .monthItem .item.active.selected {
@@ -195,5 +270,5 @@ export default {
     background-image: linear-gradient(#4D2545, #782541) !important;
     color: #ffffff !important;
 }
-.month-picker-wrapper .display-text.display-text-left{color: #4D2545 !important;}
+.month-picker-wrapper .display-text.display-text-left{color: #4D2545 !importanta;}
 </style>

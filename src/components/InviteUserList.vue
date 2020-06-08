@@ -70,9 +70,9 @@
                 {{user.email}}</span>
               </div>
               <div
-                class="w-2/5 ml-4 text-purple px-2 text-sm"
+                class="w-2/5 ml-4 text-purple px-2 text-sm joined-date"
               >{{user.details.created_at | formatDate}}</div>
-              <div class="w-2/10 ml-4 text-purple px-2">
+              <div class="w-2/10 ml-4 text-purple px-2 active-btn">
                 <div
                   v-if="user.is_active == 1"
                   class="cursor-pointer m-3 content-center rounded-full red-light w-full h-8 flex items-center button-detail accept-decline-btn"
@@ -306,6 +306,9 @@ export default {
 .user-img{
   display: flex;
   align-items: center;
+}
+.active-btn{
+  width: 104px !important;
 }
 .user-img span{
   margin-left: 10px;
