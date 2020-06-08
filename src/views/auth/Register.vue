@@ -144,6 +144,7 @@
           v-model="form.card_expiry"
           v-validate="'required'"
           name="card_expiry"
+          class="month-picker"
           placeholder="Card Expiry"
           type="month"
           :stripe_cardformat="'formatCardExpiry'"
@@ -187,7 +188,7 @@
           name="city"
           placeholder="City"
           :message="errors.first('city')"
-        /> -->
+        />-->
 
         <!-- <div class="flex items-start w-full">
           <base-select
@@ -215,23 +216,21 @@
             placeholder="Zip"
             :message="errors.first('zip')"
           />
-        </div> -->
+        </div>-->
         <base-select
-            key="country-input"
-            v-model="form.country"
-            v-validate="'required'"
-            name="country"            
-            placeholder="Country"
-            :message="errors.first('country')"
-          >
-            <option
-              v-for="country in countries"
-              :key="country.id"
-              :value="country.id"
-            >
-              {{ country.name }}
-            </option>
-          </base-select>
+          key="country-input"
+          v-model="form.country"
+          v-validate="'required'"
+          name="country"
+          placeholder="Country"
+          :message="errors.first('country')"
+        >
+          <option
+            v-for="country in countries"
+            :key="country.id"
+            :value="country.id"
+          >{{ country.name }}</option>
+        </base-select>
 
         <base-input
           key="birth-input"
@@ -243,7 +242,6 @@
           :message="errors.first('birth')"
           data-vv-as="birth date"
         />
-
       </template>
 
       <base-button class="mt-16" type="submit" expanded>{{ step === 4 ? 'Get Started' : 'Next' }}</base-button>
@@ -293,7 +291,7 @@
 import Vue from "vue";
 import AuthService from "@/services/AuthService";
 // import states from "@/utils/states";
-import countries from '@/utils/countries';
+import countries from "@/utils/countries";
 import DEFINE from "../../utils/const.js";
 import { mapActions } from "vuex";
 // Import component
@@ -324,7 +322,7 @@ export default {
   data() {
     return {
       form: {},
-      step: 1,
+      step: 0,
       isLoading: false,
       fullPage: true,
       preview: null,
@@ -351,22 +349,18 @@ export default {
     eventBus.$on("signupBack", value => {
       if (value === 0) {
         this.selectedPlan = null;
-        this.step = 1;
+        this.step = value;
       } else {
         this.step = value;
       }
-
-      console.log("created -> this.step", this.step);
     });
   },
   methods: {
     ...mapActions("auth", ["login"]),
+    ...mapActions("profile", ["fetch"]),
     async nextStep() {
-      console.log("handleRegister -> this.form", this.form);
       if (await this.$validator.validateAll()) {
         this.step += 1;
-
-        console.log("nextStep -> this.step", this.step);
         eventBus.$emit("signupNext", this.step);
       }
     },
@@ -456,12 +450,14 @@ export default {
           number: data.card_number.replace(/\s/g, ""),
           cvc: data.card_cvc,
           user_id: TokenService.getUserId(),
-          stripe_plan_id: this.selectedPlan.id,
-          stripe_plan_name: this.selectedPlan.name
+          stripe_plan_id: this.selectedPlan.stripe_plan,
+          stripe_plan_name: this.selectedPlan.name,
+          plan_id: this.selectedPlan.id
         };
 
         await axios.post(`/t/users/subscribe`, Request);
         // end : create subscription plan
+        await this.fetch();
 
         if (firebase.messaging.isSupported()) {
           await this.askForPermissionToReceiveNotifications();
@@ -476,7 +472,7 @@ export default {
         this.onRegisterSuccessRedirect();
       } catch (e) {
         console.log("handleRegister -> e", e);
-        console.log("TCL: handleLogin -> e.response", e.response);
+        console.log("TCL: handleRegister -> e.response", e.response);
         if (e.code && e.code == DEFINE.firebase_permission_error.code) {
           this.updateDeviceToken("");
           this.onRegisterSuccessRedirect();
@@ -632,11 +628,10 @@ export default {
       this.setUserData();
     },
     handleSelectPlan(selectedPlan) {
-      console.log("handleSelectPlan -> selectedPlan", selectedPlan);
       if (selectedPlan) {
+        this.step += 1;
         this.selectedPlan = selectedPlan;
         eventBus.$emit("signupNext", this.step);
-        console.log("handleSelectPlan -> this.step", this.step);
       } else {
         this.selectedPlan = null;
       }
@@ -723,4 +718,28 @@ textarea {
 .credit-card-inputs.complete {
   border: 2px solid green;
 }
+
+/*start: Month picker css */
+.month-picker .month-year-display {
+  background-color: #ffffff;
+}
+.month-picker .month-year-display .picker .flexbox div {
+  color: #ffffff;
+}
+.vue-monthly-picker .picker .flexbox div {
+  color: #000000;
+  font-weight: 600;
+}
+.vue-monthly-picker .date-popover {
+  border-radius: 15px !important;
+}
+.vue-monthly-picker .picker .monthItem .item.active:hover {
+  background-color: transparent !important;
+  background-image: linear-gradient(#4d2545, #782541) !important;
+  color: #ffffff !important;
+}
+.vue-monthly-picker .picker .monthItem .item.deactive {
+  color: #999 !important;
+}
+/*end: Month picker css */
 </style>

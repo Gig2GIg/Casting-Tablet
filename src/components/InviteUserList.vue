@@ -20,7 +20,7 @@
             >Payment: {{subscriptionDetails.card_brand}} Card {{subscriptionDetails.card_last_four}}</div>
             <div class="w-2/8 text-purple px-2 text-sm capitalize">
               <a
-                class="social-a flex items-center justify-center content-center cursor-pointer text-bold-500"
+                class="social-a flex items-center justify-center content-center cursor-pointer font-bold"
                 @click="changePaymentDetails()"
               >Change</a>
             </div>
@@ -89,6 +89,9 @@
                 </div>
               </div>
             </div>
+          </div>
+          <div class="w-full mr-2 text-center" v-if="inviteUserList.length == 0">
+            No invited user found!
           </div>
         </div>
       </div>
@@ -263,7 +266,8 @@ export default {
      */
     changePaymentDetails() {
       this.$toasted.clear();
-      console.log("changePlan -> changePlan");
+      console.log("plan_change -> plan_change");
+      this.$router.push({ name: "plan_change" });
     },
     /**
      * When user don't have any tier plan then give to option for subscription new tier (plan)

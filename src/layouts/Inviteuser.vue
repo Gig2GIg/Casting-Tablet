@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col min-h-full cover">    
-    <auth-nav-bar v-if="showNavBar" />    
+    <auth-nav-bar v-if="showNavBar" :isRouteNavigate="true" />    
     <transition
       name="page"
       mode="out-in"

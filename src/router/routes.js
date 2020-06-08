@@ -51,6 +51,12 @@ export default [
       name: 'subscribe_plan',
       component: () => import('@/views/SubscribePlan'),
     },
+    {
+      path: '/plan-change',
+      alias: '/',
+      name: 'plan_change',
+      component: () => import('@/views/PlanChange'),
+    },
   ]),
   ...mapRoutes({ layout: 'blank', allowBoth: true , isPrimeModule: false }, [
     {
@@ -206,7 +212,7 @@ export default [
     path: '/notifications',
     name: 'notifications',
     meta : {
-      isPrimeModule: false
+      isPrimeModule: true
     },
     component: () => import(/* webpackChunkName: 'notifications' */ '@/views/MyNotifications'),
   },
