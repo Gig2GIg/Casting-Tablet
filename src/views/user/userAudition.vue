@@ -609,6 +609,7 @@
                       <div class="flex justify-center content-center flex-wrap w-full h-full">
                         <div class="flex flex-wrap justify-center w-3/4">
                           <base-input
+                            v-model="chatMessage"
                             name="chat_message"
                             class="w-full px-2"
                             type="text"
@@ -1025,6 +1026,9 @@ import Loading from "vue-loading-overlay";
 import ThumbService from "@/services/ThumbService";
 import DEFINE from "@/utils/const.js";
 
+import "@firebase/firestore";
+const db = firebase.firestore();
+
 export default {
   // ...
   components: {
@@ -1067,7 +1071,11 @@ export default {
       videoFileName: null,
       isLoadedVideo: false,
       currentVideo: null,
-      isChatView: false
+      isChatView: false,
+      chatPrefix: DEFINE.CHAT_PEFIX,
+      auditionChatRef : null,
+      chatMessage : "",
+      messageList : []
     };
   },
   computed: {
@@ -1168,6 +1176,9 @@ export default {
     await this.fetchTeamFeedback(data);
     await this.myCalendar(this.$route.params.id);
     this.asignEvents();
+  },
+  created(){
+    this.initializeChat();
   },
   methods: {
     ...mapActions("user", ["fetch"]),
@@ -1554,15 +1565,80 @@ export default {
       this.currentVideo = videoData.url;
       this.$modal.show("video_modal");
     },
-    chatManage() {
+    initializeChat(){
+      const currentChatPath = `${this.chatPrefix}${this.$route.params.audition}`;
+      this.auditionChatRef = db.collection("audition_chats").doc(currentChatPath);
+      const getDoc = this.auditionChatRef.get()
+          .then(doc => {
+            if (!doc.exists) {
+              console.log("initializeChat -> create doc")
+              this.auditionChatRef.set({});
+            } else {
+              console.log("initializeChat -> already exist doc")
+            }
+          })
+          .catch(err => {
+            console.log('Error getting document', err);
+          });
+    },
+    async chatManage() {
       this.isChatView = !this.isChatView;
       console.log("chatManage -> this.isChatView", this.isChatView);
+      let roundMessages = []; 
+      this.auditionChatRef.collection(this.$route.params.round)
+      .onSnapshot(querySnapshot => {
+        querySnapshot.forEach(doc => {
+        console.log("chatManage -> doc id", doc.id)
+        console.log("chatManage -> doc data", doc.data())
+        let data = doc.data();
+          const index = this.messageList && this.messageList.length > 0 ? this.messageList.findIndex((e) => e.id === doc.id) : -1;
+
+          if (index === -1) {
+              this.messageList.push({
+              id: doc.id,
+              ...data
+            });
+          } else {
+              this.messageList[index] = {
+              id: doc.id,
+              ...data
+            };
+          }
+
+          // if (!this.messageList.some(message => message.id === doc.id)) {            
+          //   this.messageList.push({
+          //     id: doc.id,
+          //     ...data
+          //   });
+          // } else {
+          //   this.messageList.push({
+          //     id: doc.id,
+          //     ...data
+          //   });
+          // }
+
+        });
+      });
+
+      console.log("chatManage -> this.messageList", this.messageList)
     },
     chatToDetails() {
       this.isChatView = false;
     },
-    sendMessage() {
-
+    async sendMessage() {
+      if(this.chatMessage && this.chatMessage != ''){
+        let chatMessageDoc = this.auditionChatRef.collection(this.$route.params.round);
+        await chatMessageDoc.add({
+          message: this.chatMessage,
+          sender_id : parseInt(TokenService.getUserId()),
+          createDate: new Date(),
+          read: false
+        });
+      } else {
+        this.$toasted.error("Please enter message!");
+      }
+      this.chatMessage = "";
+      console.log("chatManage -> this.messageList", this.messageList)
     }
   }
 };

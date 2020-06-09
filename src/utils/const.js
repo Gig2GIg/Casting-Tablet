@@ -5,6 +5,8 @@ const DEFINE = {
     set_pass_code_key : 'checkin_set_pass_code',
     set_monitor_pass_code_key : 'monitor_set_pass_code',
     contact_us : "support@gig2gig.com",
+    // CHAT_PEFIX : process.env.CHAT_PREFIX,
+    CHAT_PEFIX : "STAGING_",
     thumbSize :{
         defaultWidth : 200,
         defaultHeight : 200,
