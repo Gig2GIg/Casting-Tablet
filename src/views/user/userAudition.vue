@@ -533,15 +533,18 @@
                   >
                     <div class="flex w-70 pt-2">
                       <div class="flex justify-center content-center flex-wrap w-1/4 h-full">
-                        <img v-lazy="messageData.sender.image.url" alt="Icon" class="rounded-full h-10" />
+                        <img v-lazy="messageData.sender && messageData.sender.image ? messageData.sender.image.url : ''" alt="Icon" class="rounded-full h-10" />
                       </div>
                       <div class="flex content-left items-left relative w-1/2 h-10 mp-box">
                         <span
                           class="text-left cus-spn-cls text-purple font-bold w-1/2"
-                        >{{messageData.sender.details.first_name +' '+messageData.sender.details.last_name}}</span>
+                        >
+                        {{ messageData.sender && messageData.sender.details ? messageData.sender.details.first_name +' '+ messageData.sender.details.last_name : ''}}</span>
                         <span
                           class="text-left cus-spn-cls text-purple w-1/2"
-                        >{{messageData.createDate}}</span>
+                        >
+                        {{ chatTimeFormat(messageData.createDate) | chatDateTime}}
+                        </span>
                       </div>
                     </div>
                     <div class="flex w-70 pt-2">
@@ -1566,7 +1569,14 @@ export default {
     },
     getChatUserDetails(user_id) {
       // it should be dynamic when audition wise all user list get
-      return this.profile;
+      return this.profile ? this.profile : null;
+    },
+    chatTimeFormat(timestamp){
+      console.log("chatTimeFormat -> timestamp", timestamp)
+      // const date = timestamp ?  timestamp.toMillis() : null;
+      const date = timestamp ?  timestamp.toDate() : null;
+      console.log("chatTimeFormat -> date", date)
+      return date;
     },
     /**
      * This method is used for create chat collection for particular uadition if it's not exist if exist then set reference

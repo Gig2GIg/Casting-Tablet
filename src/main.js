@@ -50,6 +50,12 @@ Vue.filter("formatDate", function (value) {
   }
 });
 
+Vue.filter("chatDateTime", function (value) {
+  if (value) {
+    return moment(String(value)).format("MMMM DD, YYYY hh:mm A");
+  }
+});
+
 // only time value should be pass e.g. 10:20 am or 15:30
 Vue.filter("custTimeFormat", function (value) {
   if (value) {
