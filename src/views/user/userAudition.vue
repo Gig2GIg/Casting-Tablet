@@ -526,7 +526,32 @@
                   </div>
 
                   <!-- Message List start from here -->
-                  <div class="mt-5 w-full rounded-lg bg-gray">
+                  <div
+                    class="mt-5 w-full rounded-lg bg-gray"
+                    v-for="messageData of messageList"
+                    :key="messageData.id"
+                  >
+                    <div class="flex w-70 pt-2">
+                      <div class="flex justify-center content-center flex-wrap w-1/4 h-full">
+                        <img v-lazy="messageData.sender.image.url" alt="Icon" class="rounded-full h-10" />
+                      </div>
+                      <div class="flex content-left items-left relative w-1/2 h-10 mp-box">
+                        <span
+                          class="text-left cus-spn-cls text-purple font-bold w-1/2"
+                        >{{messageData.sender.details.first_name +' '+messageData.sender.details.last_name}}</span>
+                        <span
+                          class="text-left cus-spn-cls text-purple w-1/2"
+                        >{{messageData.createDate}}</span>
+                      </div>
+                    </div>
+                    <div class="flex w-70 pt-2">
+                      <div class="flex justify-center content-center flex-wrap w-1/4 h-full"></div>
+                      <div class="flex justify-left w-70 ml-5">
+                        <span class="cus-spn-cls text-purple w-full">{{messageData.message}}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- <div class="mt-5 w-full rounded-lg bg-gray">
                     <div class="flex w-70 pt-2">
                       <div class="flex justify-center content-center flex-wrap w-1/4 h-full">
                         <img
@@ -577,33 +602,7 @@
                         </span>
                       </div>
                     </div>
-                  </div>
-                  <div class="mt-5 w-full rounded-lg bg-gray">
-                    <div class="flex w-70 pt-2">
-                      <div class="flex justify-center content-center flex-wrap w-1/4 h-full">
-                        <img
-                          src="http://202.131.117.92:7024/images/roles.png"
-                          alt="Icon"
-                          class="h-10"
-                        />
-                      </div>
-                      <div class="flex content-center items-center relative w-1/2 h-10 mp-box">
-                        <span class="text-center cus-spn-cls text-purple font-bold w-1/2">Name</span>
-                        <span class="text-center cus-spn-cls text-purple font-bold w-1/2">Time</span>
-                      </div>
-                    </div>
-                    <div class="flex w-70 pt-2">
-                      <div class="flex justify-center content-center flex-wrap w-1/4 h-full"></div>
-                      <div class="flex justify-left w-70 ml-5">
-                        <span class="cus-spn-cls text-purple w-full">
-                          This is message send by user
-                          This is message send by user
-                          This is message send by user
-                          This is message send by user
-                        </span>
-                      </div>
-                    </div>
-                  </div>
+                  </div>-->
                   <div class="mt-5 w-full rounded-lg bg-gray">
                     <div class="flex w-70 pt-2">
                       <div class="flex justify-center content-center flex-wrap w-full h-full">
@@ -614,7 +613,7 @@
                             class="w-full px-2"
                             type="text"
                             placeholder="Write Something..."
-                            :custom-classes="['border-2', 'border-purple']"                            
+                            :custom-classes="['border-2', 'border-purple']"
                           />
                         </div>
                         <div class="flex flex-wrap justify-center content-center w-1/4">
@@ -1073,9 +1072,9 @@ export default {
       currentVideo: null,
       isChatView: false,
       chatPrefix: DEFINE.CHAT_PEFIX,
-      auditionChatRef : null,
-      chatMessage : "",
-      messageList : []
+      auditionChatRef: null,
+      chatMessage: "",
+      messageList: []
     };
   },
   computed: {
@@ -1117,7 +1116,7 @@ export default {
       round: this.$route.params.round,
       user: this.$route.params.id
     });
-    console.log("mounted -> this.onlineMedia", this.onlineMedia);
+    // console.log("mounted -> this.onlineMedia", this.onlineMedia);
     let feedback = {
       user: this.$route.params.id,
       round: this.$route.params.round
@@ -1177,7 +1176,7 @@ export default {
     await this.myCalendar(this.$route.params.id);
     this.asignEvents();
   },
-  created(){
+  created() {
     this.initializeChat();
   },
   methods: {
@@ -1297,24 +1296,24 @@ export default {
               .ref(`temp/thumbnail/${uuid()}.png`)
               .put(this.thumbnail.file);
             thumbnailUrl = await thumbnailFile.ref.getDownloadURL();
-            console.log("saveFeedback -> thumbnailUrl", thumbnailUrl);
+            // console.log("saveFeedback -> thumbnailUrl", thumbnailUrl);
           }
 
           // upload video file
           const extension = this.file.org_name.substring(
             this.file.org_name.lastIndexOf(".") + 1
           );
-          console.log("saveFeedback -> extension", extension);
+          // console.log("saveFeedback -> extension", extension);
           const filePath = this.file.name.includes(`${extension}`)
             ? `temp/${uuid()}_${this.file.name}`
             : `temp/${uuid()}_${this.file.name}.${extension}`;
-          console.log("saveFeedback -> filePath", filePath);
+          // console.log("saveFeedback -> filePath", filePath);
           const file = await firebase
             .storage()
             .ref(filePath)
             .put(this.form.file);
           const url = await file.ref.getDownloadURL();
-          console.log("saveFeedback -> url", url);
+          // console.log("saveFeedback -> url", url);
 
           let audition_record = {
             url: url,
@@ -1335,7 +1334,7 @@ export default {
           this.file.name = "Record Audition";
         }
       } catch (e) {
-        console.log("saveFeedback -> e", e);
+        // console.log("saveFeedback -> e", e);
         this.isLoading = false;
         this.$toasted.error("This performer already has a video, try later");
       }
@@ -1395,7 +1394,7 @@ export default {
           file,
           DEFINE.thumbSize.videoThumbWidth
         ).then(thumb_data => {
-          console.log("handleFile -> video thumb_data return", thumb_data);
+          // console.log("handleFile -> video thumb_data return", thumb_data);
           Vue.set(this.thumbnail, "preview", thumb_data.preview);
           Vue.set(this.thumbnail, "file", thumb_data.file);
         });
@@ -1406,7 +1405,7 @@ export default {
         this.file.name = "Record Audition";
         this.videoFileName = null;
       }
-      console.log("snapImage -> final ", this.thumbnail);
+      // console.log("snapImage -> final ", this.thumbnail);
     },
     imageRenameDone() {
       this.$toasted.clear();
@@ -1565,72 +1564,82 @@ export default {
       this.currentVideo = videoData.url;
       this.$modal.show("video_modal");
     },
-    initializeChat(){
-      const currentChatPath = `${this.chatPrefix}${this.$route.params.audition}`;
-      this.auditionChatRef = db.collection("audition_chats").doc(currentChatPath);
-      const getDoc = this.auditionChatRef.get()
-          .then(doc => {
-            if (!doc.exists) {
-              console.log("initializeChat -> create doc")
-              this.auditionChatRef.set({});
-            } else {
-              console.log("initializeChat -> already exist doc")
-            }
-          })
-          .catch(err => {
-            console.log('Error getting document', err);
-          });
+    getChatUserDetails(user_id) {
+      // it should be dynamic when audition wise all user list get
+      return this.profile;
     },
+    /**
+     * This method is used for create chat collection for particular uadition if it's not exist if exist then set reference
+     */
+    async initializeChat() {
+      const currentChatPath = `${this.chatPrefix}${this.$route.params.audition}`;
+      this.auditionChatRef = db
+        .collection("audition_chats")
+        .doc(currentChatPath);
+      await this.auditionChatRef
+        .get()
+        .then(doc => {
+          if (!doc.exists) {
+            console.log("initializeChat -> create doc");
+            this.auditionChatRef.set({});
+          } else {
+            console.log("initializeChat -> already exist doc");
+          }
+        })
+        .catch(err => {
+          console.log("Error getting document", err);
+        });
+    },
+    /**
+     * On chat button click get list of message and set value with real time message change
+     */
     async chatManage() {
       this.isChatView = !this.isChatView;
       console.log("chatManage -> this.isChatView", this.isChatView);
-      let roundMessages = []; 
-      this.auditionChatRef.collection(this.$route.params.round)
-      .onSnapshot(querySnapshot => {
-        querySnapshot.forEach(doc => {
-        console.log("chatManage -> doc id", doc.id)
-        console.log("chatManage -> doc data", doc.data())
-        let data = doc.data();
-          const index = this.messageList && this.messageList.length > 0 ? this.messageList.findIndex((e) => e.id === doc.id) : -1;
+      if (this.isChatView) {
+        this.auditionChatRef
+          .collection(this.$route.params.round)
+          .onSnapshot(querySnapshot => {
+            querySnapshot.forEach(doc => {
+              // console.log("chatManage -> doc id", doc.id)
+              // console.log("chatManage -> doc data", doc.data())
+              let data = doc.data();
+              data.sender = this.getChatUserDetails(data.sender_id);
+              console.log("chatManage -> data", data)
+              
+              const index =
+                this.messageList && this.messageList.length > 0
+                  ? this.messageList.findIndex(e => e.id === doc.id)
+                  : -1;
 
-          if (index === -1) {
-              this.messageList.push({
-              id: doc.id,
-              ...data
+              if (index === -1) {
+                this.messageList.push({
+                  id: doc.id,
+                  ...data
+                });
+              } else {
+                this.messageList[index] = {
+                  id: doc.id,
+                  ...data
+                };
+              }
             });
-          } else {
-              this.messageList[index] = {
-              id: doc.id,
-              ...data
-            };
-          }
+          });
+      }
 
-          // if (!this.messageList.some(message => message.id === doc.id)) {            
-          //   this.messageList.push({
-          //     id: doc.id,
-          //     ...data
-          //   });
-          // } else {
-          //   this.messageList.push({
-          //     id: doc.id,
-          //     ...data
-          //   });
-          // }
-
-        });
-      });
-
-      console.log("chatManage -> this.messageList", this.messageList)
+      console.log("chatManage -> this.messageList", this.messageList);
     },
     chatToDetails() {
       this.isChatView = false;
     },
     async sendMessage() {
-      if(this.chatMessage && this.chatMessage != ''){
-        let chatMessageDoc = this.auditionChatRef.collection(this.$route.params.round);
+      if (this.chatMessage && this.chatMessage != "") {
+        let chatMessageDoc = this.auditionChatRef.collection(
+          this.$route.params.round
+        );
         await chatMessageDoc.add({
           message: this.chatMessage,
-          sender_id : parseInt(TokenService.getUserId()),
+          sender_id: parseInt(TokenService.getUserId()),
           createDate: new Date(),
           read: false
         });
@@ -1638,7 +1647,7 @@ export default {
         this.$toasted.error("Please enter message!");
       }
       this.chatMessage = "";
-      console.log("chatManage -> this.messageList", this.messageList)
+      console.log("sendMessage -> this.messageList", this.messageList);
     }
   }
 };
