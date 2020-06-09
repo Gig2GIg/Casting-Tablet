@@ -515,7 +515,7 @@
           <div class="absolute flex flex-wrap w-full justify-center align-content-start minh-100vh">
             <div class="container flex w-full mt-2">
               <div class="container flex w-full mt-2">
-                <div class="custom-side-back rounded-lg bg-white">
+                <div class="custom-side-back rounded-lg bg-white chat-side-min-width">
                   <div class="flex content-around w-100 items-center relative cmb-10">
                     <img
                       src="/images/icons/left_arrow.png"
@@ -531,91 +531,40 @@
                     v-for="messageData of messageList"
                     :key="messageData.id"
                   >
-                    <div class="flex w-70 pt-2">
-                      <div class="flex justify-center content-center flex-wrap w-1/4 h-full">
+                    <div class="flex w-70 pt-2 ml-2">
+                      <div class="flex justify-center content-center flex-wrap w-10/11 h-full">
                         <img v-lazy="messageData.sender && messageData.sender.image ? messageData.sender.image.url : ''" alt="Icon" class="rounded-full h-10" />
                       </div>
-                      <div class="flex content-left items-left relative w-1/2 h-10 mp-box">
+                      <div class="flex content-left items-left relative w-70 h-10 mp-box">
                         <span
-                          class="text-left cus-spn-cls text-purple font-bold w-1/2"
+                          class="text-left cus-spn-cls text-purple font-bold text-sm w-10/11"
                         >
                         {{ messageData.sender && messageData.sender.details ? messageData.sender.details.first_name +' '+ messageData.sender.details.last_name : ''}}</span>
                         <span
-                          class="text-left cus-spn-cls text-purple w-1/2"
+                          class="text-left text-purple w-70 text-sm"
                         >
                         {{ chatTimeFormat(messageData.createDate) | chatDateTime}}
                         </span>
                       </div>
                     </div>
-                    <div class="flex w-70 pt-2">
-                      <div class="flex justify-center content-center flex-wrap w-1/4 h-full"></div>
+                    <div class="flex w-70 pt-2 ml-2">
+                      <div class="flex justify-center content-center flex-wrap w-10/11 h-full"></div>
                       <div class="flex justify-left w-70 ml-5">
-                        <span class="cus-spn-cls text-purple w-full">{{messageData.message}}</span>
+                        <span class="cus-spn-cls text-purple w-full text-sm">{{messageData.message}}</span>
                       </div>
                     </div>
-                  </div>
-                  <!-- <div class="mt-5 w-full rounded-lg bg-gray">
-                    <div class="flex w-70 pt-2">
-                      <div class="flex justify-center content-center flex-wrap w-1/4 h-full">
-                        <img
-                          src="http://202.131.117.92:7024/images/roles.png"
-                          alt="Icon"
-                          class="h-10"
-                        />
-                      </div>
-                      <div class="flex content-center items-center relative w-1/2 h-10 mp-box">
-                        <span class="text-center cus-spn-cls text-purple font-bold w-1/2">Name</span>
-                        <span class="text-center cus-spn-cls text-purple font-bold w-1/2">Time</span>
-                      </div>
-                    </div>
-                    <div class="flex w-70 pt-2">
-                      <div class="flex justify-center content-center flex-wrap w-1/4 h-full"></div>
-                      <div class="flex justify-left w-70 ml-5">
-                        <span class="cus-spn-cls text-purple w-full">
-                          This is message send by user
-                          This is message send by user
-                          This is message send by user
-                          This is message send by user
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="mt-5 w-full rounded-lg bg-gray">
-                    <div class="flex w-70 pt-2">
-                      <div class="flex justify-center content-center flex-wrap w-1/4 h-full">
-                        <img
-                          src="http://202.131.117.92:7024/images/roles.png"
-                          alt="Icon"
-                          class="h-10"
-                        />
-                      </div>
-                      <div class="flex content-center items-center relative w-1/2 h-10 mp-box">
-                        <span class="text-center cus-spn-cls text-purple font-bold w-1/2">Name</span>
-                        <span class="text-center cus-spn-cls text-purple font-bold w-1/2">Time</span>
-                      </div>
-                    </div>
-                    <div class="flex w-70 pt-2">
-                      <div class="flex justify-center content-center flex-wrap w-1/4 h-full"></div>
-                      <div class="flex justify-left w-70 ml-5">
-                        <span class="cus-spn-cls text-purple w-full">
-                          This is message send by user
-                          This is message send by user
-                          This is message send by user
-                          This is message send by user
-                        </span>
-                      </div>
-                    </div>
-                  </div>-->
+                  </div>                  
                   <div class="mt-5 w-full rounded-lg bg-gray">
                     <div class="flex w-70 pt-2">
                       <div class="flex justify-center content-center flex-wrap w-full h-full">
-                        <div class="flex flex-wrap justify-center w-3/4">
-                          <base-input
+                        <div class="flex flex-wrap justify-center w-3/4">                        
+                          <input
                             v-model="chatMessage"
                             name="chat_message"
                             class="w-full px-2"
                             type="text"
                             placeholder="Write Something..."
+                            @keyup.enter="sendMessage()"
                             :custom-classes="['border-2', 'border-purple']"
                           />
                         </div>
@@ -1179,8 +1128,8 @@ export default {
     await this.myCalendar(this.$route.params.id);
     this.asignEvents();
   },
-  created() {
-    this.initializeChat();
+  async created() {
+    await this.initializeChat();
   },
   methods: {
     ...mapActions("user", ["fetch"]),
@@ -1607,8 +1556,9 @@ export default {
       this.isChatView = !this.isChatView;
       console.log("chatManage -> this.isChatView", this.isChatView);
       if (this.isChatView) {
-        this.auditionChatRef
-          .collection(this.$route.params.round)
+        console.log("chatManage -> this.auditionChatRef", this.auditionChatRef)
+        this.auditionChatRef        
+          .collection(`${this.$route.params.round}`)
           .onSnapshot(querySnapshot => {
             querySnapshot.forEach(doc => {
               // console.log("chatManage -> doc id", doc.id)
@@ -1636,7 +1586,10 @@ export default {
             });
           });
       }
-
+      this.messageList = this.messageList.sort(
+          (a, b) =>
+            new Date(a.createDate.seconds) - new Date(b.createDate.seconds)
+        );
       console.log("chatManage -> this.messageList", this.messageList);
     },
     chatToDetails() {
@@ -1765,5 +1718,9 @@ nav {
 
 .w-70 {
   width: 70%;
+}
+
+.chat-side-min-width{
+  min-width: 350px;
 }
 </style>
