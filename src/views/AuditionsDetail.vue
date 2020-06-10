@@ -126,7 +126,7 @@
                         v-bind:class="{ 'after-clck-new-grp' : isShowCreateGroup, 'relative' : !isCommentView}"
                   />
                 <div
-                        v-show="!isAuditionVideos && auditionData.online == 0 && currentAudition.status == 1 && round && round.status == 1"
+                        v-show="!isAuditionVideos && auditionData.online == 0 && currentAudition.user_id == userId && currentAudition.status == 1 && round && round.status == 1"
                   class="custom-btn-grp"
                 >
                   <div
@@ -245,7 +245,7 @@
                       v-bind:class="{ 'after-clck-new-grp' : isShowCreateGroup, 'relative' : !isCommentView}"
                     />
                     <div
-                      v-if="auditionData && auditionData.online == 0 && currentAudition && currentAudition.status == 1 && round && round.status == 1"
+                      v-if="auditionData && auditionData.online == 0 && currentAudition.user_id == userId && currentAudition && currentAudition.status == 1 && round && round.status == 1"
                       class="custom-btn-grp"
                     >
                       <div
@@ -273,7 +273,7 @@
                     </div>
                   </div>
                 </router-link>
-                <!-- <div v-if="auditionData && auditionData.online == 0 && currentAudition.status == 1 && round.status == 1" class="custom-btn-grp">
+                <!-- <div v-if="auditionData && auditionData.online == 0 && currentAudition.user_id == userId && currentAudition.status == 1 && round.status == 1" class="custom-btn-grp">
                     <div @click="approveBtn(data.user_id, data.is_feedback_sent)" class="m-1 content-center rounded-full grren-back h-10 flex items-center">
                       <button class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide" type="button"><img src="/images/icons/right-tick.svg" alt="right-tick" /></button>
                     </div>

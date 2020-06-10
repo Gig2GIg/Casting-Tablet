@@ -4,8 +4,15 @@
         :can-cancel="true" 
         :is-full-page="fullPage"></loading>
   <nav class="flex items-center h-12">
-      <div v-if="audition.online != 1" class="w-1/5 flex flex-wrap justify-center content-center h-10 border-2 ml-auto border-white rounded-sm cursor-pointer" @click="$refs.inputFile.click()">
-      <!-- v-if="audition.online != 1" -->
+    <div class=" cursor-pointer flex content-around w-1/6 items-center relative cmb-10" @click="backAudition()">
+      <img
+        src="/images/icons/left_arrow_white.png"
+        class="absolute left-0 pl-1"        
+      />
+      <h1 class="absolute left-0 text-white text-lg back-mrg-l">Back</h1>
+    </div>
+
+      <div v-if="audition.online != 1" class="w-1/5 flex flex-wrap justify-center content-center h-10 border-2 ml-auto border-white rounded-sm cursor-pointer" @click="$refs.inputFile.click()">      
         <div class="w-full flex">
             <div class="w-1/4 flex justify-center"><img :src="'/images/icons/camera.png'" class="h-6 ml-auto" alt="star"></div>
             <p class="w-full text-white tracking-wide text-lg ml-5 tracking-tight truncate">{{file.name}}</p>
@@ -501,6 +508,17 @@
           </div>
         </div>
       </div>
+      <div class="flex flex-wrap justify-center mt-1 w-full cursor-pointer" v-if="nextPerformerId">
+        <div class="flex w-1/2" @click="gotoNextPerformer()">
+          <div class="flex w-full text-center justify-center flex-wrap">
+            <div class="m-3 content-center border border-purple bg-white rounded-full w-32 h-10 flex items-center">
+              <p class="text-purple text-sm font-bold content-center tracking-tighter flex-1">
+                Next
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     </div>
@@ -757,6 +775,7 @@ export default {
       videoFileName : null,
       isLoadedVideo : false,
       currentVideo : null,
+      nextPerformerId : null
     };
   },
   computed: {
@@ -766,6 +785,12 @@ export default {
     ...mapState('profile', {profile:'user', calendar:'calendar', contract:'contract'}),
     getAssignNumber : function() {
       return this.addNumberText ? this.addNumberText.toString() : "";
+    }
+  },
+  watch: {
+    userList: function() {
+      console.log("this.userList", this.userList)
+      this.setNextPerform();
     }
   },
   async mounted() {
@@ -1119,6 +1144,40 @@ export default {
           this.currentVideo = videoData.url;
           this.$modal.show('video_modal');
       },
+      /**
+       * Form nav bar click on back button then navigate to audition details
+       */
+      backAudition(){
+        this.$router.push({ name: 'auditions/detail', params: { id: this.$route.params.audition } });
+      },
+      /**
+       * When click on next button then navigate to next performer details of current audition
+       */
+      gotoNextPerformer(){        
+        if(this.nextPerformerId){
+          console.log("gotoNextPerformer -> gotoNextPerformer")
+          this.$router.push({ name: 'auditions/user', params: { audition: this.$route.params.audition , round: this.$route.params.round , id: this.nextPerformerId } });
+          this.setNextPerform();
+        }
+        
+      },
+      /**
+       * Find out next perfomer id
+       */
+      setNextPerform() {
+        if(this.userList && this.userList.length > 0 ){
+          const userIndex = this.userList.findIndex(x => x.user_id == this.$route.params.id);
+          console.log("setNextPerform -> userIndex", userIndex)
+          if (userIndex > -1 && userIndex < (this.userList.length-1)) {
+            this.nextPerformerId = this.userList[userIndex+1].user_id;
+          } else {       
+            this.nextPerformerId = null;            
+          }
+        } else {
+          this.nextPerformerId = null;
+        }
+        console.log("setNextPerform -> this.nextPerformerId", this.nextPerformerId)
+      }
     },
 };
 </script>
@@ -1221,4 +1280,9 @@ nav {
     overflow: auto !important;
     min-height: 200px !important;
 }
+
+.back-mrg-l {
+  padding-left: 22px !important;
+}
+
 </style>
