@@ -12,11 +12,17 @@
       alt="Logo"
     >
 
-    <div class="flex-1 w-full mt-6">
+    <div class="flex-1 w-full mt-6">      
       <sidebar-item
         :to="{ name: 'auditions' }"
         text="Auditions"
         icon="auditions"
+        :counter="10"
+      />
+      <sidebar-item
+        :to="{ name: 'past_auditions' }"
+        text="Past Auditions"
+        icon="refresh"
         :counter="10"
       />
       <sidebar-item
