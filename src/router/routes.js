@@ -145,6 +145,11 @@ export default [
     component: () => import(/* webpackChunkName: 'auditions' */ '@/views/Auditions'),
   },
   {
+    path: '/past-auditions',
+    name: 'past_auditions',
+    component: () => import(/* webpackChunkName: 'auditions' */ '@/views/PastAuditions'),
+  },
+  {
     path: '/auditions/create',
     name: 'auditions.create',
     component: () => import(/* webpackChunkName: 'auditions.create' */ '@/views/auditions/CreateAudition'),

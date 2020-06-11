@@ -3,6 +3,13 @@
   <div>
     <loading :active.sync="isLoading" :can-cancel="true" :is-full-page="fullPage"></loading>
     <nav class="flex items-center h-12">
+      <div class=" cursor-pointer flex content-around w-1/6 items-center relative cmb-10" @click="backAudition()">
+        <img
+          src="/images/icons/left_arrow_white.png"
+          class="absolute left-0 pl-1"        
+        />
+        <h1 class="absolute left-0 text-white text-lg back-mrg-l">Back</h1>
+      </div>
       <div
         v-if="audition.online != 1"
         class="w-1/5 flex flex-wrap justify-center content-center h-10 border-2 ml-auto border-white rounded-sm cursor-pointer"
@@ -718,6 +725,17 @@
                   </div>
                 </div>
               </div>
+              <div class="flex flex-wrap justify-center mt-1 w-full cursor-pointer" v-if="nextPerformerId">
+                <div class="flex w-1/2" @click="gotoNextPerformer()">
+                  <div class="flex w-full text-center justify-center flex-wrap">
+                    <div class="m-3 content-center border border-purple bg-white rounded-full w-32 h-10 flex items-center">
+                      <p class="text-purple text-sm font-bold content-center tracking-tighter flex-1">
+                        Next
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </template>
@@ -1022,6 +1040,7 @@ export default {
       videoFileName: null,
       isLoadedVideo: false,
       currentVideo: null,
+      nextPerformerId : null,
       isChatView: false,
       chatPrefix: DEFINE.CHAT_PEFIX,
       auditionChatRef: null,
@@ -1052,81 +1071,65 @@ export default {
       return this.addNumberText ? this.addNumberText.toString() : "";
     }
   },
+  watch: {
+    userList: function() {
+      console.log("this.userList", this.userList)
+      this.setNextPerform();
+    },
+    "$route.query"() {
+      console.log("route.query")      
+      this.userDetailsInit();
+    }
+  },
   async mounted() {
     await this.fetchAuditionData(this.$route.params.audition);
-    await this.fetchUserList(this.$route.params.round);
-    this.manageCurrentUserRoles();
-    await this.fetchTags({
-      round: this.$route.params.round,
-      user: this.$route.params.id
-    });
-    await this.fetchRecommendation({
-      round: this.$route.params.audition,
-      user: this.$route.params.id
-    });
-    await this.fetchOnlineMedia({
-      round: this.$route.params.round,
-      user: this.$route.params.id
-    });
-    // console.log("mounted -> this.onlineMedia", this.onlineMedia);
-    let feedback = {
-      user: this.$route.params.id,
-      round: this.$route.params.round
-    };
-    await this.fetchUserFeedback(feedback);
-
-    if (Object.keys(this.feedback).length > 0) {
-      for (data in this.feedback) {
-        this.workon =
-          this.feedback.work === null
-            ? null
-            : this.feedback.work == "vocals"
-            ? 1
-            : this.feedback.work == "acting"
-            ? 2
-            : 3;
-        this.favorite = this.feedback.favorite;
-        this.emoji = this.feedback.evaluation;
-        this.callback =
-          this.feedback.callback == 1
-            ? true
-            : this.feedback.callback === null
-            ? null
-            : false;
-        this.form.comment = this.feedback.comment;
-      }
-    }
-    // Get Assigend Number
-    let getPerformerDetails = await axios.get(
-      `/t/auditions/profile/user/${this.$route.params.id}/appointment/${this.$route.params.round}`
-    );
-    if (getPerformerDetails.status == 200) {
-      this.performerDetails = getPerformerDetails.data.data;
-      this.addNumberText = getPerformerDetails.data.data.assign_number;
-      if (this.addNumberText && this.addNumberText != "") {
-        this.isAssignedNumber = true;
-      } else {
-        this.isAssignedNumber = false;
-      }
-    } else {
-      this.performerDetails = {};
-      this.addNumberText = "";
-      this.isAssignedNumber = true;
-    }
-    this.currentUser = this.userList.filter(
-      userList => userList.user_id == this.$route.params.id
-    );
-    if (this.currentUser != "") {
-      this.slot = this.currentUser[0].slot_id;
-      this.rol = this.currentUser[0].rol;
-    }
-    let data = {
-      appointment_id: this.$route.params.round,
-      performer: this.$route.params.id
-    };
-    await this.fetchTeamFeedback(data);
-    await this.myCalendar(this.$route.params.id);
-    this.asignEvents();
+    await this.fetchUserList(this.$route.params.round);    
+    this.userDetailsInit();
+    // this.manageCurrentUserRoles();
+    // await this.fetchTags({"round": this.$route.params.round, "user": this.$route.params.id,});
+    // await this.fetchRecommendation({"round": this.$route.params.audition, "user": this.$route.params.id,});
+    // await this.fetchOnlineMedia({"round": this.$route.params.round, "user": this.$route.params.id,});
+    // console.log("mounted -> this.onlineMedia", this.onlineMedia)
+    // let feedback = {
+    //   user:this.$route.params.id,
+    //   round:this.$route.params.round
+    // };
+    // await this.fetchUserFeedback(feedback);
+        
+    // if(Object.keys(this.feedback).length>0){
+    //   for(data in this.feedback){
+    //     this.workon = this.feedback.work === null ? null : (this.feedback.work == 'vocals' ? 1 :this.feedback.work == 'acting' ? 2 : 3);
+    //     this.favorite = this.feedback.favorite;
+    //     this.emoji = this.feedback.evaluation;
+    //     this.callback = this.feedback.callback == 1 ?true: this.feedback.callback === null ? null : false;
+    //     this.form.comment = this.feedback.comment;
+    //   }
+    // }
+    //   // Get Assigend Number
+    //   let getPerformerDetails = await axios.get(`/t/auditions/profile/user/${this.$route.params.id}/appointment/${this.$route.params.round}`);
+    //   if(getPerformerDetails.status == 200){
+    //     this.performerDetails = getPerformerDetails.data.data;        
+    //     this.addNumberText = getPerformerDetails.data.data.assign_number;
+    //     if(this.addNumberText && this.addNumberText != ''){
+    //       this.isAssignedNumber = true;
+    //     } else {
+    //       this.isAssignedNumber = false;
+    //     }
+        
+    //   }else{
+    //     this.performerDetails = {};
+    //     this.addNumberText = "";
+    //     this.isAssignedNumber = true;
+    //   }
+    // this.currentUser = this.userList.filter(userList => userList.user_id == this.$route.params.id);
+    // if(this.currentUser != ""){
+    //   this.slot = this.currentUser[0].slot_id;
+    //   this.rol = this.currentUser[0].rol;
+    // }    
+    // let data = {"appointment_id": this.$route.params.round, "performer": this.$route.params.id}
+    // await this.fetchTeamFeedback(data);
+    // await this.myCalendar(this.$route.params.id);
+    // this.asignEvents();
   },
   async created() {
     await this.initializeChat();
@@ -1161,7 +1164,54 @@ export default {
     goToday() {
       this.$refs.calendar.goToday();
     },
-    async updateTeamFeedBack() {
+    async userDetailsInit() {
+      this.manageCurrentUserRoles();
+      await this.fetchTags({"round": this.$route.params.round, "user": this.$route.params.id,});
+      await this.fetchRecommendation({"round": this.$route.params.audition, "user": this.$route.params.id,});
+      await this.fetchOnlineMedia({"round": this.$route.params.round, "user": this.$route.params.id,});
+      console.log("mounted -> this.onlineMedia", this.onlineMedia)
+      let feedback = {
+        user:this.$route.params.id,
+        round:this.$route.params.round
+      };
+      await this.fetchUserFeedback(feedback);
+          
+      if(Object.keys(this.feedback).length>0){
+        for(data in this.feedback){
+          this.workon = this.feedback.work === null ? null : (this.feedback.work == 'vocals' ? 1 :this.feedback.work == 'acting' ? 2 : 3);
+          this.favorite = this.feedback.favorite;
+          this.emoji = this.feedback.evaluation;
+          this.callback = this.feedback.callback == 1 ?true: this.feedback.callback === null ? null : false;
+          this.form.comment = this.feedback.comment;
+        }
+      }
+        // Get Assigend Number
+        let getPerformerDetails = await axios.get(`/t/auditions/profile/user/${this.$route.params.id}/appointment/${this.$route.params.round}`);
+        if(getPerformerDetails.status == 200){
+          this.performerDetails = getPerformerDetails.data.data;        
+          this.addNumberText = getPerformerDetails.data.data.assign_number;
+          if(this.addNumberText && this.addNumberText != ''){
+            this.isAssignedNumber = true;
+          } else {
+            this.isAssignedNumber = false;
+          }
+          
+        }else{
+          this.performerDetails = {};
+          this.addNumberText = "";
+          this.isAssignedNumber = true;
+        }
+      this.currentUser = this.userList.filter(userList => userList.user_id == this.$route.params.id);
+      if(this.currentUser != ""){
+        this.slot = this.currentUser[0].slot_id;
+        this.rol = this.currentUser[0].rol;
+      }    
+      let data = {"appointment_id": this.$route.params.round, "performer": this.$route.params.id}
+      await this.fetchTeamFeedback(data);
+      await this.myCalendar(this.$route.params.id);
+      this.asignEvents();
+    },
+    async updateTeamFeedBack(){
       this.isRealodTeamFeedback = true;
       let data = {
         appointment_id: this.$route.params.round,
@@ -1595,6 +1645,61 @@ export default {
     chatToDetails() {
       this.isChatView = false;
     },
+    show () {
+      this.$modal.show('marketplace');
+    },
+    hide () {
+      this.$modal.hide('marketplace');
+    },
+    setUrl(url){      
+      var pattern = /^((http|https|ftp):\/\/)/;
+      if(!pattern.test(url)) {
+          url = "http://" + url;
+      }
+      return url;
+    },
+    loadedVideo(){
+        this.isLoadedVideo = true;
+    },
+    playVideo(videoData){
+        this.isLoadedVideo = false;
+        this.currentVideo = videoData.url;
+        this.$modal.show('video_modal');
+    },
+    /**
+     * Form nav bar click on back button then navigate to audition details
+     */
+    backAudition(){
+      this.$router.push({ name: 'auditions/detail', params: { id: this.$route.params.audition } });
+    },
+    /**
+     * When click on next button then navigate to next performer details of current audition
+     */
+    gotoNextPerformer(){        
+      if(this.nextPerformerId){
+        console.log("gotoNextPerformer -> gotoNextPerformer")
+        this.$router.push({ name: 'auditions/user', params: { audition: this.$route.params.audition , round: this.$route.params.round , id: this.nextPerformerId } });
+        this.setNextPerform();
+      }
+        
+    },
+    /**
+     * Find out next perfomer id
+     */
+    setNextPerform() {
+      if(this.userList && this.userList.length > 0 ){
+        const userIndex = this.userList.findIndex(x => x.user_id == this.$route.params.id);
+        console.log("setNextPerform -> userIndex", userIndex)
+          if (userIndex > -1 && userIndex < (this.userList.length-1)) {
+            this.nextPerformerId = this.userList[userIndex+1].user_id;
+          } else {       
+            this.nextPerformerId = null;            
+          }
+      } else {
+        this.nextPerformerId = null;
+      }
+      console.log("setNextPerform -> this.nextPerformerId", this.nextPerformerId)
+    },
     async sendMessage() {
       if (this.chatMessage && this.chatMessage != "") {
         let chatMessageDoc = this.auditionChatRef.collection(
@@ -1612,7 +1717,7 @@ export default {
       this.chatMessage = "";
       console.log("sendMessage -> this.messageList", this.messageList);
     }
-  }
+  },
 };
 </script>
 <style lang="scss">
@@ -1723,4 +1828,9 @@ nav {
 .chat-side-min-width{
   min-width: 350px;
 }
+
+.back-mrg-l {
+  padding-left: 22px !important;
+}
+
 </style>
