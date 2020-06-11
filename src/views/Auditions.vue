@@ -33,38 +33,7 @@
       </slide>
     </carousel>
   </div>
-  <div class="container text-purple pl-6 py-8 w-full h-84">
-    <p class="text-3xl mt-6">
-      Past
-    </p>
-    <div class="flex flex-wrap items-center justify-center w-full h-84" v-if="passed == ''">
-      <p class="text-purple font-bold tracking-wide text-lg">No auditions found</p>
-    </div>
-    <carousel
-      class="flex mt-4 w-full carousel-slider-width"
-      :per-page="3"
-      :pagination-enabled="false"
-      :navigation-enabled="true"
-      :navigation-prev-label="'&#x279C;'"                            
-      :navigation-next-label="'&#x279C;'"
-    >
-      <slide
-        v-for="data in passed"
-        :key="data.id"
-      >
-        <card-item
-          :title="data.title"
-          :date="data.online == 1 ? '' : data.date"
-          :image="data.cover_thumbnail ? data.cover_thumbnail : data.cover"
-          :imagealt="data.cover_name ? data.cover_name : ''"
-          actionable
-          :navigate-to="data.id"
-          state="passed"
-        />
-      </slide>
-    </carousel>
-  </div>
-  </div>
+</div>
 </template>
 
 <script>
@@ -80,19 +49,18 @@ export default {
     };
   },
   computed: {
-    ...mapState('audition', ['auditions', 'upcoming', 'passed']),
+    ...mapState('audition', ['auditions', 'upcoming']),
     ...mapState('profile', ['user']),
   },
   async created() {
     this.fetchUpcoming();
-    this.fetchPassed();
     this.fetch();
   },
   async mounted(){
     this.userId = TokenService.getUserId()
   },
   methods: {
-    ...mapActions('audition', ['fetchUpcoming', 'fetchPassed']),
+    ...mapActions('audition', ['fetchUpcoming']),
     ...mapActions('profile', ['fetch']),
   },
 };
