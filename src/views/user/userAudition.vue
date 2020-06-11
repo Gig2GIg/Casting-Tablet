@@ -791,56 +791,61 @@ export default {
     userList: function() {
       console.log("this.userList", this.userList)
       this.setNextPerform();
+    },
+    "$route.query"() {
+      console.log("route.query")      
+      this.userDetailsInit();
     }
   },
   async mounted() {
     await this.fetchAuditionData(this.$route.params.audition);
     await this.fetchUserList(this.$route.params.round);    
-    this.manageCurrentUserRoles();
-    await this.fetchTags({"round": this.$route.params.round, "user": this.$route.params.id,});
-    await this.fetchRecommendation({"round": this.$route.params.audition, "user": this.$route.params.id,});
-    await this.fetchOnlineMedia({"round": this.$route.params.round, "user": this.$route.params.id,});
-    console.log("mounted -> this.onlineMedia", this.onlineMedia)
-    let feedback = {
-      user:this.$route.params.id,
-      round:this.$route.params.round
-    };
-    await this.fetchUserFeedback(feedback);
+    this.userDetailsInit();
+    // this.manageCurrentUserRoles();
+    // await this.fetchTags({"round": this.$route.params.round, "user": this.$route.params.id,});
+    // await this.fetchRecommendation({"round": this.$route.params.audition, "user": this.$route.params.id,});
+    // await this.fetchOnlineMedia({"round": this.$route.params.round, "user": this.$route.params.id,});
+    // console.log("mounted -> this.onlineMedia", this.onlineMedia)
+    // let feedback = {
+    //   user:this.$route.params.id,
+    //   round:this.$route.params.round
+    // };
+    // await this.fetchUserFeedback(feedback);
         
-    if(Object.keys(this.feedback).length>0){
-      for(data in this.feedback){
-        this.workon = this.feedback.work === null ? null : (this.feedback.work == 'vocals' ? 1 :this.feedback.work == 'acting' ? 2 : 3);
-        this.favorite = this.feedback.favorite;
-        this.emoji = this.feedback.evaluation;
-        this.callback = this.feedback.callback == 1 ?true: this.feedback.callback === null ? null : false;
-        this.form.comment = this.feedback.comment;
-      }
-    }
-      // Get Assigend Number
-      let getPerformerDetails = await axios.get(`/t/auditions/profile/user/${this.$route.params.id}/appointment/${this.$route.params.round}`);
-      if(getPerformerDetails.status == 200){
-        this.performerDetails = getPerformerDetails.data.data;        
-        this.addNumberText = getPerformerDetails.data.data.assign_number;
-        if(this.addNumberText && this.addNumberText != ''){
-          this.isAssignedNumber = true;
-        } else {
-          this.isAssignedNumber = false;
-        }
+    // if(Object.keys(this.feedback).length>0){
+    //   for(data in this.feedback){
+    //     this.workon = this.feedback.work === null ? null : (this.feedback.work == 'vocals' ? 1 :this.feedback.work == 'acting' ? 2 : 3);
+    //     this.favorite = this.feedback.favorite;
+    //     this.emoji = this.feedback.evaluation;
+    //     this.callback = this.feedback.callback == 1 ?true: this.feedback.callback === null ? null : false;
+    //     this.form.comment = this.feedback.comment;
+    //   }
+    // }
+    //   // Get Assigend Number
+    //   let getPerformerDetails = await axios.get(`/t/auditions/profile/user/${this.$route.params.id}/appointment/${this.$route.params.round}`);
+    //   if(getPerformerDetails.status == 200){
+    //     this.performerDetails = getPerformerDetails.data.data;        
+    //     this.addNumberText = getPerformerDetails.data.data.assign_number;
+    //     if(this.addNumberText && this.addNumberText != ''){
+    //       this.isAssignedNumber = true;
+    //     } else {
+    //       this.isAssignedNumber = false;
+    //     }
         
-      }else{
-        this.performerDetails = {};
-        this.addNumberText = "";
-        this.isAssignedNumber = true;
-      }
-    this.currentUser = this.userList.filter(userList => userList.user_id == this.$route.params.id);
-    if(this.currentUser != ""){
-      this.slot = this.currentUser[0].slot_id;
-      this.rol = this.currentUser[0].rol;
-    }    
-    let data = {"appointment_id": this.$route.params.round, "performer": this.$route.params.id}
-    await this.fetchTeamFeedback(data);
-    await this.myCalendar(this.$route.params.id);
-    this.asignEvents();
+    //   }else{
+    //     this.performerDetails = {};
+    //     this.addNumberText = "";
+    //     this.isAssignedNumber = true;
+    //   }
+    // this.currentUser = this.userList.filter(userList => userList.user_id == this.$route.params.id);
+    // if(this.currentUser != ""){
+    //   this.slot = this.currentUser[0].slot_id;
+    //   this.rol = this.currentUser[0].rol;
+    // }    
+    // let data = {"appointment_id": this.$route.params.round, "performer": this.$route.params.id}
+    // await this.fetchTeamFeedback(data);
+    // await this.myCalendar(this.$route.params.id);
+    // this.asignEvents();
   },
   methods: {
     ...mapActions('user', ['fetch']),
@@ -850,6 +855,53 @@ export default {
     ...mapActions('feedback', ['fetchUserFeedback', 'storeTag', 'storeRecommendation', 'fetchTags', 'fetchRecommendation', 'delete', 'searchMarketplace', 'setRecommendations', 'deleteRecommendation']),
     goToday() {
       this.$refs.calendar.goToday()
+    },
+    async userDetailsInit() {
+      this.manageCurrentUserRoles();
+      await this.fetchTags({"round": this.$route.params.round, "user": this.$route.params.id,});
+      await this.fetchRecommendation({"round": this.$route.params.audition, "user": this.$route.params.id,});
+      await this.fetchOnlineMedia({"round": this.$route.params.round, "user": this.$route.params.id,});
+      console.log("mounted -> this.onlineMedia", this.onlineMedia)
+      let feedback = {
+        user:this.$route.params.id,
+        round:this.$route.params.round
+      };
+      await this.fetchUserFeedback(feedback);
+          
+      if(Object.keys(this.feedback).length>0){
+        for(data in this.feedback){
+          this.workon = this.feedback.work === null ? null : (this.feedback.work == 'vocals' ? 1 :this.feedback.work == 'acting' ? 2 : 3);
+          this.favorite = this.feedback.favorite;
+          this.emoji = this.feedback.evaluation;
+          this.callback = this.feedback.callback == 1 ?true: this.feedback.callback === null ? null : false;
+          this.form.comment = this.feedback.comment;
+        }
+      }
+        // Get Assigend Number
+        let getPerformerDetails = await axios.get(`/t/auditions/profile/user/${this.$route.params.id}/appointment/${this.$route.params.round}`);
+        if(getPerformerDetails.status == 200){
+          this.performerDetails = getPerformerDetails.data.data;        
+          this.addNumberText = getPerformerDetails.data.data.assign_number;
+          if(this.addNumberText && this.addNumberText != ''){
+            this.isAssignedNumber = true;
+          } else {
+            this.isAssignedNumber = false;
+          }
+          
+        }else{
+          this.performerDetails = {};
+          this.addNumberText = "";
+          this.isAssignedNumber = true;
+        }
+      this.currentUser = this.userList.filter(userList => userList.user_id == this.$route.params.id);
+      if(this.currentUser != ""){
+        this.slot = this.currentUser[0].slot_id;
+        this.rol = this.currentUser[0].rol;
+      }    
+      let data = {"appointment_id": this.$route.params.round, "performer": this.$route.params.id}
+      await this.fetchTeamFeedback(data);
+      await this.myCalendar(this.$route.params.id);
+      this.asignEvents();
     },
     async updateTeamFeedBack(){
       this.isRealodTeamFeedback = true;
