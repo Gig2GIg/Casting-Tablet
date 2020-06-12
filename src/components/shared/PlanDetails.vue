@@ -1,36 +1,67 @@
 <template>
-  <div class="flex flex-wrap items-center justify-center">
-    <div
-      v-for="plan of planList"
-      :key="plan.id"
-      class="col-6 w-11/8 bg-white h-full mr-5 mb-5 border-radius-6"
+  <div class="w-90 m-5">
+    <carousel    
+      v-if="planList && planList.length > 0"
+      :per-page="3"
+      :pagination-enabled="false"
+      :navigation-enabled="true"
+      :navigation-prev-label="'&#x279C;'"                            
+      :navigation-next-label="'&#x279C;'"
+      class="flex flex-wrap items-center justify-center plan-list-carousel"
     >
-      <div class="border-radius-6 box">
-        <div
-          class="relative flex flex-col h-48 items-center justify-center bg-cus-orange border-tl-radius-6 border-tr-radius-6"
+      <!-- <div
+        v-for="plan of planList"
+        :key="plan.id"
+        class="col-6 w-11/8 bg-white h-full mr-5 mb-5 border-radius-6"
+      > -->
+      <slide
+          v-for="plan of planList"
+          :key="plan.id"        
+          class="bg-white h-full mr-5 mb-5 border-radius-6"
         >
-          <span class="text-xl text-white">{{plan.name}}</span>
-        </div>
-        <div class="relative flex flex-col h-full shadow-md">
-          <div class="flex flex-col px-4 py-2 w-full h-50 items-center justify-center">
-            <div class="price">
-              <span class="font-medium text-xl text-black">
-                $
-                <b class="f-28">{{plan.amount}}</b>
-              </span>
-              <span class="letter-space text-black">per {{plan.type}}</span>
+        <div class="border-radius-6 box">
+          <div
+            class="relative flex flex-col h-48 items-center justify-center bg-cus-orange border-tl-radius-6 border-tr-radius-6"
+          >
+            <span class="text-xl text-white" v-if="plan.is_custom == 0" >Up to {{plan.allowed_performers}} Performers</span>
+            <span class="text-xl text-white" v-else>{{plan.allowed_performers}}+ Performers</span>
+          </div>
+          <div class="relative flex flex-col h-full shadow-md">
+            <div class="flex flex-col px-4 py-2 w-full h-50 items-center justify-center">
+              <div class="price" v-if="plan.is_custom == 0">
+                <span class="font-medium text-xl text-black">
+                  $
+                  <b class="f-28">{{plan.amount}}</b>
+                </span>
+                <span class="letter-space text-black">per {{plan.type}}</span>
+              </div>
+              <div class="custom-plan-blank" v-else>
+                <span class="font-medium text-xl text-black">                  
+                </span>
+                <span class="letter-space text-black"></span>
+              </div>
+              <div 
+                v-if="plan.is_custom == 0"
+                class="cursor-pointer m-3 content-center rounded-full red-light w-40 h-10 flex items-center button-detail accept-decline-btn"
+                @click="selectPlan(plan)"
+              >
+                <p class="text-white text-center uppercase content-center flex-1">Select</p>
+              </div>
+              <a 
+                v-else
+                target="_blank"
+                v-bind:href="'mailto:'+account_email+''"
+                class="cursor-pointer m-3 content-center rounded-full red-light w-40 h-10 flex items-center button-detail accept-decline-btn"                
+              >
+                <p class="text-white text-center uppercase content-center flex-1" >Contact Us</p>
+              </a>
+              <span class="font-400 text-sm cus-p f-10 text-black text-center">{{plan.description}}</span>
             </div>
-            <div
-              class="cursor-pointer m-3 content-center rounded-full red-light w-40 h-10 flex items-center button-detail accept-decline-btn"
-              @click="selectPlan(plan)"
-            >
-              <p class="text-white text-center uppercase content-center flex-1">Select</p>
-            </div>
-            <span class="font-400 text-sm cus-p f-10 text-black text-center">{{plan.description}}</span>
           </div>
         </div>
-      </div>
-    </div>
+      </slide>
+      <!-- </div> -->    
+    </carousel>
     <div class="bottom-text">
       <span class="text-md text-white text-center mt-5 f-14">
         All subscriptions are billed monthly. if your Talent Database exceeds the number of
@@ -38,11 +69,13 @@
       </span>
     </div>
   </div>
+  
 </template>
 
 <script>
 import axios from "axios";
 import store from "@/store";
+import DEFINE from "@/utils/const.js";
 
 export default {
   name: "PlanDetails",
@@ -53,6 +86,7 @@ export default {
     return {
       planList: Array,
       currentUser: null,
+      account_email : DEFINE.account_email,
       default: () => []
     };
   },
@@ -153,5 +187,8 @@ export default {
 }
 .letter-space {
   letter-spacing: 2.1px;
+}
+.plan-list-carousel{
+
 }
 </style>

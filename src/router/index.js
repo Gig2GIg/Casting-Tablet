@@ -61,9 +61,8 @@ router.beforeEach((to, from, next) => {
     return next({ name: 'auditions' });
   }
 
-  if (isPrimeModule && (!currentUser || !currentUser.is_premium || currentUser.is_premium === 0)) {
+  if (loggedIn && isPrimeModule && (!currentUser || !currentUser.is_premium || currentUser.is_premium === 0)) {
     Vue.toasted.clear();
-    // Vue.toasted.info(DEFINE.no_plan_subscirbed_error);
     Vue.toasted.info(DEFINE.no_plan_subscirbed_error, {
       action: {
         text: 'Subscribe',
