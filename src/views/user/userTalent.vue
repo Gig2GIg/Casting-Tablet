@@ -47,7 +47,7 @@
   <multipane class="custom-resizer h-full " layout="vertical">
     <div class="flex p-5" :style="isShowAuditionVideo? { minWidth: '68%', width: '68%', maxWidth: '100%' } : { minWidth: '75%', width: '100%', maxWidth: '100%' }">
       <div class="flex flex-wrap justify-center content-start w-1/2 shadow-2xl rounded-lg">
-          <div v-if="tuser && tuser.image && tuser.image.url" class="w-full bg-cover rounded-t-lg user-profile" :style="{ backgroundImage: 'url(' + tuser.image.url + ')'}">
+          <div v-if="tuser && tuser.image && tuser.image.url" class="w-full bg-cover rounded-t-lg user-profile width-fix" :style="{ backgroundImage: 'url(' + tuser.image.url + ')'}">
           </div>
           <div v-else class="h-56 w-full bg-cover rounded-t-lg" :style="{ backgroundImage: 'url(' + image + ')' }">
           </div>
@@ -1025,10 +1025,12 @@ ul.submanu-content > li > a {
 }
 .user-profile {
   background-position: center;
-  height: 18rem !important;
+  
 }
 .custom-video-list-w {
   width: 319px !important;
 }
-
+.user-profile.width-fix{
+  height: 382px !important;
+}
 </style>
