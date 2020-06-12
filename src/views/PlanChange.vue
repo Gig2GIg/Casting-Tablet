@@ -6,14 +6,8 @@
       :on-cancel="onCancel"
       :is-full-page="fullPage"
     ></loading>
-    <p class="text-2xl" v-if="selectedPlan">Payment Details</p>
-    <PlanDetails
-      v-if="!selectedPlan"
-      :from="'subsribe_plan'"
-      @select_plan="handleSelectPlan"
-      @child_loder="handleChildLoader"
-    />
-    <form v-else class="w-full max-w-xs mt-16" @submit.prevent="handleSubscription()">
+    <p class="text-2xl">Payment Details</p>
+    <form class="w-full max-w-xs mt-16" @submit.prevent="handleChangePlan()">
       <base-input
         key="name_on_card-input"
         v-model="form.name_on_card"
@@ -51,14 +45,14 @@
         v-model="form.card_cvc"
         v-validate="'required'"
         name="card_cvc"
-        placeholder="CSV"
+        placeholder="CVC"
         :type="'stripe_element'"
         :stripe_cardformat="'formatCardCVC'"
         :message="errors.first('card_cvc')"
-        data-vv-as="csv"
+        data-vv-as="cvc"
       />
 
-      <base-button class="mt-16" type="submit" expanded>Subscribe Plan</base-button>
+      <base-button class="mt-16" type="submit" expanded>Change</base-button>
     </form>
   </div>
 </template>
@@ -78,64 +72,61 @@ Vue.use(Loading);
 import axios from "axios";
 import moment from "moment";
 import TokenService from "../services/core/TokenService";
-import PlanDetails from "../components/shared/PlanDetails.vue";
 const $ = require("jquery");
+import payment from "@/utils/jquery.payment.min";
 
 export default {
   components: {
-    Loading,
-    PlanDetails
+    Loading
   },
   data() {
     return {
       form: {},
       step: 1,
       isLoading: false,
-      fullPage: true,
-      preview: null,
-      states,
-      imgSrc: null,
-      updatedImageFile: null,
-      updatedImageBlob: null,
-      cropImg: "",
-      data: null,
-      minHeight: Number(200),
-      minWidth: Number(200),
-      profileFileName: null,
-      profileNameObject: {},
-      profileThumbnail: {},
-      selectedPlan: null,
-      minmonthdate: moment(),
-      isSignUpDone: false
+      fullPage: true
     };
   },
   methods: {
-    async handleSubscription() {
+    async handleChangePlan() {     
+      
+      
+
       try {
         if (this.isLoading || !(await this.$validator.validateAll())) {
           return;
         }
+        // if(!payment.validateCardNumber(this.form.card_expiry)){
+        //   this.$toasted.error("Please enter valid card number!");
+        //   return;
+        // }  
+        // if(!payment.validateCardCVC(this.form.card_cvc)){
+        //   this.$toasted.error("Please enter valid CVC!");
+        //   return;
+        // }    
+
         this.isLoading = true;
         let data = JSON.parse(JSON.stringify(this.form));
 
-        // start : create subscription plan
+        // start : change payment details
         const Request = {
           name_on_card: data.name_on_card,
           exp_year: moment(data.card_expiry).format("YYYY"),
           exp_month: moment(data.card_expiry).format("MM"),
           number: data.card_number.replace(/\s/g, ""),
-          cvc: data.card_cvc,
-          user_id: TokenService.getUserId(),
-          stripe_plan_id: this.selectedPlan.id,
-          stripe_plan_name: this.selectedPlan.name
+          cvc: data.card_cvc
         };
 
-        await axios.post(`/t/users/subscribe`, Request);
-        // end : create subscription plan
-        
-        this.$toasted.show("Plan subscribe successfully.");
-        this.$router.push({ name: "my.settings" });
+        await axios.post(`/users/changeDefaultPaymentMethod`, Request);
+        // end : change payment details
 
+        this.$toasted.show(
+          "Your payment detail has been changed successfully."
+        );
+        this.$router.push({
+          name: "my.settings",
+          query: { tab: "subscription" }
+        });
       } catch (e) {
         let errorMsg;
         if (e.response && e.response.data) {
@@ -154,18 +145,6 @@ export default {
     },
     onCancel() {
       console.log("User cancelled the loader.");
-    },
-    handleSelectPlan(selectedPlan) {
-      console.log("handleSelectPlan -> selectedPlan", selectedPlan);
-      if (selectedPlan) {
-        this.selectedPlan = selectedPlan;
-        console.log("handleSelectPlan -> this.step", this.step);
-      } else {
-        this.selectedPlan = null;
-      }
-    },
-    handleChildLoader(value) {
-      this.isLoading = value;
     }
   }
 };
@@ -188,87 +167,25 @@ export default {
   display: flex;
   justify-content: space-between;
 }
-.cropper-area {
-  width: 614px;
-}
-.actions {
-  margin-top: 1rem;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-}
-.actions a {
-  display: inline-block;
-  padding: 5px 15px;
-  background: #782541;
-  color: white;
-  text-decoration: none;
-  border-radius: 3px;
-  margin-right: 1rem;
-  margin-bottom: 1rem;
-}
-textarea {
-  width: 100%;
-  height: 100px;
-}
-.preview-area {
-  width: 307px;
-}
-.preview-area p {
-  font-size: 1.25rem;
-  margin: 0;
-  margin-bottom: 1rem;
-  color: #782541;
-}
-.preview-area p:last-of-type {
-  margin-top: 1rem;
-}
-.preview {
-  width: 100%;
-  height: calc(372px * (9 / 16));
-  overflow: hidden;
-}
-.crop-placeholder {
-  width: 100%;
-  height: 200px;
-  background: #ccc;
-}
-.cropped-image img {
-  max-width: 100%;
-}
-.v--modal-box.v--modal {
-  overflow: auto !important;
-}
-.cropper-area > textarea {
-  display: none;
-}
-.credit-card-inputs.complete {
-  border: 2px solid green;
-}
-.month-picker .month-year-display{
+.month-picker .month-year-display {
   background-color: #ffffff;
 }
-.month-picker .month-year-display .picker .flexbox div{color: #ffffff;}
-.vue-monthly-picker .picker .flexbox div {
-    color: #000000;
-    font-weight: 600;
+.month-picker .month-year-display .picker .flexbox div {
+  color: #ffffff;
 }
-.vue-monthly-picker .date-popover{
+.vue-monthly-picker .picker .flexbox div {
+  color: #000000;
+  font-weight: 600;
+}
+.vue-monthly-picker .date-popover {
   border-radius: 15px !important;
 }
 .vue-monthly-picker .picker .monthItem .item.active:hover {
-    background-color: transparent !important;
-    background-image: linear-gradient(#4D2545, #782541) !important;
-    color: #ffffff !important;
+  background-color: transparent !important;
+  background-image: linear-gradient(#4d2545, #782541) !important;
+  color: #ffffff !important;
 }
-.vue-monthly-picker .picker .monthItem .item.deactive{
+.vue-monthly-picker .picker .monthItem .item.deactive {
   color: #999 !important;
 }
-.vue-monthly-picker .picker .monthItem .item.active.selected {
-    background-color: transparent !important;
-    background-image: linear-gradient(#4D2545, #782541) !important;
-    color: #ffffff !important;
-}
-.month-picker-wrapper .display-text.display-text-left{color: #4D2545 !importanta;}
 </style>

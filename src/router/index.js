@@ -33,8 +33,8 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-console.log("to", to)
-console.log("from", from)
+  // console.log("to", to)
+  // console.log("from", from)
   const isPublic = to.matched.some(record => record.meta.public);
   const onlyWhenLoggedOut = to.matched.some(record => record.meta.onlyWhenLoggedOut);
   const allowBoth = to.matched.some(record => record.meta.allowBoth);
@@ -47,7 +47,7 @@ console.log("from", from)
   }
   const loggedIn = store.getters['auth/isAuthenticated'];
   const currentUser = store.getters['profile/currentUser'];
-  console.log("router currentUser", currentUser)
+  // console.log("router currentUser", currentUser)
 
   if (!isPublic && !onlyWhenLoggedOut && !loggedIn) {
     return next({
@@ -61,30 +61,25 @@ console.log("from", from)
     return next({ name: 'auditions' });
   }
 
-  if (isPrimeModule && (!currentUser || !currentUser.is_premium || currentUser.is_premium === 0)) {
+  if (loggedIn && isPrimeModule && (!currentUser || !currentUser.is_premium || currentUser.is_premium === 0)) {
     Vue.toasted.clear();
-    Vue.toasted.info(DEFINE.no_plan_subscirbed_error);
-    // Vue.toasted.info(DEFINE.no_plan_subscirbed_error,  {
-    //   action : {
-    //       text : 'Subscribe',
-    //       onClick : (e, toastObject) => {            
-    //         that.$router.push({name: 'my.settings'});
-    //       }
-    //     }
-    //   });
-    if(from.name){
+    Vue.toasted.info(DEFINE.no_plan_subscirbed_error, {
+      action: {
+        text: 'Subscribe',
+        onClick: (e, toastObject) => {
+          return next({ name: 'my.settings', query: { tab: "subscription" } });
+        }
+      }
+    });
+    if (from.name) {
       return next({ name: from.name });
     } else {
       return next({ name: 'my.settings' });
     }
-    
+
   }
 
   return next();
-});
-router.afterEach((to, from, next) => {
-  const currentUser = store.getters['profile/currentUser'];
-  // console.log("currentUser", currentUser)
 });
 
 export default router;

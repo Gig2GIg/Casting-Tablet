@@ -5,6 +5,7 @@ const DEFINE = {
     set_pass_code_key : 'checkin_set_pass_code',
     set_monitor_pass_code_key : 'monitor_set_pass_code',
     contact_us : "support@gig2gig.com",
+    account_email : "accounts@gig2gig.com",    
     common_error_message : 'Oops! something went to wrong!',
     no_plan_subscirbed_error : "You don't have any subscrition to access this feature.",
     thumbSize :{

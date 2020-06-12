@@ -16,14 +16,14 @@
 
         <div class="py-4 px-4 mr-2 flex flex-wrap justify-center">
           <div class="w-full mr-2">
-            <div class="flex justify-center mb-4 items-center px-3 w-full">
+            <div class="flex justify-center mb-2 items-center px-3 w-full">
               <div class="w-1/2 ml-4 text-purple px-2 text-md">Email Address</div>
-              <div class="w-1/2 ml-4 text-purple px-2 text-md">Name(Optional)</div>
+              <div class="w-1/2 text-purple px-2 text-md">Name(Optional)</div>
             </div>
           </div>
           <div class="w-full mr-2" v-for="(user, index) of form" :key="index">
-            <div class="flex justify-center mb-4 items-center px-3 w-full">
-              <div class="w-2/5 ml-4 text-purple px-2">
+            <div class="flex justify-center mb-4 items-start px-3 w-full">
+              <div class="w-3/5 ml-4 text-purple px-2">
                 <base-input
                   v-model="user.email"
                   v-validate="'required|email'"
@@ -34,7 +34,7 @@
                   data-vv-as="email"
                 />
               </div>
-              <div class="w-2/5 ml-4 text-purple px-2">
+              <div class="w-3/5 ml-4 text-purple px-2">
                 <base-input
                   v-model="user.name"
                   :custom-classes="['border border-b border-gray-300 text-sm place-holder-color']"
@@ -56,10 +56,10 @@
           </div>
 
           <div class="w-full mr-2">
-            <div class="flex justify-left mb-4 px-3 w-full cursor-pointer" @click="addNew()">
-              <div class="w-1/2 ml-4 text-purple px-2 text-sm">
+            <div class="flex justify-left mb-2 px-3 w-full cursor-pointer" @click="addNew()">
+              <div class="w-1/2 ml-4 text-purple px-2 text-sm add-new-btn">
                 <img src="/images/icons/new.png" class="h-6" />
-                Add New OR Add Multiple at once
+                <span class="ml-2">Add New OR Add Multiple at once</span>
               </div>
             </div>
           </div>
@@ -197,4 +197,16 @@ export default {
   min-height: 500px;
   min-height: 500px;
 }
+
+.add-new-btn{display: flex; align-items: center;}
+.add-new-btn img{width: 18px;
+    height: 18px !important;
+    padding: 2px;
+    border: 1px solid;
+    border-radius: 50%;}
+
+    .add-new-btn span{
+          font-size: 12px;
+    font-weight: 500;
+    }
 </style>

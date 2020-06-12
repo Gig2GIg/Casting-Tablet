@@ -156,5 +156,8 @@ body, html {
   align-items: flex-start;  
   padding: 20px;
 }
+.month-picker .vue-monthly-picker .month-year-display.text-black.placeholder {
+  color: #4D2545 !important;
+}
 
 </style>

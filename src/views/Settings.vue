@@ -479,13 +479,24 @@
             </div>
             <div class="flex justify-center mb-4 items-center px-3 w-full">
               <div class="w-1/3 ml-4 text-purple px-2">
-                <base-input
+                <!-- <base-input
                   v-model="form.address"
                   v-validate="'required|max:300'"
                   :custom-classes="['border border-b border-gray-300']"
                   name="address"
                   placeholder="Address"
                   :message="errors.first('address')"
+                />-->
+                <base-input
+                  ref="password"
+                  v-model="form.password"
+                  v-validate="'min:8'"
+                  :custom-classes="['border border-b border-gray-300']"
+                  name="password"
+                  type="password"
+                  placeholder="Password"
+                  :message="errors.first('password')"
+                  autocomplete="false"
                 />
               </div>
               <div class="w-1/3 ml-4 text-purple px-2">
@@ -500,7 +511,7 @@
                 />
               </div>
             </div>
-            <div class="flex justify-center mb-4 items-center px-3 w-full">
+            <!-- <div class="flex justify-center mb-4 items-center px-3 w-full">
               <div class="w-1/3 ml-4 text-purple px-2">
                 <base-input
                   key="city-input"
@@ -529,8 +540,8 @@
                   >{{ state.label }}</option>
                 </base-select>
               </div>
-            </div>
-            <div class="flex justify-center mb-4 items-center px-3 w-full">
+            </div>-->
+            <!-- <div class="flex justify-center mb-4 items-center px-3 w-full">
               <div class="w-1/3 ml-4 text-purple px-2">
                 <base-input
                   key="zip-input"
@@ -543,6 +554,25 @@
                   placeholder="Zip"
                   :message="errors.first('zip')"
                 />
+            </div>-->
+            <div class="flex justify-center mb-4 items-center px-3 w-full">
+              <div class="w-1/3 ml-4 text-purple px-2">
+                <base-select
+                  key="country-input"
+                  v-model="form.country"
+                  v-validate="'required'"
+                  :custom-classes="['border border-b border-gray-300']"
+                  name="country"
+                  class="w-full"
+                  placeholder="Country"
+                  :message="errors.first('country')"
+                >
+                  <option
+                    v-for="country in countries"
+                    :key="country.id"
+                    :value="country.id"
+                  >{{ country.name }}</option>
+                </base-select>
               </div>
               <div class="w-1/3 ml-4 text-purple px-2">
                 <base-input
@@ -582,7 +612,7 @@
         class="tags w-9/12 shadow-md mx-auto px-3 py-3 mt-6"
       >
         <div class="cursor-pointer" @click="hideMenuInfo = false; tabSelected = ''">
-          <svg xmlns="http://www.w3.org/2000/svg" width="30.049" height="39.187">
+          <svg xmlns="http://www.w3.org/2000/svg"  width="30.049" height="39.187">
             <defs>
               <filter
                 id="a"
@@ -994,8 +1024,12 @@
 </template>
 
 <script>
+const $ = require('jquery');
+window.$ = $;
+
 import axios from "axios";
-import states from "@/utils/states";
+// import states from "@/utils/states";
+import countries from "@/utils/countries";
 import { mapActions, mapState } from "vuex";
 import DEFINE from "../utils/const.js";
 import VueCropper from "vue-cropperjs";
@@ -1026,7 +1060,8 @@ export default {
       feedbackText: "",
       feedbackStdText: "",
       cmsContentDetails: {},
-      states,
+      // states,
+      countries,
       previewProfile: null,
       imgSrc: null,
       updatedImageFile: null,
@@ -1042,8 +1077,8 @@ export default {
     };
   },
   async mounted() {
-    const tab = this.$route.query.tab    
-    if(tab && tab != ''){
+    const tab = this.$route.query.tab;
+    if (tab && tab != "") {
       this.manageSelectedTab(tab);
     }
     this.getUserData();
@@ -1051,6 +1086,9 @@ export default {
   async created() {
     eventBus.$on("settingNavViewChange", value => {
       this.hideMenuInfo = value;
+      if(!this.hideMenuInfo) {
+        this.$router.push(this.$route.path);      
+      }      
     });
   },
   watch: {
@@ -1077,6 +1115,12 @@ export default {
             break;
         }
       }
+    },
+    '$route.query'() {
+        const tab = this.$route.query.tab;
+        if (tab && tab != "") {
+          this.manageSelectedTab(tab);
+        }
     }
   },
   computed: {
@@ -1100,10 +1144,6 @@ export default {
         if (this.tabSelected == "instantFeedback") {
           this.showFeedBackOptionMenu = true;
         } else if (this.tabSelected == "subscription") {
-          console.log(
-            "manageSelectedTab -> this.hideMenuInfo",
-            this.hideMenuInfo
-          );
           eventBus.$emit("settingNavViewChange", this.hideMenuInfo);
         }
       }
@@ -1137,6 +1177,7 @@ export default {
       this.form.agency_name = this.user.details.agency_name;
       this.form.gender = this.user.details.gender;
       this.form.state = this.user.details.state;
+      this.form.country = this.user.details.country;
       this.form.location = "12,33334 - 23,00000";
       this.form.image = this.user.image.url;
       this.form.thumbnailImage = this.user.image.thumbnail;
@@ -1192,14 +1233,14 @@ export default {
             : null;
           this.form.file_name = this.profileNameObject.name;
         }
-
-        if (this.form.birth) {
-          this.form.birth = moment(this.form.birth).format("YYYY-MM-DD");
+        const param = JSON.parse(JSON.stringify(this.form));
+        if (param.birth) {
+          param.birth = moment(param.birth).format("YYYY-MM-DD");
         }
 
         let action = await axios.put(
           `/t/users/update/${this.user.id}`,
-          this.form
+          param
         );
         this.isLoading = false;
         this.$toasted.success("The user data has updated successfully.");
