@@ -179,6 +179,9 @@ export default [
   {
     path: '/past-auditions',
     name: 'past_auditions',
+    meta : {
+      isPrimeModule: true
+    },
     component: () => import(/* webpackChunkName: 'auditions' */ '@/views/PastAuditions'),
   },
   {
