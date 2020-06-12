@@ -126,7 +126,19 @@ export default {
   methods: {
     async handleInviteUser() {
       console.log("handleInviteUser -> handleInviteUser");
+      this.$toasted.clear();
       if (await this.$validator.validateAll()) {
+        console.log("handleInviteUser -> this.form", this.form)
+        let valueArr = this.form.map(function (item) { return item.email });
+        
+        let isDuplicate = valueArr.some(function (item, idx) {
+            return valueArr.indexOf(item) != idx
+        });
+        if(isDuplicate){
+          this.$toasted.error('Please enter unique email ids!');
+          return false;
+        }
+        
         this.isLoading = true;
         try {
           const requestParam = {

@@ -51,11 +51,11 @@
         v-model="form.card_cvc"
         v-validate="'required'"
         name="card_cvc"
-        placeholder="CSV"
+        placeholder="CVC"
         :type="'stripe_element'"
         :stripe_cardformat="'formatCardCVC'"
         :message="errors.first('card_cvc')"
-        data-vv-as="csv"
+        data-vv-as="cvc"
       />
 
       <base-button class="mt-16" type="submit" expanded>Subscribe Plan</base-button>
@@ -126,8 +126,9 @@ export default {
           number: data.card_number.replace(/\s/g, ""),
           cvc: data.card_cvc,
           user_id: TokenService.getUserId(),
-          stripe_plan_id: this.selectedPlan.id,
-          stripe_plan_name: this.selectedPlan.name
+          stripe_plan_id: this.selectedPlan.stripe_plan,
+          stripe_plan_name: this.selectedPlan.name,
+          plan_id: this.selectedPlan.id
         };
 
         await axios.post(`/t/users/subscribe`, Request);

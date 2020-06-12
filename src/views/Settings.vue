@@ -1137,7 +1137,14 @@ export default {
           tab == "marketplace" ||
           tab == "notifications")
       ) {
-        this.$toasted.info(DEFINE.no_plan_subscirbed_error);
+        this.$toasted.info(DEFINE.no_plan_subscirbed_error, {
+            action: {
+              text: 'Subscribe',
+              onClick: (e, toastObject) => {
+                this.$router.push({ name: 'my.settings', query: { tab: "subscription" } });
+              }
+            }
+          });
       } else {
         this.tabSelected = tab;
         this.hideMenuInfo = true;

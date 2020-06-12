@@ -156,11 +156,11 @@
           v-model="form.card_cvc"
           v-validate="'required'"
           name="card_cvc"
-          placeholder="CSV"
+          placeholder="CVC"
           :type="'stripe_element'"
           :stripe_cardformat="'formatCardCVC'"
           :message="errors.first('card_cvc')"
-          data-vv-as="csv"
+          data-vv-as="cvc"
         />
       </template>
       <template v-else>

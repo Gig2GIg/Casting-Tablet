@@ -6,7 +6,10 @@
       :on-cancel="onCancel"
       :is-full-page="fullPage"
     ></loading>
-    <div class="tags w-full mx-auto invite-block-hieght text-purple">
+    <div
+      class="tags w-full mx-auto invite-block-hieght text-purple"
+      v-if="!isLoading && !notSuscription"
+    >
       <div class="py-4 px-4 mr-2 flex flex-wrap justify-center">
         <div class="w-full mr-2">
           <div class="flex justify-center mb-4 items-center px-3 w-full">
@@ -23,16 +26,6 @@
                 class="social-a flex items-center justify-center content-center cursor-pointer font-bold"
                 @click="changePaymentDetails()"
               >Change</a>
-            </div>
-          </div>
-          <div class="flex justify-right mb-4 items-right px-3 w-full" v-else>
-            <div class="w-2/3 text-purple px-2 text-sm"></div>
-            <div class="w-2/8 text-purple px-2 text-sm capitalize"></div>
-            <div class="w-2/8 text-purple px-2 text-sm capitalize">
-              <a
-                class="social-a flex items-center justify-center content-center cursor-pointer"
-                @click="subscribePlan()"
-              >Subscribe Plan</a>
             </div>
           </div>
         </div>
@@ -52,7 +45,9 @@
           </div>
         </div>
         <div class="w-full mr-2 border-grey-1 border-raduis-8">
-          <div class="flex justify-center mb-4 items-center px-3 w-full bg-grey-500 border-tl-8 ptb-10">
+          <div
+            class="flex justify-center mb-4 items-center px-3 w-full bg-grey-500 border-tl-8 ptb-10"
+          >
             <div class="w-2/5 ml-4 text-purple px-2 text-md">Name</div>
             <div class="w-2/5 ml-4 text-purple px-2 text-md">Joined</div>
             <div class="w-2/10 ml-4 text-purple px-2"></div>
@@ -65,9 +60,11 @@
                   class="h-10 w-10 rounded object-cover"
                   alt="Logo"
                 />
-                <span>{{user.details.first_name +' '+ (user.details.last_name ? user.details.last_name : '')}}
-                <br />
-                {{user.email}}</span>
+                <span>
+                  {{user.details.first_name +' '+ (user.details.last_name ? user.details.last_name : '')}}
+                  <br />
+                  {{user.email}}
+                </span>
               </div>
               <div
                 class="w-2/5 ml-4 text-purple px-2 text-sm joined-date"
@@ -90,10 +87,41 @@
               </div>
             </div>
           </div>
-          <div class="w-full mr-2 text-center" v-if="inviteUserList.length == 0">
-            No invited user found!
+          <div
+            class="w-full mr-2 text-center"
+            v-if="inviteUserList.length == 0"
+          >No invited user found!</div>
+        </div>
+      </div>
+    </div>
+    <div class="tags w-full mx-auto invite-block-hieght text-purple mr-2" v-else-if="!isLoading">
+      <div class="py-4 px-4 mr-2 flex flex-wrap justify-center">
+        <div class="w-full">
+          <div class="flex justify-center mb-4 items-center px-3 w-full">
+            <div class="w-1/2 text-purple px-2 text-lg text-bold-500"></div>
+            <div class="w-1/2 text-purple px-2 text-md"></div>
+          </div>
+          <div
+            class="flex mb-4 items-center justify-center px-3 w-full"
+          >You don't have any subscription</div>
+        </div>
+      </div>
+
+      <div class="py-4 px-4 mr-2 flex flex-wrap justify-center">
+        <div class="w-2/10 text-purple text-md margin-minus-subscribe-div">
+          <div
+            class="cursor-pointer content-center capitalize rounded-full red-light w-subscire-btn h-8 flex items-center button-detail accept-decline-btn"
+            @click="subscribePlan()"
+          >
+            <p class="text-white text-sm text-center capitalize content-center flex-1">SUBSCRIBE</p>
           </div>
         </div>
+        <!-- <div class="w-full text-purple text-sm capitalize mt-5">
+              <a
+                class="social-a flex items-center justify-center content-center cursor-pointer"
+                @click="subscribePlan()"
+              >Subscribe</a>
+        </div>-->
       </div>
     </div>
     <modal
@@ -150,7 +178,8 @@ export default {
       subscriptionDetails: null,
       statusConfirmMsg: "",
       statusConfirmUser: null,
-      newStatus: null
+      newStatus: null,
+      notSuscription: false
     };
   },
   async mounted() {
@@ -183,12 +212,14 @@ export default {
         }
 
         this.isLoading = false;
+        this.notSuscription = false;
       } catch (e) {
+        this.notSuscription = true;
         this.subscriptionDetails = null;
         this.inviteUserList = [];
-        this.$toasted.error(
-          "You don't have any subscrition plan, please subscribe plan."
-        );
+        // this.$toasted.error(
+        //   "You don't have any subscrition plan, please subscribe plan."
+        // );
       } finally {
         this.isLoading = false;
       }
@@ -287,36 +318,42 @@ export default {
   min-height: 500px;
   min-height: 500px;
 }
-.bg-grey-500{
-  background-color: #F0F0F0;
+.bg-grey-500 {
+  background-color: #f0f0f0;
 }
-.border-grey-1{
-  border: 1px solid #F0F0F0;
+.border-grey-1 {
+  border: 1px solid #f0f0f0;
 }
-.border-raduis-8{
+.border-raduis-8 {
   border-radius: 8px !important;
 }
-.border-tl-8{
-      border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
+.border-tl-8 {
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
 }
 .ptb-10 {
   padding: 10px 0;
 }
-.user-img{
+.user-img {
   display: flex;
   align-items: center;
 }
-.active-btn{
+.active-btn {
   width: 104px !important;
 }
-.user-img span{
+.user-img span {
   margin-left: 10px;
 }
-.user-img img{
+.user-img img {
   border-radius: 50% !important;
 }
-.text-bold-500{
-      font-weight: 500;
+.text-bold-500 {
+  font-weight: 500;
+}
+.w-subscire-btn {
+  width: 160% !important;
+}
+.margin-minus-subscribe-div{
+      margin-left: -54px !important;
 }
 </style>
