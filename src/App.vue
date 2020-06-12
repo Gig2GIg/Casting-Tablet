@@ -159,5 +159,31 @@ body, html {
 .month-picker .vue-monthly-picker .month-year-display.text-black.placeholder {
   color: #4D2545 !important;
 }
-
+.plan-list-carousel .VueCarousel-navigation-button { 
+    color: #ffffff !important;
+    position: static !important;
+    outline: none !important;
+    font-size: 22px !important;
+}
+.plan-list-carousel .VueCarousel-navigation{
+  margin-top: 40px !important;
+}
+.plan-list-carousel .custom-plan-blank{
+  min-height: 115px;
+}
+.plan-list-carousel .VueCarousel-navigation-prev {
+    transform: rotate(180deg) translate(32px, 21px) !important;
+    margin-right: 60px !important;
+}
+.plan-list-carousel .VueCarousel-navigation-next{
+  position: relative !important;
+  margin-left: 60px !important;
+}
+ .slide-info{font-size: 14px;
+    position: absolute;
+    left: -160px;
+    top: 15px;
+    white-space: nowrap;
+    color: #ffffff !important;
+    font-weight: bold;}
 </style>

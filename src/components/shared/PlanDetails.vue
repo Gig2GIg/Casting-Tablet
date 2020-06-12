@@ -5,8 +5,8 @@
       :per-page="3"
       :pagination-enabled="false"
       :navigation-enabled="true"
-      :navigation-prev-label="'&#x279C;'"                            
-      :navigation-next-label="'&#x279C;'"
+      :navigation-prev-label="'&#x276F;'"                            
+      :navigation-next-label="nextSlideArrow"
       class="flex flex-wrap items-center justify-center plan-list-carousel"
     >
       <!-- <div
@@ -17,7 +17,7 @@
       <slide
           v-for="plan of planList"
           :key="plan.id"        
-          class="bg-white h-full mr-5 mb-5 border-radius-6"
+          class="bg-white h-full mr-75 mb-5 border-radius-6"
         >
         <div class="border-radius-6 box">
           <div
@@ -87,6 +87,7 @@ export default {
       planList: Array,
       currentUser: null,
       account_email : DEFINE.account_email,
+      nextSlideArrow : ' <span class="slide-info" > Slide For More Options </span> &#x276F;',
       default: () => []
     };
   },
@@ -177,7 +178,7 @@ export default {
 .bottom-text {
   width: 100% !important;
   text-align: center !important;
-  margin-top: 90px !important;
+  margin-top: 30px !important;
 }
 .bg-cus-orange {
   background: #d8893a !important;
@@ -189,6 +190,19 @@ export default {
   letter-spacing: 2.1px;
 }
 .plan-list-carousel{
+  width: 851px;
+  margin: 0 auto;
+  max-width: 100%;
+}
+.plan-list-carousel .box{
+  margin: 0;
+  width: 100% !important;
+  }
 
+.plan-list-carousel .VueCarousel-inner .VueCarousel-slide{
+  flex-basis: 219px !important; 
+}
+.mr-75{
+  margin-right: 75px !important;
 }
 </style>
