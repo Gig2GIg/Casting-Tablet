@@ -45,11 +45,11 @@
         v-model="form.card_cvc"
         v-validate="'required'"
         name="card_cvc"
-        placeholder="CSV"
+        placeholder="CVC"
         :type="'stripe_element'"
         :stripe_cardformat="'formatCardCVC'"
         :message="errors.first('card_cvc')"
-        data-vv-as="csv"
+        data-vv-as="cvc"
       />
 
       <base-button class="mt-16" type="submit" expanded>Change</base-button>
@@ -73,6 +73,7 @@ import axios from "axios";
 import moment from "moment";
 import TokenService from "../services/core/TokenService";
 const $ = require("jquery");
+import payment from "@/utils/jquery.payment.min";
 
 export default {
   components: {
@@ -87,11 +88,23 @@ export default {
     };
   },
   methods: {
-    async handleChangePlan() {
+    async handleChangePlan() {     
+      
+      
+
       try {
         if (this.isLoading || !(await this.$validator.validateAll())) {
           return;
         }
+        // if(!payment.validateCardNumber(this.form.card_expiry)){
+        //   this.$toasted.error("Please enter valid card number!");
+        //   return;
+        // }  
+        // if(!payment.validateCardCVC(this.form.card_cvc)){
+        //   this.$toasted.error("Please enter valid CVC!");
+        //   return;
+        // }    
+
         this.isLoading = true;
         let data = JSON.parse(JSON.stringify(this.form));
 
