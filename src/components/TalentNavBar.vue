@@ -49,17 +49,22 @@
         keyboard_arrow_down
       </i>-->
       <!-- :src="user.image && user.image.url ? user.image.url  : ''" -->
-      <img        
-        :src="user.image ? (user.image.thumbnail ? user.image.thumbnail : user.image.url) : ''"
-        class="w-12 img-h48 object-cover"
-        alt="Avatar"
-      >
+      <div v-lazy-container="{ selector: 'img' }" >
+        <img
+            
+            :data-loading="loading_placeholder" :data-error="user_placeholder"
+            :data-src="user.image && user.image.thumbnail ? user.image.thumbnail : (user.image.url ? user.image.url : '')"
+            class="w-12 img-h48 object-cover"
+            alt="Avatar"
+        />
+      </div>
     </div>
   </nav>
 </template>
 <script>
 import { mapActions, mapState, mapGetters } from 'vuex';
 import axios from 'axios';
+import DEFINE from '@/utils/const.js';
 
 export default {
   data() {
@@ -69,7 +74,9 @@ export default {
       invitation:{
         adding:false,
         code:'',
-      }
+      },
+      user_placeholder : DEFINE.role_placeholder,
+      loading_placeholder : DEFINE.loading_placeholder
     };
   },
   computed:{

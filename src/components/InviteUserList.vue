@@ -255,6 +255,7 @@ export default {
      * On user confirmation api call for new status change and handle response of api
      */
     async onStatusChangeConfirm() {
+      this.$toasted.clear();
       if (this.statusConfirmUser == null || this.newStatus == null) {
         this.$modal.hide("modal_confirm_status_change");
         this.$toasted.error(DEFINE.common_error_message);

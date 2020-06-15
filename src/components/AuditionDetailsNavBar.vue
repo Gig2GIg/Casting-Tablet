@@ -89,12 +89,15 @@
       <!-- <i class="material-icons mr-4">
         keyboard_arrow_down
       </i>-->
-      <img
-        v-if="user.image && user.image.url"
-        :src="user.image.thumbnail ? user.image.thumbnail : user.image.url"
-        class="w-12 img-h48 object-cover"
-        alt="Avatar"
-      >
+      <div v-lazy-container="{ selector: 'img' }" >
+          <img
+              
+              :data-loading="loading_placeholder" :data-error="user_placeholder"
+              :data-src="user.image && user.image.thumbnail ? user.image.thumbnail : (user.image && user.image.url ? user.image.url : '')"
+              class="w-12 img-h48 object-cover"
+              alt="Avatar"
+          />
+      </div>
     </div>
     <modal class="flex flex-col w-full items-center" :width="450" :height="200" name="modal_thumbnail_image">
       <div class="content my-info-content" >         
@@ -176,7 +179,9 @@ export default {
       showHiddenPerformer: false,
       isAuditionVideos: false,
       thumbnail : {},
-      videoFileName : null
+      videoFileName : null,
+      user_placeholder : DEFINE.role_placeholder,
+      loading_placeholder : DEFINE.loading_placeholder
     };
   },
   computed: {

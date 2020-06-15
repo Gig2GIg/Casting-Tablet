@@ -37,7 +37,6 @@ class AuthService extends BaseService {
       profileThumbnailUrl = await thumbnailFileSnapshot.ref.getDownloadURL();
     }
 
-    // Upload avatar
     // const imageName = userData.image.name;
     const profileExtension = userData.profileNameObject.org_name.substring(userData.profileNameObject.org_name.lastIndexOf('.') + 1);
     const profileFilePath = userData.profileNameObject.name.includes(`${profileExtension}`) ? `profileImage/${uuid()}_${userData.profileNameObject.name}` : `profileImage/${uuid()}_${userData.profileNameObject.name}.${profileExtension}`;

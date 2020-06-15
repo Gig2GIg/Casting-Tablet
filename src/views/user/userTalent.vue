@@ -33,15 +33,14 @@
       <!-- <i class="material-icons mr-4">
         keyboard_arrow_down
       </i> -->
-      <div >
-      <img
-        v-if="profile.image && profile.image.url"
-        :src="profile.image.thumbnail ? profile.image.thumbnail : profile.image.url"
-        class="w-13 img-h48 object-cover"
-        alt="Avatar"
-      >
+      <div v-lazy-container="{ selector: 'img' }" >
+        <img
+            :data-loading="loading_placeholder" :data-error="user_placeholder"
+            :data-src="profile.image && profile.image.thumbnail ? profile.image.thumbnail : (profile.image && profile.image.url ? profile.image.url : '')"
+            class="w-12 img-h48 object-cover"
+            alt="Avatar"
+        />
       </div>
-
     </div>
   </nav>
   <multipane class="custom-resizer h-full " layout="vertical">
@@ -492,6 +491,7 @@ import moment from "moment";
 import 'vue-sweet-calendar/dist/SweetCalendar.css'
 import { async } from 'q';
 import TokenService from "../../services/core/TokenService";
+import DEFINE from "@/utils/const.js";
 
 export default {
   // ...
@@ -534,6 +534,8 @@ export default {
       videoFileName : '',
       currentVideo : null,
       currentAdition : null,
+      user_placeholder : DEFINE.role_placeholder,
+      loading_placeholder : DEFINE.loading_placeholder
     };
   },
   computed: {

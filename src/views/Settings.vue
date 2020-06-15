@@ -9,17 +9,21 @@
       <div v-if="!hideMenuInfo" class="tags w-2/5 mx-auto px-3 py-3 mt-6">
         <div class="py-4">
           <div class="flex items-center px-3">
-            <div class="mr-6">
-              <img
-                v-lazy="user.image && user.image.url ? user.image.url : ''"
-                class="h-24 w-24 rounded object-cover"
-                alt="Logo"
-              />
+
+            <div v-lazy-container="{ selector: 'img' }" class="mr-6">
+                <img                    
+                    :data-loading="loading_placeholder" :data-error="user_placeholder"
+                    :data-src="user.image && user.image.thumbnail ? user.image.thumbnail : (user.image && user.image.url ? user.image.url : '' )"
+                    class="h-24 w-24 rounded object-cover"
+                    alt="Avatar"
+                />
             </div>
+
+
             <div class="w-6/12 py-8">
               <p
                 class="font-bold"
-              >{{ user.details?user.details.first_name + ' ' + user.details.last_name:"" }}</p>
+              >{{ user.details && user.details.first_name ? user.details.first_name + ' ' + user.details.last_name:"" }}</p>
               <p class="font-bold">{{ user.details ? user.details.agency_name : '' }}</p>
             </div>
           </div>
@@ -354,7 +358,7 @@
         </div>
       </div>
       <div v-show="tabSelected === 'myinfo'" class="tags w-9/12 shadow-md mx-auto px-3 py-3 mt-6">
-        <div class="cursor-pointer" @click="cancelUpdateProfile">
+        <div class="cursor-pointer" v-if="user.details && user.details.agency_name" @click="cancelUpdateProfile">
           <svg xmlns="http://www.w3.org/2000/svg" width="30.049" height="39.187">
             <defs>
               <filter
@@ -403,12 +407,14 @@
                   >
                     <img src="/images/icons/upload.png" class="rounded" />
                   </div>
-                  <img
-                    v-else
-                    v-lazy="previewProfile"
-                    alt="Cover"
-                    class="h-24 w-24 rounded object-cover"
-                  />
+                  <div v-else v-lazy-container="{ selector: 'img' }" >
+                      <img
+                          :data-loading="loading_placeholder" :data-error="user_placeholder"
+                          :data-src="previewProfile"
+                          class="h-24 w-24 rounded object-cover"
+                          alt="Avatar"
+                      />
+                  </div>
                 </div>
 
                 <input
@@ -1073,7 +1079,9 @@ export default {
       isLoading: false,
       profileFileName: null,
       profileNameObject: {},
-      profileThumbnail: {}
+      profileThumbnail: {},
+      user_placeholder : DEFINE.role_placeholder,
+      loading_placeholder : DEFINE.loading_placeholder
     };
   },
   async mounted() {

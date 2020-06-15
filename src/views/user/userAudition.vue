@@ -25,13 +25,16 @@
       <img v-else  :src="'/images/icons/Path_56@2x.png'" class="w-6 m-6" alt="star" @click="favorite=0">
     <div class="flex items-center border-l border-white text-white ml-auto cursor-pointer">
       <span class="mx-4">
-        {{profile.details ? profile.details.first_name : ""}} {{profile.details ? profile.details.last_name : ""}}
-      </span>      
-      <img
-        :src="profile.image ? (profile.image.thumbnail ? profile.image.thumbnail : profile.image.url) : ''"
-        class="w-12 img-h48 object-cover"
-        alt="Avatar"
-      >
+        {{profile.details && profile.details.first_name ? profile.details.first_name : ""}} {{profile.details ? profile.details.last_name : ""}}
+      </span>
+      <div v-lazy-container="{ selector: 'img' }" >
+        <img
+            :data-loading="loading_placeholder" :data-error="user_placeholder"
+            :data-src="(profile.image && profile.image.thumbnail) ? (profile.image.thumbnail ? profile.image.thumbnail : profile.image.url) : ''"
+            class="w-12 img-h48 object-cover"
+            alt="Avatar"
+        />
+      </div>
     </div>
   </nav>
   <input
@@ -775,7 +778,9 @@ export default {
       videoFileName : null,
       isLoadedVideo : false,
       currentVideo : null,
-      nextPerformerId : null
+      nextPerformerId : null,
+      user_placeholder : DEFINE.role_placeholder,
+      loading_placeholder : DEFINE.loading_placeholder
     };
   },
   computed: {

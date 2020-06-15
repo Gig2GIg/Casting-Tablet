@@ -12,12 +12,14 @@
       <span class="mx-4">
         {{user.details && user.details.first_name ? user.details.first_name : ''}} {{user.details && user.details.last_name ? user.details.last_name : '' }}
       </span>      
-      <img
-        v-if="user.image && user.image.url"
-        :src="user.image.thumbnail ? user.image.thumbnail : user.image.url"
-        class="w-12 img-h48 object-cover"
-        alt="Avatar"
-      >
+      <div v-lazy-container="{ selector: 'img' }" >
+          <img              
+              :data-loading="loading_placeholder" :data-error="user_placeholder"
+              :data-src="user.image.thumbnail ? user.image.thumbnail : user.image.url"
+              class="w-12 img-h48 object-cover"
+              alt="Avatar"
+          />
+      </div>
     </div>
 
 
@@ -31,11 +33,14 @@ import axios from "axios";
 import { eventBus } from "../main";
 import firebase from "firebase/app";
 import uuid from "uuid/v1";
+import DEFINE from '@/utils/const.js';
 
 export default {
   data() {
     return {
-      audition_title: "",      
+      audition_title: "",
+      user_placeholder : DEFINE.role_placeholder,
+      loading_placeholder : DEFINE.loading_placeholder
     };
   },
   computed: {    

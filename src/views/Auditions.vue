@@ -4,8 +4,8 @@
     <p class="w-full text-3xl">
       Upcoming
     </p>
-    <div class="flex flex-wrap items-center justify-center w-full h-84" v-if="upcoming == ''">
-      <p class="text-purple font-bold tracking-wide text-lg">No auditions found</p>
+    <div class="flex flex-wrap items-center justify-center w-full h-84" v-if="!upcoming || upcoming.length == 0">
+      <p class="text-purple font-bold tracking-wide text-lg">There are no upcoming auditions</p>
     </div>
     <!-- :paginationPosition="bottom-overlay" -->
     <carousel

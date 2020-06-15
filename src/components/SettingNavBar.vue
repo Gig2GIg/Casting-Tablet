@@ -15,12 +15,20 @@
     <div class="flex items-center border-l border-white text-white ml-auto cursor-pointer">
       <span
         class="mx-4"
-      >{{ user.details?user.details.first_name + ' ' + user.details.last_name:"" }}</span>
-      <img
-        :src="user.image ? (user.image.thumbnail ? user.image.thumbnail : user.image.url) : ''"
+      >{{ (user.details && user.details.first_name) ? user.details.first_name + ' ' + user.details.last_name:"" }}</span>
+      <div v-lazy-container="{ selector: 'img' }" >
+          <img
+              :data-loading="loading_placeholder" :data-error="user_placeholder"
+              :data-src="user.image && user.image.thumbnail ? user.image.thumbnail : (user.image && user.image.url ? user.image.url : '')"
+              class="w-12 img-h48 object-cover"
+              alt="Avatar"
+          />
+      </div>
+      <!-- <img
+        v-lazy="user.image ? (user.image.thumbnail ? user.image.thumbnail : user.image.url) : ''"
         class="w-12 img-h48 object-cover"
         alt="Avatar"
-      />
+      /> -->
     </div>
   </nav>
 </template>
@@ -29,12 +37,16 @@ import { mapActions, mapState } from "vuex";
 import TokenService from "../services/core/TokenService";
 import store from "@/store";
 import { eventBus } from "../main";
+import DEFINE from '@/utils/const.js';
+
 export default {
   data() {
     return {
       isLoading: true,
       userId: "",
-      hideMenuInfo: false
+      hideMenuInfo: false,
+      user_placeholder : DEFINE.role_placeholder,
+      loading_placeholder : DEFINE.loading_placeholder
     };
   },
   computed: {
