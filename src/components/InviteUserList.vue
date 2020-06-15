@@ -23,7 +23,7 @@
             >Payment: {{subscriptionDetails.card_brand}} Card {{subscriptionDetails.card_last_four}}</div>
             <div class="w-2/8 text-purple px-2 text-sm capitalize">
               <a
-                class="social-a flex items-center justify-center content-center cursor-pointer font-bold"
+                class="flex items-center justify-center content-center cursor-pointer font-bold"
                 @click="changePaymentDetails()"
               >Change</a>
             </div>
