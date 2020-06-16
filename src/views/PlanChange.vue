@@ -95,7 +95,7 @@ export default {
           return;
         }
 
-        if(!payment.validateCardNumber(this.form.card_expiry)){
+        if(!payment.validateCardNumber(this.form.card_number)){
           this.$toasted.error("Please enter valid card number!");
           return;
         }  
