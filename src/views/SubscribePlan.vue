@@ -79,8 +79,7 @@ import axios from "axios";
 import moment from "moment";
 import TokenService from "../services/core/TokenService";
 import PlanDetails from "../components/shared/PlanDetails.vue";
-const $ = require("jquery");
-import payment from "@/utils/jquery.payment";
+import payment from "@/utils/jquery.payment.js";
 
 export default {
   components: {

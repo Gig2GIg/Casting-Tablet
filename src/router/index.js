@@ -63,14 +63,19 @@ router.beforeEach((to, from, next) => {
 
   if (loggedIn && isPrimeModule && (!currentUser || !currentUser.is_premium || currentUser.is_premium === 0)) {
     Vue.toasted.clear();
-    Vue.toasted.info(DEFINE.no_plan_subscirbed_error, {
-      action: {
-        text: 'Subscribe',
-        onClick: (e, toastObject) => {
-          return next({ name: 'my.settings', query: { tab: "subscription" } });
+    if(currentUser.is_invited){
+      Vue.toasted.info(DEFINE.no_plan_sub_user_subscirbed_error);
+    } else {
+      Vue.toasted.info(DEFINE.no_plan_subscirbed_error, {
+        action: {
+          text: 'Subscribe',
+          onClick: (e, toastObject) => {
+            return next({ name: 'my.settings', query: { tab: "subscription" } });
+          }
         }
-      }
-    });
+      });
+    }
+    
     if (from.name) {
       return next({ name: from.name });
     } else {

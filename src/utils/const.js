@@ -8,7 +8,8 @@ const DEFINE = {
     contact_us : "support@gig2gig.com",
     account_email : "accounts@gig2gig.com",    
     common_error_message : 'Oops! something went to wrong!',
-    no_plan_subscirbed_error : "You don't have any subscrition to access this feature.",
+    no_plan_subscirbed_error : "You don't have any subscription to access this feature.",
+    no_plan_sub_user_subscirbed_error : "You don't have any subscription to access this feature, please contact admin.",
     thumbSize :{
         defaultWidth : 200,
         defaultHeight : 200,

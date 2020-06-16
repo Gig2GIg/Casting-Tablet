@@ -1030,8 +1030,8 @@
 </template>
 
 <script>
-const $ = require('jquery');
-window.$ = $;
+// const $ = require('jquery');
+// window.$ = $;
 
 import axios from "axios";
 // import states from "@/utils/states";
@@ -1145,7 +1145,10 @@ export default {
           tab == "marketplace" ||
           tab == "notifications")
       ) {
-        this.$toasted.info(DEFINE.no_plan_subscirbed_error, {
+        if(this.user.is_invited){
+          this.$toasted.info(DEFINE.no_plan_sub_user_subscirbed_error);
+        } else {
+          this.$toasted.info(DEFINE.no_plan_subscirbed_error, {
             action: {
               text: 'Subscribe',
               onClick: (e, toastObject) => {
@@ -1153,6 +1156,7 @@ export default {
               }
             }
           });
+        }
       } else {
         this.tabSelected = tab;
         this.hideMenuInfo = true;

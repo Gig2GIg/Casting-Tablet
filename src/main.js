@@ -17,8 +17,6 @@ import moment from "moment";
 import 'vue-loading-overlay/dist/vue-loading.css';
 import VueLazyload from 'vue-lazyload'
 
-window.$ = window.jQuery = require("jquery");
-
 // Vue.use(VueLazyload)
 Vue.use(VueLazyload, {
   preLoad: 1.3,

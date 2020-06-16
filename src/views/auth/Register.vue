@@ -311,8 +311,7 @@ import PlanDetails from "../../components/shared/PlanDetails";
 import moment from "moment";
 import TokenService from "../../services/core/TokenService";
 import { eventBus } from "../../main";
-const $ = require("jquery");
-import payment from "@/utils/jquery.payment";
+import payment from "@/utils/jquery.payment.js";
 
 export default {
   components: {
@@ -359,8 +358,19 @@ export default {
   methods: {
     ...mapActions("auth", ["login"]),
     ...mapActions("profile", ["fetch"]),
-    async nextStep() {
+    async nextStep() {      
       if (await this.$validator.validateAll()) {
+        if(this.step == 3) {
+          this.$toasted.clear();
+          if(!payment.validateCardNumber(this.form.card_number)){
+            this.$toasted.error("Please enter valid card number!");
+            return;
+          }
+          if(!payment.validateCardCVC(this.form.card_cvc)){
+            this.$toasted.error("Please enter valid CVC!");
+            return;
+          }
+        }
         this.step += 1;
         eventBus.$emit("signupNext", this.step);
       }
@@ -409,15 +419,7 @@ export default {
         if (this.isLoading || !(await this.$validator.validateAll())) {
           return;
         }
-
-        if(!payment.validateCardNumber(this.form.card_number)){
-          this.$toasted.error("Please enter valid card number!");
-          return;
-        }  
-        if(!payment.validateCardCVC(this.form.card_cvc)){
-          this.$toasted.error("Please enter valid CVC!");
-          return;
-        }    
+   
         
         let data = JSON.parse(JSON.stringify(this.form));
         if (!this.isSignUpDone) {

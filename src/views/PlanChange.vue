@@ -72,8 +72,7 @@ Vue.use(Loading);
 import axios from "axios";
 import moment from "moment";
 import TokenService from "../services/core/TokenService";
-const $ = require("jquery");
-import payment from "@/utils/jquery.payment";
+import payment from "@/utils/jquery.payment.js";
 
 export default {
   components: {
@@ -127,6 +126,7 @@ export default {
           query: { tab: "subscription" }
         });
       } catch (e) {
+        console.log("handleChangePlan -> e", e)
         let errorMsg;
         if (e.response && e.response.data) {
           errorMsg = this.$options.filters.getErrorMsg(e.response.data.errors);

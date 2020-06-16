@@ -366,7 +366,7 @@ export default {
               rol : roles,              
               appointment_id : this.audition.appointment_id
             };            
-            const { data: { data } } = await axios.post('/t/auditions/dropPerformer', requestParam);
+            const { data: { data } } = await axios.put('/t/auditions/dropPerformer', requestParam);
             this.isLoading = false;
             return data;
         } catch (e) {

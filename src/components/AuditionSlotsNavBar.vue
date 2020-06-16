@@ -15,7 +15,7 @@
       <div v-lazy-container="{ selector: 'img' }" >
           <img              
               :data-loading="loading_placeholder" :data-error="user_placeholder"
-              :data-src="user.image.thumbnail ? user.image.thumbnail : user.image.url"
+              :data-src="user.image && user.image.thumbnail ? user.image.thumbnail : (user.image && user.image.url ? user.image.url : '')"
               class="w-12 img-h48 object-cover"
               alt="Avatar"
           />

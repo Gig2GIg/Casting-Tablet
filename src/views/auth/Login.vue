@@ -138,18 +138,23 @@ export default {
         this.logingResult && this.logingResult.user
           ? this.logingResult.user
           : null;      
-      if (
-        !this.$route.query.redirect &&
-        (!currentUser ||
+      if (!currentUser ||
           !currentUser.is_premium ||
-          currentUser.is_premium === 0)
+          currentUser.is_premium === 0
       ) {
-        Vue.toasted.info(DEFINE.no_plan_subscirbed_error);
+        // Vue.toasted.info(DEFINE.no_plan_subscirbed_error);
         // no prime user redirect on subscribe settings screen
-        this.$router.push({
-          name: "my.settings",
-          query: { tab: "subscription" }
-        });
+        if(currentUser.is_invited){
+            this.$router.push({
+              name: "my.settings"
+            });
+        } else {
+          this.$router.push({
+            name: "my.settings",
+            query: { tab: "subscription" }
+          });
+        }
+        
       } else {
         if (
           currentUser.is_premium === 1 &&

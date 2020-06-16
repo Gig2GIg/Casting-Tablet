@@ -218,7 +218,7 @@ export default {
         this.subscriptionDetails = null;
         this.inviteUserList = [];
         // this.$toasted.error(
-        //   "You don't have any subscrition plan, please subscribe plan."
+        //   "You don't have any subscription plan, please subscribe plan."
         // );
       } finally {
         this.isLoading = false;
