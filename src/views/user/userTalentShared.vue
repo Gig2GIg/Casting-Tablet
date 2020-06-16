@@ -729,6 +729,6 @@ ul.submanu-content > li > a {
 }
 
 .user-profile.width-fix{
-  height: 382px !important;
+  padding-top:100%;
 }
 </style>

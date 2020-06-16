@@ -70,12 +70,12 @@
             <div class="w-2/5 ml-4 text-purple px-2">
               <a
                 v-if="commingFrom == 'signup'"
-                class="social-a flex items-center justify-center content-center mt-16 cursor-pointer"
+                class="flex items-center justify-center content-center mt-16 cursor-pointer"
                 @click="skipInviteUser()"
               >I'll complete this later</a>
               <a
                 v-else
-                class="overflow-hidden my-2 p-3 text-lg focus:outline-none mt-16 text-md rounded-full shadow-xl w-full bg-white border border-purple flex justify-center"
+                class="flex items-center justify-center content-center mt-16 cursor-pointer"
                 @click="backToSetting()"
               >Back</a>
             </div>

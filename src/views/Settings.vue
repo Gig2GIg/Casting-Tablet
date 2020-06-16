@@ -94,7 +94,7 @@
         </div>
         <div
           class="py-2 flex flex-wrap px-4 border-b-2 border-gray-300 mr-2 cursor-pointer"
-          @click="manageSelectedTab('notifications')"
+          @click="manageSelectedTab('instantFeedback')"
         >
           <div class="w-10/12">
             <p class="font-bold">Instant Feedback</p>
@@ -310,7 +310,7 @@
           <svg xmlns="http://www.w3.org/2000/svg" width="30.049" height="39.187">
             <defs>
               <filter
-                id="a"
+                id="marketplace_svg"
                 x="0"
                 y="0"
                 width="30.049"
@@ -325,7 +325,7 @@
               </filter>
             </defs>
             <g data-name="Grupo 39">
-              <g filter="url(#a)" data-name="Grupo 38">
+              <g filter="url(#marketplace_svg)" data-name="Grupo 38">
                 <path
                   data-name="Trazado 24"
                   d="M12.447 16.594L20.641 8.4a1.406 1.406 0 10-1.988-1.988l-8.88 8.88a1.453 1.453 0 000 2.6l8.88 8.88a1.406 1.406 0 101.988-1.988z"
@@ -362,7 +362,7 @@
           <svg xmlns="http://www.w3.org/2000/svg" width="30.049" height="39.187">
             <defs>
               <filter
-                id="a"
+                id="myinfo_svg"
                 x="0"
                 y="0"
                 width="30.049"
@@ -377,7 +377,7 @@
               </filter>
             </defs>
             <g data-name="Grupo 39">
-              <g filter="url(#a)" data-name="Grupo 38">
+              <g filter="url(#myinfo_svg)" data-name="Grupo 38">
                 <path
                   data-name="Trazado 24"
                   d="M12.447 16.594L20.641 8.4a1.406 1.406 0 10-1.988-1.988l-8.88 8.88a1.453 1.453 0 000 2.6l8.88 8.88a1.406 1.406 0 101.988-1.988z"
@@ -621,7 +621,7 @@
           <svg xmlns="http://www.w3.org/2000/svg"  width="30.049" height="39.187">
             <defs>
               <filter
-                id="a"
+                id="notifications_svg"
                 x="0"
                 y="0"
                 width="30.049"
@@ -636,7 +636,7 @@
               </filter>
             </defs>
             <g data-name="Grupo 39">
-              <g filter="url(#a)" data-name="Grupo 38">
+              <g filter="url(#notifications_svg)" data-name="Grupo 38">
                 <path
                   data-name="Trazado 24"
                   d="M12.447 16.594L20.641 8.4a1.406 1.406 0 10-1.988-1.988l-8.88 8.88a1.453 1.453 0 000 2.6l8.88 8.88a1.406 1.406 0 101.988-1.988z"
@@ -726,7 +726,7 @@
           <svg xmlns="http://www.w3.org/2000/svg" width="30.049" height="39.187">
             <defs>
               <filter
-                id="a"
+                id="audition_svg"
                 x="0"
                 y="0"
                 width="30.049"
@@ -741,7 +741,7 @@
               </filter>
             </defs>
             <g data-name="Grupo 39">
-              <g filter="url(#a)" data-name="Grupo 38">
+              <g filter="url(#audition_svg)" data-name="Grupo 38">
                 <path
                   data-name="Trazado 24"
                   d="M12.447 16.594L20.641 8.4a1.406 1.406 0 10-1.988-1.988l-8.88 8.88a1.453 1.453 0 000 2.6l8.88 8.88a1.406 1.406 0 101.988-1.988z"
@@ -780,7 +780,7 @@
           <svg xmlns="http://www.w3.org/2000/svg" width="30.049" height="39.187">
             <defs>
               <filter
-                id="a"
+                id="appinfo_svg"
                 x="0"
                 y="0"
                 width="30.049"
@@ -795,7 +795,7 @@
               </filter>
             </defs>
             <g data-name="Grupo 39">
-              <g filter="url(#a)" data-name="Grupo 38">
+              <g filter="url(#appinfo_svg)" data-name="Grupo 38">
                 <path
                   data-name="Trazado 24"
                   d="M12.447 16.594L20.641 8.4a1.406 1.406 0 10-1.988-1.988l-8.88 8.88a1.453 1.453 0 000 2.6l8.88 8.88a1.406 1.406 0 101.988-1.988z"
@@ -814,7 +814,7 @@
           <svg xmlns="http://www.w3.org/2000/svg" width="30.049" height="39.187">
             <defs>
               <filter
-                id="a"
+                id="faq_svg"
                 x="0"
                 y="0"
                 width="30.049"
@@ -829,7 +829,7 @@
               </filter>
             </defs>
             <g data-name="Grupo 39">
-              <g filter="url(#a)" data-name="Grupo 38">
+              <g filter="url(#faq_svg)" data-name="Grupo 38">
                 <path
                   data-name="Trazado 24"
                   d="M12.447 16.594L20.641 8.4a1.406 1.406 0 10-1.988-1.988l-8.88 8.88a1.453 1.453 0 000 2.6l8.88 8.88a1.406 1.406 0 101.988-1.988z"
@@ -850,7 +850,7 @@
           <svg xmlns="http://www.w3.org/2000/svg" width="30.049" height="39.187">
             <defs>
               <filter
-                id="a"
+                id="termsofuse_svg"
                 x="0"
                 y="0"
                 width="30.049"
@@ -865,7 +865,7 @@
               </filter>
             </defs>
             <g data-name="Grupo 39">
-              <g filter="url(#a)" data-name="Grupo 38">
+              <g filter="url(#termsofuse_svg)" data-name="Grupo 38">
                 <path
                   data-name="Trazado 24"
                   d="M12.447 16.594L20.641 8.4a1.406 1.406 0 10-1.988-1.988l-8.88 8.88a1.453 1.453 0 000 2.6l8.88 8.88a1.406 1.406 0 101.988-1.988z"
@@ -884,7 +884,7 @@
           <svg xmlns="http://www.w3.org/2000/svg" width="30.049" height="39.187">
             <defs>
               <filter
-                id="a"
+                id="policy_svg"
                 x="0"
                 y="0"
                 width="30.049"
@@ -899,7 +899,7 @@
               </filter>
             </defs>
             <g data-name="Grupo 39">
-              <g filter="url(#a)" data-name="Grupo 38">
+              <g filter="url(#policy_svg)" data-name="Grupo 38">
                 <path
                   data-name="Trazado 24"
                   d="M12.447 16.594L20.641 8.4a1.406 1.406 0 10-1.988-1.988l-8.88 8.88a1.453 1.453 0 000 2.6l8.88 8.88a1.406 1.406 0 101.988-1.988z"
@@ -917,7 +917,7 @@
           <svg xmlns="http://www.w3.org/2000/svg" width="30.049" height="39.187">
             <defs>
               <filter
-                id="a"
+                id="contact_us_svg"
                 x="0"
                 y="0"
                 width="30.049"
@@ -932,7 +932,7 @@
               </filter>
             </defs>
             <g data-name="Grupo 39">
-              <g filter="url(#a)" data-name="Grupo 38">
+              <g filter="url(#contact_us_svg)" data-name="Grupo 38">
                 <path
                   data-name="Trazado 24"
                   d="M12.447 16.594L20.641 8.4a1.406 1.406 0 10-1.988-1.988l-8.88 8.88a1.453 1.453 0 000 2.6l8.88 8.88a1.406 1.406 0 101.988-1.988z"
