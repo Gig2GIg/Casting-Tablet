@@ -6,7 +6,9 @@
       :on-cancel="onCancel"
       :is-full-page="fullPage"
     ></loading>
-    <div class="tags w-9/12 shadow-lg mx-auto px-3 py-3 bg-white invite-block-hieght text-purple rounded">
+    <div
+      class="tags w-9/12 shadow-lg mx-auto px-3 py-3 bg-white invite-block-hieght text-purple rounded"
+    >
       <form @submit.prevent="handleInviteUser()">
         <div class="py-4 px-4 mr-2">
           <div class="flex w-full justify-center text-purple text-xl uppercase">
@@ -128,17 +130,19 @@ export default {
       console.log("handleInviteUser -> handleInviteUser");
       this.$toasted.clear();
       if (await this.$validator.validateAll()) {
-        console.log("handleInviteUser -> this.form", this.form)
-        let valueArr = this.form.map(function (item) { return item.email });
-        
-        let isDuplicate = valueArr.some(function (item, idx) {
-            return valueArr.indexOf(item) != idx
+        console.log("handleInviteUser -> this.form", this.form);
+        let valueArr = this.form.map(function(item) {
+          return item.email;
         });
-        if(isDuplicate){
-          this.$toasted.error('Please enter unique email ids!');
+
+        let isDuplicate = valueArr.some(function(item, idx) {
+          return valueArr.indexOf(item) != idx;
+        });
+        if (isDuplicate) {
+          this.$toasted.error("Please enter unique email ids!");
           return false;
         }
-        
+
         this.isLoading = true;
         try {
           const requestParam = {
@@ -208,24 +212,21 @@ export default {
 .invite-block-hieght {
   min-height: 500px;
 }
-
-
-
-
-.add-new-btn{display: flex; align-items: center;}
-.add-new-btn img{width: 18px;
-    height: 18px !important;
-    padding: 2px;
-    border: 1px solid;
-    border-radius: 50%;}
-
-    .add-new-btn span{
-          font-size: 12px;
-    font-weight: 500;
-    }
-
-
-
+.add-new-btn {
+  display: flex;
+  align-items: center;
+}
+.add-new-btn img {
+  width: 18px;
+  height: 18px !important;
+  padding: 2px;
+  border: 1px solid;
+  border-radius: 50%;
+}
+.add-new-btn span {
+  font-size: 12px;
+  font-weight: 500;
+}
 </style>
 
 

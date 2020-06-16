@@ -188,7 +188,7 @@ body, html {
     font-weight: bold;}
 
 .plan-list-carousel .VueCarousel-navigation--disabled {
-  opacity:1;
+  opacity:1 !important;
   color:rgba(255,255,255,0.5) !important;
 }
 .plan-list-carousel .VueCarousel-navigation--disabled span{
