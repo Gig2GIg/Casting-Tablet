@@ -80,6 +80,7 @@ import moment from "moment";
 import TokenService from "../services/core/TokenService";
 import PlanDetails from "../components/shared/PlanDetails.vue";
 const $ = require("jquery");
+import payment from "@/utils/jquery.payment";
 
 export default {
   components: {
@@ -111,10 +112,21 @@ export default {
   },
   methods: {
     async handleSubscription() {
+      this.$toasted.clear();
       try {
         if (this.isLoading || !(await this.$validator.validateAll())) {
           return;
         }
+
+        if(!payment.validateCardNumber(this.form.card_expiry)){
+          this.$toasted.error("Please enter valid card number!");
+          return;
+        }  
+        if(!payment.validateCardCVC(this.form.card_cvc)){
+          this.$toasted.error("Please enter valid CVC!");
+          return;
+        }
+
         this.isLoading = true;
         let data = JSON.parse(JSON.stringify(this.form));
 
