@@ -6,7 +6,7 @@
       :on-cancel="onCancel"
       :is-full-page="fullPage"
     ></loading>
-    <div class="tags w-9/12 shadow-lg mx-auto px-3 py-3 bg-white invite-block-hieght text-purple">
+    <div class="tags w-9/12 shadow-lg mx-auto px-3 py-3 bg-white invite-block-hieght text-purple rounded">
       <form @submit.prevent="handleInviteUser()">
         <div class="py-4 px-4 mr-2">
           <div class="flex w-full justify-center text-purple text-xl uppercase">
@@ -27,7 +27,7 @@
                 <base-input
                   v-model="user.email"
                   v-validate="'required|email'"
-                  :custom-classes="['border border-b border-gray-300 text-sm place-holder-color']"
+                  :custom-classes="['border border-b border-gray-300 text-sm']"
                   :name="'email_'+index"
                   placeholder="Eg. john@yopmail.com"
                   :message="errors.first('email_'+index)"
@@ -37,14 +37,14 @@
               <div class="w-3/5 ml-4 text-purple px-2">
                 <base-input
                   v-model="user.name"
-                  :custom-classes="['border border-b border-gray-300 text-sm place-holder-color']"
+                  :custom-classes="['border border-b border-gray-300 text-sm']"
                   :name="'name_'+index"
                   placeholder="Eg. John"
                   :message="errors.first('name_'+index)"
                   data-vv-as="name"
                 />
               </div>
-              <div class="w-2/10 ml-4 text-purple px-2">
+              <div class="w-2/10 ml-4 text-purple px-2 mt-auto mb-auto">
                 <img
                   v-if="form.length > 1"
                   @click="removeAt(index)"
@@ -75,7 +75,7 @@
               >I'll complete this later</a>
               <a
                 v-else
-                class="social-a flex items-center justify-center content-center mt-16 cursor-pointer"
+                class="overflow-hidden my-2 p-3 text-lg focus:outline-none mt-16 text-md rounded-full shadow-xl w-full bg-white border border-purple flex justify-center"
                 @click="backToSetting()"
               >Back</a>
             </div>
@@ -207,8 +207,10 @@ export default {
 <style scoped>
 .invite-block-hieght {
   min-height: 500px;
-  min-height: 500px;
 }
+
+
+
 
 .add-new-btn{display: flex; align-items: center;}
 .add-new-btn img{width: 18px;
@@ -221,4 +223,10 @@ export default {
           font-size: 12px;
     font-weight: 500;
     }
+
+
+
 </style>
+
+
+

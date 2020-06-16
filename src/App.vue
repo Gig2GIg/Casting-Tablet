@@ -186,4 +186,17 @@ body, html {
     white-space: nowrap;
     color: #ffffff !important;
     font-weight: bold;}
+
+.plan-list-carousel .VueCarousel-navigation--disabled {
+  opacity:1;
+  color:rgba(255,255,255,0.5) !important;
+}
+.plan-list-carousel .VueCarousel-navigation--disabled span{
+  color:rgba(255,255,255,1);
+}
+
+.invite-block-hieght ::-webkit-input-placeholder {color: #D6D6D6 !important; opacity: 1; }
+.invite-block-hieght ::-moz-placeholder {color: #D6D6D6 !important; opacity: 1; }
+.invite-block-hieght :-ms-input-placeholder {color: #D6D6D6 !important; opacity: 1; }
+.invite-block-hieght :-moz-placeholder {color: #D6D6D6 !important; opacity: 1; }
 </style>

@@ -1033,6 +1033,6 @@ ul.submanu-content > li > a {
   width: 319px !important;
 }
 .user-profile.width-fix{
-  height: 382px !important;
+  padding-top:100%;
 }
 </style>

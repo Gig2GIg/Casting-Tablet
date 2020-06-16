@@ -205,4 +205,5 @@ export default {
 .mr-75{
   margin-right: 75px !important;
 }
+
 </style>
