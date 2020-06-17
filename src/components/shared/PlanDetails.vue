@@ -17,21 +17,21 @@
       <slide
           v-for="plan of planList"
           :key="plan.id"        
-          class="bg-white h-full mr-75 mb-5 border-radius-6"
+          class="bg-white h-full mr-35 mb-5 border-radius-6"
         >
         <div class="border-radius-6 box">
           <div
-            class="relative flex flex-col h-48 items-center justify-center bg-cus-orange border-tl-radius-6 border-tr-radius-6"
+            class="relative flex flex-col h-58 items-center justify-center bg-cus-orange border-tl-radius-6 border-tr-radius-6"
           >
             <span class="text-xl text-white" v-if="plan.is_custom == 0" >Up to {{plan.allowed_performers}} Performers</span>
             <span class="text-xl text-white" v-else>{{plan.allowed_performers}}+ Performers</span>
           </div>
-          <div class="relative flex flex-col h-full shadow-md">
-            <div class="flex flex-col px-4 py-2 w-full h-50 items-center justify-center">
+          <div class="relative flex flex-col card-data shadow-md">
+            <div class="flex flex-col px-4 text-center w-full h-50 items-center justify-center">
               <div class="price" v-if="plan.is_custom == 0">
                 <span class="font-medium text-xl text-black">
                   $
-                  <b class="f-28">{{plan.amount}}</b>
+                  <b class="f-56">{{plan.amount}}</b>
                 </span>
                 <span class="letter-space text-black">per {{plan.type}}</span>
               </div>
@@ -42,7 +42,7 @@
               </div>
               <div 
                 v-if="plan.is_custom == 0"
-                class="cursor-pointer m-3 content-center rounded-full red-light w-40 h-10 flex items-center button-detail accept-decline-btn"
+                class="cursor-pointer content-center rounded-full red-light w-40 h-10 flex items-center button-detail accept-decline-btn"
                 @click="selectPlan(plan)"
               >
                 <p class="text-white text-center uppercase content-center flex-1">Select</p>
@@ -51,11 +51,11 @@
                 v-else
                 target="_blank"
                 v-bind:href="'mailto:'+account_email+''"
-                class="cursor-pointer m-3 content-center rounded-full red-light w-40 h-10 flex items-center button-detail accept-decline-btn"                
+                class="cursor-pointer content-center rounded-full red-light w-40 h-10 flex items-center button-detail accept-decline-btn"                
               >
                 <p class="text-white text-center uppercase content-center flex-1" >Contact Us</p>
               </a>
-              <span class="font-400 text-sm cus-p f-10 text-black text-center">{{plan.description}}</span>
+              <span class="font-400 text-sm cus-p f-14 text-black text-center">{{plan.description}}</span>
             </div>
           </div>
         </div>
@@ -139,14 +139,14 @@ export default {
 .box {
   width: 210px !important;
 }
-.h-48 {
-  height: 48px !important;
+.h-58 {
+  height: 58px !important;
 }
-.f-28 {
-  font-size: 28px !important;
+.f-56 {
+  font-size: 56px !important;
 }
 .price {
-  padding: 25px 0;
+  padding: 50px 0;
   display: flex;
   flex-direction: column;
 }
@@ -157,11 +157,12 @@ export default {
 .price :first-of-child span {
   font-weight: 300;
 }
-.f-10 {
-  font-size: 12px !important;
+.f-14 {
+  font-size: 14px !important;
+  line-height: 24px;
 }
 .cus-p {
-  padding: 20px 0 14px 0;
+  padding: 40px 0px;
 }
 .f-14 {
   font-size: 14px !important;
@@ -190,20 +191,32 @@ export default {
   letter-spacing: 2.1px;
 }
 .plan-list-carousel{
-  width: 851px;
+  width: 915px;
   margin: 0 auto;
   max-width: 100%;
 }
 .plan-list-carousel .box{
   margin: 0;
   width: 100% !important;
+  height: 100%;
   }
 
 .plan-list-carousel .VueCarousel-inner .VueCarousel-slide{
-  flex-basis: 219px !important; 
+  flex-basis: 271px !important; 
 }
-.mr-75{
-  margin-right: 75px !important;
+.mr-35 {
+  margin-left: 17px !important;
+  margin-right: 17px !important;
+}
+.price .font-medium {
+  font-size: 2.25rem !important;
+}
+
+.VueCarousel-inner {
+  height: calc(100% - 1.25rem) !important;
+}
+.card-data {
+  height: calc(100% - 58px) !important;
 }
 
 </style>
