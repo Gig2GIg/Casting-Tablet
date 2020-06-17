@@ -476,8 +476,8 @@
                 <div class="img-cropper">
                     <vue-cropper
                     ref="cropper"
-                    :aspect-ratio="14/12"
-                    :initial-aspect-ratio="2/1"
+                    :aspect-ratio="14/14"
+                    :initial-aspect-ratio="1/1"
                     :src="imgSrc"
                     preview=".preview"
                     drag-mode="crop"
@@ -485,7 +485,7 @@
                     :minCropBoxHeight="minWidth"
                     :auto-crop-area="0.5"
                     alt="Profile Picture"
-                    :img-style="{ 'width': '400px', 'height': '300px' }"
+                    :img-style="{ 'width': '400px', 'height': '400px' }"
                     />
                 </div>
                 <div class="actions">            
@@ -887,8 +887,8 @@ export default {
       updatedImageBlob: null,
       cropImg: "",
       data: null,
-      minHeight: Number(192),
-      minWidth: Number(328),
+      minHeight: Number(350),
+      minWidth: Number(350),
       rounds: [
         {
           name: "Round 1",
@@ -1526,7 +1526,7 @@ export default {
       this.cropImg = this.$refs.cropper.getCroppedCanvas().toDataURL();
       await this.$refs.cropper.getCroppedCanvas().toBlob(async (blob) => {
         this.updatedImageBlob = blob;
-        await ThumbService.imageThumbnail(this.updatedImageBlob, DEFINE.thumbSize.imageThumbWidth).then((thumb_data) => {
+        await ThumbService.imageThumbnail(this.updatedImageBlob, DEFINE.thumbSize.coverImageThumbWidth).then((thumb_data) => {
           Vue.set(this.coverThumbnail, 'preview', thumb_data.preview);
           Vue.set(this.coverThumbnail, 'file', thumb_data.file);
         });

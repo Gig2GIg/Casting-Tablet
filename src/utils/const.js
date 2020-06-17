@@ -15,6 +15,7 @@ const DEFINE = {
         defaultHeight : 200,
         videoThumbWidth : 200,
         imageThumbWidth : 250,
+        coverImageThumbWidth : 200,
         docImageThumbWidth : 200,
         roleImageThumbWidth : 150
     },
