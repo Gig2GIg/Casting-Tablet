@@ -1,6 +1,6 @@
 <template>
 <div>
-  <div class="container text-purple pl-6 py-8 h-84">
+  <div class="container text-purple pl-8 pr-8 py-8 h-84">
     <p class="w-full text-3xl">
       Upcoming
     </p>
@@ -67,7 +67,7 @@ export default {
 </script>
 <style>
 .carousel-slider-width{
-  width: 96% !important;
+  width: 100% !important;
 }
 @media (min-width: 1280px){
   .container {

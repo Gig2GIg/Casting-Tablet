@@ -1,6 +1,6 @@
 <!-- eslint-disable max-len -->
 <template>
-  <div class="relative w-84 py-2 pr-2 ml-1 mr-4">
+  <div class="relative pr-2 pl-2">
     <div
       v-if="tag"
       class="flex items-center justify-center absolute top-0 right-0 bg-white shadow rounded-sm rounded-bl-lg w-32 h-12"
@@ -8,7 +8,7 @@
       {{ tag }}
     </div>
 
-    <div class="flex flex-col h-full rounded-lg shadow-md overflow-hidden">
+    <div class="flex flex-col h-full rounded-lg shadow-md overflow-hidden relative">
 <!--      <button-->
 <!--        v-if="state == 'upcoming'"-->
 <!--        class="absolute top-0 right-0 rounded-b-lg shadow-xl mb-0 w-32 text-sm bg-white text-white overflow-hidden my-2 p-3 text-lg focus:outline-none text-purple"-->
@@ -19,7 +19,7 @@
 <!--      >-->
       <button
               v-if="state == 'upcoming'"
-              class="absolute top-0 right-0 rounded-b-lg shadow-xl mb-0 w-32 text-sm bg-white text-white overflow-hidden my-2 p-3 text-lg focus:outline-none text-purple"
+              class="absolute top-0 right-0 rounded-b-lg shadow-xl mb-0 w-32 text-sm bg-white text-white overflow-hidden p-3 text-lg focus:outline-none text-purple"
               v-bind="$attrs"
               @click="$emit('click', $event)"
       >
@@ -27,7 +27,7 @@
       </button>
       <img
         :src="image || '/images/xd.png'"
-        class="h-48 object-cover"
+        class="object-cover slide-image"
         :alt="imagealt"
       >
       <div
@@ -40,8 +40,7 @@
         <span v-if="date != ''" class="-mt-2">{{ $dayjs(date).format('MMMM Do') }}</span>
         <span v-else class="-mt-2 text-white">.</span>
       </div>
-    </div>
-    <router-link :to="{ name: 'auditions/detail', params: {id: navigateTo } }">
+      <router-link :to="{ name: 'auditions/detail', params: {id: navigateTo } }">
       <base-button
         v-if="actionable"
         class="absolute bottom-0 right-0 mb-0 w-32 text-sm"
@@ -50,6 +49,8 @@
         Manage
       </base-button>
     </router-link>
+    </div>
+    
   </div>
 </template>
 
@@ -94,3 +95,8 @@ export default {
   methods: {},
 };
 </script>
+<style>
+.slide-image {
+  width: 100%;
+}
+</style>

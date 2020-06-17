@@ -184,10 +184,10 @@
       />
       <div class="px-2 py-2 w-1/3">
         <div
-          class="flex rounded-large h-40 items-center border border-purple cursor-pointer justify-center bg-grey-500 overflow-hidden"
+          class="flex rounded-large h-full items-center border border-purple cursor-pointer justify-center bg-grey-500 overflow-hidden"
           @click="$refs.coverFile.click()"
         >
-          <div v-if="!previewCover" class="flex flex-col flex-no-wrap justify-between">
+          <div v-if="!previewCover" class="flex flex-col flex-no-wrap py-5 justify-between">
             <p class="pb-6 text-purple">Cover photo</p>
             <img src="/images/icons/file.svg" />
           </div>
