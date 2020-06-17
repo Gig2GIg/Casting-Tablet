@@ -56,7 +56,7 @@
             <div class="flex justify-center mb-4 items-center px-3 w-full">
               <div class="w-2/5 ml-4 text-purple px-2 text-sm user-img">
                 <img
-                  v-lazy="user.image && user.image.url ? user.image.url : ''"
+                  v-lazy="user.image && user.image.thumbnail ? user.image.thumbnail : (user.image && user.image.url ? user.image.url : '')"
                   class="h-10 w-10 rounded object-cover"
                   alt="Logo"
                 />
