@@ -199,4 +199,8 @@ body, html {
 .invite-block-hieght ::-moz-placeholder {color: #D6D6D6 !important; opacity: 1; }
 .invite-block-hieght :-ms-input-placeholder {color: #D6D6D6 !important; opacity: 1; }
 .invite-block-hieght :-moz-placeholder {color: #D6D6D6 !important; opacity: 1; }
+
+.plan-list-carousel .VueCarousel-inner {
+  height: calc(100% - 1.25rem) !important;
+}
 </style>

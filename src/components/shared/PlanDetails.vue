@@ -27,7 +27,7 @@
             <span class="text-xl text-white" v-else>{{plan.allowed_performers}}+ Performers</span>
           </div>
           <div class="relative flex flex-col card-data shadow-md">
-            <div class="flex flex-col px-4 text-center w-full h-50 items-center justify-center">
+            <div class="flex flex-col px-4 text-center w-full h-full items-center justify-center">
               <div class="price" v-if="plan.is_custom == 0">
                 <span class="font-medium text-xl text-black">
                   $
@@ -42,7 +42,7 @@
               </div>
               <div 
                 v-if="plan.is_custom == 0"
-                class="cursor-pointer content-center rounded-full red-light w-40 h-10 flex items-center button-detail accept-decline-btn"
+                class="cursor-pointer content-center rounded-full red-light w-40 h-10 flex items-center button-detail accept-decline-btn mt-auto"
                 @click="selectPlan(plan)"
               >
                 <p class="text-white text-center uppercase content-center flex-1">Select</p>
@@ -51,11 +51,11 @@
                 v-else
                 target="_blank"
                 v-bind:href="'mailto:'+account_email+''"
-                class="cursor-pointer content-center rounded-full red-light w-40 h-10 flex items-center button-detail accept-decline-btn"                
+                class="cursor-pointer content-center rounded-full red-light w-40 h-10 flex items-center button-detail accept-decline-btn mt-auto"                
               >
                 <p class="text-white text-center uppercase content-center flex-1" >Contact Us</p>
               </a>
-              <span class="font-400 text-sm cus-p f-14 text-black text-center">{{plan.description}}</span>
+              <span class="font-400 text-sm cus-p f-14 text-black text-center h-128">{{plan.description}}</span>
             </div>
           </div>
         </div>
@@ -212,11 +212,10 @@ export default {
   font-size: 2.25rem !important;
 }
 
-.VueCarousel-inner {
-  height: calc(100% - 1.25rem) !important;
-}
 .card-data {
   height: calc(100% - 58px) !important;
 }
-
+.h-128 {
+  min-height: 128px;
+}
 </style>
