@@ -21,7 +21,7 @@
         >
         <div class="border-radius-6 box">
           <div
-            class="relative flex flex-col h-58 items-center justify-center bg-cus-orange border-tl-radius-6 border-tr-radius-6"
+            class="relative flex flex-col h-48 items-center justify-center bg-cus-orange border-tl-radius-6 border-tr-radius-6"
           >
             <span class="text-xl text-white" v-if="plan.is_custom == 0" >Up to {{plan.allowed_performers}} Performers</span>
             <span class="text-xl text-white" v-else>{{plan.allowed_performers}}+ Performers</span>
@@ -31,7 +31,7 @@
               <div class="price" v-if="plan.is_custom == 0">
                 <span class="font-medium text-xl text-black">
                   $
-                  <b class="f-56">{{plan.amount}}</b>
+                  <b class="f-28">{{plan.amount}}</b>
                 </span>
                 <span class="letter-space text-black">per {{plan.type}}</span>
               </div>
@@ -55,7 +55,7 @@
               >
                 <p class="text-white text-center uppercase content-center flex-1" >Contact Us</p>
               </a>
-              <span class="font-400 text-sm cus-p f-14 text-black text-center h-128">{{plan.description}}</span>
+              <span class="font-400 text-sm cus-p f-14 text-black text-center h-88">{{plan.description}}</span>
             </div>
           </div>
         </div>
@@ -139,16 +139,21 @@ export default {
 .box {
   width: 210px !important;
 }
-.h-58 {
-  height: 58px !important;
+.h-48 {
+  height: 48px !important;
 }
-.f-56 {
-  font-size: 56px !important;
+.f-28 {
+  font-size: 28px !important;
 }
 .price {
-  padding: 50px 0;
+  padding: 20px 0 30px;
   display: flex;
   flex-direction: column;
+  
+}
+.custom-plan-blank {
+  min-height: 116px;
+  width: 100%;
 }
 .price span b {
   font-weight: 600;
@@ -162,7 +167,7 @@ export default {
   line-height: 24px;
 }
 .cus-p {
-  padding: 40px 0px;
+  padding: 20px 0px;
 }
 .f-14 {
   font-size: 14px !important;
@@ -179,7 +184,6 @@ export default {
 .bottom-text {
   width: 100% !important;
   text-align: center !important;
-  margin-top: 30px !important;
 }
 .bg-cus-orange {
   background: #d8893a !important;
@@ -209,13 +213,13 @@ export default {
   margin-right: 17px !important;
 }
 .price .font-medium {
-  font-size: 2.25rem !important;
+  font-size: 1.25rem !important;
 }
 
 .card-data {
-  height: calc(100% - 58px) !important;
+  height: calc(100% - 48px) !important;
 }
-.h-128 {
-  min-height: 128px;
+.h-88 {
+  min-height: 88px;
 }
 </style>
