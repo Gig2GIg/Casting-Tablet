@@ -1364,9 +1364,11 @@ export default {
           .put(data.cover_file);
 
         data.cover = await coverSnapshot.ref.getDownloadURL();        
+        console.log("handleCreate -> data.cover", data.cover)
         data.cover_thumbnail = coverThumbnailUrl ? coverThumbnailUrl : null;
+        console.log("handleCreate -> data.cover_thumbnail", data.cover_thumbnail)
         data.cover_name = data.cover_name;
-
+        return
         // Upload roles
         await Promise.all(
           data.roles.map(async (role) => {

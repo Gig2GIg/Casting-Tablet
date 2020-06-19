@@ -50,7 +50,7 @@
         <div class="w-full mr-2">
           <div class="flex mb-4 items-center px-3 w-full">
             <div class="w-2/5 text-purple px-2 text-lg text-bold-500">Users</div>
-            <div class="w-2/5 text-purple px-2 text-lg"></div>
+            <div class="w-2/6 text-purple px-2 text-lg"></div>
             <div class="w-2/10 text-purple px-2 text-md">
               <div
                 v-if="subscriptionDetails"

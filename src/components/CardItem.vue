@@ -26,7 +26,7 @@
         {{contributor == true ?'Contributor':'Manager'}}
       </button>
       <img
-        :src="image || '/images/xd.png'"
+        v-lazy="image || '/images/xd.png'"
         class="object-cover slide-image"
         :alt="imagealt"
       >
