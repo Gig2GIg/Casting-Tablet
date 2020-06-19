@@ -455,19 +455,26 @@
       </div>
       <!-- Cover image crop modal -->
         <modal class="flex flex-col w-full items-center my-info-mdel" :width="600" :height="480" name="modal_crop_image">
+            <div class="w-full content-center justify-center text-center mt-2">
+              <span class="text-center text-md text-purple">Please upload an image, which has a size of more than width {{cover_image_size.min_width}} X height {{cover_image_size.min_height}}.</span>
+            </div>
             <div class="content my-info-content" ng-if="imgSrc">
                 <section class="cropper-area">
                 <div class="img-cropper">
                     <vue-cropper
                     ref="cropper"
-                    :aspect-ratio="14/14"
-                    :initial-aspect-ratio="1/1"
+                    :aspectRatio="1/1"
+                    :initialAspectRatio="1/1"
                     :src="imgSrc"
                     preview=".preview"
                     drag-mode="crop"
                     :minCropBoxWidth="minHeight"
                     :minCropBoxHeight="minWidth"
-                    :auto-crop-area="0.5"
+                    :minContainerWidth="minWidthCropContainer"
+                    :minContainerHeight="minHeightCropContainer"
+                    :minCanvasWidth="minWidth"
+                    :minCanvasHeight="minHeight"
+                    :auto-crop-area="1"
                     alt="Profile Picture"
                     :img-style="{ 'width': '400px', 'height': '400px' }"
                     />
@@ -649,6 +656,7 @@ export default {
       isLoading: false,
       fullPage: true,
       changeLocationBtnTxt: false,
+      cover_image_size : DEFINE.cover_image,
       invitation: {
         adding: false,
         email: ""
@@ -759,8 +767,10 @@ export default {
       updatedImageBlob : null,
       cropImg: '',
       data: null,
-      minHeight : Number(350),
-      minWidth : Number(350),
+      minHeight: Number(350),
+      minWidth: Number(350),
+      minHeightCropContainer: Number(450),
+      minWidthCropContainer: Number(450),
       currentDoc : {},
       coverFileName :  null,
       coveNameObject : {},
@@ -1271,6 +1281,25 @@ export default {
     imgUrlAlt(event) {
         event.target.src = DEFINE.role_placeholder;
     },
+    /**
+     * validate cover image minimum width height
+     */
+    async coverImageSizeValidate(imageSrc) {
+      const imageSize = new Image();
+      imageSize.src = imageSrc;      
+      const that = this;
+      return new Promise((resolve, reject) => {
+        imageSize.onload = function () {
+          console.log("width :: ", imageSize.width+", height :: "+imageSize.height);
+          if(imageSize.width < DEFINE.cover_image.min_width || imageSize.height < DEFINE.cover_image.min_height){
+            that.$toasted.error(`Please upload an image, which has a size of more than width ${DEFINE.cover_image.min_width} X height ${DEFINE.cover_image.min_height}!`);        
+            reject();
+          } else {
+            resolve(true)
+          }
+        };
+      });
+    },
     async cropSaveImage() {
       this.$toasted.clear();
         if(!this.coverFileName || this.coverFileName == '' || this.coverFileName.trim() == ''){
@@ -1282,7 +1311,23 @@ export default {
         }
         this.coverThumbnail = {};
         // get image data for post processing, e.g. upload or setting image src
-        this.cropImg = this.$refs.cropper.getCroppedCanvas().toDataURL();
+        const croppedImg = this.$refs.cropper.getCroppedCanvas().toDataURL();
+        //start : check minimum image width and height
+        await this.coverImageSizeValidate(croppedImg).then((validImage) => {        
+          if(validImage) {
+            this.cropImg = croppedImg;
+          } else {
+            that.$toasted.error(`Please upload an image, which has a size of more than width ${DEFINE.cover_image.min_width} X height ${DEFINE.cover_image.min_height}!`);        
+            return;
+          }
+        }).catch(error=>{
+          return;
+        });
+        if(!this.cropImg){
+          return;
+        }
+        //end : check minimum image width and height
+
         await this.$refs.cropper.getCroppedCanvas().toBlob(async (blob) => {
             this.updatedImageBlob = blob;
             await ThumbService.imageThumbnail(this.updatedImageBlob, DEFINE.thumbSize.coverImageThumbWidth).then((thumb_data) => {

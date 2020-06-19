@@ -19,6 +19,10 @@ const DEFINE = {
         docImageThumbWidth : 200,
         roleImageThumbWidth : 150
     },
+    cover_image : {
+        min_width : 350,
+        min_height : 350
+    },
     google : {
         key: "AIzaSyCBwvwOsPR82AjeUx5o3FUvr4syuoNFrLI", // old one => AIzaSyCNwa9Hpkf463makeiBW_vSMH2Y0sY23q0
         libraries: "places"
