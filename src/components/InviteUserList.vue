@@ -30,6 +30,24 @@
           </div>
         </div>
         <div class="w-full mr-2">
+          <div class="flex justify-center mb-4 items-center px-3 w-full">
+            <div class="w-1/2 text-purple px-2 text-lg text-bold-500"></div>
+            <div class="w-1/2 text-purple px-2 text-md"></div>
+          </div>
+          <div class="flex justify-right mb-4 items-right px-3 w-full" v-if="subscriptionDetails">
+            <div class="w-2/3 text-purple px-2 text-sm"></div>
+            <div
+              class="w-2/7 text-purple px-2 text-sm capitalize justify-center content-center"
+            ></div>
+            <div class="w-2/8 text-purple px-5 pr-0 ml-15 text-sm capitalize margin-left-cancel">
+              <a
+                class="flex items-center justify-center content-center cursor-pointer font-bold"
+                @click="cancelSubscription()"
+              >Cancel Subscription</a>
+            </div>
+          </div>
+        </div>
+        <div class="w-full mr-2">
           <div class="flex mb-4 items-center px-3 w-full">
             <div class="w-2/5 text-purple px-2 text-lg text-bold-500">Users</div>
             <div class="w-2/5 text-purple px-2 text-lg"></div>
@@ -138,6 +156,24 @@
           </div>
           <div class="w-1/4 ml-3">
             <base-button type="button" expanded @click="onStatusChangeConfirm()">Yes</base-button>
+          </div>
+        </div>
+      </div>
+    </modal>
+    <modal
+      class="flex flex-col w-full items-center mt-4"
+      :width="540"
+      height="175"
+      name="modal_confirm_cancel_subscribe"
+    >
+      <div class="py-8 px-3">
+        <p class="text-lg text-purple font-bold text-center">Are you sure, you want to cancel the subscription?</p>
+        <div class="w-full flex flex-wrap justify-center overflow-hidden mt-3">
+          <div class="w-1/4">
+            <base-button type="button" expanded @click="subscribeConfirmCancel()">No</base-button>
+          </div>
+          <div class="w-1/4 ml-3">
+            <base-button type="button" expanded @click="subscribeConfirmDone()">Yes</base-button>
           </div>
         </div>
       </div>
@@ -302,6 +338,37 @@ export default {
       this.$router.push({ name: "plan_change" });
     },
     /**
+     * On click cancel subscription confirmation modal open
+     */
+    cancelSubscription() {
+      if(this.subscriptionDetails && this.subscriptionDetails.grace_period == 1) {
+        this.$toasted.error("You have already request for cancel subscription.");
+      } else {
+        this.$modal.show("modal_confirm_cancel_subscribe");
+      }
+      
+    },
+    subscribeConfirmCancel(){
+      this.$modal.hide("modal_confirm_cancel_subscribe");
+    },
+    async subscribeConfirmDone() {
+      // this.$modal.show("modal_confirm_cancel_subscribe");
+      this.isLoading = true;
+      try {
+        this.$modal.hide("modal_confirm_cancel_subscribe");       
+        const {
+          data: { data }
+        } = await axios.get(`/t/users/cancelSubscription`);
+        this.isLoading = false;
+        this.$toasted.success("Your subscription has been cancelled successfully.");
+        this.getInviteUser();        
+      } catch (e) {
+        this.$toasted.error(DEFINE.common_error_message);
+      } finally {
+        this.isLoading = false;
+      }
+    },
+    /**
      * When user don't have any tier plan then give to option for subscription new tier (plan)
      */
     subscribePlan() {
@@ -356,5 +423,8 @@ export default {
 }
 .margin-minus-subscribe-div{
       margin-left: -54px !important;
+}
+.margin-left-cancel {
+   margin-left: 64px !important;
 }
 </style>
