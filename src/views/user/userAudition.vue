@@ -36,34 +36,31 @@
           <p class="w-full text-white tracking-wide text-lg ml-5 tracking-tight truncate">Chat</p>
         </div>
       </div>
-      <img
-        v-if="favorite == 0"
-        :src="'/images/icons/4-layers.png'"
-        class="w-6 m-6"
-        alt="star"
-        @click="favorite=1"
-      />
-      <img
-        v-else
-        :src="'/images/icons/Path_56@2x.png'"
-        class="w-6 m-6"
-        alt="star"
-        @click="favorite=0"
-      />
-      <div class="flex items-center border-l border-white text-white ml-auto cursor-pointer">
-        <span
-          class="mx-4"
-        >{{profile.details ? profile.details.first_name : ""}} {{profile.details ? profile.details.last_name : ""}}</span>
+      <img v-if="favorite == 0" :src="'/images/icons/4-layers.png'" class="w-6 m-6" alt="star" @click="favorite=1">
+      <img v-else  :src="'/images/icons/Path_56@2x.png'" class="w-6 m-6" alt="star" @click="favorite=0">
+    <div class="flex items-center border-l border-white text-white ml-auto cursor-pointer">
+      <span class="mx-4">
+        {{profile.details && profile.details.first_name ? profile.details.first_name : ""}} {{profile.details ? profile.details.last_name : ""}}
+      </span>
+      <div v-lazy-container="{ selector: 'img' }" >
         <img
-          :src="profile.image ? (profile.image.thumbnail ? profile.image.thumbnail : profile.image.url) : ''"
-          class="w-12 img-h48 object-cover"
-          alt="Avatar"
+            :data-loading="loading_placeholder" :data-error="user_placeholder"
+            :data-src="(profile.image && profile.image.thumbnail) ? (profile.image.thumbnail ? profile.image.thumbnail : profile.image.url) : ''"
+            class="w-12 img-h48 object-cover"
+            alt="Avatar"
         />
       </div>
-    </nav>
-    <input ref="inputFile" accept=".mp4" type="file" hidden @change="handleFile" />
-    <modal name="marketplace" :scrollable="true" height="auto">
-      <div class="w-full shadow-lg border border-gray-300">
+    </div>
+  </nav>
+  <input
+    ref="inputFile"
+    accept=".mp4"
+    type="file"
+    hidden
+    @change="handleFile"
+  >
+  <modal name="marketplace" :scrollable="true" height="auto">
+    <div class="w-full shadow-lg border border-gray-300">
         <p class="text-center text-2xl text-purple font-bold" @click="show">Marketplaces</p>
         <div class="flex flex-wrap justify-center w-full">
           <div class="flex flex-wrap justify-center w-full">
@@ -1032,15 +1029,17 @@ export default {
         color: "red"
       },
       addNumberText: "",
-      isAssignedNumber: false,
-      performerDetails: {},
-      currentUserRoles: [],
-      isRealodTeamFeedback: false,
-      thumbnail: {},
-      videoFileName: null,
-      isLoadedVideo: false,
-      currentVideo: null,
+      isAssignedNumber:false,
+      performerDetails:{},
+      currentUserRoles : [],
+      isRealodTeamFeedback : false,
+      thumbnail : {},
+      videoFileName : null,
+      isLoadedVideo : false,
+      currentVideo : null,
       nextPerformerId : null,
+      user_placeholder : DEFINE.role_placeholder,
+      loading_placeholder : DEFINE.loading_placeholder,
       isChatView: false,
       chatPrefix: DEFINE.CHAT_PEFIX,
       auditionChatRef: null,

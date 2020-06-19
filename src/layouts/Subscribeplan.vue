@@ -1,8 +1,7 @@
 <template>
   <div class="flex flex-col min-h-full cover">
-    <auth-nav-bar v-if="showNavBar" :isRouteNavigate="signupStep === 4 ? true : false" />
+    <subscribe-nav-bar />
     <div
-      v-if="signupStep !== 4"
       class="cursor-pointer flex content-around w-100 items-center relative cmb-10 back-div ml-5"
       @click="back"
     >
@@ -16,37 +15,16 @@
 </template>
 
 <script>
-import { eventBus } from "../main";
 export default {
   data() {
-    return {
-      showNavBar: true,
-      signupStep: 0
-    };
-  },
-  watch: {
-    $route: {
-      immediate: true,
-      handler(to) {
-        this.showNavBar = to.name !== "login";
-      }
-    }
-  },
-  created() {
-    eventBus.$on("signupNext", value => {
-      this.signupStep = value;
-      console.log("created -> signupNext this.signupStep ", this.signupStep);
-    });
+    return {};
   },
   methods: {
     back() {
-      this.signupStep -= 1;
-      console.log("back -> this.signupStep", this.signupStep);
-      if (this.signupStep < 0) {
-        this.$router.push({ name: "login" });
-      } else {
-        eventBus.$emit("signupBack", this.signupStep);
-      }
+      this.$router.push({
+        name: "my.settings",
+        query: { tab: "subscription" }
+      });
     }
   }
 };

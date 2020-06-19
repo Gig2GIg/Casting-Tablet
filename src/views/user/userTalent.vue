@@ -33,21 +33,20 @@
       <!-- <i class="material-icons mr-4">
         keyboard_arrow_down
       </i> -->
-      <div >
-      <img
-        v-if="profile.image && profile.image.url"
-        :src="profile.image.thumbnail ? profile.image.thumbnail : profile.image.url"
-        class="w-13 img-h48 object-cover"
-        alt="Avatar"
-      >
+      <div v-lazy-container="{ selector: 'img' }" >
+        <img
+            :data-loading="loading_placeholder" :data-error="user_placeholder"
+            :data-src="profile.image && profile.image.thumbnail ? profile.image.thumbnail : (profile.image && profile.image.url ? profile.image.url : '')"
+            class="w-12 img-h48 object-cover"
+            alt="Avatar"
+        />
       </div>
-
     </div>
   </nav>
   <multipane class="custom-resizer h-full " layout="vertical">
     <div class="flex p-5" :style="isShowAuditionVideo? { minWidth: '68%', width: '68%', maxWidth: '100%' } : { minWidth: '75%', width: '100%', maxWidth: '100%' }">
       <div class="flex flex-wrap justify-center content-start w-1/2 shadow-2xl rounded-lg">
-          <div v-if="tuser && tuser.image && tuser.image.url" class="w-full bg-cover rounded-t-lg user-profile" :style="{ backgroundImage: 'url(' + tuser.image.url + ')'}">
+          <div v-if="tuser && tuser.image && tuser.image.url" class="w-full bg-cover rounded-t-lg user-profile width-fix" :style="{ backgroundImage: 'url(' + tuser.image.url + ')'}">
           </div>
           <div v-else class="h-56 w-full bg-cover rounded-t-lg" :style="{ backgroundImage: 'url(' + image + ')' }">
           </div>
@@ -492,6 +491,7 @@ import moment from "moment";
 import 'vue-sweet-calendar/dist/SweetCalendar.css'
 import { async } from 'q';
 import TokenService from "../../services/core/TokenService";
+import DEFINE from "@/utils/const.js";
 
 export default {
   // ...
@@ -534,6 +534,8 @@ export default {
       videoFileName : '',
       currentVideo : null,
       currentAdition : null,
+      user_placeholder : DEFINE.role_placeholder,
+      loading_placeholder : DEFINE.loading_placeholder
     };
   },
   computed: {
@@ -1025,10 +1027,12 @@ ul.submanu-content > li > a {
 }
 .user-profile {
   background-position: center;
-  height: 18rem !important;
+  
 }
 .custom-video-list-w {
   width: 319px !important;
 }
-
+.user-profile.width-fix{
+  padding-top:100%;
+}
 </style>

@@ -13,7 +13,7 @@ export default [
   |
   */
 
-  ...mapRoutes({ layout: 'authentication', onlyWhenLoggedOut: true }, [
+  ...mapRoutes({ layout: 'authentication', onlyWhenLoggedOut: true, isPrimeModule: false }, [
     {
       path: '/login',
       alias: '/',
@@ -36,7 +36,29 @@ export default [
       component: () => import(/* webpackChunkName: 'email' */ '@/views/auth/password/Resetpassword'),
     },
   ]),
-  ...mapRoutes({ layout: 'blank', allowBoth: true }, [
+  ...mapRoutes({ layout: 'inviteuser', isPrimeModule: true }, [
+    {
+      path: '/invite-user/:type',
+      alias: '/',
+      name: 'invite_user',
+      component: () => import('@/views/InviteUser'),
+    },
+  ]),
+  ...mapRoutes({ layout: 'subscribeplan', isPrimeModule: false}, [
+    {
+      path: '/subscribe-plan',
+      alias: '/',
+      name: 'subscribe_plan',
+      component: () => import('@/views/SubscribePlan'),
+    },
+    {
+      path: '/plan-change',
+      alias: '/',
+      name: 'plan_change',
+      component: () => import('@/views/PlanChange'),
+    },
+  ]),
+  ...mapRoutes({ layout: 'blank', allowBoth: true , isPrimeModule: false }, [
     {
       path: '/talent-shared/:id',
       name: 'talent_shared/user',
@@ -45,7 +67,7 @@ export default [
     },
   ]),
 
-  ...mapRoutes({ layout: 'checkIn' }, [
+  ...mapRoutes({ layout: 'checkIn', isPrimeModule: true }, [
     {
       path: '/auditions/:id/checkin/:title/:date/:auditionId',
       name: 'auditions/checkin',
@@ -53,7 +75,7 @@ export default [
     },
   ]),
 
-  ...mapRoutes({ layout: 'monitor' }, [
+  ...mapRoutes({ layout: 'monitor', isPrimeModule: true }, [
     {
       path: '/auditions/:id/monitor-mode/:auditionId',
       name: 'monitor-update',
@@ -61,7 +83,7 @@ export default [
     },
   ]),
 
-  ...mapRoutes({ layout: 'talent' }, [
+  ...mapRoutes({ layout: 'talent', isPrimeModule: true }, [
     {
       path: '/auditions/talent-database',
       name: 'talents',
@@ -70,7 +92,7 @@ export default [
 
   ]),
 
-  ...mapRoutes({ layout: 'news' }, [
+  ...mapRoutes({ layout: 'news', isPrimeModule: true }, [
     {
       path: '/news-and-updates',
       name: 'news-and-updates',
@@ -85,7 +107,7 @@ export default [
   ]),
 
 
-  ...mapRoutes({ layout: 'detail' }, [
+  ...mapRoutes({ layout: 'detail', isPrimeModule: false }, [
     {
       path: '/auditions/:audition/round/:round/user/:id/',
       name: 'auditions/user',
@@ -106,25 +128,32 @@ export default [
     },
   ]),
 
-  ...mapRoutes({ layout: 'auditiondetails' }, [
+  ...mapRoutes({ layout: 'auditiondetails' , isPrimeModule: true }, [
     {
       path: '/auditions/detail/:id',
       name: 'auditions/detail',
       component: () => import(/* webpackChunkName: 'auditions.detail' */ '@/views/AuditionsDetail'),
     },
   ]),
-  ...mapRoutes({ layout: 'auditionslotlayout' }, [
+  ...mapRoutes({ layout: 'auditionslotlayout' , isPrimeModule: true }, [
     {
       path: '/audition-slot/manage/:id',
       name: 'audition-slot/manage',
       component: () => import(/* webpackChunkName: 'auditions.detail' */ '@/views/AuditionSlotManage'),
     },
   ]),
-  ...mapRoutes({ layout: 'tour' }, [
+  ...mapRoutes({ layout: 'tour',isPrimeModule: false }, [
     {
       path: '/tour',
       name: 'tour',
       component: () => import(/* webpackChunkName: 'tour' */ '@/views/tour/Details'),
+    }
+  ]),
+  ...mapRoutes({ layout: 'settings',isPrimeModule: false }, [
+    {
+      path: '/my/settings',
+      name: 'my.settings',
+      component: () => import(/* webpackChunkName: 'tour' */ '@/views/Settings'),
     }
   ]),
 
@@ -142,44 +171,68 @@ export default [
   {
     path: '/auditions',
     name: 'auditions',
+    meta : {
+      isPrimeModule: true
+    },
     component: () => import(/* webpackChunkName: 'auditions' */ '@/views/Auditions'),
   },
   {
     path: '/past-auditions',
     name: 'past_auditions',
+    meta : {
+      isPrimeModule: true
+    },
     component: () => import(/* webpackChunkName: 'auditions' */ '@/views/PastAuditions'),
   },
   {
     path: '/auditions/create',
     name: 'auditions.create',
+    meta : {
+      isPrimeModule: true
+    },
     component: () => import(/* webpackChunkName: 'auditions.create' */ '@/views/auditions/CreateAudition'),
   },
   {
     path: '/auditions/update/:id',
     name: 'auditions.update',
+    meta : {
+      isPrimeModule: true
+    },
     component: () => import(/* webpackChunkName: 'auditions.update' */ '@/views/auditions/UpdateAudition'),
   },
   // {
   //   path: '/auditions/detail/:id',
   //   name: 'auditions/detail',
+  //   meta : {
+  //     isPrimeModule: true
+  //   },
   //   component: () => import(/* webpackChunkName: 'auditions.detail' */ '@/views/AuditionsDetail'),
   // },
   {
     path: '/auditions/round/:id/create',
     name: 'auditions.round',
+    meta : {
+      isPrimeModule: true
+    },
     component: () => import(/* webpackChunkName: 'auditions.round' */ '@/views/auditions/CreateRound'),
   },
   {
     path: '/notifications',
     name: 'notifications',
+    meta : {
+      isPrimeModule: true
+    },
     component: () => import(/* webpackChunkName: 'notifications' */ '@/views/MyNotifications'),
   },
 
-  {
-    path: '/my/settings',
-    name: 'my.settings',
-    component: () => import(/* webpackChunkName: 'mysettings' */ '@/views/Settings'),
-  },
+  // {
+  //   path: '/my/settings',
+  //   name: 'my.settings',
+  //   meta : {
+  //     isPrimeModule: false
+  //   },
+  //   component: () => import(/* webpackChunkName: 'mysettings' */ '@/views/Settings'),
+  // },
 
   /*
   |--------------------------------------------------------------------------
@@ -191,7 +244,7 @@ export default [
   |
   */
 
-  ...mapRoutes({ layout: 'authentication', public: true }, [
+  ...mapRoutes({ layout: 'authentication', public: true , isPrimeModule: false }, [
     {
       path: '*',
       name: '404',

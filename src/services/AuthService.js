@@ -8,33 +8,37 @@ import 'firebase/storage';
 class AuthService extends BaseService {
   async login(credentials) {
     // eslint-disable-next-line camelcase
-    const { data: { data: { id }, access_token } } = await this.post('/login', credentials);
+    const { data: { data, access_token } } = await this.post('/login', credentials);
+    // const { data: { data } } = await this.post('/login', credentials);
     // debugger;
     // Save token
-    TokenService.setToken(id, access_token);
+    await TokenService.setToken(data.id, access_token);
+    // user data
+    await TokenService.setUserData(data);
     // Configure HttpClient with the new token
-    HttpService.setAuthorizationHeader(access_token);
-    HttpService.mount401Interceptor();
+    await HttpService.setAuthorizationHeader(access_token);
+    await HttpService.mount401Interceptor();
 
     // eslint-disable-next-line camelcase
-    return access_token;
+    return {
+      access_token: access_token,
+      user: data
+    };
   }
 
   async register(user) {
     let userData = user;
-    console.log("AuthService -> register -> userData", userData)
     // upload cover thumbnail file
     let profileThumbnailUrl;
-    if(user.profileThumbnail && user.profileThumbnail.file){
+    if (user.profileThumbnail && user.profileThumbnail.file) {
       const thumbnailFileSnapshot = await firebase.storage()
-      .ref(`profileImage/thumbnail/${uuid()}.png`)
-      .put(user.profileThumbnail.file);        
-      profileThumbnailUrl = await thumbnailFileSnapshot.ref.getDownloadURL();          
+        .ref(`profileImage/thumbnail/${uuid()}.png`)
+        .put(user.profileThumbnail.file);
+      profileThumbnailUrl = await thumbnailFileSnapshot.ref.getDownloadURL();
     }
 
-    // Upload avatar
     // const imageName = userData.image.name;
-    const profileExtension = userData.profileNameObject.org_name.substring(userData.profileNameObject.org_name.lastIndexOf('.')+1);
+    const profileExtension = userData.profileNameObject.org_name.substring(userData.profileNameObject.org_name.lastIndexOf('.') + 1);
     const profileFilePath = userData.profileNameObject.name.includes(`${profileExtension}`) ? `profileImage/${uuid()}_${userData.profileNameObject.name}` : `profileImage/${uuid()}_${userData.profileNameObject.name}.${profileExtension}`;
 
     const snapshot = await firebase.storage()

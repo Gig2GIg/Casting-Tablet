@@ -348,16 +348,25 @@ export default {
     async checkIn(performer_id, slot_id, roles, user_auditions_id){
       try {
           this.isLoading = true;
-          let requestParam = {
-              auditions: this.$route.params.id,
-              appointment_id : this.audition.appointment_id,
+          // let requestParam = {
+          //     auditions: this.$route.params.id,
+          //     appointment_id : this.audition.appointment_id,
+          //     slot: slot_id,
+          //     user: performer_id,
+          //     rol : roles,
+          //     user_audition_id : user_auditions_id,
+          //     nonRevert : false
+          //   };            
+            // const { data: { data } } = await axios.post('/appointments/auditions', requestParam);
+            let requestParam = {
+              id : user_auditions_id,
               slot: slot_id,
               user: performer_id,
-              rol : roles,
-              user_audition_id : user_auditions_id,
-              nonRevert : false
+              auditions: this.$route.params.id,
+              rol : roles,              
+              appointment_id : this.audition.appointment_id
             };            
-            const { data: { data } } = await axios.post('/appointments/auditions', requestParam);
+            const { data: { data } } = await axios.put('/t/auditions/dropPerformer', requestParam);
             this.isLoading = false;
             return data;
         } catch (e) {

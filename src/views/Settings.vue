@@ -9,24 +9,28 @@
       <div v-if="!hideMenuInfo" class="tags w-2/5 mx-auto px-3 py-3 mt-6">
         <div class="py-4">
           <div class="flex items-center px-3">
-            <div class="mr-6">
-              <img
-                v-lazy="user.image && user.image.url ? user.image.url : ''"
-                class="h-24 w-24 rounded object-cover"
-                alt="Logo"
-              />
+
+            <div v-lazy-container="{ selector: 'img' }" class="mr-6">
+                <img                    
+                    :data-loading="loading_placeholder" :data-error="user_placeholder"
+                    :data-src="user.image && user.image.thumbnail ? user.image.thumbnail : (user.image && user.image.url ? user.image.url : '' )"
+                    class="h-24 w-24 rounded object-cover"
+                    alt="Avatar"
+                />
             </div>
+
+
             <div class="w-6/12 py-8">
               <p
                 class="font-bold"
-              >{{ user.details?user.details.first_name + ' ' + user.details.last_name:"" }}</p>
+              >{{ user.details && user.details.first_name ? user.details.first_name + ' ' + user.details.last_name:"" }}</p>
               <p class="font-bold">{{ user.details ? user.details.agency_name : '' }}</p>
             </div>
           </div>
         </div>
         <div
           class="py-2 flex flex-wrap px-4 border-b-2 border-gray-300 mr-2 cursor-pointer"
-          @click="tabSelected = 'myinfo'; hideMenuInfo = true"
+          @click="manageSelectedTab('myinfo')"
         >
           <div class="w-10/12">
             <p class="font-bold">My info</p>
@@ -46,8 +50,30 @@
           </div>
         </div>
         <div
+          v-if="!user.is_invited"
           class="py-2 flex flex-wrap px-4 border-b-2 border-gray-300 mr-2 cursor-pointer"
-          @click="tabSelected = 'notifications'; hideMenuInfo = true"
+          @click="manageSelectedTab('subscription')"
+        >
+          <div class="w-10/12">
+            <p class="font-bold">Subscription</p>
+          </div>
+          <div class="w-2/12">
+            <svg xmlns="http://www.w3.org/2000/svg" width="10.926" height="19.213">
+              <g data-name="Grupo 1912">
+                <g data-name="Grupo 38">
+                  <path
+                    data-name="Trazado 24"
+                    d="M7.804 9.606L.373 17.037a1.275 1.275 0 101.8 1.8l8.053-8.05a1.26 1.26 0 00.328-.231 1.267 1.267 0 00.372-.95 1.267 1.267 0 00-.369-.95 1.259 1.259 0 00-.328-.231L2.175.373a1.275 1.275 0 00-1.8 1.8z"
+                    fill="#4d2545"
+                  />
+                </g>
+              </g>
+            </svg>
+          </div>
+        </div>
+        <div
+          class="py-2 flex flex-wrap px-4 border-b-2 border-gray-300 mr-2 cursor-pointer"
+          @click="manageSelectedTab('notifications')"
         >
           <div class="w-10/12">
             <p class="font-bold">Push Notifications</p>
@@ -68,7 +94,7 @@
         </div>
         <div
           class="py-2 flex flex-wrap px-4 border-b-2 border-gray-300 mr-2 cursor-pointer"
-          @click="tabSelected = 'instantFeedback'; hideMenuInfo = true; showFeedBackOptionMenu = true"
+          @click="manageSelectedTab('instantFeedback')"
         >
           <div class="w-10/12">
             <p class="font-bold">Instant Feedback</p>
@@ -89,7 +115,7 @@
         </div>
         <div
           class="mt-4 flex flex-wrap py-2 px-4 border-b-2 border-gray-300 mr-2 cursor-pointer font-bold"
-          @click="tabSelected = 'marketplace'; hideMenuInfo = true"
+          @click="manageSelectedTab('marketplace')"
         >
           <div class="w-10/12">
             <p class="font-bold">QR Code</p>
@@ -110,7 +136,7 @@
         </div>
         <div
           class="mt-4 flex flex-wrap py-2 px-4 border-b-2 border-gray-300 mr-2 cursor-pointer font-bold"
-          @click="tabSelected = 'appinfo'; hideMenuInfo = true"
+          @click="manageSelectedTab('appinfo')"
         >
           <div class="w-10/12">
             <p class="font-bold">App Info</p>
@@ -158,7 +184,7 @@
         </div>-->
         <div
           class="mt-4 flex flex-wrap py-2 px-4 border-b-2 border-gray-300 mr-2 cursor-pointer font-bold"
-          @click="tabSelected = 'termsofuse'; hideMenuInfo = true"
+          @click="manageSelectedTab('termsofuse')"
         >
           <div class="w-10/12">
             <p class="font-bold">Terms of Use</p>
@@ -205,7 +231,7 @@
         </div>
         <div
           class="mt-4 flex flex-wrap py-2 px-4 border-b-2 border-gray-300 mr-2 cursor-pointer font-bold"
-          @click="tabSelected = 'policy'; hideMenuInfo = true"
+          @click="manageSelectedTab('policy')"
         >
           <div class="w-10/12">
             <p class="font-bold">Privacy Policy</p>
@@ -284,7 +310,7 @@
           <svg xmlns="http://www.w3.org/2000/svg" width="30.049" height="39.187">
             <defs>
               <filter
-                id="a"
+                id="marketplace_svg"
                 x="0"
                 y="0"
                 width="30.049"
@@ -299,7 +325,7 @@
               </filter>
             </defs>
             <g data-name="Grupo 39">
-              <g filter="url(#a)" data-name="Grupo 38">
+              <g filter="url(#marketplace_svg)" data-name="Grupo 38">
                 <path
                   data-name="Trazado 24"
                   d="M12.447 16.594L20.641 8.4a1.406 1.406 0 10-1.988-1.988l-8.88 8.88a1.453 1.453 0 000 2.6l8.88 8.88a1.406 1.406 0 101.988-1.988z"
@@ -332,11 +358,11 @@
         </div>
       </div>
       <div v-show="tabSelected === 'myinfo'" class="tags w-9/12 shadow-md mx-auto px-3 py-3 mt-6">
-        <div class="cursor-pointer" @click="cancelUpdateProfile">
+        <div class="cursor-pointer" v-if="user.details && user.details.agency_name" @click="cancelUpdateProfile">
           <svg xmlns="http://www.w3.org/2000/svg" width="30.049" height="39.187">
             <defs>
               <filter
-                id="a"
+                id="myinfo_svg"
                 x="0"
                 y="0"
                 width="30.049"
@@ -351,7 +377,7 @@
               </filter>
             </defs>
             <g data-name="Grupo 39">
-              <g filter="url(#a)" data-name="Grupo 38">
+              <g filter="url(#myinfo_svg)" data-name="Grupo 38">
                 <path
                   data-name="Trazado 24"
                   d="M12.447 16.594L20.641 8.4a1.406 1.406 0 10-1.988-1.988l-8.88 8.88a1.453 1.453 0 000 2.6l8.88 8.88a1.406 1.406 0 101.988-1.988z"
@@ -381,12 +407,14 @@
                   >
                     <img src="/images/icons/upload.png" class="rounded" />
                   </div>
-                  <img
-                    v-else
-                    v-lazy="previewProfile"
-                    alt="Cover"
-                    class="h-24 w-24 rounded object-cover"
-                  />
+                  <div v-else v-lazy-container="{ selector: 'img' }" >
+                      <img
+                          :data-loading="loading_placeholder" :data-error="user_placeholder"
+                          :data-src="previewProfile"
+                          class="h-24 w-24 rounded object-cover"
+                          alt="Avatar"
+                      />
+                  </div>
                 </div>
 
                 <input
@@ -457,13 +485,24 @@
             </div>
             <div class="flex justify-center mb-4 items-center px-3 w-full">
               <div class="w-1/3 ml-4 text-purple px-2">
-                <base-input
+                <!-- <base-input
                   v-model="form.address"
                   v-validate="'required|max:300'"
                   :custom-classes="['border border-b border-gray-300']"
                   name="address"
                   placeholder="Address"
                   :message="errors.first('address')"
+                />-->
+                <base-input
+                  ref="password"
+                  v-model="form.password"
+                  v-validate="'min:8'"
+                  :custom-classes="['border border-b border-gray-300']"
+                  name="password"
+                  type="password"
+                  placeholder="Password"
+                  :message="errors.first('password')"
+                  autocomplete="false"
                 />
               </div>
               <div class="w-1/3 ml-4 text-purple px-2">
@@ -478,7 +517,7 @@
                 />
               </div>
             </div>
-            <div class="flex justify-center mb-4 items-center px-3 w-full">
+            <!-- <div class="flex justify-center mb-4 items-center px-3 w-full">
               <div class="w-1/3 ml-4 text-purple px-2">
                 <base-input
                   key="city-input"
@@ -507,8 +546,8 @@
                   >{{ state.label }}</option>
                 </base-select>
               </div>
-            </div>
-            <div class="flex justify-center mb-4 items-center px-3 w-full">
+            </div>-->
+            <!-- <div class="flex justify-center mb-4 items-center px-3 w-full">
               <div class="w-1/3 ml-4 text-purple px-2">
                 <base-input
                   key="zip-input"
@@ -521,6 +560,25 @@
                   placeholder="Zip"
                   :message="errors.first('zip')"
                 />
+            </div>-->
+            <div class="flex justify-center mb-4 items-center px-3 w-full">
+              <div class="w-1/3 ml-4 text-purple px-2">
+                <base-select
+                  key="country-input"
+                  v-model="form.country"
+                  v-validate="'required'"
+                  :custom-classes="['border border-b border-gray-300']"
+                  name="country"
+                  class="w-full"
+                  placeholder="Country"
+                  :message="errors.first('country')"
+                >
+                  <option
+                    v-for="country in countries"
+                    :key="country.id"
+                    :value="country.id"
+                  >{{ country.name }}</option>
+                </base-select>
               </div>
               <div class="w-1/3 ml-4 text-purple px-2">
                 <base-input
@@ -550,14 +608,20 @@
         </div>
       </div>
       <div
+        v-if="!user.is_invited && tabSelected === 'subscription' && hideMenuInfo == true"
+        class="tags w-80 shadow-md mx-auto px-3 py-3 mt-6"
+      >
+        <invite-user-list />
+      </div>
+      <div
         v-if="tabSelected === 'notifications'"
         class="tags w-9/12 shadow-md mx-auto px-3 py-3 mt-6"
       >
         <div class="cursor-pointer" @click="hideMenuInfo = false; tabSelected = ''">
-          <svg xmlns="http://www.w3.org/2000/svg" width="30.049" height="39.187">
+          <svg xmlns="http://www.w3.org/2000/svg"  width="30.049" height="39.187">
             <defs>
               <filter
-                id="a"
+                id="notifications_svg"
                 x="0"
                 y="0"
                 width="30.049"
@@ -572,7 +636,7 @@
               </filter>
             </defs>
             <g data-name="Grupo 39">
-              <g filter="url(#a)" data-name="Grupo 38">
+              <g filter="url(#notifications_svg)" data-name="Grupo 38">
                 <path
                   data-name="Trazado 24"
                   d="M12.447 16.594L20.641 8.4a1.406 1.406 0 10-1.988-1.988l-8.88 8.88a1.453 1.453 0 000 2.6l8.88 8.88a1.406 1.406 0 101.988-1.988z"
@@ -662,7 +726,7 @@
           <svg xmlns="http://www.w3.org/2000/svg" width="30.049" height="39.187">
             <defs>
               <filter
-                id="a"
+                id="audition_svg"
                 x="0"
                 y="0"
                 width="30.049"
@@ -677,7 +741,7 @@
               </filter>
             </defs>
             <g data-name="Grupo 39">
-              <g filter="url(#a)" data-name="Grupo 38">
+              <g filter="url(#audition_svg)" data-name="Grupo 38">
                 <path
                   data-name="Trazado 24"
                   d="M12.447 16.594L20.641 8.4a1.406 1.406 0 10-1.988-1.988l-8.88 8.88a1.453 1.453 0 000 2.6l8.88 8.88a1.406 1.406 0 101.988-1.988z"
@@ -716,7 +780,7 @@
           <svg xmlns="http://www.w3.org/2000/svg" width="30.049" height="39.187">
             <defs>
               <filter
-                id="a"
+                id="appinfo_svg"
                 x="0"
                 y="0"
                 width="30.049"
@@ -731,7 +795,7 @@
               </filter>
             </defs>
             <g data-name="Grupo 39">
-              <g filter="url(#a)" data-name="Grupo 38">
+              <g filter="url(#appinfo_svg)" data-name="Grupo 38">
                 <path
                   data-name="Trazado 24"
                   d="M12.447 16.594L20.641 8.4a1.406 1.406 0 10-1.988-1.988l-8.88 8.88a1.453 1.453 0 000 2.6l8.88 8.88a1.406 1.406 0 101.988-1.988z"
@@ -750,7 +814,7 @@
           <svg xmlns="http://www.w3.org/2000/svg" width="30.049" height="39.187">
             <defs>
               <filter
-                id="a"
+                id="faq_svg"
                 x="0"
                 y="0"
                 width="30.049"
@@ -765,7 +829,7 @@
               </filter>
             </defs>
             <g data-name="Grupo 39">
-              <g filter="url(#a)" data-name="Grupo 38">
+              <g filter="url(#faq_svg)" data-name="Grupo 38">
                 <path
                   data-name="Trazado 24"
                   d="M12.447 16.594L20.641 8.4a1.406 1.406 0 10-1.988-1.988l-8.88 8.88a1.453 1.453 0 000 2.6l8.88 8.88a1.406 1.406 0 101.988-1.988z"
@@ -786,7 +850,7 @@
           <svg xmlns="http://www.w3.org/2000/svg" width="30.049" height="39.187">
             <defs>
               <filter
-                id="a"
+                id="termsofuse_svg"
                 x="0"
                 y="0"
                 width="30.049"
@@ -801,7 +865,7 @@
               </filter>
             </defs>
             <g data-name="Grupo 39">
-              <g filter="url(#a)" data-name="Grupo 38">
+              <g filter="url(#termsofuse_svg)" data-name="Grupo 38">
                 <path
                   data-name="Trazado 24"
                   d="M12.447 16.594L20.641 8.4a1.406 1.406 0 10-1.988-1.988l-8.88 8.88a1.453 1.453 0 000 2.6l8.88 8.88a1.406 1.406 0 101.988-1.988z"
@@ -820,7 +884,7 @@
           <svg xmlns="http://www.w3.org/2000/svg" width="30.049" height="39.187">
             <defs>
               <filter
-                id="a"
+                id="policy_svg"
                 x="0"
                 y="0"
                 width="30.049"
@@ -835,7 +899,7 @@
               </filter>
             </defs>
             <g data-name="Grupo 39">
-              <g filter="url(#a)" data-name="Grupo 38">
+              <g filter="url(#policy_svg)" data-name="Grupo 38">
                 <path
                   data-name="Trazado 24"
                   d="M12.447 16.594L20.641 8.4a1.406 1.406 0 10-1.988-1.988l-8.88 8.88a1.453 1.453 0 000 2.6l8.88 8.88a1.406 1.406 0 101.988-1.988z"
@@ -853,7 +917,7 @@
           <svg xmlns="http://www.w3.org/2000/svg" width="30.049" height="39.187">
             <defs>
               <filter
-                id="a"
+                id="contact_us_svg"
                 x="0"
                 y="0"
                 width="30.049"
@@ -868,7 +932,7 @@
               </filter>
             </defs>
             <g data-name="Grupo 39">
-              <g filter="url(#a)" data-name="Grupo 38">
+              <g filter="url(#contact_us_svg)" data-name="Grupo 38">
                 <path
                   data-name="Trazado 24"
                   d="M12.447 16.594L20.641 8.4a1.406 1.406 0 10-1.988-1.988l-8.88 8.88a1.453 1.453 0 000 2.6l8.88 8.88a1.406 1.406 0 101.988-1.988z"
@@ -966,8 +1030,12 @@
 </template>
 
 <script>
+// const $ = require('jquery');
+// window.$ = $;
+
 import axios from "axios";
-import states from "@/utils/states";
+// import states from "@/utils/states";
+import countries from "@/utils/countries";
 import { mapActions, mapState } from "vuex";
 import DEFINE from "../utils/const.js";
 import VueCropper from "vue-cropperjs";
@@ -978,6 +1046,7 @@ import uuid from "uuid/v1";
 import moment from "moment";
 import Vue from "vue";
 import ThumbService from "@/services/ThumbService";
+import { eventBus } from "../main";
 
 export default {
   components: {
@@ -997,7 +1066,8 @@ export default {
       feedbackText: "",
       feedbackStdText: "",
       cmsContentDetails: {},
-      states,
+      // states,
+      countries,
       previewProfile: null,
       imgSrc: null,
       updatedImageFile: null,
@@ -1009,13 +1079,26 @@ export default {
       isLoading: false,
       profileFileName: null,
       profileNameObject: {},
-      profileThumbnail: {}
+      profileThumbnail: {},
+      user_placeholder : DEFINE.role_placeholder,
+      loading_placeholder : DEFINE.loading_placeholder
     };
   },
   async mounted() {
+    const tab = this.$route.query.tab;
+    if (tab && tab != "") {
+      this.manageSelectedTab(tab);
+    }
     this.getUserData();
   },
-  async created() {},
+  async created() {
+    eventBus.$on("settingNavViewChange", value => {
+      this.hideMenuInfo = value;
+      if(!this.hideMenuInfo) {
+        this.$router.push(this.$route.path);      
+      }      
+    });
+  },
   watch: {
     tabSelected: {
       immediate: true,
@@ -1040,6 +1123,12 @@ export default {
             break;
         }
       }
+    },
+    '$route.query'() {
+        const tab = this.$route.query.tab;
+        if (tab && tab != "") {
+          this.manageSelectedTab(tab);
+        }
     }
   },
   computed: {
@@ -1047,6 +1136,37 @@ export default {
   },
   methods: {
     ...mapActions("profile", ["fetch"]),
+    manageSelectedTab(tab) {
+      this.$toasted.clear();
+      const isPrimeUser = this.user && this.user.is_premium ? true : false;
+      if (
+        !isPrimeUser &&
+        (tab == "instantFeedback" ||
+          tab == "marketplace" ||
+          tab == "notifications")
+      ) {
+        if(this.user.is_invited){
+          this.$toasted.info(DEFINE.no_plan_sub_user_subscirbed_error);
+        } else {
+          this.$toasted.info(DEFINE.no_plan_subscirbed_error, {
+            action: {
+              text: 'Subscribe',
+              onClick: (e, toastObject) => {
+                this.$router.push({ name: 'my.settings', query: { tab: "subscription" } });
+              }
+            }
+          });
+        }
+      } else {
+        this.tabSelected = tab;
+        this.hideMenuInfo = true;
+        if (this.tabSelected == "instantFeedback") {
+          this.showFeedBackOptionMenu = true;
+        } else if (this.tabSelected == "subscription") {
+          eventBus.$emit("settingNavViewChange", this.hideMenuInfo);
+        }
+      }
+    },
     async updateFeedBackTxt(type) {
       try {
         let res = await axios.post(`/t/instantfeedbacks/changeDefault`, {
@@ -1076,6 +1196,7 @@ export default {
       this.form.agency_name = this.user.details.agency_name;
       this.form.gender = this.user.details.gender;
       this.form.state = this.user.details.state;
+      this.form.country = this.user.details.country;
       this.form.location = "12,33334 - 23,00000";
       this.form.image = this.user.image.url;
       this.form.thumbnailImage = this.user.image.thumbnail;
@@ -1131,14 +1252,14 @@ export default {
             : null;
           this.form.file_name = this.profileNameObject.name;
         }
-
-        if (this.form.birth) {
-          this.form.birth = moment(this.form.birth).format("YYYY-MM-DD");
+        const param = JSON.parse(JSON.stringify(this.form));
+        if (param.birth) {
+          param.birth = moment(param.birth).format("YYYY-MM-DD");
         }
 
         let action = await axios.put(
           `/t/users/update/${this.user.id}`,
-          this.form
+          param
         );
         this.isLoading = false;
         this.$toasted.success("The user data has updated successfully.");

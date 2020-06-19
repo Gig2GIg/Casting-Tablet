@@ -18,22 +18,27 @@
     <div class="w-7/12 text-center">News & Updates</div>
     <div class="flex items-center border-l border-white text-white ml-auto cursor-pointer">
       <span class="mx-4">
-        {{user.details.first_name}} {{user.details.last_name}}
+        {{ user.details && user.details.first_name ? user.details.first_name + ' ' + user.details.last_name:"" }}
       </span>
       <!-- <i class="material-icons mr-4">
         keyboard_arrow_down
       </i>-->
-      <img        
-        :src="user.image.thumbnail ? user.image.thumbnail : user.image.url"
-        class="w-12 img-h48 object-cover"
-        alt="Avatar"
-      >
+      <div v-lazy-container="{ selector: 'img' }" >
+        <img
+            
+            :data-loading="loading_placeholder" :data-error="user_placeholder"
+            :data-src="user.image.thumbnail ? user.image.thumbnail : user.image.url"
+            class="w-12 img-h48 object-cover"
+            alt="Avatar"
+        />
+      </div>
     </div>
   </nav>
 </template> 
 <script>
 import { mapActions, mapState, mapGetters } from 'vuex';
 import axios from 'axios';
+import DEFINE from '@/utils/const.js';
 
 export default {
   data() {
@@ -42,7 +47,9 @@ export default {
       invitation:{
         adding:false,
         code:'',
-      }
+      },
+      user_placeholder : DEFINE.role_placeholder,
+      loading_placeholder : DEFINE.loading_placeholder
     };
   },
   computed:{

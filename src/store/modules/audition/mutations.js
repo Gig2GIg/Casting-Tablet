@@ -15,7 +15,7 @@ export default {
   },
 
   [types.FETCH_UPCOMING_AUDITIONS_FAILURE](state) {
-    state.upcoming = {};
+    state.upcoming = [];
   },
 
   [types.FETCH_PASSED_AUDITIONS_SUCCESS](state, passed) {
@@ -23,7 +23,7 @@ export default {
   },
 
   [types.FETCH_PASSED_AUDITIONS_FAILURE](state) {
-    state.passed = {};
+    state.passed = [];
   },
 
   [types.FETCH_USER_LIST_AUDITION_SUCCESS](state, userList) {

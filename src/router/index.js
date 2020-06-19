@@ -2,7 +2,7 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import store from '@/store';
 import routes from './routes';
-
+import DEFINE from './../utils/const';
 Vue.use(VueRouter);
 
 const router = new VueRouter({
@@ -25,6 +25,7 @@ const router = new VueRouter({
 
     // Wait for the out transition to complete (if necessary)
     router.app.$root.$once('triggerScroll', () => {
+      console.log("router triggerScroll")
       router.app.$nextTick(() => resolve(position));
     });
   }),
@@ -32,14 +33,21 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
+  // console.log("to", to)
+  // console.log("from", from)
   const isPublic = to.matched.some(record => record.meta.public);
   const onlyWhenLoggedOut = to.matched.some(record => record.meta.onlyWhenLoggedOut);
   const allowBoth = to.matched.some(record => record.meta.allowBoth);
-  
-  if(allowBoth){
+  const isPrimeModule = to.matched.some(record => record.meta.isPrimeModule);
+  // console.log("isPrimeModule", isPrimeModule)
+
+
+  if (allowBoth) {
     return next();
   }
   const loggedIn = store.getters['auth/isAuthenticated'];
+  const currentUser = store.getters['profile/currentUser'];
+  // console.log("router currentUser", currentUser)
 
   if (!isPublic && !onlyWhenLoggedOut && !loggedIn) {
     return next({
@@ -51,6 +59,29 @@ router.beforeEach((to, from, next) => {
   // Do not allow user to visit login page or register page if they are logged in
   if (loggedIn && onlyWhenLoggedOut) {
     return next({ name: 'auditions' });
+  }
+
+  if (loggedIn && isPrimeModule && (!currentUser || !currentUser.is_premium || currentUser.is_premium === 0)) {
+    Vue.toasted.clear();
+    if(currentUser.is_invited){
+      Vue.toasted.info(DEFINE.no_plan_sub_user_subscirbed_error);
+    } else {
+      Vue.toasted.info(DEFINE.no_plan_subscirbed_error, {
+        action: {
+          text: 'Subscribe',
+          onClick: (e, toastObject) => {
+            return next({ name: 'my.settings', query: { tab: "subscription" } });
+          }
+        }
+      });
+    }
+    
+    if (from.name) {
+      return next({ name: from.name });
+    } else {
+      return next({ name: 'my.settings' });
+    }
+
   }
 
   return next();

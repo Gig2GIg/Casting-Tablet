@@ -6,11 +6,18 @@
       :on-cancel="onCancel"
       :is-full-page="fullPage"
     ></loading>
-    <p class="text-2xl" v-if="selectedPlan">Create Your Account</p>
-    <!-- <PlanDetails v-if="!selectedPlan" :from="'signup'" @select_plan="handleSelectPlan" /> -->
-    <form      
+    <p class="text-2xl" v-if="selectedPlan && step !== 3">Create Your Account</p>
+    <p class="text-2xl" v-if="step === 3">Payment Details</p>
+    <PlanDetails
+      v-if="!selectedPlan"
+      :from="'signup'"
+      @select_plan="handleSelectPlan"
+      @child_loder="handleChildLoader"
+    />
+    <form
+      v-else
       class="w-full max-w-xs mt-16"
-      @submit.prevent="step === 3 ? handleRegister() : nextStep()"
+      @submit.prevent="step === 4 ? handleRegister() : nextStep()"
     >
       <template v-if="step === 1">
         <base-input
@@ -61,118 +68,7 @@
           autocomplete="false"
         />
       </template>
-      <!-- <template v-else-if="step === 2">
-        <base-input
-          key="name_on_card-input"
-          v-model="form.name_on_card"
-          v-validate="'required|max:255'"
-          name="name_on_card"
-          placeholder="Name on Card"
-          :message="errors.first('name_on_card')"
-          data-vv-as="name on card"
-        />
-        <base-input
-          key="card_number-input"
-          v-model="form.card_number"
-          v-validate="'required'"
-          name="card_number"
-          placeholder="Card Number"
-          :type="'stripe_element'"
-          :stripe_cardformat="'formatCardNumber'"
-          :message="errors.first('card_number')"
-          data-vv-as="card number"
-        />
-        <base-input
-          key="card_expiry-input"
-          v-model="form.card_expiry"
-          v-validate="'required'"
-          name="card_expiry"
-          placeholder="Card Expiry"
-          type="month"
-          :stripe_cardformat="'formatCardExpiry'"
-          :message="errors.first('card_expiry')"
-          data-vv-as="card expiry"
-        />
-        <base-input
-          key="card_cvc-input"
-          v-model="form.card_cvc"
-          v-validate="'required'"
-          name="card_cvc"
-          placeholder="CSV"
-          :type="'stripe_element'"
-          :stripe_cardformat="'formatCardCVC'"
-          :message="errors.first('card_cvc')"
-          data-vv-as="csv"
-        />
-      </template> -->
       <template v-else-if="step === 2">
-        <base-input
-          key="address1-input"
-          v-model="form.address1"
-          v-validate="'required|max:255'"
-          name="address1"
-          placeholder="Address Line 1"
-          :message="errors.first('address')"
-        />
-        <base-input
-          key="address2-input"
-          v-model="form.address2"
-          v-validate="'required|max:255'"
-          name="address2"
-          placeholder="Address Line 2"
-          :message="errors.first('address2')"
-        />
-
-        <base-input
-          key="city-input"
-          v-model="form.city"
-          v-validate="'required|max:255'"
-          name="city"
-          placeholder="City"
-          :message="errors.first('city')"
-        />
-
-        <div class="flex items-start w-full">
-          <base-select
-            key="state-input"
-            v-model="form.state"
-            v-validate="'required'"
-            name="state"
-            class="w-2/5"
-            placeholder="State"
-            :message="errors.first('state')"
-          >
-            <option
-              v-for="state in states"
-              :key="state.value"
-              :value="state.value"
-            >{{ state.label }}</option>
-          </base-select>
-          <base-input
-            key="zip-input"
-            v-model="form.zip"
-            v-validate="'required|integer|max:5'"
-            v-mask="'#####'"
-            name="zip"
-            class="w-3/5 ml-4"
-            placeholder="Zip"
-            :message="errors.first('zip')"
-          />
-        </div>
-
-        <!-- <base-input
-          key="birth-input"
-          v-model="form.birth"
-          v-validate="'required'"
-          name="birth"
-          type="date"
-          placeholder="Birth Date"
-          :message="errors.first('birth')"
-          data-vv-as="birth date"
-        />-->
-      </template>
-
-      <template v-else>
         <div
           v-if="!preview"
           class="flex items-center rounded-full bg-white h-32 w-32 mx-auto mb-6 cursor-pointer"
@@ -222,8 +118,133 @@
           <option value="other">Other</option>
         </base-select>
       </template>
+      <template v-else-if="step === 3">
+        <base-input
+          key="name_on_card-input"
+          v-model="form.name_on_card"
+          v-validate="'required|max:255'"
+          name="name_on_card"
+          placeholder="Name on Card"
+          :message="errors.first('name_on_card')"
+          data-vv-as="name on card"
+        />
+        <base-input
+          key="card_number-input"
+          v-model="form.card_number"
+          v-validate="'required'"
+          name="card_number"
+          placeholder="Card Number"
+          :type="'stripe_element'"
+          :stripe_cardformat="'formatCardNumber'"
+          :message="errors.first('card_number')"
+          data-vv-as="card number"
+        />
+        <base-input
+          key="card_expiry-input"
+          v-model="form.card_expiry"
+          v-validate="'required'"
+          name="card_expiry"
+          class="month-picker"
+          placeholder="Card Expiry"
+          type="month"
+          :stripe_cardformat="'formatCardExpiry'"
+          :message="errors.first('card_expiry')"
+          data-vv-as="card expiry"
+        />
+        <base-input
+          key="card_cvc-input"
+          v-model="form.card_cvc"
+          v-validate="'required'"
+          name="card_cvc"
+          placeholder="CVC"
+          :type="'stripe_element'"
+          :stripe_cardformat="'formatCardCVC'"
+          :message="errors.first('card_cvc')"
+          data-vv-as="cvc"
+        />
+      </template>
+      <template v-else>
+        <!-- <base-input
+          key="address1-input"
+          v-model="form.address1"
+          v-validate="'required|max:255'"
+          name="address1"
+          placeholder="Address Line 1"
+          :message="errors.first('address')"
+        />
+        <base-input
+          key="address2-input"
+          v-model="form.address2"
+          v-validate="'required|max:255'"
+          name="address2"
+          placeholder="Address Line 2"
+          :message="errors.first('address2')"
+        />
 
-      <base-button class="mt-16" type="submit" expanded>Next</base-button>
+        <base-input
+          key="city-input"
+          v-model="form.city"
+          v-validate="'required|max:255'"
+          name="city"
+          placeholder="City"
+          :message="errors.first('city')"
+        />-->
+
+        <!-- <div class="flex items-start w-full">
+          <base-select
+            key="state-input"
+            v-model="form.state"
+            v-validate="'required'"
+            name="state"
+            class="w-2/5"
+            placeholder="State"
+            :message="errors.first('state')"
+          >
+            <option
+              v-for="state in states"
+              :key="state.value"
+              :value="state.value"
+            >{{ state.label }}</option>
+          </base-select>
+          <base-input
+            key="zip-input"
+            v-model="form.zip"
+            v-validate="'required|integer|max:5'"
+            v-mask="'#####'"
+            name="zip"
+            class="w-3/5 ml-4"
+            placeholder="Zip"
+            :message="errors.first('zip')"
+          />
+        </div>-->
+        <base-select
+          key="country-input"
+          v-model="form.country"
+          v-validate="'required'"
+          name="country"
+          placeholder="Country"
+          :message="errors.first('country')"
+        >
+          <option
+            v-for="country in countries"
+            :key="country.id"
+            :value="country.id"
+          >{{ country.name }}</option>
+        </base-select>
+
+        <base-input
+          key="birth-input"
+          v-model="form.birth"
+          name="birth"
+          type="date"
+          :max-date="new Date(new Date().getFullYear() - 18, new Date().getMonth(), new Date().getDate())"
+          placeholder="Birth Date"
+          :message="errors.first('birth')"
+          data-vv-as="birth date"
+        />
+      </template>
+
+      <base-button class="mt-16" type="submit" expanded>{{ step === 4 ? 'Get Started' : 'Next' }}</base-button>
     </form>
     <modal
       class="flex flex-col w-full items-center my-info-mdel"
@@ -269,7 +290,8 @@
 <script>
 import Vue from "vue";
 import AuthService from "@/services/AuthService";
-import states from "@/utils/states";
+// import states from "@/utils/states";
+import countries from "@/utils/countries";
 import DEFINE from "../../utils/const.js";
 import { mapActions } from "vuex";
 // Import component
@@ -288,6 +310,8 @@ import ThumbService from "@/services/ThumbService";
 import PlanDetails from "../../components/shared/PlanDetails";
 import moment from "moment";
 import TokenService from "../../services/core/TokenService";
+import { eventBus } from "../../main";
+import payment from "@/utils/jquery.payment.js";
 
 export default {
   components: {
@@ -298,11 +322,12 @@ export default {
   data() {
     return {
       form: {},
-      step: 1,
+      step: 0,
       isLoading: false,
       fullPage: true,
       preview: null,
-      states,
+      // states,
+      countries,
       imgSrc: null,
       updatedImageFile: null,
       updatedImageBlob: null,
@@ -314,14 +339,40 @@ export default {
       profileNameObject: {},
       profileThumbnail: {},
       selectedPlan: null,
-      minmonthdate: moment()
+      minmonthdate: moment(),
+      isSignUpDone: false,
+      logingResult: null
     };
+  },
+  created() {
+    eventBus.$emit("signupNext", this.step);
+    eventBus.$on("signupBack", value => {
+      if (value === 0) {
+        this.selectedPlan = null;
+        this.step = value;
+      } else {
+        this.step = value;
+      }
+    });
   },
   methods: {
     ...mapActions("auth", ["login"]),
-    async nextStep() {
+    ...mapActions("profile", ["fetch"]),
+    async nextStep() {      
       if (await this.$validator.validateAll()) {
+        if(this.step == 3) {
+          this.$toasted.clear();
+          if(!payment.validateCardNumber(this.form.card_number)){
+            this.$toasted.error("Please enter valid card number!");
+            return;
+          }
+          if(!payment.validateCardCVC(this.form.card_cvc)){
+            this.$toasted.error("Please enter valid CVC!");
+            return;
+          }
+        }
         this.step += 1;
+        eventBus.$emit("signupNext", this.step);
       }
     },
 
@@ -362,47 +413,66 @@ export default {
     },
 
     async handleRegister() {
+      this.$toasted.clear();
+
       try {
         if (this.isLoading || !(await this.$validator.validateAll())) {
           return;
         }
-
-        if (this.updatedImageBlob && this.updatedImageFile) {
-          this.updatedImageBlob.name = this.updatedImageFile.name;
-          this.form.image = this.updatedImageBlob;
-          this.form.profileThumbnail = this.profileThumbnail;
-          this.form.profileNameObject = this.profileNameObject;
-        } else {
-          this.form.image = null;
-        }
-        // Validate image
-        if (!this.form.image) {
-          this.$toasted.error("The image field is required.");
-          return;
-        }
-
-        // Validate location
-        // if (!this.form.location) {
-        //   this.$toasted.error('The location selected is invalid.');
-        //   return;
-        // }
-
-        this.isLoading = true;
+   
+        
         let data = JSON.parse(JSON.stringify(this.form));
-        this.form.address = `${this.form.address1} ${this.form.address2}`;
-        console.log("handleRegister -> this.form", this.form);
-        delete this.form.address1;
-        delete this.form.address2;
-        await AuthService.register(this.form);
-        await this.login({
+        if (!this.isSignUpDone) {
+          if (this.updatedImageBlob && this.updatedImageFile) {
+            this.updatedImageBlob.name = this.updatedImageFile.name;
+            this.form.image = this.updatedImageBlob;
+            this.form.profileThumbnail = this.profileThumbnail;
+            this.form.profileNameObject = this.profileNameObject;
+          } else {
+            this.form.image = null;
+          }
+          // Validate image
+          if (!this.form.image) {
+            this.$toasted.error("The image field is required.");
+            return;
+          }
+
+          // Validate location
+          // if (!this.form.location) {
+          //   this.$toasted.error('The location selected is invalid.');
+          //   return;
+          // }
+
+          this.isLoading = true;
+          // this.form.address = `${this.form.address1} ${this.form.address2}`;
+          console.log("handleRegister -> this.form", this.form);
+          // delete this.form.address1;
+          // delete this.form.address2;
+          await AuthService.register(this.form);
+          this.isSignUpDone = true;
+        }
+        this.logingResult = await this.login({
           email: this.form.email,
           password: this.form.password,
           type: DEFINE.caster_type
         });
 
         // start : create subscription plan
-        // await this.subscribePlan(data);
+        const Request = {
+          name_on_card: data.name_on_card,
+          exp_year: moment(data.card_expiry).format("YYYY"),
+          exp_month: moment(data.card_expiry).format("MM"),
+          number: data.card_number.replace(/\s/g, ""),
+          cvc: data.card_cvc,
+          user_id: TokenService.getUserId(),
+          stripe_plan_id: this.selectedPlan.stripe_plan,
+          stripe_plan_name: this.selectedPlan.name,
+          plan_id: this.selectedPlan.id
+        };
+
+        await axios.post(`/t/users/subscribe`, Request);
         // end : create subscription plan
+        await this.fetch();
 
         if (firebase.messaging.isSupported()) {
           await this.askForPermissionToReceiveNotifications();
@@ -417,7 +487,7 @@ export default {
         this.onRegisterSuccessRedirect();
       } catch (e) {
         console.log("handleRegister -> e", e);
-        console.log("TCL: handleLogin -> e.response", e.response);
+        console.log("TCL: handleRegister -> e.response", e.response);
         if (e.code && e.code == DEFINE.firebase_permission_error.code) {
           this.updateDeviceToken("");
           this.onRegisterSuccessRedirect();
@@ -456,23 +526,13 @@ export default {
         `/t/notification-send-pushkey?pushkey=${device_token}&device_id=${userAgentId}&device_type=web`
       );
     },
-    async subscribePlan(data) {
-      const Request = {
-        exp_year: moment(data.card_expiry).format("YYYY"),
-        exp_month: moment(data.card_expiry).format("MM"),
-        number: data.card_number,
-        cvc: data.card_cvc,
-        user_id: TokenService.getUserId(),
-        stripe_plan_id: this.selectedPlan.id,
-        stripe_plan_name: this.selectedPlan.name
-      };
-      const {
-        result: { result }
-      } = await axios.post(`/t/users/subscribe`, data);
-    },
     onRegisterSuccessRedirect() {
       // Redirect the user to the page he first tried to visit or to the home view
-      this.$router.push({ name: "tour" });
+      // this.$router.push({ name: "tour" });
+      this.$router.push({
+        name: "invite_user",
+        params: { type: btoa("signup") }
+      });
     },
     onCancel() {
       console.log("User cancelled the loader.");
@@ -583,12 +643,16 @@ export default {
       this.setUserData();
     },
     handleSelectPlan(selectedPlan) {
-      console.log("handleSelectPlan -> selectedPlan", selectedPlan);
       if (selectedPlan) {
+        this.step += 1;
         this.selectedPlan = selectedPlan;
+        eventBus.$emit("signupNext", this.step);
       } else {
         this.selectedPlan = null;
       }
+    },
+    handleChildLoader(value) {
+      this.isLoading = value;
     }
   }
 };
@@ -669,4 +733,28 @@ textarea {
 .credit-card-inputs.complete {
   border: 2px solid green;
 }
+
+/*start: Month picker css */
+.month-picker .month-year-display {
+  background-color: #ffffff;
+}
+.month-picker .month-year-display .picker .flexbox div {
+  color: #ffffff;
+}
+.vue-monthly-picker .picker .flexbox div {
+  color: #000000;
+  font-weight: 600;
+}
+.vue-monthly-picker .date-popover {
+  border-radius: 15px !important;
+}
+.vue-monthly-picker .picker .monthItem .item.active:hover {
+  background-color: transparent !important;
+  background-image: linear-gradient(#4d2545, #782541) !important;
+  color: #ffffff !important;
+}
+.vue-monthly-picker .picker .monthItem .item.deactive {
+  color: #999 !important;
+}
+/*end: Month picker css */
 </style>

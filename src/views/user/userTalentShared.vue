@@ -6,7 +6,7 @@
   <multipane class="custom-resizer h-full " layout="vertical">
     <div class="flex p-5" :style="isShowAuditionVideo? { minWidth: '75%', width: '75%', maxWidth: '100%' } : { minWidth: '75%', width: '100%', maxWidth: '100%' }">
       <div class="flex flex-wrap justify-center content-start w-1/2 shadow-2xl rounded-lg">
-          <div class="h-56 w-full bg-cover rounded-t-lg" :style="{ backgroundImage: 'url(' + tuser.image.url + ')' }">
+          <div class="w-full bg-cover rounded-t-lg user-profile width-fix" :style="{ backgroundImage: 'url(' + tuser.image.url + ')' }">
           </div>
           <p class="text-purple text-xl font-bold mt-4 text-center w-full">{{tuser.details ? `${tuser.details.first_name} ${tuser.details.last_name}` : ''}}</p>
           <p class="text-purple text-m font-bold mt-2 text-center w-full">{{tuser.details ? tuser.details.city : ''}}</p>
@@ -722,5 +722,13 @@ ul.submanu-content > li > a {
 .image-border {
   border-bottom-left-radius: 10px;
   border-top-left-radius: 10px;
+}
+
+.user-profile {
+   background-position: center;
+}
+
+.user-profile.width-fix{
+  padding-top:100%;
 }
 </style>

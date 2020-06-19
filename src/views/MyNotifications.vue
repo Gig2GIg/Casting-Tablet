@@ -127,8 +127,8 @@
 </template>
 
 <script>
-const $ = require("jquery");
-window.$ = $;
+// const $ = require("jquery");
+// window.$ = $;
 import axios from "axios";
 import {
     mapActions,

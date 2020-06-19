@@ -1,11 +1,11 @@
 <template>
 <div>
-  <div class="container text-purple pl-6 py-8 h-84">
+  <div class="container text-purple pl-8 pr-8 py-8 h-84">
     <p class="w-full text-3xl">
       Upcoming
     </p>
-    <div class="flex flex-wrap items-center justify-center w-full h-84" v-if="upcoming == ''">
-      <p class="text-purple font-bold tracking-wide text-lg">No auditions found</p>
+    <div class="flex flex-wrap items-center justify-center w-full h-84" v-if="!upcoming || upcoming.length == 0">
+      <p class="text-purple font-bold tracking-wide text-lg">There are no upcoming auditions</p>
     </div>
     <!-- :paginationPosition="bottom-overlay" -->
     <carousel
@@ -23,7 +23,7 @@
         <card-item
           :title="data.title"
           :date="data.online == 1 ? '' : data.date"
-          :contributor="data.user_id == userId  ? false : true"
+          :contributor="(data.user_id == userId || data.admin_id == userId)  ? false : true"
           :image="data.cover_thumbnail ? data.cover_thumbnail : data.cover"
           :imagealt="data.cover_name ? data.cover_name : ''"
           actionable
@@ -67,7 +67,7 @@ export default {
 </script>
 <style>
 .carousel-slider-width{
-  width: 96% !important;
+  width: 100% !important;
 }
 @media (min-width: 1280px){
   .container {

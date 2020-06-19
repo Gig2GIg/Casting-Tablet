@@ -2,18 +2,28 @@ const DEFINE = {
     caster_type : 1,
     qr_code_walkin: "/images/qr_codes/qr@3x.png",
     role_placeholder: "/images/roles.png",
+    loading_placeholder: "/images/Loadingsome.gif",
     set_pass_code_key : 'checkin_set_pass_code',
     set_monitor_pass_code_key : 'monitor_set_pass_code',
     contact_us : "support@gig2gig.com",
     // CHAT_PEFIX : process.env.CHAT_PREFIX,
     CHAT_PEFIX : "STAGING_",
+    account_email : "accounts@gig2gig.com",    
+    common_error_message : 'Oops! something went to wrong!',
+    no_plan_subscirbed_error : "You don't have any subscription to access this feature.",
+    no_plan_sub_user_subscirbed_error : "You don't have any subscription to access this feature, please contact admin.",
     thumbSize :{
         defaultWidth : 200,
         defaultHeight : 200,
         videoThumbWidth : 200,
         imageThumbWidth : 250,
+        coverImageThumbWidth : 200,
         docImageThumbWidth : 200,
         roleImageThumbWidth : 150
+    },
+    cover_image : {
+        min_width : 350,
+        min_height : 350
     },
     google : {
         key: "AIzaSyCBwvwOsPR82AjeUx5o3FUvr4syuoNFrLI", // old one => AIzaSyCNwa9Hpkf463makeiBW_vSMH2Y0sY23q0

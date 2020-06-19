@@ -2,6 +2,7 @@ import Cookies from 'js-cookie';
 
 const USER_KEY = 'user';
 const TOKEN_KEY = 'token';
+const USER_DETAILS_KEY = 'user_data';
 const EXPIRATION_DAYS = 365;
 
 export default {
@@ -34,10 +35,30 @@ export default {
   },
 
   /**
+   * Set user data in cookies.
+   *
+   * @param {object} token
+   */
+  async setUserData(user_data) {
+    await Cookies.set(USER_DETAILS_KEY, btoa(JSON.stringify(user_data)), { expires: EXPIRATION_DAYS });
+  },
+
+  /**
+   * Get user data from cookie.
+   *
+   * @returns {object|null}
+   */
+  getUserData() {
+    const data = Cookies.get(USER_DETAILS_KEY);
+    return data ? JSON.parse(atob(data)) : null;
+  },
+
+  /**
    * Remove token from cookies.
    */
   removeToken() {
     Cookies.remove(USER_KEY);
     Cookies.remove(TOKEN_KEY);
+    Cookies.remove(USER_DETAILS_KEY);
   },
 };

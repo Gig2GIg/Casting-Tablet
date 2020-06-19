@@ -156,5 +156,51 @@ body, html {
   align-items: flex-start;  
   padding: 20px;
 }
+.month-picker .vue-monthly-picker .month-year-display.text-black.placeholder {
+  color: #4D2545 !important;
+}
+.plan-list-carousel .VueCarousel-navigation-button { 
+    color: #ffffff !important;
+    position: static !important;
+    outline: none !important;
+    font-size: 22px !important;
+}
+.plan-list-carousel .VueCarousel-navigation{
+  margin-top: 40px !important;
+}
+.plan-list-carousel .custom-plan-blank{
+  min-height: 115px;
+}
+.plan-list-carousel .VueCarousel-navigation-prev {
+    transform: rotate(180deg) translate(32px, 21px) !important;
+    margin-right: 60px !important;
+}
+.plan-list-carousel .VueCarousel-navigation-next{
+  position: relative !important;
+  margin-left: 60px !important;
+}
+ .slide-info{font-size: 14px;
+    position: absolute;
+    left: -160px;
+    top: 15px;
+    white-space: nowrap;
+    color: #ffffff !important;
+    font-weight: bold;}
 
+.plan-list-carousel .VueCarousel-navigation--disabled {
+  opacity:1 !important;
+  color:rgba(255,255,255,0.5) !important;
+}
+.plan-list-carousel .VueCarousel-navigation--disabled span{
+  color:rgba(255,255,255,1);
+}
+
+.invite-block-hieght ::-webkit-input-placeholder {color: #D6D6D6 !important; opacity: 1; }
+.invite-block-hieght ::-moz-placeholder {color: #D6D6D6 !important; opacity: 1; }
+.invite-block-hieght :-ms-input-placeholder {color: #D6D6D6 !important; opacity: 1; }
+.invite-block-hieght :-moz-placeholder {color: #D6D6D6 !important; opacity: 1; }
+
+.plan-list-carousel .VueCarousel-inner {
+  height: calc(100% - 1.25rem) !important;
+}
 </style>

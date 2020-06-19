@@ -13,6 +13,14 @@ export default {
     }
   },
 
+  async removeProfile({ commit }) {
+    await commit(types.FETCH_PROFILE_SUCCESS, {});
+  },
+
+  async setProfile({ commit }, data) {
+    await commit(types.FETCH_PROFILE_SUCCESS, data);
+  },
+
   async fetchData({ commit }, id) {
     try {
       const { data: { data } } = await axios.get(`/t/auditions/profile/user/${id}`);
@@ -48,7 +56,7 @@ export default {
       commit(types.FETCH_MY_CALENDAR_FAILURE);
     }
   },
-  
+
   async fetchContract({ commit }, id) {
     try {
       const { data: { data } } = await axios.get(`t/performers/contracts?user=${id}`);
