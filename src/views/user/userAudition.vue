@@ -515,75 +515,58 @@
       </div>
       <multipane-resizer class="mt-0.1 bg-purple full-height"></multipane-resizer>
       <div class="pane relative" :style="{ flexGrow: 1 }">
-        <div v-if="isChatView" class="absolute">
-          <div class="absolute flex flex-wrap w-full justify-center align-content-start minh-100vh">
-            <div class="container flex w-full mt-2">
-              <div class="container flex w-full mt-2">
-                <div class="custom-side-back rounded-lg bg-white chat-side-min-width">
-                  <div class="flex content-around w-100 items-center relative cmb-10">
-                    <img
-                      src="/images/icons/left_arrow.png"
-                      class="absolute left-0 cursor-pointer"
-                      @click="chatToDetails"
-                    />
-                    <h1 class="text-purple text-lg font-bold">Audition Chat</h1>
-                  </div>
+        <div v-if="isChatView" class="custom-side-back chat-side-min-width">
+          <div class="chat-head">
+            <!-- <img
+              src="/images/icons/left_arrow.png"
+              class="absolute left-0 cursor-pointer"
+              @click="chatToDetails"
+            /> -->
+            <h1>Audition Chat</h1>
+          </div>
 
-                  <!-- Message List start from here -->
-                  <div
-                    class="mt-5 w-full rounded-lg bg-gray"
-                    v-for="messageData of messageList"
-                    :key="messageData.id"
-                  >
-                    <div class="flex w-70 pt-2 ml-2">
-                      <div class="flex justify-center content-center flex-wrap w-10/11 h-full">
-                        <img v-lazy="messageData.sender && messageData.sender.image ? messageData.sender.image.url : ''" alt="Icon" class="rounded-full h-10" />
-                      </div>
-                      <div class="flex content-left items-left relative w-70 h-10 mp-box">
-                        <span
-                          class="text-left cus-spn-cls text-purple font-bold text-sm w-10/11"
-                        >
-                        {{ messageData.sender && messageData.sender.details ? messageData.sender.details.first_name +' '+ messageData.sender.details.last_name : ''}}</span>
-                        <span
-                          class="text-left text-purple w-70 text-sm"
-                        >
-                        {{ chatTimeFormat(messageData.createDate) | chatDateTime}}
-                        </span>
-                      </div>
-                    </div>
-                    <div class="flex w-70 pt-2 ml-2">
-                      <div class="flex justify-center content-center flex-wrap w-10/11 h-full"></div>
-                      <div class="flex justify-left w-70 ml-5">
-                        <span class="cus-spn-cls text-purple w-full text-sm">{{messageData.message}}</span>
-                      </div>
-                    </div>
-                  </div>                  
-                  <div class="mt-5 w-full rounded-lg bg-gray">
-                    <div class="flex w-70 pt-2">
-                      <div class="flex justify-center content-center flex-wrap w-full h-full">
-                        <div class="flex flex-wrap justify-center w-3/4">                        
-                          <input
-                            v-model="chatMessage"
-                            name="chat_message"
-                            class="w-full px-2"
-                            type="text"
-                            placeholder="Write Something..."
-                            @keyup.enter="sendMessage()"
-                            :custom-classes="['border-2', 'border-purple']"
-                          />
-                        </div>
-                        <div class="flex flex-wrap justify-center content-center w-1/4">
-                          <img
-                            src="/images/icons/send_purple.png"
-                            class="cursor-pointer h-10"
-                            @click="sendMessage()"
-                          />
-                        </div>
-                      </div>
-                    </div>
+          <!-- Message List start from here -->
+          <div class="p-4">
+            <div
+              class="w-full mb-5"
+              v-for="messageData of messageList"
+              :key="messageData.id"
+              >
+              <div class="flex content-center">
+                <div class="flex h-8 chat-image">
+                  <img v-lazy="messageData.sender && messageData.sender.image ? messageData.sender.image.url : ''" alt="Icon" class="rounded-full h-8" />
+                </div>
+                <div class="ml-3 col-chat">
+                  <div class="flex w-full mp-box">
+                    <span
+                      class="font-bold text-sm"
+                    >
+                      {{ messageData.sender && messageData.sender.details ? messageData.sender.details.first_name +' '+ messageData.sender.details.last_name : ''}}</span>
+                    <span
+                      class="text-sm"
+                      >
+                    {{ chatTimeFormat(messageData.createDate) | chatDateTime}}
+                    </span>
                   </div>
+                  <span class="w-full text-sm">{{messageData.message}}</span>
                 </div>
               </div>
+            </div>                  
+            <div class="flex w-full">
+              <input
+                v-model="chatMessage"
+                name="chat_message"
+                class="w-full p-2 chat-input"
+                type="text"
+                placeholder="Write Something..."
+                @keyup.enter="sendMessage()"
+                :custom-classes="['border-2', 'border-purple']"
+              />
+              <img
+                src="/images/icons/send_purple.png"
+                class="cursor-pointer h-8 chat-btn"
+                @click="sendMessage()"
+              />
             </div>
           </div>
         </div>
@@ -1726,12 +1709,9 @@ export default {
 }
 .custom-resizer > .pane {
   text-align: left;
-  padding: 15px;
+  padding: 30px 15px;
   overflow: hidden;
-  background: #eee;
-  border: 1px solid #ccc;
-}
-.custom-resizer > .pane ~ .pane {
+  background: #F0F0F0;
 }
 .custom-resizer > .multipane-resizer {
   margin: 0;
@@ -1825,11 +1805,37 @@ nav {
 }
 
 .chat-side-min-width{
-  min-width: 350px;
+  width: 100%;
+  border-radius: 4px;
+  background-color: rgba(255,255,255, 0.4);
 }
 
 .back-mrg-l {
   padding-left: 22px !important;
 }
-
+.chat-head {
+  background-color: #BFBFBF;
+  border-radius: 4px 4px 0px 0px;
+  height: 45px;
+  line-height: 45px;
+  padding: 0px 15px;
+}
+.chat-image {
+  min-width: 2rem;
+}
+.col-chat {
+  width: 100%;
+  max-width: calc(100% - 2.75rem);
+}
+.chat-btn {
+  position: absolute;
+  top: 0px;
+  right: 5px;
+  bottom: 0px;
+  margin: auto;
+}
+.chat-input {
+  padding-right: 40px !important;
+  border-radius: 20px;
+}
 </style>
