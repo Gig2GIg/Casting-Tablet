@@ -233,7 +233,7 @@
           >{{ country.name }}</option>
         </base-select>
 
-        <base-input
+        <!-- <base-input
           key="birth-input"
           v-model="form.birth"
           name="birth"
@@ -242,7 +242,7 @@
           placeholder="Birth Date"
           :message="errors.first('birth')"
           data-vv-as="birth date"
-        />
+        /> -->
       </template>
 
       <base-button class="mt-16" type="submit" expanded>{{ step === 4 ? 'Get Started' : 'Next' }}</base-button>

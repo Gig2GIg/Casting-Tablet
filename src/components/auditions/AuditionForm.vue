@@ -161,7 +161,7 @@
     <!-- Cover image crop modal -->
     <modal class="flex flex-col w-full items-center my-info-mdel modal-height-96 crop-modal" :width="600" name="modal_crop_image">
       <div class="content my-info-content flex-col" ng-if="imgSrc">
-          <div class="w-full content-center justify-center text-center mb-2">
+          <div class="w-full content-center justify-center text-center mrtop-minus-crop">
             <span class="text-center text-sm w-full text-purple">Please upload an image, which has a size of more than width {{cover_image_size.min_width}} X height {{cover_image_size.min_height}}.</span>
           </div>
         <section class="cropper-area">
@@ -1399,6 +1399,9 @@ textarea {
 .modal-height-90 .v--modal-box.v--modal {
   height: 90vh !important;
   top: 5vh !important;
+}
+.mrtop-minus-crop {
+ margin-top: -8px !important;
 }
 </style>
 
