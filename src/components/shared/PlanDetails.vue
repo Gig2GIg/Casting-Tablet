@@ -33,7 +33,7 @@
                   $
                   <b class="f-28">{{plan.amount}}</b>
                 </span>
-                <span class="letter-space text-black">per {{plan.type}}</span>
+                <span class="letter-space text-black">per {{plan.type == 'daily' ? 'day' : 'month'}}</span>
               </div>
               <div class="custom-plan-blank" v-else>
                 <span class="font-medium text-xl text-black">                  

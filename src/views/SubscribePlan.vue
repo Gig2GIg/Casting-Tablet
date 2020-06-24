@@ -31,6 +31,7 @@
         placeholder="Card Number"
         :type="'stripe_element'"
         :stripe_cardformat="'formatCardNumber'"
+        :maxlength='23'
         :message="errors.first('card_number')"
         data-vv-as="card number"
       />
@@ -41,8 +42,7 @@
         name="card_expiry"
         class="month-picker"
         placeholder="Card Expiry"
-        type="month"
-        :stripe_cardformat="'formatCardExpiry'"
+        type="month"        
         :message="errors.first('card_expiry')"
         data-vv-as="card expiry"
       />
@@ -54,6 +54,7 @@
         placeholder="CVC"
         :type="'stripe_element'"
         :stripe_cardformat="'formatCardCVC'"
+        :maxlength='3'
         :message="errors.first('card_cvc')"
         data-vv-as="cvc"
       />

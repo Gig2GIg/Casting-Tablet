@@ -25,6 +25,7 @@
         placeholder="Card Number"
         :type="'stripe_element'"
         :stripe_cardformat="'formatCardNumber'"
+        :maxlength='23'
         :message="errors.first('card_number')"
         data-vv-as="card number"
       />
@@ -36,7 +37,6 @@
         class="month-picker"
         placeholder="Card Expiry"
         type="month"
-        :stripe_cardformat="'formatCardExpiry'"
         :message="errors.first('card_expiry')"
         data-vv-as="card expiry"
       />
@@ -49,6 +49,7 @@
         :type="'stripe_element'"
         :stripe_cardformat="'formatCardCVC'"
         :message="errors.first('card_cvc')"
+        :maxlength='3'
         data-vv-as="cvc"
       />
 
@@ -89,12 +90,13 @@ export default {
   methods: {
     async handleChangePlan() {     
       this.$toasted.clear();
+      console.log("handleChangePlan -> this.form", this.form)
       try {
         if (this.isLoading || !(await this.$validator.validateAll())) {
           return;
         }
 
-        if(!payment.validateCardNumber(this.form.card_number)){
+        if(!payment.validateCardNumber(this.form.card_number)){          
           this.$toasted.error("Please enter valid card number!");
           return;
         }  

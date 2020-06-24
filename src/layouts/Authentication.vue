@@ -35,13 +35,13 @@ export default {
   created() {
     eventBus.$on("signupNext", value => {
       this.signupStep = value;
-      console.log("created -> signupNext this.signupStep ", this.signupStep);
+      // console.log("created -> signupNext this.signupStep ", this.signupStep);
     });
   },
   methods: {
     back() {
       this.signupStep -= 1;
-      console.log("back -> this.signupStep", this.signupStep);
+      // console.log("back -> this.signupStep", this.signupStep);
       if (this.signupStep < 0) {
         this.$router.push({ name: "login" });
       } else {

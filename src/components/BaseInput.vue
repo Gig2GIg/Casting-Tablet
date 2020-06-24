@@ -120,7 +120,9 @@
         :class="[{ 'pr-8': type === 'location' }, ...customClasses]"
         :value="value"
         v-bind="$attrs"
-        @input="$emit('input', $event.target.value)"
+        :maxlength="maxlength"        
+        @blur="$emit('input', $event.target.value)"
+        @change="$emit('input', $event.target.value)"
         v-cardformat:[stripe_cardformat]        
       />
       <input
@@ -157,7 +159,8 @@ import Vue from "vue";
 import VueTimepicker from "vue2-timepicker";
 import "vue2-timepicker/dist/VueTimepicker.css";
 import VueCardFormat from "vue-credit-card-validation";
-Vue.use(VueCardFormat);
+// VueCardFormat['cvcLength'] = [3]; 
+Vue.use(VueCardFormat, {cvcLength : 3});
 import VueMonthlyPicker from 'vue-monthly-picker'
 import moment from "moment";
 
@@ -217,6 +220,10 @@ export default {
     time: {
       type: Boolean,
       default: false
+    },
+    maxlength : {
+      type: Number,
+      default: null
     }
   },
   mounted() {
