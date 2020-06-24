@@ -62,7 +62,7 @@ export default {
   
 };
 </script>
-<style>
+<style scoped>
 .tour-img {
     max-height: calc(100vh - 25%);
     display: block;
