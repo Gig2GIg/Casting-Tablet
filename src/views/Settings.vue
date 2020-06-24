@@ -33,7 +33,7 @@
           @click="manageSelectedTab('myinfo')"
         >
           <div class="w-10/12">
-            <p class="font-bold">My info</p>
+            <p class="font-bold">My Info</p>
           </div>
           <div class="w-2/12">
             <svg xmlns="http://www.w3.org/2000/svg" width="10.926" height="19.213">

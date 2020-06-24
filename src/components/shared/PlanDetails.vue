@@ -64,8 +64,8 @@
     </carousel>
     <div class="bottom-text">
       <span class="text-md text-white text-center mt-5 f-14">
-        All subscriptions are billed monthly. if your Talent Database exceeds the number of
-        <br />performers assigned to your account tier. your tier will automatically be upgraded.
+        All subscriptions are billed monthly. If your Talent Database exceeds the number of
+        <br />performers assigned to your account tier, your tier will automatically be upgraded.
       </span>
     </div>
   </div>

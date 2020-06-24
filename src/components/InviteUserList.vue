@@ -108,7 +108,7 @@
           <div
             class="w-full mr-2 text-center"
             v-if="inviteUserList.length == 0"
-          >No invited user found!</div>
+          >You haven't invited any users yet</div>
         </div>
       </div>
     </div>

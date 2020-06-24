@@ -145,7 +145,7 @@ export default {
         await axios.post(`/t/users/subscribe`, Request);
         // end : create subscription plan
         
-        this.$toasted.show("Plan subscribe successfully.");
+        this.$toasted.show("Subscription created successfully");
         this.$router.push({ name: "my.settings" });
 
       } catch (e) {

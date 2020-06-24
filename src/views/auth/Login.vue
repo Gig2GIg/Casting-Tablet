@@ -12,9 +12,9 @@
       <base-input
         v-model="email"
         v-validate="'required|email'"
-        name="user"
-        placeholder="User"
-        :message="errors.first('user')"
+        name="email"
+        placeholder="Email"
+        :message="errors.first('email')"
       />
 
       <base-input
@@ -33,7 +33,7 @@
 
     <router-link :to="{ name: 'register' }" class="mt-16">
       <!-- Create Account -->
-      <span class="text-2lg">Getting started Now!</span>
+      <span class="text-2lg">Get Started Now!</span>
     </router-link>
   </div>
 </template>

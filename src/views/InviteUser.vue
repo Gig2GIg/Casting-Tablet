@@ -31,7 +31,7 @@
                   v-validate="'required|email'"
                   :custom-classes="['border border-b border-gray-300 text-sm']"
                   :name="'email_'+index"
-                  placeholder="Eg. john@yopmail.com"
+                  placeholder="Eg. john@mail.com"
                   :message="errors.first('email_'+index)"
                   data-vv-as="email"
                 />

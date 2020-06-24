@@ -92,7 +92,7 @@
         v-else-if="type === 'month'"
         :value="value"
         :min="minmonthdate"
-        :dateFormat="'YY/MM'"
+        :dateFormat="'MM / YY'"
         :clearOption="false"
         :selectedBackgroundColor="'#007bff'"
         :placeHolder="$attrs.placeholder ? $attrs.placeholder : ''"
