@@ -203,4 +203,15 @@ body, html {
 .plan-list-carousel .VueCarousel-inner {
   height: calc(100% - 1.25rem) !important;
 }
+.modal-height-96 {
+  height: 100vh !important;
+  top: 0 !important;
+}
+.modal-height-96 .v--modal-box.v--modal {
+  height: 96vh !important;
+  top: 2vh !important;
+}
+.crop-modal .content{
+  padding : 0.75rem 15px 0.5rem !important; 
+}
 </style>
