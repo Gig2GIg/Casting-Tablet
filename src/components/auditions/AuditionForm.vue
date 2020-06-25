@@ -1,503 +1,176 @@
 <!-- eslint-disable max-len -->
 <template>
-    <form class="relative" data-vv-scope="create" @submit.prevent="handleCreate">
-        <loading
-                :active.sync="isLoading"
-                :can-cancel="true"
-                :on-cancel="onCancel"
-                :is-full-page="fullPage"
-        ></loading>
-        <div class="flex flex-row-reverse mb-4 px-2">
-            <div
-                    class="relative flex items-center text-purple cursor-pointer"
-                    @click="manageInvitations = !manageInvitations"
-            >
-                <img src="/images/icons/person.png" alt="Icon" class="h-4 mr-2"/>
-                <span class="select-none">Add Invitations</span>
+  <form class="relative" data-vv-scope="create" @submit.prevent="handleCreate">
+    <loading :active.sync="isLoading" :can-cancel="true" :on-cancel="onCancel" :is-full-page="fullPage"></loading>
+    <div class="flex flex-row-reverse mb-4 px-2">
+      <div class="relative flex items-center text-purple cursor-pointer" @click="manageInvitations = !manageInvitations">
+        <img src="/images/icons/person.png" alt="Icon" class="h-4 mr-2" />
+        <span class="select-none">Add Invitations</span>
+      </div>
+    </div>
+    <form v-if="manageInvitations" class="bubble absolute right-0 w-64 -mr-12 z-50 p-3" data-vv-scope="invitation" @submit.prevent="handleInvitation">
+      <base-button v-if="!invitation.adding" class="pt-2 pb-2" border-classes="rounded-full border border-purple" color="bg-white" :hover="['bg-purple', 'text-white']" text="text-purple" expanded @click="invitation.adding = true">Add Contributor
+      </base-button>
+      <div v-show="invitation.adding">
+        <base-input v-model="invitation.email" v-validate="'required|email'" name="email" placeholder="Email" :custom-classes="['border', 'border-purple']" :message="errors.first('invitation.email')" expanded />
+        <base-button class="pt-2 pb-2" type="submit" expanded>Send</base-button>
+      </div>
+      <contributor-item v-for="contributor in form.contributors" :key="contributor.email" class="-mx-3" :contributor="contributor" @destroy="handleDeleteContributor" />
+    </form>
+    <div class="flex">
+      <base-input v-model="form.title" v-validate="'required|max:255'" name="title" class="w-2/3 px-2" placeholder="Title" :custom-classes="['border', 'border-purple']" :message="errors.first('create.title')" expanded />
+      <base-checkbox class="w-1/3 px-2" v-model="form.online" :custom-classes="['border', 'border-purple']" name="title" :value="form.online">Online Submission
+      </base-checkbox>
+    </div>
+    <p class="px-5 text-purple font-medium py-8 pb-6">Production Information</p>
+    <div class="flex w-full">
+      <base-input v-model="form.description" v-validate="'required|max:500'" name="description" class="px-2 py-2 w-2/3" type="textarea" placeholder="Description" :custom-classes="['border', 'border-purple', 'mt-0', { 'mb-0': !errors.has('create.description') }]" :message="errors.first('create.description')" />
+      <div class="px-2 py-2 w-1/3">
+        <div class="flex rounded-large h-full items-center border border-purple cursor-pointer justify-center bg-grey-500 overflow-hidden" @click="$refs.coverFile.click()">
+          <div v-if="!previewCover" class="flex flex-col py-5 flex-no-wrap justify-between">
+            <p class="pb-6 text-purple">Cover photo</p>
+            <img src="/images/icons/file.svg" />
+          </div>
+          <img v-else :src="previewCover" alt="Cover" class="w-full h-full object-cover" />
+        </div>
+        <input ref="coverFile" accept=".png, .jpg, .jpeg" type="file" hidden @change="handleCoverFile" />
+      </div>
+    </div>
+    <div class="flex w-full">
+      <!-- v-validate="'required|max:500'" -->
+      <base-input v-model="form.personal_information" name="personal_information" class="px-2 w-full h-40" type="textarea" placeholder="Personal Information" :custom-classes="['border', 'border-purple']" :message="errors.first('create.personal_information')" data-vv-as="Personal information" />
+    </div>
+    <div class="flex w-full">
+      <!-- v-validate="'required|max:500'" -->
+      <base-input v-model="form.additional_info" v-validate="'max:500'" name="additional_info" class="px-2 w-full h-40" type="textarea" placeholder="Additional Information" :custom-classes="['border', 'border-purple']" :message="errors.first('create.additional_info')" data-vv-as="additional information" />
+    </div>
+    <p class="px-5 text-purple font-medium py-8 pb-6">Contract Information</p>
+    <div class="flex w-full">
+      <!-- v-validate="'required'" -->
+      <base-input v-model="form.dates[0].from" name="contract_start_date" class="w-1/2 px-2" type="date" :mindate="new Date()" placeholder="Contract Start Date" :custom-classes="['border', 'border-purple']" :message="errors.first('create.contract_start_date')" data-vv-as="start date" @input="handleChangeDates('contract')" />
+      <!-- v-validate="'required'" -->
+      <base-input v-model="form.dates[0].to" name="contract_end_date" class="w-1/2 px-2" type="date" :mindate="form.dates[0].from" placeholder="Contract End Date" :custom-classes="['border', 'border-purple']" :message="errors.first('create.contract_end_date')" data-vv-as="end date" @input="handleChangeDates('contract')" />
+    </div>
+    <div class="flex w-full">
+      <!-- v-validate="'required'" -->
+      <base-input v-model="form.dates[1].from" :mindate="new Date()" name="rehearsal_start_date" class="w-1/2 px-2" type="date" placeholder="Rehearsal Start Date" :custom-classes="['border', 'border-purple']" :message="errors.first('create.rehearsal_start_date')" data-vv-as="start date" @input="handleChangeDates('rehearsal')" />
+      <!-- v-validate="'required'" -->
+      <base-input v-model="form.dates[1].to" :mindate="form.dates[1].from" name="rehearsal_end_date" class="w-1/2 px-2" type="date" placeholder="Rehearsal End Date" :custom-classes="['border', 'border-purple']" :message="errors.first('create.rehearsal_end_date')" data-vv-as="end date" @input="handleChangeDates('rehearsal')" />
+    </div>
+    <p class="px-5 text-purple font-medium py-8 pb-6">Contact Information</p>
+    <div class="flex">
+      <base-input v-model="form.url" v-validate="'url'" name="url" class="w-full px-2" placeholder="Audition URL" :custom-classes="['border', 'border-purple']" :message="errors.first('create.url')" />
+    </div>
+    <div class="flex">
+      <base-input v-model="form.phone" v-validate="'max:255'" name="phone" v-mask="'(###) ###-####'" class="w-1/3 px-2" placeholder="Phone" :custom-classes="['border', 'border-purple']" :message="errors.first('create.phone')" />
+      <base-input v-model="form.email" v-validate="'email'" name="email" class="w-1/3 px-2" placeholder="Email" :custom-classes="['border', 'border-purple']" :message="errors.first('create.email')" />
+      <base-input v-model="form.other_info" v-validate="'max:255'" name="other_info" class="w-1/3 px-2" placeholder="Other" :custom-classes="['border', 'border-purple']" :message="errors.first('create.other_info')" data-vv-as="other information" />
+    </div>
+    <template v-if="!form.online">
+      <p class="px-5 text-purple font-medium py-8 pb-6">Rounds</p>
+      <div class="flex">
+        <round-dropdown-form class="text-red-600 bg-white" :options="rounds" :selected="selected_round" :setround.sync="set_selected_round" @setOption="methodToRunOnSelect" v-on:updateOption="methodToRunOnSelect" :placeholder="'Select a Round'"></round-dropdown-form>
+      </div>
+      <div v-for="(round,index) of rounds" :key="index">
+        <div class="flex" v-if="selected_round.index == index">
+          <base-input v-validate="'required'" name="date" v-model="round.date" :mindate="new Date()" class="w-1/3 px-2" type="date" placeholder="Date" :custom-classes="['border', 'border-purple']" :message="errors.first('create.date')" />
+          <template>
+            <div class="relative h-12 my-2">
+              <custom-time-picker class="timepicker-custom cus-des-timepicker px-2 text-left" :onTimeChange="timeChangeHandler" :defaultFocused="false" v-validate="'required'" :message="errors.first('create.time')" placeholder="Time" :HOURS="24" colorPalette="dark" theme="material" :defaultHour="round.defaultHour" :defaultMinute="round.defaultMinute">
+              </custom-time-picker>
             </div>
+          </template>
+          <button class="w-1/3 location-icon border border-purple rounded-full h-full py-3 px-6 h-12 my-2 text-left text-purple" v-validate="'required'" :custom-classes="['border', 'border-purple']" name="location" type="button" :message="errors.first('create.location')" @click="openLocationModel()">{{round.isSelected ? 'Location Saved' : 'Location'}}
+          </button>
         </div>
-
-        <form
-                v-if="manageInvitations"
-                class="bubble absolute right-0 w-64 -mr-12 z-50 p-3"
-                data-vv-scope="invitation"
-                @submit.prevent="handleInvitation"
-        >
-            <base-button
-                    v-if="!invitation.adding"
-                    class="pt-2 pb-2"
-                    border-classes="rounded-full border border-purple"
-                    color="bg-white"
-                    :hover="['bg-purple', 'text-white']"
-                    text="text-purple"
-                    expanded
-                    @click="invitation.adding = true"
-            >Add Contributor
-            </base-button>
-
-            <div v-show="invitation.adding">
-                <base-input
-                        v-model="invitation.email"
-                        v-validate="'required|email'"
-                        name="email"
-                        placeholder="Email"
-                        :custom-classes="['border', 'border-purple']"
-                        :message="errors.first('invitation.email')"
-                        expanded
-                />
-
-                <base-button class="pt-2 pb-2" type="submit" expanded>Send</base-button>
+        <div class="flex" v-if="selected_round.index == index">
+          <button class="w-1/3 mt-4 py-3 px-4 border-4 border-purple text-purple rounded-full focus:outline-none" type="button" @click.prevent="round.manageAppointments = true">Manage Appointments
+          </button>
+          <AppointmentsModal v-if="round.manageAppointments" :data="round.appointment" @change="round.appointment = $event" @close="round.manageAppointments = false" />
+        </div>
+      </div>
+      <modal width="80%" height="500px" :adaptive="true" name="location_model">
+        <template>
+          <div class="close-btn search wrap">
+            <div>
+              <label class="search-btn-wrap">
+                <button type="button"><i class="material-icons" @click="closeLocationModel('close')" style="font-size: 35px;">clear</i></button>
+                <gmap-autocomplete class="w-1/3 px-2 border border-purple rounded-full h-full location-input" @place_changed="setPlace">
+                </gmap-autocomplete>
+                <button type="button" class="w-1/4 w-2btn border border-purple bg-purple-gradient text-white rounded-full h-full" @click="closeLocationModel('save')">Save
+                </button>
+              </label>
+              <br />
             </div>
-
-            <contributor-item
-                    v-for="contributor in form.contributors"
-                    :key="contributor.email"
-                    class="-mx-3"
-                    :contributor="contributor"
-                    @destroy="handleDeleteContributor"                    
-            />
-        </form>
-
-        <div class="flex">
-            <base-input
-                    v-model="form.title"
-                    v-validate="'required|max:255'"
-                    name="title"
-                    class="w-2/3 px-2"
-                    placeholder="Title"
-                    :custom-classes="['border', 'border-purple']"
-                    :message="errors.first('create.title')"
-                    expanded
-            />
-            <base-checkbox
-                    class="w-1/3 px-2"
-                    v-model="form.online"
-                    :custom-classes="['border', 'border-purple']"
-                    name="title"
-                    :value="form.online"
-            >Online Submission
-            </base-checkbox>
-        </div>        
-
-        <p class="px-5 text-purple font-medium py-8 pb-6">Production Information</p>
-        <div class="flex w-full">
-            <base-input
-                    v-model="form.description"
-                    v-validate="'required|max:500'"
-                    name="description"
-                    class="px-2 py-2 w-2/3"
-                    type="textarea"
-                    placeholder="Description"
-                    :custom-classes="['border', 'border-purple', 'mt-0', { 'mb-0': !errors.has('create.description') }]"
-                    :message="errors.first('create.description')"
-            />
-            <div class="px-2 py-2 w-1/3">
-                <div
-                        class="flex rounded-large h-full items-center border border-purple cursor-pointer justify-center bg-grey-500 overflow-hidden"
-                        @click="$refs.coverFile.click()"
-                >
-                    <div v-if="!previewCover" class="flex flex-col py-5 flex-no-wrap justify-between">
-                        <p class="pb-6 text-purple">Cover photo</p>
-                        <img src="/images/icons/file.svg"/>
-                    </div>
-
-                    <img v-else :src="previewCover" alt="Cover" class="w-full h-full object-cover"/>
-                </div>
-
-                <input
-                        ref="coverFile"
-                        accept=".png, .jpg, .jpeg"
-                        type="file"
-                        hidden
-                        @change="handleCoverFile"
-                />
-            </div>
-        </div>
-        <div class="flex w-full">
-            <!-- v-validate="'required|max:500'" -->
-            <base-input
-                    v-model="form.personal_information"
-                    name="personal_information"
-                    class="px-2 w-full h-40"
-                    type="textarea"
-                    placeholder="Personal Information"
-                    :custom-classes="['border', 'border-purple']"
-                    :message="errors.first('create.personal_information')"
-                    data-vv-as="Personal information"
-            />
-        </div>
-        <div class="flex w-full">
-            <!-- v-validate="'required|max:500'" -->
-            <base-input
-                    v-model="form.additional_info"
-                    v-validate="'max:500'"
-                    name="additional_info"
-                    class="px-2 w-full h-40"
-                    type="textarea"
-                    placeholder="Additional Information"
-                    :custom-classes="['border', 'border-purple']"
-                    :message="errors.first('create.additional_info')"
-                    data-vv-as="additional information"
-            />
-        </div>
-
-        <p class="px-5 text-purple font-medium py-8 pb-6">Contract Information</p>
-        <div class="flex w-full">
-            <!-- v-validate="'required'" -->
-            <base-input
-                    v-model="form.dates[0].from"
-                    name="contract_start_date"
-                    class="w-1/2 px-2"
-                    type="date"
-                    :mindate="new Date()"
-                    placeholder="Contract Start Date"
-                    :custom-classes="['border', 'border-purple']"
-                    :message="errors.first('create.contract_start_date')"
-                    data-vv-as="start date"
-                    @input="handleChangeDates('contract')"
-            />
-            <!-- v-validate="'required'" -->
-            <base-input
-                    v-model="form.dates[0].to"
-                    name="contract_end_date"
-                    class="w-1/2 px-2"
-                    type="date"
-                    :mindate="form.dates[0].from"
-                    placeholder="Contract End Date"
-                    :custom-classes="['border', 'border-purple']"
-                    :message="errors.first('create.contract_end_date')"
-                    data-vv-as="end date"
-                    @input="handleChangeDates('contract')"
-            />
-        </div>
-        <div class="flex w-full">
-            <!-- v-validate="'required'" -->
-            <base-input
-                    v-model="form.dates[1].from"
-                    :mindate="new Date()"
-                    name="rehearsal_start_date"
-                    class="w-1/2 px-2"
-                    type="date"
-                    placeholder="Rehearsal Start Date"
-                    :custom-classes="['border', 'border-purple']"
-                    :message="errors.first('create.rehearsal_start_date')"
-                    data-vv-as="start date"
-                    @input="handleChangeDates('rehearsal')"
-            />
-            <!-- v-validate="'required'" -->
-            <base-input
-                    v-model="form.dates[1].to"
-                    :mindate="form.dates[1].from"
-                    name="rehearsal_end_date"
-                    class="w-1/2 px-2"
-                    type="date"
-                    placeholder="Rehearsal End Date"
-                    :custom-classes="['border', 'border-purple']"
-                    :message="errors.first('create.rehearsal_end_date')"
-                    data-vv-as="end date"
-                    @input="handleChangeDates('rehearsal')"
-            />
-        </div>
-
-        <p class="px-5 text-purple font-medium py-8 pb-6">Contact Information</p>
-        <div class="flex">
-            <base-input
-                    v-model="form.url"
-                    v-validate="'url'"
-                    name="url"
-                    class="w-full px-2"
-                    placeholder="Audition URL"
-                    :custom-classes="['border', 'border-purple']"
-                    :message="errors.first('create.url')"
-            />
-        </div>
-        <div class="flex">
-            <base-input
-                    v-model="form.phone"
-                    v-validate="'max:255'"
-                    name="phone"
-                    v-mask="'(###) ###-####'"
-                    class="w-1/3 px-2"
-                    placeholder="Phone"
-                    :custom-classes="['border', 'border-purple']"
-                    :message="errors.first('create.phone')"
-            />
-            <base-input
-                    v-model="form.email"
-                    v-validate="'email'"
-                    name="email"
-                    class="w-1/3 px-2"
-                    placeholder="Email"
-                    :custom-classes="['border', 'border-purple']"
-                    :message="errors.first('create.email')"
-            />
-            <base-input
-                    v-model="form.other_info"
-                    v-validate="'max:255'"
-                    name="other_info"
-                    class="w-1/3 px-2"
-                    placeholder="Other"
-                    :custom-classes="['border', 'border-purple']"
-                    :message="errors.first('create.other_info')"
-                    data-vv-as="other information"
-            />
-        </div>
-        <template v-if="!form.online">
-            <p class="px-5 text-purple font-medium py-8 pb-6">Rounds</p>
-
-            <div class="flex">
-                <round-dropdown-form
-                class="text-red-600 bg-white"
-                :options="rounds"
-                :selected="selected_round"
-                :setround.sync="set_selected_round"
-                @setOption="methodToRunOnSelect"
-                v-on:updateOption="methodToRunOnSelect"
-                :placeholder="'Select a Round'"
-                ></round-dropdown-form>
-                
-            </div>
-            <div v-for="(round,index) of rounds" :key="index">
-                <div class="flex" v-if="selected_round.index == index">
-                    <base-input                    
-                        v-validate="'required'"
-                        name="date"
-                        v-model="round.date"
-                        :mindate="new Date()"
-                        class="w-1/3 px-2"
-                        type="date"
-                        placeholder="Date"
-                        :custom-classes="['border', 'border-purple']"
-                        :message="errors.first('create.date')"
-                    />
-
-                    <template>
-                        <div class="relative h-12 my-2">
-                            <custom-time-picker                    
-                                class="timepicker-custom cus-des-timepicker px-2 text-left"
-                                :onTimeChange="timeChangeHandler"
-                                :defaultFocused="false"
-                                v-validate="'required'"
-                                :message="errors.first('create.time')"
-                                placeholder="Time"
-                                :HOURS="24"
-                                colorPalette="dark"
-                                theme="material"
-                                :defaultHour="round.defaultHour"
-                                :defaultMinute="round.defaultMinute"
-                            >
-                            </custom-time-picker>
-                        </div>
-                    </template> 
-
-                        <button class="w-1/3 location-icon border border-purple rounded-full h-full py-3 px-6 h-12 my-2 text-left text-purple"
-                            v-validate="'required'"
-                            :custom-classes="['border', 'border-purple']"
-                            name="location"
-                            type="button"
-                            :message="errors.first('create.location')"
-                            @click="openLocationModel()"
-                    >{{round.isSelected ? 'Location Saved' : 'Location'}}
-                    </button>
-                </div>
-                <div class="flex" v-if="selected_round.index == index">
-                    <button 
-                            class="w-1/3 mt-4 py-3 px-4 border-4 border-purple text-purple rounded-full focus:outline-none"
-                            type="button"
-                            @click.prevent="round.manageAppointments = true"
-                    >Manage Appointments
-                    </button>    
-                    <AppointmentsModal
-                            v-if="round.manageAppointments"
-                            :data="round.appointment"
-                            @change="round.appointment = $event"
-                            @close="round.manageAppointments = false"
-                    />            
-                </div>
-            </div>
-            <modal width="80%" height="500px" :adaptive="true" name="location_model">
-                    <template>
-                        <div class="close-btn search wrap">
-
-                            <div>
-                                <label class="search-btn-wrap">
-                                    <button type="button"><i class="material-icons" @click="closeLocationModel('close')"
-                                                            style="font-size: 35px;">clear</i></button>
-                                    <gmap-autocomplete class="w-1/3 px-2 border border-purple rounded-full h-full location-input" @place_changed="setPlace">
-                                    </gmap-autocomplete>
-                                    <button type="button" class="w-1/4 w-2btn border border-purple bg-purple-gradient text-white rounded-full h-full"
-                                            @click="closeLocationModel('save')">Save
-                                    </button>
-                                </label>
-                                <br/>
-                            </div>
-                            <br>
-                            <gmap-map
-                                    :center="center"
-                                    :zoom="12"
-                                    style="width:100%;  height: 400px;"
-                            >
-                                <gmap-marker
-                                        :key="index"
-                                        v-for="(m, index) in markers"
-                                        :position="m.position"
-                                        @click="center=m.position"
-                                ></gmap-marker>
-                            </gmap-map>
-                        </div>
-                    </template>
-                </modal> 
-            
-            
+            <br>
+            <gmap-map :center="center" :zoom="12" style="width:100%;  height: 400px;">
+              <gmap-marker :key="index" v-for="(m, index) in markers" :position="m.position" @click="center=m.position"></gmap-marker>
+            </gmap-map>
+          </div>
         </template>
-
-        <div class="flex pt-12">
-            <div class="tags w-2/5">
-                <p class="px-4 text-purple py-4">Union Status</p>
-                <div class="flex px-4">
-                    <div
-                            v-for="union in union_status"
-                            :key="union.key"
-                            class="py-2 px-4 border border-purple uppercase mr-2 rounded-full cursor-pointer"
-                            :class="[union.selected ? 'bg-purple text-white' : 'bg-white text-purple']"
-                            @click="setTags($event, 'union_status', false)"
-                    >{{ union.name }}
-                    </div>
-                </div>
-
-                <p class="px-5 text-purple py-4">Contract type</p>
-                <div class="flex px-4">
-                    <div
-                            v-for="contract_type in contract_types"
-                            :key="contract_type.key"
-                            class="py-2 px-4 uppercase border border-orange-500 mr-2 rounded-full cursor-pointer"
-                            :class="[contract_type.selected ? 'bg-orange-500 text-white' : 'bg-white text-orange-500']"
-                            @click="setTags($event, 'contract_types', false)"
-                    >{{ contract_type.name }}
-                    </div>
-                </div>
-                <p class="px-4 text-purple pt-4 pb-2">Production Type</p>
-                <div class="flex flex-wrap px-4">
-                    <div
-                            v-for="production_type in production_types"
-                            :key="production_type.key"
-                            class="py-2 px-4 uppercase border border-pink-800 my-2 mr-2 rounded-full cursor-pointer"
-                            :class="[production_type.selected ? 'bg-pink-800 text-white' : 'bg-white text-pink-800']"
-                            @click="setTags($event, 'production_types', true)"
-                    >{{ production_type.name }}
-                    </div>
-                </div>
-            </div>
-            <div class="managers w-3/5 flex flex-col items-end">            
-
-                <div v-if="!!form.roles.length" class="flex flex-col items-center my-5 w-2/3">
-                    <p class="text-purple text-lg mb-4">Roles</p>
-
-                    <carousel
-                            class="flex-none w-full"
-                            :per-page="innerWidth < 1920 ? 3 : 4"
-                            :pagination-enabled="false"
-                            :navigation-enabled="true"
-                            :navigation-prev-label="'&#x279C;'"
-                            :navigation-next-label="'&#x279C;'"
-                    >
-                        <slide
-                                v-for="(role, index) in form.roles"
-                                :key="index"
-                                :data-index="index"
-                                @slide-click="openRole"
-                                class="py-2 pr-2 cml-6"
-                        >
-                            <div class="flex flex-col items-center cursor-pointer box-shadow">
-                                <div
-                                        class="bg-purple-gradient flex items-center justify-center rounded-full h-12 w-12"
-                                >
-                                    <img
-                                            :src="role && role.preview ? role.preview :imgUrlAlt"
-                                            @error="imgUrlAlt"
-                                            alt="Cover"
-                                            class="w-full h-full object-cover rounded-full"
-                                    />
-                                </div>
-                                <span class="text-purple font-medium mt-2">{{ role.name }}</span>
-                            </div>
-                        </slide>
-                    </carousel>
-                </div>
-
-                <button
-                        class="w-2/3 mt-4 py-3 px-4 border-4 border-purple text-purple rounded-full focus:outline-none"
-                        type="button"
-                        @click.prevent="manageRoles = true"
-                >{{ form.roles.length ? 'Edit' : 'Add' }} Roles
-                </button>
-
-                <div v-if="!!form.media.length" class="flex flex-col items-center my-5 w-2/3">
-                    <p class="text-purple text-lg mb-4">Documents</p>
-
-                    <carousel
-                            class="flex-none w-full"
-                            :per-page="innerWidth < 1920 ? 1 : 2"
-                            :pagination-enabled="false"
-                            :navigation-enabled="true"
-                            :navigation-prev-label="'&#x279C;'"
-                            :navigation-next-label="'&#x279C;'"
-                    >
-                        <slide v-for="(media, index) in form.media" :key="index">
-                            <DocumentItem :media="media" @destroy="handleDeleteDocument" @renamedoc="handleRenameDoc" />
-                        </slide>
-                    </carousel>
-                </div>
-
-                <button
-                        class="w-2/3 py-3 px-4 border-4 border-purple text-purple rounded-full focus:outline-none mb-4"
-                        type="button"
-                        :class="{ 'mt-4': !form.media.length }"
-                        @click="openDocumentOptionModal"
-                >Manage Documents
-                </button>
-
-                <base-button class="mt-auto w-2/3 mb-12" type="submit">Create Audition</base-button>
-            </div>
+      </modal>
+    </template>
+    <div class="flex pt-12">
+      <div class="tags w-2/5">
+        <p class="px-4 text-purple py-4">Union Status</p>
+        <div class="flex px-4">
+          <div v-for="union in union_status" :key="union.key" class="py-2 px-4 border border-purple uppercase mr-2 rounded-full cursor-pointer" :class="[union.selected ? 'bg-purple text-white' : 'bg-white text-purple']" @click="setTags($event, 'union_status', false)">{{ union.name }}
+          </div>
         </div>
-
-      
-        <RolesModal
-                v-if="manageRoles"
-                :data="selectedRole"
-                @save="handleSaveRole"
-                @destroy="handleDeleteRole"
-                @close="manageRoles = false"
-        />
-        <!-- Cover image crop modal -->
-        <modal class="flex flex-col w-full items-center my-info-mdel" :width="600" :height="480" name="modal_crop_image">
-            <div class="w-full content-center justify-center text-center mt-2">
-              <span class="text-center text-md text-purple">Please upload an image, which has a size of more than width {{cover_image_size.min_width}} X height {{cover_image_size.min_height}}.</span>
-            </div>            
-            <div class="content my-info-content" ng-if="imgSrc">
-                <section class="cropper-area">
-                <div class="img-cropper">
-                    <vue-cropper
-                    ref="cropper"
-                    :aspectRatio="1/1"
-                    :initialAspectRatio="1/1"
-                    :src="imgSrc"
-                    preview=".preview"
-                    drag-mode="crop"
-                    :minCropBoxWidth="minHeight"
-                    :minCropBoxHeight="minWidth"
-                    :minContainerWidth="minWidthCropContainer"
-                    :minContainerHeight="minHeightCropContainer"
-                    :minCanvasWidth="minWidth"
-                    :minCanvasHeight="minHeight"
-                    :auto-crop-area="1"
-                    alt="Profile Picture"
-                    :img-style="{ 'width': '400px', 'height': '400px' }"
-                    />
+        <p class="px-5 text-purple py-4">Contract type</p>
+        <div class="flex px-4">
+          <div v-for="contract_type in contract_types" :key="contract_type.key" class="py-2 px-4 uppercase border border-orange-500 mr-2 rounded-full cursor-pointer" :class="[contract_type.selected ? 'bg-orange-500 text-white' : 'bg-white text-orange-500']" @click="setTags($event, 'contract_types', false)">{{ contract_type.name }}
+          </div>
+        </div>
+        <p class="px-4 text-purple pt-4 pb-2">Production Type</p>
+        <div class="flex flex-wrap px-4">
+          <div v-for="production_type in production_types" :key="production_type.key" class="py-2 px-4 uppercase border border-pink-800 my-2 mr-2 rounded-full cursor-pointer" :class="[production_type.selected ? 'bg-pink-800 text-white' : 'bg-white text-pink-800']" @click="setTags($event, 'production_types', true)">{{ production_type.name }}
+          </div>
+        </div>
+      </div>
+      <div class="managers w-3/5 flex flex-col items-end">
+        <div v-if="!!form.roles.length" class="flex flex-col items-center my-5 w-2/3">
+          <p class="text-purple text-lg mb-4">Roles</p>
+          <carousel class="flex-none w-full" :per-page="innerWidth < 1920 ? 3 : 4" :pagination-enabled="false" :navigation-enabled="true" :navigation-prev-label="'&#x279C;'" :navigation-next-label="'&#x279C;'">
+            <slide v-for="(role, index) in form.roles" :key="index" :data-index="index" @slide-click="openRole" class="py-2 pr-2 cml-6">
+              <div class="flex flex-col items-center cursor-pointer box-shadow">
+                <div class="bg-purple-gradient flex items-center justify-center rounded-full h-12 w-12">
+                  <img :src="role && role.preview ? role.preview :imgUrlAlt" @error="imgUrlAlt" alt="Cover" class="w-full h-full object-cover rounded-full" />
                 </div>
-                <div class="actions">            
-                  <a href="#" role="button" @click.prevent="cropSaveImage">Crop & Save</a>
-                    <!-- <a
+                <span class="text-purple font-medium mt-2">{{ role.name }}</span>
+              </div>
+            </slide>
+          </carousel>
+        </div>
+        <button class="w-2/3 mt-4 py-3 px-4 border-4 border-purple text-purple rounded-full focus:outline-none" type="button" @click.prevent="manageRoles = true">{{ form.roles.length ? 'Edit' : 'Add' }} Roles
+        </button>
+        <div v-if="!!form.media.length" class="flex flex-col items-center my-5 w-2/3">
+          <p class="text-purple text-lg mb-4">Documents</p>
+          <carousel class="flex-none w-full" :per-page="innerWidth < 1920 ? 1 : 2" :pagination-enabled="false" :navigation-enabled="true" :navigation-prev-label="'&#x279C;'" :navigation-next-label="'&#x279C;'">
+            <slide v-for="(media, index) in form.media" :key="index">
+              <DocumentItem :media="media" @destroy="handleDeleteDocument" @renamedoc="handleRenameDoc" />
+            </slide>
+          </carousel>
+        </div>
+        <button class="w-2/3 py-3 px-4 border-4 border-purple text-purple rounded-full focus:outline-none mb-4" type="button" :class="{ 'mt-4': !form.media.length }" @click="openDocumentOptionModal">Manage Documents
+        </button>
+        <base-button class="mt-auto w-2/3 mb-12" type="submit">Create Audition</base-button>
+      </div>
+    </div>
+    <RolesModal v-if="manageRoles" :data="selectedRole" @save="handleSaveRole" @destroy="handleDeleteRole" @close="manageRoles = false" />
+    <!-- Cover image crop modal -->
+    <modal class="flex flex-col w-full items-center my-info-mdel modal-height-96 crop-modal" :width="600" name="modal_crop_image">
+      <div class="content my-info-content flex-col" ng-if="imgSrc">
+          <div class="w-full content-center justify-center text-center mrtop-minus-crop">
+            <span class="text-center text-sm w-full text-purple">Please upload an image, which has a size of more than width {{cover_image_size.min_width}} X height {{cover_image_size.min_height}}.</span>
+          </div>
+        <section class="cropper-area">
+          <div class="img-cropper">
+            <vue-cropper ref="cropper" :aspectRatio="1/1" :initialAspectRatio="1/1" :src="imgSrc" preview=".preview" drag-mode="crop" :minCropBoxWidth="minHeight" :minCropBoxHeight="minWidth" :minContainerWidth="minWidthCropContainer" :minContainerHeight="minHeightCropContainer" :minCanvasWidth="minWidth" :minCanvasHeight="minHeight" :auto-crop-area="1" alt="Profile Picture" :img-style="{ 'width': '400px', 'height': '400px' }" />
+          </div>
+          <div class="actions">
+            <a href="#" role="button" @click.prevent="cropSaveImage">Crop & Save</a>
+            <!-- <a
                     href="#"
                     role="button"
                     @click.prevent="cropImage"
@@ -525,25 +198,14 @@
                     >
                     Done
                     </a> -->
-                    <a
-                    href="#"
-                    role="button"
-                    @click.prevent="cropImageCancel"
-                    >
-                    Cancel
-                    </a>
-                </div>
-                <base-input
-                    v-model="coverFileName"
-                    :custom-classes="['border border-b border-gray-300']"
-                    name="cover_file_name"
-                    placeholder="Cover Name"
-                    data-vv-as="cover name"
-                    class="w-8/12"
-                  />
-                
-                </section>
-                <!-- <section class="preview-area">
+            <a href="#" role="button" @click.prevent="cropImageCancel">
+              Cancel
+            </a>
+          </div>
+
+          <base-input v-model="coverFileName" :custom-classes="['border border-b border-gray-300']" name="cover_file_name" placeholder="Cover Name" data-vv-as="cover name" class="w-8/12" />
+        </section>
+        <!-- <section class="preview-area">
                 <p>Image Preview</p>
                 <div class="preview" />
                 <p>Cropped Image</p>
@@ -556,172 +218,95 @@
                     <div v-else class="crop-placeholder" />
                 </div>
                 </section> -->
+      </div>
+    </modal>
+    <modal class="flex flex-col items-center" :width="250" :height="250" name="modal_document_options">
+      <div class="flex flex-col items-center text-purple text-lg mt-5 mb-2">
+        <h1>Select Document</h1>
+      </div>
+      <div class="flex flex-col items-center">
+        <input ref="inputFile" accept="audio/*,video/*,image/*, .pdf" type="file" multiple hidden @change="handleFile" />
+        <button class="w-2/3 py-3 px-4 border-4 border-purple text-purple rounded-full focus:outline-none mb-4" type="button" :class="{ 'mt-4': !form.media.length }" @click="$refs.inputFile.click()">Add Files
+        </button>
+        <button class="w-2/3 py-3 px-4 border-4 border-purple text-purple rounded-full focus:outline-none mb-4" type="button" :class="{ 'mt-4': !form.media.length }" @click="showLinkManageModal">Add Links
+        </button>
+      </div>
+    </modal>
+    <modal class="flex w-full items-center link-modal" :width="500" :height="650" name="modal_document_file_manage" :clickToClose="false">
+      <div class="flex flex-col items-center text-purple text-lg mt-5 mb-2">
+        <h1>Manage Documents Name</h1>
+      </div>
+      <div class="max-link-screen" id="link_container">
+        <div class="mt-5">
+          <div class="flex flex-col w-10/13 px-2 mb-5" v-for="(media, index) in form.media" :key="index">
+            <span class="relative px-2 text-purple"> Document {{(index+1)}} :</span>
+            <div class="relative h-12 w-9/12 my-2">
+              <base-input v-model="media.name" name="media_name[]" class="w-full px-2" placeholder="Name" :custom-classes="['border', 'border-purple']" />
             </div>
-        </modal>
-        <modal class="flex flex-col items-center" :width="250" :height="250" name="modal_document_options">
-            <div class="flex flex-col items-center text-purple text-lg mt-5 mb-2">
-                <h1>Select Document</h1>
-            </div>
-            <div class="flex flex-col items-center">
-                <input
-                            ref="inputFile"
-                            accept="audio/*,video/*,image/*, .pdf"
-                            type="file"
-                            multiple
-                            hidden
-                            @change="handleFile"
-                    />
-
-                    <button
-                            class="w-2/3 py-3 px-4 border-4 border-purple text-purple rounded-full focus:outline-none mb-4"
-                            type="button"
-                            :class="{ 'mt-4': !form.media.length }"
-                            @click="$refs.inputFile.click()"
-                    >Add Files
-                    </button>
-                    <button
-                            class="w-2/3 py-3 px-4 border-4 border-purple text-purple rounded-full focus:outline-none mb-4"
-                            type="button"
-                            :class="{ 'mt-4': !form.media.length }"
-                            @click="showLinkManageModal"
-                    >Add Links
-                    </button>
-            </div>
-        </modal>
-        <modal class="flex w-full items-center link-modal" :width="500" :height="650" name="modal_document_file_manage" :clickToClose="false">                        
-          <div class="flex flex-col items-center text-purple text-lg mt-5 mb-2">
-                <h1>Manage Documents Name</h1>
-            </div>
-            <div class="max-link-screen" id="link_container">            
-                <div class="mt-5">
-                    <div class="flex flex-col w-10/13 px-2 mb-5" v-for="(media, index) in form.media" :key="index">
-                        <span class="relative px-2 text-purple"> Document {{(index+1)}} :</span>
-                        <div class="relative h-12 w-9/12 my-2">
-                            <base-input
-                                v-model="media.name"
-                                name="media_name[]"
-                                class="w-full px-2"
-                                placeholder="Name"
-                                :custom-classes="['border', 'border-purple']"
-                            />
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="actions cus-action-btn">                           
-                <a
-                href="#"
-                role="button"
-                @click.prevent="documentFileManageDone"
-                >
-                Done
-                </a>                
-            </div>
-            
-        </modal>
-        <modal class="flex w-full items-center link-modal" :width="500" :height="650" name="modal_document_link_manage" :clickToClose="false">            
-            <div class="d-flex justify-end text-right top-add-btn" >
-                <a
-                href="#"
-                role="button"
-                @click.prevent="addNewLink"
-                class="text-purple text-mg"
-                >
-                    Add New
-                </a>
-            </div>
-            <div class="max-link-screen" id="link_container">            
-                <div>
-                    <div class="flex flex-col w-10/13 px-2 mb-5" v-for="(dlink, index) in document_links" :key="index">
-                        <div class="relative h-12 w-9/12 my-2">
-                            <base-input
-                                v-model="dlink.name"
-                                name="link_name[]"
-                                class="w-full px-2"
-                                placeholder="Name"
-                                :custom-classes="['border', 'border-purple']"
-                            />
-                        </div>
-                        <div class="relative h-12 w-10/13 my-2">
-                            <div class="input-delete-link">
-                                <base-input
-                                    v-model="dlink.url"
-                                    name="link_url[]"
-                                    class="w-full px-2 w-9/12 cus-input"
-                                    placeholder="URL"
-                                    :custom-classes="['border', 'border-purple']"
-                            />     
-                            <img
-                                src="/images/icons/icon3.png"
-                                alt="Icon"
-                                class="h-8"
-                                @click="removeLink(index)"
-                                v-if="index>0"
-                            />   
-                            </div>                    
-                        </div>
-                        
-                    </div>
-                </div>
-            </div>
-
-            <div class="actions cus-action-btn">            
-                <a
-                href="#"
-                role="button"
-                @click.prevent="linkManageCancel"
-                >
-                Cancel
-                </a>
-                <a
-                href="#"
-                role="button"
-                @click.prevent="linkManageDone"
-                >
-                Done
-                </a>                
-            </div>
-            
-        </modal>
-        <modal class="flex flex-col w-full items-center" :width="450" :height="200" name="rename_file_name" :clickToClose="false">
-            <div class="flex flex-col items-center text-purple text-lg mt-5 mb-2">
-                  <h1>Document Rename</h1>
-            </div>
-            <div class="content my-info-content" >              
-              <section class="image-preview-area">                
-                  <div class="flex justify-center mb-4 items-center px-3 w-full">
-                    <div class="w-full  ml-4 text-purple px-2">
-                        <base-input
-                          v-if="currentDoc && currentDoc.index != null"
-                          v-model="form.media[currentDoc.index].name"
-                          :custom-classes="['border border-b border-gray-300']"
-                          name="file_name"
-                          placeholder="File Name"
-                          data-vv-as="file name"
-                        />
-                    </div>
-                  </div>
-                  <div class="container flex w-full mt-3 cursor-pointer">
-                    <div class="flex w-full text-center justify-center flex-wrap actions">
-                  <a
-                    href="#"
-                    role="button"
-                    @click.prevent="fileRenameDone"
-                  >
-                    Done
-                  </a>
-                </div>
-            </div>
-          </section>
+          </div>
         </div>
-      </modal>
-            
-    </form>
+      </div>
+      <div class="actions cus-action-btn">
+        <a href="#" role="button" @click.prevent="documentFileManageDone">
+          Done
+        </a>
+      </div>
+    </modal>
+    <modal class="flex w-full items-center link-modal" :width="500" :height="650" name="modal_document_link_manage" :clickToClose="false">
+      <div class="d-flex justify-end text-right top-add-btn">
+        <a href="#" role="button" @click.prevent="addNewLink" class="text-purple text-mg">
+          Add New
+        </a>
+      </div>
+      <div class="max-link-screen" id="link_container">
+        <div>
+          <div class="flex flex-col w-10/13 px-2 mb-5" v-for="(dlink, index) in document_links" :key="index">
+            <div class="relative h-12 w-9/12 my-2">
+              <base-input v-model="dlink.name" name="link_name[]" class="w-full px-2" placeholder="Name" :custom-classes="['border', 'border-purple']" />
+            </div>
+            <div class="relative h-12 w-10/13 my-2">
+              <div class="input-delete-link">
+                <base-input v-model="dlink.url" name="link_url[]" class="w-full px-2 w-9/12 cus-input" placeholder="URL" :custom-classes="['border', 'border-purple']" />
+                <img src="/images/icons/icon3.png" alt="Icon" class="h-8" @click="removeLink(index)" v-if="index>0" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="actions cus-action-btn">
+        <a href="#" role="button" @click.prevent="linkManageCancel">
+          Cancel
+        </a>
+        <a href="#" role="button" @click.prevent="linkManageDone">
+          Done
+        </a>
+      </div>
+    </modal>
+    <modal class="flex flex-col w-full items-center" :width="450" :height="200" name="rename_file_name" :clickToClose="false">
+      <div class="flex flex-col items-center text-purple text-lg mt-5 mb-2">
+        <h1>Document Rename</h1>
+      </div>
+      <div class="content my-info-content">
+        <section class="image-preview-area">
+          <div class="flex justify-center mb-4 items-center px-3 w-full">
+            <div class="w-full  ml-4 text-purple px-2">
+              <base-input v-if="currentDoc && currentDoc.index != null" v-model="form.media[currentDoc.index].name" :custom-classes="['border border-b border-gray-300']" name="file_name" placeholder="File Name" data-vv-as="file name" />
+            </div>
+          </div>
+          <div class="container flex w-full mt-3 cursor-pointer">
+            <div class="flex w-full text-center justify-center flex-wrap actions">
+              <a href="#" role="button" @click.prevent="fileRenameDone">
+                Done
+              </a>
+            </div>
+          </div>
+        </section>
+      </div>
+    </modal>
+  </form>
 </template>
-
 <script>
-import Vue from "vue";
+  import Vue from "vue";
 import uuid from "uuid/v1";
 import firebase from "firebase/app";
 import axios from "axios";
@@ -1666,9 +1251,8 @@ export default {
   }  
 };
 </script>
-
 <style scoped>
-.bubble {
+  .bubble {
   background: #fff;
   border-radius: 0.4em;
   box-shadow: 0px 0px 6px #b2b2b2;
@@ -1733,7 +1317,7 @@ export default {
   justify-content: space-between;
 }
 .cropper-area {
-  width: 614px;
+  width: 570px;
 }
 .actions {
   margin-top: 1rem;
@@ -1750,7 +1334,7 @@ export default {
   text-decoration: none;
   border-radius: 3px;
   margin-right: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 }
 textarea {
   width: 100%;
@@ -1807,6 +1391,19 @@ textarea {
   display: flex;
   justify-content: center;
 }
+
+.modal-height-90 {
+  height: 100vh !important;
+  top: 0 !important;
+}
+.modal-height-90 .v--modal-box.v--modal {
+  height: 90vh !important;
+  top: 5vh !important;
+}
+.mrtop-minus-crop {
+ margin-top: -8px !important;
+}
 </style>
 
 
+  

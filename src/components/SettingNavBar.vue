@@ -10,7 +10,7 @@
     </div>
     <div v-else class="cursor-pointer flex content-around w-1/2 items-center relative cmb-10"></div>
 
-    <div class="text-center">{{hideMenuInfo ? 'Subsciption' : 'Settings'}}</div>
+    <div class="text-center">{{hideMenuInfo ? 'Subscription' : 'Settings'}}</div>
 
     <div class="flex items-center border-l border-white text-white ml-auto cursor-pointer">
       <span

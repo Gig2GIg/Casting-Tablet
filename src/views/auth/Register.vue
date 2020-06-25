@@ -136,6 +136,7 @@
           placeholder="Card Number"
           :type="'stripe_element'"
           :stripe_cardformat="'formatCardNumber'"
+          :maxlength='23'
           :message="errors.first('card_number')"
           data-vv-as="card number"
         />
@@ -147,7 +148,6 @@
           class="month-picker"
           placeholder="Card Expiry"
           type="month"
-          :stripe_cardformat="'formatCardExpiry'"
           :message="errors.first('card_expiry')"
           data-vv-as="card expiry"
         />
@@ -159,6 +159,7 @@
           placeholder="CVC"
           :type="'stripe_element'"
           :stripe_cardformat="'formatCardCVC'"
+          :maxlength='3'
           :message="errors.first('card_cvc')"
           data-vv-as="cvc"
         />
@@ -232,7 +233,7 @@
           >{{ country.name }}</option>
         </base-select>
 
-        <base-input
+        <!-- <base-input
           key="birth-input"
           v-model="form.birth"
           name="birth"
@@ -241,7 +242,7 @@
           placeholder="Birth Date"
           :message="errors.first('birth')"
           data-vv-as="birth date"
-        />
+        /> -->
       </template>
 
       <base-button class="mt-16" type="submit" expanded>{{ step === 4 ? 'Get Started' : 'Next' }}</base-button>

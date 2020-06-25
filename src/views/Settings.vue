@@ -33,7 +33,7 @@
           @click="manageSelectedTab('myinfo')"
         >
           <div class="w-10/12">
-            <p class="font-bold">My info</p>
+            <p class="font-bold">My Info</p>
           </div>
           <div class="w-2/12">
             <svg xmlns="http://www.w3.org/2000/svg" width="10.926" height="19.213">
@@ -114,7 +114,7 @@
           </div>
         </div>
         <div
-          class="mt-4 flex flex-wrap py-2 px-4 border-b-2 border-gray-300 mr-2 cursor-pointer font-bold"
+          class="flex flex-wrap py-2 px-4 border-b-2 border-gray-300 mr-2 cursor-pointer font-bold"
           @click="manageSelectedTab('marketplace')"
         >
           <div class="w-10/12">
@@ -135,7 +135,7 @@
           </div>
         </div>
         <div
-          class="mt-4 flex flex-wrap py-2 px-4 border-b-2 border-gray-300 mr-2 cursor-pointer font-bold"
+          class="flex flex-wrap py-2 px-4 border-b-2 border-gray-300 mr-2 cursor-pointer font-bold"
           @click="manageSelectedTab('appinfo')"
         >
           <div class="w-10/12">
@@ -156,7 +156,7 @@
           </div>
         </div>
         <!-- <div
-          class="mt-4 flex flex-wrap py-2 px-4 border-b-2 border-gray-300 mr-2 cursor-pointer font-bold"
+          class="flex flex-wrap py-2 px-4 border-b-2 border-gray-300 mr-2 cursor-pointer font-bold"
           @click="tabSelected = 'faq'; hideMenuInfo = true"
         >
           <div class="w-10/12">
@@ -183,7 +183,7 @@
           </div>
         </div>-->
         <div
-          class="mt-4 flex flex-wrap py-2 px-4 border-b-2 border-gray-300 mr-2 cursor-pointer font-bold"
+          class="flex flex-wrap py-2 px-4 border-b-2 border-gray-300 mr-2 cursor-pointer font-bold"
           @click="manageSelectedTab('termsofuse')"
         >
           <div class="w-10/12">
@@ -204,7 +204,7 @@
           </div>
         </div>
         <div
-          class="mt-4 flex flex-wrap py-2 px-4 border-b-2 border-gray-300 mr-2 cursor-pointer font-bold"
+          class="flex flex-wrap py-2 px-4 border-b-2 border-gray-300 mr-2 cursor-pointer font-bold"
         >
           <div class="w-10/12">
             <a
@@ -230,7 +230,7 @@
           </a>
         </div>
         <div
-          class="mt-4 flex flex-wrap py-2 px-4 border-b-2 border-gray-300 mr-2 cursor-pointer font-bold"
+          class="flex flex-wrap py-2 px-4 border-b-2 border-gray-300 mr-2 cursor-pointer font-bold"
           @click="manageSelectedTab('policy')"
         >
           <div class="w-10/12">
@@ -1614,5 +1614,9 @@ textarea {
 }
 .feedback-option-ml {
   margin-left: 50px !important;
+}
+.tags svg {
+  position: relative;
+  top: 1px;
 }
 </style>
