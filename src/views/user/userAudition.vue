@@ -24,9 +24,8 @@
           >{{file.name}}</p>
         </div>
       </div>
-      <div v-else class="w-610"></div>      
-      <div
-        v-if="audition && audition.appointment_id == this.$route.params.round && audition.status == 1"
+      <div v-else class="w-1/5"></div>      
+      <div        
         class="w-1/8 flex flex-wrap justify-center content-center h-10 border-2 ml-auto border-white rounded-sm cursor-pointer"
         @click="chatManage()"
       >
@@ -553,7 +552,10 @@
                 </div>
               </div>
             </div>                  
-            <div class="flex w-full">
+            <div 
+              v-if="audition && audition.appointment_id == this.$route.params.round && audition.status == 1"
+              class="flex w-full"
+            >
               <input
                 v-model="chatMessage"
                 name="chat_message"
@@ -1598,10 +1600,10 @@ export default {
           await this.getCasterUsers();
         }        
         // const currentChatPath = `${this.chatPrefix}${this.$route.params.audition}`;
-        const currentChatPath = `${this.$route.params.audition}`;
+        const roundChatPath = `${this.$route.params.round}`;
         // console.log("chatManage -> this.auditionChatRef", this.auditionChatRef)
         this.auditionChatRef          
-          .collection(`${currentChatPath}`)
+          .collection(`${roundChatPath}`)
           .orderBy("createDate", "asc")
           .onSnapshot(querySnapshot => {
             querySnapshot.forEach(doc => {
@@ -1694,12 +1696,14 @@ export default {
     async sendMessage() {      
       if (this.chatMessage && this.chatMessage != "") {
         // const currentChatPath = `${this.chatPrefix}${this.$route.params.audition}`;
-        const currentChatPath = `${this.$route.params.audition}`;
+        const roundChatPath = `${this.$route.params.round}`;
         let chatMessageDoc = this.auditionChatRef.collection(
-          currentChatPath
+          roundChatPath
         );
+        const message = this.chatMessage;
+        this.chatMessage = '';
         await chatMessageDoc.add({
-          message: this.chatMessage,
+          message: message,
           sender_id: parseInt(TokenService.getUserId()),
           createDate: new Date(),
           read: false
