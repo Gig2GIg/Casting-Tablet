@@ -12,7 +12,7 @@
       <form @submit.prevent="handleInviteUser()">
         <div class="py-4 px-4 mr-2">
           <div class="flex w-full justify-center text-purple text-xl uppercase">
-            <p>Invite Casting</p>
+            <p>INVITE YOUR CASTING TEAM</p>
           </div>
         </div>
 
