@@ -144,7 +144,7 @@
                 <div
                   v-if="!isRealodTeamFeedback"
                   class="justify-end text-right cursor-pointer mt-2 mr-0 reafresh-spacing"
-                  @click="updateTeamFeedBack"
+                  @click="updateTeamFeedBack(true)"
                 >
                   <img src="/images/icons/reload.png" class="h-5 ml-3" alt="Reload" />
                 </div>
@@ -1119,6 +1119,10 @@ export default {
   },
   async created() {
     await this.initializeChat();
+    // auto refresh feed back
+    setInterval(function () {
+		      this.updateTeamFeedBack(false);
+		 }.bind(this), 5000);
   },
   methods: {
     ...mapActions("user", ["fetch"]),
@@ -1208,8 +1212,8 @@ export default {
         console.log("getCasterUsers -> e", e)        
       }
     },
-    async updateTeamFeedBack(){
-      this.isRealodTeamFeedback = true;
+    async updateTeamFeedBack(loaderView){
+      this.isRealodTeamFeedback = loaderView;
       let data = {
         appointment_id: this.$route.params.round,
         performer: this.$route.params.id
