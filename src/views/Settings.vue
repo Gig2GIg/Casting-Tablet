@@ -581,7 +581,7 @@
                 </base-select>
               </div>
               <div class="w-1/3 ml-4 text-purple px-2">
-                <base-input
+                <!-- <base-input
                   id="birth"
                   key="birth-input"
                   v-model="form.birth"
@@ -592,7 +592,7 @@
                   placeholder="Birth Date"
                   :message="errors.first('birth')"
                   data-vv-as="birth date"
-                />
+                /> -->
               </div>
             </div>
           </div>
