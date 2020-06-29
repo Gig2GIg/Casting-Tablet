@@ -192,7 +192,15 @@
                           v-if="data.work && data.work != ''"
                           class="py-1 px-5 border text-xs border-purple button-detail text-white font-bold uppercase mr-2 rounded-full cursor-pointer"
                         >{{ data.work }}</div>
-                      </div>
+                        <p
+                          class="text-purple text-xs justify-center w-16 font-bold tracking-tighter flex-1 w-full"
+                          v-if="data.rating && data.rating != ''"
+                        >Rating</p>
+                        <div
+                          v-if="data.rating && data.rating != ''"
+                          class="py-1 px-5 border text-xs border-purple button-detail text-white font-bold uppercase mr-2 rounded-full cursor-pointer"
+                        >{{ data.rating }}</div>
+                      </div>                      
                     </div>
                   </div>
                 </template>
@@ -276,14 +284,14 @@
               </div>
             </div>
           </div>
-          <div class="flex w-full h-96 mt-16">
+          <div class="flex w-full h-bottom mt-16">
             <div class="w-1/3 shadow-lg border border-gray-300">
               <p class="text-center text-2xl text-purple font-bold">Feedback</p>
               <div class="flex flex-wrap justify-center w-full">
                 <div class="text-center w-full flex flex-wrap justify-center">
-                  <div>
+                  <div class="ml-feedback">
                     <div
-                      class="rounded-full flex flex-wrap justify-center content-center w-full h-12 mt-40"
+                      class="rounded-full flex flex-wrap justify-center content-center w-full h-feedback mt-40"
                     >
                       <div class="flex flex-wrap justify-center w-full">
                         <figure
@@ -411,6 +419,18 @@
                             </div>
                           </div>
                         </div>
+                      </div>
+                      <div class="flex flex-wrap justify-center content-center w-full">
+                        <p
+                          class="text-purple justify-center w-16 font-bold tracking-tighter flex-1 w-full text-xl font-bold tracking-wider"
+                        >Rate</p>
+                          <vue-slider 
+                            class="w-full px-2 mt-5 mb-5 rate-slider"
+                            v-model="rating"
+                            ref="slider"
+                            v-bind="sliderOptions"
+                          />
+
                       </div>
                       <div class="flex flex-wrap justify-center content-center w-full">
                         <base-input
@@ -978,6 +998,9 @@ import Loading from "vue-loading-overlay";
 import ThumbService from "@/services/ThumbService";
 import DEFINE from "@/utils/const.js";
 
+import VueSlider from 'vue-slider-component'
+import 'vue-slider-component/theme/antd.css'
+
 import "@firebase/firestore";
 const db = firebase.firestore();
 
@@ -987,7 +1010,8 @@ export default {
     Multipane,
     MultipaneResizer,
     Calendar,
-    Loading
+    Loading,
+    VueSlider
   },
   data() {
     return {
@@ -996,6 +1020,7 @@ export default {
       rol: "",
       emoji: null,
       callback: null,
+      rating: null,
       favorite: 0,
       attrs: [],
       slot: "",
@@ -1031,7 +1056,14 @@ export default {
       auditionChatRef: null,
       chatMessage: "",
       messageList: [],
-      casterUserList : {}
+      casterUserList : {},
+      sliderOptions : {
+          min: 1,
+          max: 10,
+          interval: 0.5,
+          disabled: false,
+          clickable: true,
+      }
     };
   },
   computed: {
@@ -1062,7 +1094,7 @@ export default {
       this.setNextPerform();
     },
     "$route.query"() {
-      console.log("route.query")      
+      // console.log("route.query")      
       this.userDetailsInit();
     }
   },
@@ -1171,6 +1203,7 @@ export default {
           this.favorite = this.feedback.favorite;
           this.emoji = this.feedback.evaluation;
           this.callback = this.feedback.callback == 1 ?true: this.feedback.callback === null ? null : false;
+          this.rating = this.feedback.rating ? this.feedback.rating : null;
           this.form.comment = this.feedback.comment;
         }
       }
@@ -1207,7 +1240,7 @@ export default {
         data.forEach((val, index) => {
           this.casterUserList[val.id] = val;
         });        
-        console.log("getCasterUsers -> casterUserList", this.casterUserList)
+        // console.log("getCasterUsers -> casterUserList", this.casterUserList)
       } catch(e){
         console.log("getCasterUsers -> e", e)        
       }
@@ -1343,6 +1376,7 @@ export default {
           : this.callback === null
           ? null
           : false;
+      this.form.rating = this.rating;
       this.form.data = this.$route.params.audition;
       this.form.appointment_id = this.$route.params.round;
       this.form.user = this.$route.params.id;
@@ -1583,10 +1617,10 @@ export default {
         .get()
         .then(doc => {
           if (!doc.exists) {
-            console.log("initializeChat -> create doc");
+            // console.log("initializeChat -> create doc");
             this.auditionChatRef.set({});
           } else {
-            console.log("initializeChat -> already exist doc");
+            // console.log("initializeChat -> already exist doc");
           }
         })
         .catch(err => {
@@ -1615,7 +1649,7 @@ export default {
               // console.log("chatManage -> doc data", doc.data())
               let data = doc.data();
               data.sender = this.getChatUserDetails(data.sender_id);
-              console.log("chatManage -> data", data)
+              // console.log("chatManage -> data", data)
               
               const index =
                 this.messageList && this.messageList.length > 0
@@ -1640,7 +1674,7 @@ export default {
       //     (a, b) =>
       //       new Date(a.createDate.seconds) - new Date(b.createDate.seconds)
       //   );
-      console.log("chatManage -> this.messageList", this.messageList);
+      // console.log("chatManage -> this.messageList", this.messageList);
     },
     chatToDetails() {
       this.isChatView = false;
@@ -1717,7 +1751,7 @@ export default {
         this.$toasted.error("Please enter message!");
       }
       this.chatMessage = "";
-      console.log("sendMessage -> this.messageList", this.messageList);
+      // console.log("sendMessage -> this.messageList", this.messageList);
     }
   },
 };
@@ -1858,4 +1892,29 @@ nav {
   padding-right: 40px !important;
   border-radius: 20px;
 }
+
+.ml-feedback {
+  margin-left: 3.25rem !important;
+}
+.h-feedback {
+  height: 7rem !important;
+}
+.h-bottom {
+  height: 28rem !important;
+}
+
+//start: rating slider custom css
+.rate-slider .vue-slider-dot-handle {
+  border: 2px solid #4D2544;
+}
+.rate-slider .vue-slider-process{
+  background-color: #4D2544;
+}
+.vue-slider:hover .vue-slider-dot-handle:hover {
+    border-color: #6F2541;
+}
+.rate-slider:hover .vue-slider-process {
+  background-color: #6F2541;
+}
+//end: rating slider custom css
 </style>
