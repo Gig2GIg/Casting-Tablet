@@ -26,7 +26,7 @@
               class="pt-2 pb-2"
               type="submit"
               expanded
-              @click.native="sendData"
+              @click.native="sharedProfile"
             >
               Send
             </base-button>
@@ -786,15 +786,6 @@
       <button @click="$modal.hide('resumeModal')" class="popup-close-btn">
         <i class="material-icons" style="font-size: 35px;color: black;">clear</i>
       </button>
-        			<!-- {{currentPage}} / {{pageCount}} -->
-          <!-- <pdf 
-            ref="myPdfComponent"
-            :src="performerResume"
-            @num-pages="pageCount = $event"
-			      @page-loaded="currentPage = $event" 
-          >
-          </pdf> -->
-
           <pdf
             v-for="i in numPages"
             :key="i"
@@ -1135,6 +1126,7 @@ export default {
         adding: false,
         email: '',
       },
+      base_url : ''
     };
   },
   computed: {
@@ -1176,6 +1168,7 @@ export default {
     this.getCasterUsers();
   },
   async created() {
+    this.base_url = window.location.origin;
     await this.initializeChat();
     // auto refresh feed back
     setInterval(function () {
@@ -1280,6 +1273,23 @@ export default {
       await this.fetchTeamFeedback(data);
       this.isRealodTeamFeedback = false;
     },
+    async sharedProfile() {
+      this.$toasted.clear();
+      if(!this.invitation.email || this.invitation.email == '') {        
+        this.$toasted.error('Please enter email!');
+        return;
+      } 
+      let requestParam = {
+        "code": this.performerDetails.share_code,
+        "email": this.invitation.email,
+        "link"  : `${this.base_url}/talent-shared/${window.btoa(this.$route.params.id)}`
+      }
+
+      await axios.post(`/t/performers/code`, requestParam);
+      this.$toasted.success('The user code has been shared successfully');
+      this.invitation.email = "";
+
+    },
     viewResume() {
       this.performerResume = this.performerDetails.resume ? pdf.createLoadingTask(this.performerDetails.resume) : '';
       // this.performerResume = this.performerDetails.resume;
@@ -1287,7 +1297,6 @@ export default {
         this.numPages = pdf.numPages;
       });
       this.$modal.show("resumeModal");
-
     },
     getPerformerDetail(type) {
       // if (type == "info") {

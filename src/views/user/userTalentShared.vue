@@ -6,8 +6,13 @@
   <multipane class="custom-resizer h-full " layout="vertical">
     <div class="flex p-5" :style="isShowAuditionVideo? { minWidth: '75%', width: '75%', maxWidth: '100%' } : { minWidth: '75%', width: '100%', maxWidth: '100%' }">
       <div class="flex flex-wrap justify-center content-start w-1/2 shadow-2xl rounded-lg">
-          <div class="w-full bg-cover rounded-t-lg user-profile width-fix" :style="{ backgroundImage: 'url(' + tuser.image.url + ')' }">
+          <template v-if="tuser && tuser.image && tuser.image.url">
+            <div class="w-full bg-cover rounded-t-lg user-profile width-fix" :style="{ backgroundImage: 'url(' + tuser.image.url + ')' }">
+            </div>
+          </template>
+          <div v-else class="w-full bg-cover rounded-t-lg user-profile width-fix" >
           </div>
+          
           <p class="text-purple text-xl font-bold mt-4 text-center w-full">{{tuser.details ? `${tuser.details.first_name} ${tuser.details.last_name}` : ''}}</p>
           <p class="text-purple text-m font-bold mt-2 text-center w-full">{{tuser.details ? tuser.details.city : ''}}</p>
 
@@ -164,7 +169,7 @@
                         <div class="dropdown cus-dropdown submanu" v-bind:class="{ 'isOpen' : openId==data.id}">
                           <ul class="submanu-content">                            
                             <li>
-                              <a :href="data.url" title="Open in" target="_blank">Open in</a>
+                              <a :href="data.url ? data.url : ''" title="Open in" target="_blank">Open in</a>
                             </li>
                           </ul>
                         </div>
@@ -346,20 +351,17 @@ export default {
   },
   async mounted() {
     this.userId = this.$route.params.id ? window.atob(this.$route.params.id) : '';
-    this.image;
-    await this.fetchSharedData(this.userId);
+    this.image;    
     await this.sharedCalendar(this.userId);
     this.asignEvents();
     
     let getAuditionList = await axios.get(`/talentDatabase/auditions/list/${this.userId}`);
     if(getAuditionList.data.data.length){
       this.auditionList = getAuditionList.data.data;
-    }   
-    
-    
-    // debugger;
+    }
   },
-  created(){
+  async created(){
+    await this.fetchSharedData(this.userId);
     this.base_url = window.location.origin;
     this.encCode = this.$route.params.code;
 
