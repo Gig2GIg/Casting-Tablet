@@ -425,10 +425,11 @@
                           class="text-purple justify-center w-16 font-bold tracking-tighter flex-1 w-full text-xl font-bold tracking-wider"
                         >Rate</p>
                           <vue-slider 
-                            class="w-full px-2 mt-5 mb-5 rate-slider"
+                            class="w-full px-2 mt-5 mb-10 rate-slider"
                             v-model="rating"
                             ref="slider"
                             v-bind="sliderOptions"
+                            :lazy="true"
                           />
 
                       </div>
@@ -1020,7 +1021,7 @@ export default {
       rol: "",
       emoji: null,
       callback: null,
-      rating: null,
+      rating: 1,
       favorite: 0,
       attrs: [],
       slot: "",
@@ -1063,6 +1064,8 @@ export default {
           interval: 0.5,
           disabled: false,
           clickable: true,
+          tooltip: 'always',
+          tooltipPlacement: 'bottom',
       }
     };
   },
