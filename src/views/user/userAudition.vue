@@ -10,6 +10,29 @@
         />
         <h1 class="absolute left-0 text-white text-lg back-mrg-l">Back</h1>
       </div>
+      <div class=" w-8/11 z-40">
+          <div v-show="invitation.adding" class="mt-16 mr-32 shadow-lg bg-white absolute left-50 top-0 z-40">
+            <base-input
+              v-model="invitation.email"
+              v-validate="'required|email'"
+              name="email"
+              placeholder="Email"
+              :custom-classes="['border', 'border-purple']"
+              :message="errors.first('invitation.email')"
+              expanded
+            />
+
+            <base-button
+              class="pt-2 pb-2"
+              type="submit"
+              expanded
+              @click.native="sendData"
+            >
+              Send
+            </base-button>
+          </div>
+      </div>
+      <img :src="'/images/icons/12-layers@3x.png'" class="h-10  ml-auto mr-5" alt="star" @click="invitation.adding =invitation.adding == true?false:true" >
       <div
         v-if="audition.online != 1"
         class="w-1/5 flex flex-wrap justify-center content-center h-10 border-2 ml-auto border-white rounded-sm cursor-pointer"
@@ -619,11 +642,11 @@
                   :custom-classes="['border-2', 'border-purple']"
                 />
               </div>
-              <img :src="data.image" alt="Icon" class="-ml-3 h-300 object-cover" />
-              <p class="text-purple text-xl font-bold mt-4 w-full">{{data.name}}</p>
-              <p
-                class="text-purple text-m font-bold mt-2 w-full"
-              >{{performerDetails.details && performerDetails.details.city ? performerDetails.details.city : ""}}</p>
+                <img :src="data.image" alt="Icon" class="-ml-3 h-300 object-cover" />
+                <p class="text-purple text-xl font-bold mt-4 w-full">{{data.name}}</p>
+                <p
+                  class="text-purple text-m font-bold mt-2 w-full"
+                >{{performerDetails.details && performerDetails.details.city ? performerDetails.details.city : ""}}</p>
               <div class="flex w-full mt-5">
                 <a
                   class="social-a flex items-center justify-center content-center w-12 h-12"
@@ -676,17 +699,31 @@
                     class="h-6"
                   />
                 </a>
-              </div>
-
+              </div>              
               <div
+                class="flex w-full justify-start"                
+              >
+                <a target="_blank" v-bind:href="'mailto:'+performerDetails.email+''" type="button" class="flex contact-btn justify-center mt-12 bg-purple-gradient text-white text-md rounded-sm rounded-tl-md">
+                  <img :src="'/images/icons/mail_icon@2x.png'" alt="Icon" class="h-5 mr-2 mt-1" />
+                  <span class="mt-1">Contact</span>
+                </a>
+              </div>
+              <div
+                @click="viewResume()"
+                class="flex w-full justify-start mt-12 cus-cur"
+              >
+                <img :src="'/images/icons/icon.png'" alt="Icon" class="content-center h-8" />
+                <p class="text-purple text-m text-left ml-4 tracking-wide font-semibold w-1/2">Resume</p>
+              </div>
+              <!-- <div
                 @click="getPerformerDetail('info')"
                 class="flex w-full justify-start mt-12 cus-cur"
               >
                 <img :src="'/images/icons/person.png'" alt="Icon" class="content-center h-8" />
                 <p class="text-purple text-m text-left ml-4 tracking-wide font-semibold w-1/2">Info</p>
-              </div>
+              </div> -->
 
-              <div
+              <!-- <div
                 @click="getPerformerDetail('credit')"
                 class="flex w-full justify-start mt-12 cus-cur"
               >
@@ -703,7 +740,7 @@
                 <p
                   class="text-purple text-m text-left ml-4 tracking-wide font-semibold w-1/2"
                 >Education & Training</p>
-              </div>
+              </div> -->
               <div
                 @click="getPerformerDetail('appearance')"
                 class="flex w-full justify-start mt-12 cus-cur"
@@ -745,6 +782,28 @@
         </template>
       </div>
     </multipane>
+    <modal :width="500" height="650" :adaptive="true" name="resumeModal" class="custom-event-popup">
+      <button @click="$modal.hide('resumeModal')" class="popup-close-btn">
+        <i class="material-icons" style="font-size: 35px;color: black;">clear</i>
+      </button>
+        			<!-- {{currentPage}} / {{pageCount}} -->
+          <!-- <pdf 
+            ref="myPdfComponent"
+            :src="performerResume"
+            @num-pages="pageCount = $event"
+			      @page-loaded="currentPage = $event" 
+          >
+          </pdf> -->
+
+          <pdf
+            v-for="i in numPages"
+            :key="i"
+            :src="performerResume"
+            :page="i"
+            
+          ></pdf>
+          <!-- style="display: inline-block; width: 25%" -->
+    </modal>
     <modal :width="500" height="200" :adaptive="true" name="infoModal" class="custom-event-popup">
       <button @click="$modal.hide('infoModal')" class="popup-close-btn">
         <i class="material-icons" style="font-size: 35px;color: black;">clear</i>
@@ -1001,6 +1060,8 @@ import DEFINE from "@/utils/const.js";
 
 import VueSlider from 'vue-slider-component'
 import 'vue-slider-component/theme/antd.css'
+import pdf from 'vue-pdf'
+
 
 import "@firebase/firestore";
 const db = firebase.firestore();
@@ -1012,7 +1073,8 @@ export default {
     MultipaneResizer,
     Calendar,
     Loading,
-    VueSlider
+    VueSlider,
+    pdf
   },
   data() {
     return {
@@ -1066,7 +1128,13 @@ export default {
           clickable: true,
           tooltip: 'always',
           tooltipPlacement: 'bottom',
-      }
+      },
+      performerResume : '',
+      numPages: undefined,
+      invitation: {
+        adding: false,
+        email: '',
+      },
     };
   },
   computed: {
@@ -1106,51 +1174,6 @@ export default {
     await this.fetchUserList(this.$route.params.round);    
     this.userDetailsInit();
     this.getCasterUsers();
-    // this.manageCurrentUserRoles();
-    // await this.fetchTags({"round": this.$route.params.round, "user": this.$route.params.id,});
-    // await this.fetchRecommendation({"round": this.$route.params.audition, "user": this.$route.params.id,});
-    // await this.fetchOnlineMedia({"round": this.$route.params.round, "user": this.$route.params.id,});
-    // console.log("mounted -> this.onlineMedia", this.onlineMedia)
-    // let feedback = {
-    //   user:this.$route.params.id,
-    //   round:this.$route.params.round
-    // };
-    // await this.fetchUserFeedback(feedback);
-        
-    // if(Object.keys(this.feedback).length>0){
-    //   for(data in this.feedback){
-    //     this.workon = this.feedback.work === null ? null : (this.feedback.work == 'vocals' ? 1 :this.feedback.work == 'acting' ? 2 : 3);
-    //     this.favorite = this.feedback.favorite;
-    //     this.emoji = this.feedback.evaluation;
-    //     this.callback = this.feedback.callback == 1 ?true: this.feedback.callback === null ? null : false;
-    //     this.form.comment = this.feedback.comment;
-    //   }
-    // }
-    //   // Get Assigend Number
-    //   let getPerformerDetails = await axios.get(`/t/auditions/profile/user/${this.$route.params.id}/appointment/${this.$route.params.round}`);
-    //   if(getPerformerDetails.status == 200){
-    //     this.performerDetails = getPerformerDetails.data.data;        
-    //     this.addNumberText = getPerformerDetails.data.data.assign_number;
-    //     if(this.addNumberText && this.addNumberText != ''){
-    //       this.isAssignedNumber = true;
-    //     } else {
-    //       this.isAssignedNumber = false;
-    //     }
-        
-    //   }else{
-    //     this.performerDetails = {};
-    //     this.addNumberText = "";
-    //     this.isAssignedNumber = true;
-    //   }
-    // this.currentUser = this.userList.filter(userList => userList.user_id == this.$route.params.id);
-    // if(this.currentUser != ""){
-    //   this.slot = this.currentUser[0].slot_id;
-    //   this.rol = this.currentUser[0].rol;
-    // }    
-    // let data = {"appointment_id": this.$route.params.round, "performer": this.$route.params.id}
-    // await this.fetchTeamFeedback(data);
-    // await this.myCalendar(this.$route.params.id);
-    // this.asignEvents();
   },
   async created() {
     await this.initializeChat();
@@ -1257,19 +1280,29 @@ export default {
       await this.fetchTeamFeedback(data);
       this.isRealodTeamFeedback = false;
     },
+    viewResume() {
+      this.performerResume = this.performerDetails.resume ? pdf.createLoadingTask(this.performerDetails.resume) : '';
+      // this.performerResume = this.performerDetails.resume;
+      this.performerResume.promise.then(pdf => {
+        this.numPages = pdf.numPages;
+      });
+      this.$modal.show("resumeModal");
+
+    },
     getPerformerDetail(type) {
-      if (type == "info") {
-        this.$modal.show("infoModal");
-      }
-      if (type == "credit") {
-        this.$modal.show("creditModal");
-      }
-      if (type == "eduTra") {
-        this.$modal.show("eduTraModal");
-      }
+      // if (type == "info") {
+      //   this.$modal.show("infoModal");
+      // } else 
       if (type == "appearance") {
         this.$modal.show("appearance");
       }
+      // if (type == "credit") {
+      //   this.$modal.show("creditModal");
+      // }
+      // if (type == "eduTra") {
+      //   this.$modal.show("eduTraModal");
+      // }
+      
     },
     manageCurrentUserRoles() {
       this.currentUserRoles = [];
@@ -1919,4 +1952,8 @@ nav {
   background-color: #6F2541;
 }
 //end: rating slider custom css
+.contact-btn {
+  width: 6.3rem !important;
+  height: 1.8rem !important;
+}
 </style>

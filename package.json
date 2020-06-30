@@ -37,6 +37,7 @@
     "vue-loading-overlay": "^3.2.0",
     "vue-monthly-picker": "^0.2.8",
     "vue-multipane": "^0.9.5",
+    "vue-pdf": "^4.1.0",
     "vue-qrcode-reader": "^2.1.0",
     "vue-router": "^3.0.7",
     "vue-select": "^3.4.0",
