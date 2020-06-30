@@ -24,8 +24,8 @@
           >{{file.name}}</p>
         </div>
       </div>
-      <div v-else class="w-610"></div>
-      <div
+      <div v-else class="w-1/5"></div>      
+      <div        
         class="w-1/8 flex flex-wrap justify-center content-center h-10 border-2 ml-auto border-white rounded-sm cursor-pointer"
         @click="chatManage()"
       >
@@ -144,7 +144,7 @@
                 <div
                   v-if="!isRealodTeamFeedback"
                   class="justify-end text-right cursor-pointer mt-2 mr-0 reafresh-spacing"
-                  @click="updateTeamFeedBack"
+                  @click="updateTeamFeedBack(true)"
                 >
                   <img src="/images/icons/reload.png" class="h-5 ml-3" alt="Reload" />
                 </div>
@@ -192,7 +192,15 @@
                           v-if="data.work && data.work != ''"
                           class="py-1 px-5 border text-xs border-purple button-detail text-white font-bold uppercase mr-2 rounded-full cursor-pointer"
                         >{{ data.work }}</div>
-                      </div>
+                        <p
+                          class="text-purple text-xs justify-center w-16 font-bold tracking-tighter flex-1 w-full"
+                          v-if="data.rating && data.rating != ''"
+                        >Rating</p>
+                        <div
+                          v-if="data.rating && data.rating != ''"
+                          class="py-1 px-5 border text-xs border-purple button-detail text-white font-bold uppercase mr-2 rounded-full cursor-pointer"
+                        >{{ data.rating }}</div>
+                      </div>                      
                     </div>
                   </div>
                 </template>
@@ -276,14 +284,14 @@
               </div>
             </div>
           </div>
-          <div class="flex w-full h-96 mt-16">
+          <div class="flex w-full h-bottom mt-16">
             <div class="w-1/3 shadow-lg border border-gray-300">
               <p class="text-center text-2xl text-purple font-bold">Feedback</p>
               <div class="flex flex-wrap justify-center w-full">
                 <div class="text-center w-full flex flex-wrap justify-center">
-                  <div>
+                  <div class="ml-feedback">
                     <div
-                      class="rounded-full flex flex-wrap justify-center content-center w-full h-12 mt-40"
+                      class="rounded-full flex flex-wrap justify-center content-center w-full h-feedback mt-40"
                     >
                       <div class="flex flex-wrap justify-center w-full">
                         <figure
@@ -413,6 +421,18 @@
                         </div>
                       </div>
                       <div class="flex flex-wrap justify-center content-center w-full">
+                        <p
+                          class="text-purple justify-center w-16 font-bold tracking-tighter flex-1 w-full text-xl font-bold tracking-wider"
+                        >Rate</p>
+                          <vue-slider 
+                            class="w-full px-2 mt-5 mb-5 rate-slider"
+                            v-model="rating"
+                            ref="slider"
+                            v-bind="sliderOptions"
+                          />
+
+                      </div>
+                      <div class="flex flex-wrap justify-center content-center w-full">
                         <base-input
                           v-model="form.comment"
                           name="tag"
@@ -534,7 +554,7 @@
               >
               <div class="flex content-center">
                 <div class="flex h-8 chat-image">
-                  <img v-lazy="messageData.sender && messageData.sender.image ? messageData.sender.image.url : ''" alt="Icon" class="rounded-full h-8" />
+                  <img v-lazy="messageData.sender && messageData.sender.image && messageData.sender.image.thumbnail ? messageData.sender.image.thumbnail :  (messageData.sender && messageData.sender.image ? messageData.sender.image.url : '')" alt="Icon" class="rounded-full h-8" />
                 </div>
                 <div class="ml-3 col-chat">
                   <div class="flex w-full mp-box">
@@ -552,7 +572,10 @@
                 </div>
               </div>
             </div>                  
-            <div class="flex w-full">
+            <div 
+              v-if="audition && audition.appointment_id == this.$route.params.round && audition.status == 1"
+              class="flex w-full"
+            >
               <input
                 v-model="chatMessage"
                 name="chat_message"
@@ -975,6 +998,9 @@ import Loading from "vue-loading-overlay";
 import ThumbService from "@/services/ThumbService";
 import DEFINE from "@/utils/const.js";
 
+import VueSlider from 'vue-slider-component'
+import 'vue-slider-component/theme/antd.css'
+
 import "@firebase/firestore";
 const db = firebase.firestore();
 
@@ -984,7 +1010,8 @@ export default {
     Multipane,
     MultipaneResizer,
     Calendar,
-    Loading
+    Loading,
+    VueSlider
   },
   data() {
     return {
@@ -993,6 +1020,7 @@ export default {
       rol: "",
       emoji: null,
       callback: null,
+      rating: null,
       favorite: 0,
       attrs: [],
       slot: "",
@@ -1027,7 +1055,15 @@ export default {
       chatPrefix: DEFINE.CHAT_PEFIX,
       auditionChatRef: null,
       chatMessage: "",
-      messageList: []
+      messageList: [],
+      casterUserList : {},
+      sliderOptions : {
+          min: 1,
+          max: 10,
+          interval: 0.5,
+          disabled: false,
+          clickable: true,
+      }
     };
   },
   computed: {
@@ -1055,11 +1091,10 @@ export default {
   },
   watch: {
     userList: function() {
-      console.log("this.userList", this.userList)
       this.setNextPerform();
     },
     "$route.query"() {
-      console.log("route.query")      
+      // console.log("route.query")      
       this.userDetailsInit();
     }
   },
@@ -1067,6 +1102,7 @@ export default {
     await this.fetchAuditionData(this.$route.params.audition);
     await this.fetchUserList(this.$route.params.round);    
     this.userDetailsInit();
+    this.getCasterUsers();
     // this.manageCurrentUserRoles();
     // await this.fetchTags({"round": this.$route.params.round, "user": this.$route.params.id,});
     // await this.fetchRecommendation({"round": this.$route.params.audition, "user": this.$route.params.id,});
@@ -1115,6 +1151,10 @@ export default {
   },
   async created() {
     await this.initializeChat();
+    // auto refresh feed back
+    setInterval(function () {
+		      this.updateTeamFeedBack(false);
+		 }.bind(this), 5000);
   },
   methods: {
     ...mapActions("user", ["fetch"]),
@@ -1151,7 +1191,6 @@ export default {
       await this.fetchTags({"round": this.$route.params.round, "user": this.$route.params.id,});
       await this.fetchRecommendation({"round": this.$route.params.audition, "user": this.$route.params.id,});
       await this.fetchOnlineMedia({"round": this.$route.params.round, "user": this.$route.params.id,});
-      console.log("mounted -> this.onlineMedia", this.onlineMedia)
       let feedback = {
         user:this.$route.params.id,
         round:this.$route.params.round
@@ -1164,6 +1203,7 @@ export default {
           this.favorite = this.feedback.favorite;
           this.emoji = this.feedback.evaluation;
           this.callback = this.feedback.callback == 1 ?true: this.feedback.callback === null ? null : false;
+          this.rating = this.feedback.rating ? this.feedback.rating : null;
           this.form.comment = this.feedback.comment;
         }
       }
@@ -1193,8 +1233,20 @@ export default {
       await this.myCalendar(this.$route.params.id);
       this.asignEvents();
     },
-    async updateTeamFeedBack(){
-      this.isRealodTeamFeedback = true;
+    async getCasterUsers() {
+      try {
+        const { data : { data } } = await axios.get(`/auditions/getAuditionUserData/${this.$route.params.audition}`);        
+        this.casterUserList = {};
+        data.forEach((val, index) => {
+          this.casterUserList[val.id] = val;
+        });        
+        // console.log("getCasterUsers -> casterUserList", this.casterUserList)
+      } catch(e){
+        console.log("getCasterUsers -> e", e)        
+      }
+    },
+    async updateTeamFeedBack(loaderView){
+      this.isRealodTeamFeedback = loaderView;
       let data = {
         appointment_id: this.$route.params.round,
         performer: this.$route.params.id
@@ -1280,24 +1332,20 @@ export default {
               .ref(`temp/thumbnail/${uuid()}.png`)
               .put(this.thumbnail.file);
             thumbnailUrl = await thumbnailFile.ref.getDownloadURL();
-            // console.log("saveFeedback -> thumbnailUrl", thumbnailUrl);
           }
 
           // upload video file
           const extension = this.file.org_name.substring(
             this.file.org_name.lastIndexOf(".") + 1
           );
-          // console.log("saveFeedback -> extension", extension);
           const filePath = this.file.name.includes(`${extension}`)
             ? `temp/${uuid()}_${this.file.name}`
             : `temp/${uuid()}_${this.file.name}.${extension}`;
-          // console.log("saveFeedback -> filePath", filePath);
           const file = await firebase
             .storage()
             .ref(filePath)
             .put(this.form.file);
           const url = await file.ref.getDownloadURL();
-          // console.log("saveFeedback -> url", url);
 
           let audition_record = {
             url: url,
@@ -1328,6 +1376,7 @@ export default {
           : this.callback === null
           ? null
           : false;
+      this.form.rating = this.rating;
       this.form.data = this.$route.params.audition;
       this.form.appointment_id = this.$route.params.round;
       this.form.user = this.$route.params.id;
@@ -1378,7 +1427,6 @@ export default {
           file,
           DEFINE.thumbSize.videoThumbWidth
         ).then(thumb_data => {
-          // console.log("handleFile -> video thumb_data return", thumb_data);
           Vue.set(this.thumbnail, "preview", thumb_data.preview);
           Vue.set(this.thumbnail, "file", thumb_data.file);
         });
@@ -1389,7 +1437,6 @@ export default {
         this.file.name = "Record Audition";
         this.videoFileName = null;
       }
-      // console.log("snapImage -> final ", this.thumbnail);
     },
     imageRenameDone() {
       this.$toasted.clear();
@@ -1550,13 +1597,12 @@ export default {
     },
     getChatUserDetails(user_id) {
       // it should be dynamic when audition wise all user list get
-      return this.profile ? this.profile : null;
+      return this.casterUserList && this.casterUserList[user_id] ? this.casterUserList[user_id] : null;
     },
     chatTimeFormat(timestamp){
-      console.log("chatTimeFormat -> timestamp", timestamp)
-      // const date = timestamp ?  timestamp.toMillis() : null;
+      // console.log("chatTimeFormat -> timestamp", timestamp)
       const date = timestamp ?  timestamp.toDate() : null;
-      console.log("chatTimeFormat -> date", date)
+      // console.log("chatTimeFormat -> date", date)
       return date;
     },
     /**
@@ -1571,10 +1617,10 @@ export default {
         .get()
         .then(doc => {
           if (!doc.exists) {
-            console.log("initializeChat -> create doc");
+            // console.log("initializeChat -> create doc");
             this.auditionChatRef.set({});
           } else {
-            console.log("initializeChat -> already exist doc");
+            // console.log("initializeChat -> already exist doc");
           }
         })
         .catch(err => {
@@ -1586,18 +1632,24 @@ export default {
      */
     async chatManage() {
       this.isChatView = !this.isChatView;
-      console.log("chatManage -> this.isChatView", this.isChatView);
+      // console.log("chatManage -> this.isChatView", this.isChatView);
       if (this.isChatView) {
-        console.log("chatManage -> this.auditionChatRef", this.auditionChatRef)
-        this.auditionChatRef        
-          .collection(`${this.$route.params.round}`)
+        if(Object.keys(this.casterUserList).length === 0) {
+          await this.getCasterUsers();
+        }        
+        // const currentChatPath = `${this.chatPrefix}${this.$route.params.audition}`;
+        const roundChatPath = `${this.$route.params.round}`;
+        // console.log("chatManage -> this.auditionChatRef", this.auditionChatRef)
+        this.auditionChatRef          
+          .collection(`${roundChatPath}`)
+          .orderBy("createDate", "asc")
           .onSnapshot(querySnapshot => {
             querySnapshot.forEach(doc => {
               // console.log("chatManage -> doc id", doc.id)
               // console.log("chatManage -> doc data", doc.data())
               let data = doc.data();
               data.sender = this.getChatUserDetails(data.sender_id);
-              console.log("chatManage -> data", data)
+              // console.log("chatManage -> data", data)
               
               const index =
                 this.messageList && this.messageList.length > 0
@@ -1618,11 +1670,11 @@ export default {
             });
           });
       }
-      this.messageList = this.messageList.sort(
-          (a, b) =>
-            new Date(a.createDate.seconds) - new Date(b.createDate.seconds)
-        );
-      console.log("chatManage -> this.messageList", this.messageList);
+      // this.messageList = this.messageList.sort(
+      //     (a, b) =>
+      //       new Date(a.createDate.seconds) - new Date(b.createDate.seconds)
+      //   );
+      // console.log("chatManage -> this.messageList", this.messageList);
     },
     chatToDetails() {
       this.isChatView = false;
@@ -1659,7 +1711,6 @@ export default {
      */
     gotoNextPerformer(){        
       if(this.nextPerformerId){
-        console.log("gotoNextPerformer -> gotoNextPerformer")
         this.$router.push({ name: 'auditions/user', params: { audition: this.$route.params.audition , round: this.$route.params.round , id: this.nextPerformerId } });
         this.setNextPerform();
       }
@@ -1671,7 +1722,6 @@ export default {
     setNextPerform() {
       if(this.userList && this.userList.length > 0 ){
         const userIndex = this.userList.findIndex(x => x.user_id == this.$route.params.id);
-        console.log("setNextPerform -> userIndex", userIndex)
           if (userIndex > -1 && userIndex < (this.userList.length-1)) {
             this.nextPerformerId = this.userList[userIndex+1].user_id;
           } else {       
@@ -1680,24 +1730,28 @@ export default {
       } else {
         this.nextPerformerId = null;
       }
-      console.log("setNextPerform -> this.nextPerformerId", this.nextPerformerId)
     },
-    async sendMessage() {
+    async sendMessage() {      
       if (this.chatMessage && this.chatMessage != "") {
+        // const currentChatPath = `${this.chatPrefix}${this.$route.params.audition}`;
+        const roundChatPath = `${this.$route.params.round}`;
         let chatMessageDoc = this.auditionChatRef.collection(
-          this.$route.params.round
+          roundChatPath
         );
+        const message = this.chatMessage;
+        this.chatMessage = '';
         await chatMessageDoc.add({
-          message: this.chatMessage,
+          message: message,
           sender_id: parseInt(TokenService.getUserId()),
           createDate: new Date(),
           read: false
         });
       } else {
+        this.$toasted.clear();
         this.$toasted.error("Please enter message!");
       }
       this.chatMessage = "";
-      console.log("sendMessage -> this.messageList", this.messageList);
+      // console.log("sendMessage -> this.messageList", this.messageList);
     }
   },
 };
@@ -1838,4 +1892,28 @@ nav {
   padding-right: 40px !important;
   border-radius: 20px;
 }
+.ml-feedback {
+  margin-left: 3.25rem !important;
+}
+.h-feedback {
+  height: 7rem !important;
+}
+.h-bottom {
+  height: 28rem !important;
+}
+
+//start: rating slider custom css
+.rate-slider .vue-slider-dot-handle {
+  border: 2px solid #4D2544;
+}
+.rate-slider .vue-slider-process{
+  background-color: #4D2544;
+}
+.vue-slider:hover .vue-slider-dot-handle:hover {
+    border-color: #6F2541;
+}
+.rate-slider:hover .vue-slider-process {
+  background-color: #6F2541;
+}
+//end: rating slider custom css
 </style>

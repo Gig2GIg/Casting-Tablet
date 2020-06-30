@@ -12,7 +12,7 @@
       <form @submit.prevent="handleInviteUser()">
         <div class="py-4 px-4 mr-2">
           <div class="flex w-full justify-center text-purple text-xl uppercase">
-            <p>Invite Casting</p>
+            <p>INVITE YOUR CASTING TEAM</p>
           </div>
         </div>
 
@@ -31,7 +31,7 @@
                   v-validate="'required|email'"
                   :custom-classes="['border border-b border-gray-300 text-sm']"
                   :name="'email_'+index"
-                  placeholder="Eg. john@yopmail.com"
+                  placeholder="Eg. john@mail.com"
                   :message="errors.first('email_'+index)"
                   data-vv-as="email"
                 />

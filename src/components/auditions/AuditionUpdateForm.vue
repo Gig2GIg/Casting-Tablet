@@ -454,11 +454,11 @@
         <base-button class="mt-auto w-2/3 mb-12" type="submit">Update Audition</base-button>
       </div>
       <!-- Cover image crop modal -->
-        <modal class="flex flex-col w-full items-center my-info-mdel" :width="600" :height="480" name="modal_crop_image">
-            <div class="w-full content-center justify-center text-center mt-2">
-              <span class="text-center text-md text-purple">Please upload an image, which has a size of more than width {{cover_image_size.min_width}} X height {{cover_image_size.min_height}}.</span>
-            </div>
-            <div class="content my-info-content" ng-if="imgSrc">
+        <modal class="flex flex-col w-full items-center my-info-mdel modal-height-96 crop-modal" :width="600" name="modal_crop_image">            
+            <div class="content my-info-content flex-col" ng-if="imgSrc">
+              <div class="w-full content-center justify-center text-center mrtop-minus-crop">
+                <span class="text-center text-sm w-full text-purple">Please upload an image, which has a size of more than width {{cover_image_size.min_width}} X height {{cover_image_size.min_height}}.</span>
+              </div>
                 <section class="cropper-area">
                 <div class="img-cropper">
                     <vue-cropper
@@ -1451,7 +1451,7 @@ export default {
   justify-content: space-between;
 }
 .cropper-area {
-  width: 614px;
+  width: 570px;
 }
 .actions {
   margin-top: 1rem;
@@ -1468,7 +1468,7 @@ export default {
   text-decoration: none;
   border-radius: 3px;
   margin-right: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 }
 textarea {
   width: 100%;
@@ -1504,5 +1504,17 @@ textarea {
 }
 .cropper-area>textarea{
   display: none;
+}
+
+.modal-height-90 {
+  height: 100vh !important;
+  top: 0 !important;
+}
+.modal-height-90 .v--modal-box.v--modal {
+  height: 90vh !important;
+  top: 5vh !important;
+}
+.mrtop-minus-crop {
+ margin-top: -8px !important;
 }
 </style>

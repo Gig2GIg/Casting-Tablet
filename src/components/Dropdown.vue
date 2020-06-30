@@ -128,7 +128,7 @@ import axios from 'axios';
 
             },
             async reloadRounds(isSetOption){
-              console.log("reloadRounds -> isSetOption", isSetOption)
+              // console.log("reloadRounds -> isSetOption", isSetOption)
               await  this.fetch(this.$route.params.id);
               this.options = this.rounds;
               if(this.options != ""){
@@ -139,9 +139,9 @@ import axios from 'axios';
                   }
                   this.selectedOption = this.selectedOption.length > 0 ? this.selectedOption[0] : this.selectedOption;                  
                 } 
-                console.log("reloadRounds -> this.selectedOption", this.selectedOption) 
+                // console.log("reloadRounds -> this.selectedOption", this.selectedOption) 
                 if(this.audition == 2 && (!this.selectedOption || this.selectedOption.length == 0)) {
-                  console.log("reloadRounds -> set first round")
+                  // console.log("reloadRounds -> set first round")
                   this.selectedOption = this.options[0];
                 }              
                 this.$emit('setOption', this.selectedOption)

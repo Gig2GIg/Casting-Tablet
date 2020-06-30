@@ -34,7 +34,7 @@
             <div class="w-1/2 text-purple px-2 text-lg text-bold-500"></div>
             <div class="w-1/2 text-purple px-2 text-md"></div>
           </div>
-          <div class="flex justify-right mb-4 items-right px-3 w-full" v-if="subscriptionDetails">
+          <div class="flex justify-right mb-4 items-right px-3 w-full" v-if="subscriptionDetails && subscriptionDetails.grace_period == 0">
             <div class="w-2/3 text-purple px-2 text-sm"></div>
             <div
               class="w-2/7 text-purple px-2 text-sm capitalize justify-center content-center"
@@ -108,7 +108,7 @@
           <div
             class="w-full mr-2 text-center"
             v-if="inviteUserList.length == 0"
-          >No invited user found!</div>
+          >You haven't invited any users yet</div>
         </div>
       </div>
     </div>
@@ -360,6 +360,7 @@ export default {
           data: { data }
         } = await axios.get(`/t/users/cancelSubscription`);
         this.isLoading = false;
+        this.subscriptionDetails.grace_period = 1;
         this.$toasted.success("Your subscription has been cancelled successfully.");
         this.getInviteUser();        
       } catch (e) {
