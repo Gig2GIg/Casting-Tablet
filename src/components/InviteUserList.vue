@@ -47,12 +47,12 @@
                 @click="cancelSubscription()"
               >Cancel Subscription</a>
             </div>
-            <!-- <div class="w-2/8 text-purple px-5 pr-0 ml-15 text-sm capitalize margin-left-cancel" v-else-if="subscriptionDetails && subscriptionDetails.grace_period == 1">
+            <div class="w-2/8 text-purple px-5 pr-0 ml-15 text-sm capitalize margin-left-cancel" v-else-if="subscriptionDetails && subscriptionDetails.grace_period == 1">
               <a
                 class="flex items-center justify-center content-center cursor-pointer font-bold"
                 @click="reSubscription()"
               >Resume Subscription</a>
-            </div> -->
+            </div>
             <div class="w-2/8 text-purple px-5 pr-0 ml-15 text-sm capitalize margin-left-cancel" v-else>              
             </div>
           </div>
@@ -385,20 +385,35 @@ export default {
     reSubscriptionConfirmCancel(){
       this.$modal.hide("modal_confirm_re_subscribe");
     },
-    async reSubscriptionConfirmDone() {
-      // need to call api here
+    async reSubscriptionConfirmDone() {      
+      this.isLoading = true;
+      try {
+        this.$modal.hide("modal_confirm_re_subscribe");       
+        const result = await axios.get(`/t/users/resumeSubscription`);
+        this.isLoading = false;
+        console.log("reSubscriptionConfirmDone -> response ::: ", result);
+        this.subscriptionDetails.grace_period = 0;
+        const successMsg = result.data && result.data.message ? result.data.message : "Your subscription has been resume successfully";
+        this.$toasted.success(successMsg);
+        this.getInviteUser();        
+      } catch (e) {
+        this.$toasted.error(DEFINE.common_error_message);
+      } finally {
+        this.isLoading = false;
+      }
     },
     async subscribeConfirmDone() {
       // this.$modal.show("modal_confirm_cancel_subscribe");
       this.isLoading = true;
       try {
         this.$modal.hide("modal_confirm_cancel_subscribe");       
-        const {
-          data: { data }
-        } = await axios.get(`/t/users/cancelSubscription`);
+        const result = await axios.get(`/t/users/cancelSubscription`);
+        console.log("subscribeConfirmDone -> result", result)
         this.isLoading = false;
         this.subscriptionDetails.grace_period = 1;
-        this.$toasted.success("Your subscription has been cancelled successfully.");
+        const successMsg = result.data && result.data.message ? result.data.message : "Your subscription has been cancelled successfully";
+        this.$toasted.success(successMsg);
+        this.$toasted.success();
         this.getInviteUser();        
       } catch (e) {
         this.$toasted.error(DEFINE.common_error_message);
