@@ -47,12 +47,12 @@
                 @click="cancelSubscription()"
               >Cancel Subscription</a>
             </div>
-            <div class="w-2/8 text-purple px-5 pr-0 ml-15 text-sm capitalize margin-left-cancel" v-else-if="subscriptionDetails && subscriptionDetails.grace_period == 1">
+            <!-- <div class="w-2/8 text-purple px-5 pr-0 ml-15 text-sm capitalize margin-left-cancel" v-else-if="subscriptionDetails && subscriptionDetails.grace_period == 1">
               <a
                 class="flex items-center justify-center content-center cursor-pointer font-bold"
                 @click="reSubscription()"
               >Resume Subscription</a>
-            </div>
+            </div> -->
             <div class="w-2/8 text-purple px-5 pr-0 ml-15 text-sm capitalize margin-left-cancel" v-else>              
             </div>
           </div>
