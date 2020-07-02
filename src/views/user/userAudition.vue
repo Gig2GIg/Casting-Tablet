@@ -119,438 +119,383 @@
     </modal>
     <multipane class="custom-resizer h-full" layout="vertical">
       <div
-        class="pane bg-white overflow-scroll"
-        :style="{ minWidth: '75%', width: '68%', maxWidth: '100%' }"
-      >
+        class="pane content-pane bg-white p-2"
+        :style="{ minWidth: 'calc(100% - 426px)', width: 'calc(100% - 426px)', maxWidth: '100%' }"
+        >
         <div class="flex flex-wrap h-full">
           <div class="flex w-full">
-            <div class="w-1/4 flex flex-wrap content-center justify-center calendar shadow-lg">
-              <p class="text-center text-2xl text-purple font-bold">Availability</p>
-              <v-date-picker
-                :attributes="attrs"
-                class="border-none calendar-bar-inline"
-                :select-attribute="selectAttribute"
-                locale="en"
-                mode="range"
-                v-model="dates"
-                show-caps
-                is-inline
-                :rows="2"
-              />
+            <div class="w-1/4 p-2">
+              <div class="border rounded w-full h-50 overflow-auto px-0 py-2">
+                <p class="text-center text-2xl text-purple font-semibold mb-2">Availability</p>
+                <v-date-picker
+                  :attributes="attrs"
+                  class="border-none calendar-bar-inline mx-auto w-full"
+                  :select-attribute="selectAttribute"
+                  locale="en"
+                  mode="range"
+                  v-model="dates"
+                  show-caps
+                  is-inline
+                  :rows="2"
+                />
+              </div>
             </div>
-            <div class="w-1/12"></div>
-            <div class="w-1/4 shadow-lg">
-              <p class="text-center text-2xl text-purple font-bold">Roles</p>
-              <div class="flex flex-wrap justify-center">
-                <div
+            <div class="w-1/4 p-2">
+              <div class="border rounded w-full h-50 overflow-auto px-0 py-2">
+                <p class="text-center text-2xl text-purple font-semibold mb-2">Roles</p>
+
+                <div 
                   v-for="data in currentUserRoles"
                   :key="data.id"
-                  class="text-center w-1/2 flex justify-center"
-                >
-                  <div>
+                  class="flex flex-wrap justify-center">
+                  <div class="w-1/3">
                     <div
-                      class="m-3 rounded-full flex items-center w-12 h-12 bg-cover"
+                      class="rounded-full w-12 h-12 bg-cover mb-1 mx-auto"
                       :class="{'button-detail': data.id == rol, 'bg-gray-400': data.id != rol}"
-                      :style="{ backgroundImage: 'url(' + data.image.url + ')' }"
-                    ></div>
-                    <p
-                      class="text-purple text-xs justify-center w-16 font-bold tracking-tighter flex-1"
-                    >{{ data.name }}</p>
+                      :style="{ backgroundImage: 'url(' + data.image.url + ')' }">  
+                    </div>
+                    <p class="text-purple text-xs font-bold text-center">{{ data.name }}</p>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="w-1/12"></div>
-            <div v-if="audition.online == 0" class="w-1/3 shadow-lg">
-              <div class="flex flex-wrap justify-center">
-                <p class="text-center text-2xl text-purple font-bold">Team Feedback</p>
-                <div
-                  v-if="!isRealodTeamFeedback"
-                  class="justify-end text-right cursor-pointer mt-2 mr-0 reafresh-spacing"
-                  @click="updateTeamFeedBack(true)"
-                >
-                  <img src="/images/icons/reload.png" class="h-5 ml-3" alt="Reload" />
-                </div>
-                <div v-else class="justify-end text-right mt-2 mr-0 reafresh-spacing">
-                  <img src="/images/icons/reload_process.gif" class="h-5 ml-3" alt="Reloading..." />
-                </div>
-              </div>
-
-              <div class="flex flex-wrap justify-center">
-                <div
-                  v-if="teamFeedback.length == 0 && !isRealodTeamFeedback"
-                  class="text-purple font-bold h-full"
-                >Not records created yet</div>
-                <template v-if="!isRealodTeamFeedback">
+            <div v-if="audition.online == 0" class="w-2/4 p-2">
+              <div class="border rounded w-full h-50 overflow-auto px-0 py-2">
+                <div class="flex flex-wrap justify-center items-center mb-2">
+                  <p class="text-center text-2xl text-purple font-semibold">Team Feedback</p>
                   <div
-                    v-for="data in teamFeedback"
-                    :key="data.id"
-                    class="text-center w-full flex justify-center"
-                  >
-                    <div>
-                      <div class="m-3 rounded-full flex items-center w-full h-12">
-                        <figure
-                          class="flex justify-center flex-wrap content-center w-8 h-8 border-2 border-purple rounded-sm"
-                          v-if="data.evaluation != null"
-                        >
-                          <img
-                            :src="'/images/icons/'+data.evaluation+'.png'"
-                            alt="Icon"
-                            class="content-center h-4"
-                          />
-                        </figure>
-                        <p
-                          class="text-purple text-xs justify-center w-16 font-bold tracking-tighter flex-1 w-full"
-                          v-if="data.callback != null"
-                        >Call Back</p>
-                        <div
-                          v-if="data.callback != null"
-                          class="py-1 px-5 border text-xs border-purple button-detail text-white font-bold uppercase mr-2 rounded-full cursor-pointer"
-                        >{{ data.callback == 1? 'Yes' : 'No' }}</div>
-                        <p
-                          class="text-purple text-xs justify-center w-16 font-bold tracking-tighter flex-1 w-full"
-                          v-if="data.work && data.work != ''"
-                        >Work On</p>
-                        <div
-                          v-if="data.work && data.work != ''"
-                          class="py-1 px-5 border text-xs border-purple button-detail text-white font-bold uppercase mr-2 rounded-full cursor-pointer"
-                        >{{ data.work }}</div>
-                        <p
-                          class="text-purple text-xs justify-center w-16 font-bold tracking-tighter flex-1 w-full"
-                          v-if="data.rating && data.rating != ''"
-                        >Rating</p>
-                        <div
-                          v-if="data.rating && data.rating != ''"
-                          class="py-1 px-5 border text-xs border-purple button-detail text-white font-bold uppercase mr-2 rounded-full cursor-pointer"
-                        >{{ data.rating }}</div>
-                      </div>                      
-                    </div>
+                    v-if="!isRealodTeamFeedback"
+                    class="reafresh-spacing w-5 h-5 ml-3"
+                    @click="updateTeamFeedBack(true)">
+                    <img src="/images/icons/reload.png" alt="Reload" />
                   </div>
-                </template>
+                  <div v-else class="reafresh-spacing w-5 h-5 ml-3">
+                    <img src="/images/icons/reload_process.gif" alt="Reloading..." />
+                  </div>
+                </div>
+
+                <div class="flex flex-wrap justify-center">
+                  <div
+                    v-if="teamFeedback.length == 0 && !isRealodTeamFeedback"
+                    class="text-purple font-bold h-full">Not records created yet</div>
+                  <template v-if="!isRealodTeamFeedback">
+                    <div
+                      v-for="data in teamFeedback"
+                      :key="data.id"
+                      class="text-center w-full flex flex-col justify-center">
+                      <div class="w-full mb-5 mx-auto flex justify-center items-end">
+                        <div class="flex flex-col w-1/6 px-2">
+                          <figure
+                            v-if="data.evaluation != null"
+                            class="flex justify-center items-center w-8 h-8 border-2 border-purple rounded-sm text-purple text-xs font-bold mx-1">
+                            <img
+                              :src="'/images/icons/'+data.evaluation+'.png'"
+                              alt="Icon"
+                              class="content-center h-4"
+                            />
+                          </figure>
+                        </div>
+                        <div class="flex flex-col px-2 w-1/3">
+                          <p
+                            v-if="data.callback != null"
+                            class="text-purple text-xs font-bold mb-1">Call Back</p>
+                          
+                          <div
+                            v-if="data.callback != null"
+                            class="bg-white border border-purple rounded-full py-0 px-4 text-sm font-bold text-center flex items-center justify-center button-detail text-white w-full"
+                          >{{ data.callback == 1? 'Yes' : 'No' }}</div>
+                        </div>
+                        <div class="flex flex-col px-2 w-1/3">
+                          <p
+                            v-if="data.work && data.work != ''"
+                            class="text-purple text-xs font-bold mb-1">Work On</p>
+                          
+                          <div
+                            v-if="data.work && data.work != ''"
+                            class="bg-white border border-purple rounded-full py-0 px-4 text-sm font-bold text-center flex items-center justify-center button-detail text-white w-full"
+                          >{{ data.work }}</div>
+                        </div>
+                        <div class="flex flex-col px-2 w-1/3">
+                          <p
+                            v-if="data.rating && data.rating != ''"
+                            class="text-purple text-xs font-bold mb-1">Rating</p>
+                          
+                          <div
+                            v-if="data.rating && data.rating != ''"
+                            class="bg-white border border-purple rounded-full py-0 px-4 text-sm font-bold text-center flex items-center justify-center button-detail text-white w-full"
+                          >{{ data.rating }}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </template>
+                </div>
               </div>
             </div>
-            <div v-if="audition.online == 1" class="w-1/3 shadow-lg">
-              <p class="text-center text-2xl text-purple font-bold">Audition Documents</p>
-              <div class="flex flex-wrap justify-center">
-                <div
-                  v-if="onlineMedia.length  == 0"
-                  class="text-purple font-bold h-full"
-                >No media added yet</div>
-                <carousel
-                  class="flex flex-col mt-4 w-10/12"
-                  :per-page="1"
-                  :pagination-enabled="false"
-                  :navigation-enabled="true"
-                  :navigation-prev-label="'&#x279C;'"
-                  :navigation-next-label="'&#x279C;'"
-                >
-                  <slide
-                    class="flex flex-wrap justify-center content-center mt-4 w-full p-3"
-                    v-for="data in onlineMedia"
-                    :key="data.id"
-                    v-if="data.type == 'video'"
+            <div v-if="audition.online == 1" class="w-2/4 p-2">
+              <div class="border rounded w-full h-50 overflow-auto">
+                <p class="text-center text-2xl text-purple font-bold">Audition Documents</p>
+                <div class="flex flex-wrap justify-center">
+                  <div
+                    v-if="onlineMedia.length  == 0"
+                    class="text-purple font-bold h-full"
+                  >No media added yet</div>
+                  <carousel
+                    class="flex flex-col mt-4 w-10/12"
+                    :per-page="1"
+                    :pagination-enabled="false"
+                    :navigation-enabled="true"
+                    :navigation-prev-label="'&#x279C;'"
+                    :navigation-next-label="'&#x279C;'"
                   >
-                    <div
-                      class="container w-full rounded-lg shadow-lg overflow-hidden mb-3 shadow-lg"
+                    <slide
+                      class="flex flex-wrap justify-center content-center mt-4 w-full p-3"
+                      v-for="data in onlineMedia"
+                      :key="data.id"
+                      v-if="data.type == 'video'"
                     >
-                      <div class="flex-col p-4">
-                        <img
-                          v-lazy="data.preview"
-                          class="w-full h-24 cursor-pointer"
-                          @click="playVideo(data)"
-                          title="Play Video"
-                        />
+                      <div
+                        class="container w-full rounded-lg shadow-lg overflow-hidden mb-3 shadow-lg"
+                      >
+                        <div class="flex-col p-4">
+                          <img
+                            v-lazy="data.preview"
+                            class="w-full h-24 cursor-pointer"
+                            @click="playVideo(data)"
+                            title="Play Video"
+                          />
+                        </div>
+                        <div class="p-2 bg-purple">
+                          <span class="text-base truncate mb-3 text-white uppercase">{{ data.name }}</span>
+                        </div>
                       </div>
-                      <div class="p-2 bg-purple">
-                        <span class="text-base truncate mb-3 text-white uppercase">{{ data.name }}</span>
-                      </div>
-                    </div>
-                  </slide>
-                </carousel>
-                <carousel
-                  class="flex flex-col mt-4 w-10/12"
-                  :per-page="1"
-                  :pagination-enabled="false"
-                  :navigation-enabled="true"
-                  :navigation-prev-label="'&#x279C;'"
-                  :navigation-next-label="'&#x279C;'"
-                >
-                  <slide
-                    class="flex flex-wrap justify-center content-center mt-4 w-full p-3"
-                    v-for="data in onlineMedia"
-                    :key="data.id"
-                    v-if="data.type == 'doc'"
+                    </slide>
+                  </carousel>
+                  <carousel
+                    class="flex flex-col mt-4 w-10/12"
+                    :per-page="1"
+                    :pagination-enabled="false"
+                    :navigation-enabled="true"
+                    :navigation-prev-label="'&#x279C;'"
+                    :navigation-next-label="'&#x279C;'"
                   >
-                    <div class="flex m-3 content-center w-full h-16 flex justify-center">
-                      <div class="flex justify-center w-full button-detail rounded-lg shadow-lg">
-                        <div class="flex justify-center content-center flex-wrap w-1/2 h-full">
-                          <img src="/images/icons/pdf-icon@3x.png" alt="Icon" class="h-10" />
-                        </div>
-                        <div
-                          class="flex content-center relative flex-wrap w-full h-full bg-white truncate"
-                        >
-                          <span
-                            class="text-center text-purple font-bold w-full truncate"
-                          >{{ data.name }}</span>
-                          <a target="_blank" :href="data.url">
-                            <img
-                              src="/images/icons/more-icon@3x.png"
-                              alt="Icon"
-                              class="h-6 absolute right-0 bottom-0"
-                            />
-                          </a>
+                    <slide
+                      class="flex flex-wrap justify-center content-center mt-4 w-full p-3"
+                      v-for="data in onlineMedia"
+                      :key="data.id"
+                      v-if="data.type == 'doc'"
+                    >
+                      <div class="flex m-3 content-center w-full h-16 flex justify-center">
+                        <div class="flex justify-center w-full button-detail rounded-lg shadow-lg">
+                          <div class="flex justify-center content-center flex-wrap w-1/2 h-full">
+                            <img src="/images/icons/pdf-icon@3x.png" alt="Icon" class="h-10" />
+                          </div>
+                          <div
+                            class="flex content-center relative flex-wrap w-full h-full bg-white truncate"
+                          >
+                            <span
+                              class="text-center text-purple font-bold w-full truncate"
+                            >{{ data.name }}</span>
+                            <a target="_blank" :href="data.url">
+                              <img
+                                src="/images/icons/more-icon@3x.png"
+                                alt="Icon"
+                                class="h-6 absolute right-0 bottom-0"
+                              />
+                            </a>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </slide>
-                </carousel>
+                    </slide>
+                  </carousel>
+                </div>
               </div>
             </div>
           </div>
-          <div class="flex w-full h-bottom mt-16">
-            <div class="w-1/3 shadow-lg border border-gray-300">
-              <p class="text-center text-2xl text-purple font-bold">Feedback</p>
-              <div class="flex flex-wrap justify-center w-full">
-                <div class="text-center w-full flex flex-wrap justify-center">
-                  <div class="ml-feedback">
+          <div class="flex w-full">
+            <div class="w-2/4 p-2">
+              <div class="border rounded w-full h-50 overflow-auto px-3 py-2">
+                <div class="flex flex-wrap justify-center flex-col content-center w-full mb-5">
+                  <p class="text-center text-2xl text-purple font-semibold mb-2">Feedback</p>
+                  <div class="flex flex-wrap justify-center w-full mt-2">
+                    <figure
+                      :class="{'border-2 border-purple': emoji==1}"
+                      class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg"
+                      @click="emoji=1"
+                      >
+                      <img :src="'/images/icons/1.png'" alt="Icon" class="content-center h-8" />
+                    </figure>
+                    <figure
+                      :class="{'border-2 border-purple': emoji==2}"
+                      class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg"
+                      @click="emoji=2"
+                      >
+                      <img :src="'/images/icons/2.png'" alt="Icon" class="content-center h-8" />
+                    </figure>
+
+                    <figure
+                      :class="{'border-2 border-purple': emoji==3}"
+                      class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg"
+                      @click="emoji=3"
+                      >
+                      <img :src="'/images/icons/3.png'" alt="Icon" class="content-center h-8" />
+                    </figure>
+
+                    <figure
+                      :class="{'border-2 border-purple': emoji==4}"
+                      class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg"
+                      @click="emoji=4"
+                      >
+                      <img :src="'/images/icons/4.png'" alt="Icon" class="content-center h-8" />
+                    </figure>
+
+                    <figure
+                      :class="{'border-2 border-purple': emoji==5}"
+                      class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg"
+                      @click="emoji=5"
+                      >
+                      <img :src="'/images/icons/5.png'" alt="Icon" class="content-center h-8" />
+                    </figure>
+                  </div>
+                </div>
+                <div class="flex flex-wrap justify-center flex-col content-center w-full mb-5">
+                  <p class="text-center text-2xl text-purple font-semibold mb-2">Call Back</p>
+                  <div class="flex justify-center w-full">
                     <div
-                      class="rounded-full flex flex-wrap justify-center content-center w-full h-feedback mt-40"
-                    >
-                      <div class="flex flex-wrap justify-center w-full">
-                        <figure
-                          :class="{'border-2 border-purple': emoji==1}"
-                          class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg mt-3"
-                          @click="emoji=1"
-                        >
-                          <img :src="'/images/icons/1.png'" alt="Icon" class="content-center h-8" />
-                        </figure>
-                        <figure
-                          :class="{'border-2 border-purple': emoji==2}"
-                          class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg mt-3"
-                          @click="emoji=2"
-                        >
-                          <img :src="'/images/icons/2.png'" alt="Icon" class="content-center h-8" />
-                        </figure>
-
-                        <figure
-                          :class="{'border-2 border-purple': emoji==3}"
-                          class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg mt-3"
-                          @click="emoji=3"
-                        >
-                          <img :src="'/images/icons/3.png'" alt="Icon" class="content-center h-8" />
-                        </figure>
-
-                        <figure
-                          :class="{'border-2 border-purple': emoji==4}"
-                          class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg mt-3"
-                          @click="emoji=4"
-                        >
-                          <img :src="'/images/icons/4.png'" alt="Icon" class="content-center h-8" />
-                        </figure>
-
-                        <figure
-                          :class="{'border-2 border-purple': emoji==5}"
-                          class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg mt-3"
-                          @click="emoji=5"
-                        >
-                          <img :src="'/images/icons/5.png'" alt="Icon" class="content-center h-8" />
-                        </figure>
-                      </div>
-                      <div class="flex flex-wrap justify-center content-center w-full">
-                        <p
-                          class="text-purple justify-center w-16 font-bold tracking-tighter flex-1 w-full text-xl font-bold tracking-wider"
-                        >Call Back</p>
-                        <div class="flex flex-wrap justify-center content-center w-full">
-                          <div class="container flex w-1/2 mt-3" @click="callback = 1">
-                            <div class="flex w-full text-center justify-center flex-wrap">
-                              <div
-                                :class="{'button-detail': callback == 1}"
-                                class="m-3 bg-white content-center border border-purple rounded-full w-32 h-10 flex items-center"
-                              >
-                                <p
-                                  :class="{'text-white': callback == 1, 'text-purple': callback != 1}"
-                                  class="text-white text-sm font-bold content-center tracking-tighter flex-1"
-                                >Yes</p>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="container flex w-1/2 mt-3">
-                            <div
-                              class="flex w-full text-center justify-center flex-wrap"
-                              @click="callback = 0"
-                            >
-                              <div
-                                :class="{'button-detail': callback == 0}"
-                                class="m-3 content-center rounded-full border border-purple bg-white w-32 h-10 flex items-center"
-                              >
-                                <p
-                                  :class="{'text-white': callback == 0, 'text-purple': callback != 0}"
-                                  class="text-sm font-bold content-center tracking-tighter flex-1"
-                                >No</p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="flex flex-wrap justify-center content-center w-full">
-                        <p
-                          class="text-purple justify-center w-16 font-bold tracking-tighter flex-1 w-full text-xl font-bold tracking-wider"
-                        >Work On</p>
-                        <div
-                          class="flex flex-wrap work-on-btn justify-center content-center w-full"
-                        >
-                          <div class="container mt-3">
-                            <div class="flex w-full text-center justify-center flex-wrap">
-                              <div
-                                :class="{'button-detail': workon == 1}"
-                                class="m-3 content-center rounded-full border border-purple red-light w-20 h-10 flex items-center bg-white"
-                                @click="workon = 1"
-                              >
-                                <p
-                                  :class="{'text-white': workon == 1 , 'text-purple': workon != 1}"
-                                  class="text-sm font-bold content-center tracking-tighter flex-1"
-                                >Vocals</p>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="container mt-3">
-                            <div class="flexw-full text-center justify-center flex-wrap">
-                              <div
-                                :class="{'button-detail': workon == 2}"
-                                class="m-3 content-center rounded-full border border-purple bg-white w-20 h-10 flex items-center"
-                                @click="workon = 2"
-                              >
-                                <p
-                                  :class="{'text-white': workon == 2 , 'text-purple': workon != 2}"
-                                  class="text-sm font-bold content-center tracking-tighter flex-1"
-                                >Acting</p>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="container mt-3">
-                            <div class="flexw-full text-center justify-center flex-wrap">
-                              <div
-                                :class="{'button-detail': workon == 3}"
-                                class="m-3 content-center rounded-full border border-purple bg-white w-20 h-10 flex items-center"
-                                @click="workon = 3"
-                              >
-                                <p
-                                  :class="{'text-white': workon == 3 , 'text-purple': workon != 3}"
-                                  class="text-sm font-bold content-center tracking-tighter flex-1"
-                                >Dancing</p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="flex flex-wrap justify-center content-center w-full">
-                        <p
-                          class="text-purple justify-center w-16 font-bold tracking-tighter flex-1 w-full text-xl font-bold tracking-wider"
-                        >Rate</p>
-                          <vue-slider 
-                            class="w-full px-2 mt-5 mb-10 rate-slider"
-                            v-model="rating"
-                            ref="slider"
-                            v-bind="sliderOptions"
-                            :lazy="true"
-                          />
-
-                      </div>
-                      <div class="flex flex-wrap justify-center content-center w-full">
-                        <base-input
-                          v-model="form.comment"
-                          name="tag"
-                          class="w-full px-2 mb-10"
-                          type="add"
-                          placeholder="Add Comment"
-                          :custom-classes="['border-2', 'border-purple']"
-                        />
-                      </div>
+                      @click="callback = 1"
+                      :class="{'button-detail text-white': callback == 1, 'text-purple': callback != 1}"
+                      class="bg-white border border-purple rounded-full w-24 h-10 text-sm font-bold text-center flex items-center justify-center mx-2">Yes
+                    </div>
+                    <div
+                      @click="callback = 0"
+                      :class="{'button-detail text-white': callback == 0, 'text-purple': callback != 0}"
+                      class="bg-white border border-purple rounded-full w-24 h-10 text-sm font-boldtext-center flex items-center justify-center mx-2">No
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-            <div class="w-1/12"></div>
-            <div class="w-1/4 shadow-lg border border-gray-300 overflow-auto">
-              <p class="text-center text-2xl text-purple font-bold">Tags</p>
-              <div class="flex flex-wrap justify-center w-full">
-                <base-input
-                  v-model="tag"
-                  name="tag"
-                  class="w-full px-2"
-                  type="add"
-                  placeholder="Add Tags"
-                  :custom-classes="['border-2', 'border-purple']"
-                  @added="setTags"
-                />
-              </div>
-              <div class="m-4">
-                <template v-if="tags.length > 0">
-                  <div
-                    v-for="data in tags"
-                    :key="data.id"
-                    class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4"
-                  >
-                    <p class="text-purple w-1/2">{{data.title}}</p>
-                    <div class="flex flex-wrap justify-end w-1/2">
-                      <img
-                        src="/images/icons/garbage@3x.png"
-                        alt="Icon"
-                        class="h-6"
-                        @click="deleteTag(data)"
-                      />
+                <div class="flex flex-wrap justify-center flex-col content-center w-full mb-5">
+                  <p class="text-center text-2xl text-purple font-semibold mb-2">Work On</p>
+                  <div class="flex justify-center w-full">
+                    <div
+                      @click="workon = 1"
+                      :class="{'button-detail text-white': workon == 1, 'text-purple': workon != 1}"
+                      class="bg-white border border-purple rounded-full w-24 h-10 text-sm font-bold text-center flex items-center justify-center mx-2">Vocals
+                    </div>
+                    <div
+                      @click="workon = 2"
+                      :class="{'button-detail text-white': workon == 2, 'text-purple': workon != 2}"
+                      class="bg-white border border-purple rounded-full w-24 h-10 text-sm font-bold text-center flex items-center justify-center mx-2">Acting
+                    </div>
+                    <div
+                      @click="workon = 3"
+                      :class="{'button-detail text-white': workon == 3, 'text-purple': workon != 3}"
+                      class="bg-white border border-purple rounded-full w-24 h-10 text-sm font-bold text-center flex items-center justify-center mx-2">Dancing
                     </div>
                   </div>
-                </template>
-                <div
-                  v-else
-                  class="flex flex-wrap justify-center text-left content-center w-full border-gray-500 mb-4"
-                >
-                  <p class="text-purple w-full">There is no tags added</p>
                 </div>
-              </div>
-            </div>
-            <div class="w-1/12"></div>
-            <div class="w-1/4 shadow-lg border border-gray-300 overflow-auto">
-              <p class="text-center text-2xl text-purple font-bold">Recommendation</p>
-              <div class="flex flex-wrap justify-center w-full">
-                <div class="flex flex-wrap justify-center w-full">
+                <div class="flex flex-wrap justify-center flex-col content-center w-full mb-5">
+                  <p class="text-center text-2xl text-purple font-semibold mb-2">Rate</p>
+                  <vue-slider 
+                      class="w-3/4 mb-10 mx-auto rate-slider"
+                      v-model="rating"
+                      ref="slider"
+                      v-bind="sliderOptions"
+                      :lazy="true"
+                    />
+                </div>
+                <div class="flex flex-wrap justify-center flex-col content-center w-full">
                   <base-input
-                    v-model="marketplaceSearch"
-                    name="marketplace"
-                    class="w-full px-2"
+                    v-model="form.comment"
+                    name="tag"
+                    class="w-3/4 mb-3"
                     type="add"
-                    @click.native="show"
-                    placeholder="Search marketplaces"
+                    placeholder="Add Comment"
                     :custom-classes="['border-2', 'border-purple']"
-                    @input="filterMarketplaces"
                   />
                 </div>
               </div>
-              <div class="m-4">
-                <template v-if="recommendations.length > 0">
-                  <div
-                    v-for="data in recommendations"
-                    :key="data.id"
-                    class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4"
-                  >
-                    <p class="text-purple w-1/2">{{data.markeplace.title}}</p>
-                    <div class="flex flex-wrap justify-end w-1/2">
-                      <img
-                        src="/images/icons/garbage@3x.png"
-                        alt="Icon"
-                        class="h-6"
-                        @click="deleteRecommended(data)"
-                      />
+            </div>
+            <div class="w-1/4 p-2">
+              <div class="border rounded w-full h-50 overflow-auto px-3 py-2">
+                <p class="text-center text-2xl text-purple font-semibold mb-2">Tags</p>
+                <div class="flex flex-wrap justify-center w-full">
+                  <base-input
+                    v-model="tag"
+                    name="tag"
+                    class="w-full"
+                    type="add"
+                    placeholder="Add Tags"
+                    :custom-classes="['border-2', 'border-purple']"
+                    @added="setTags"
+                  />
+                </div>
+                <div class="mt-2">
+                  <template v-if="tags.length > 0">
+                    <div
+                      v-for="data in tags"
+                      :key="data.id"
+                      class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4"
+                      >
+                      <p class="text-purple w-1/2">{{data.title}}</p>
+                      <div class="flex flex-wrap justify-end w-1/2">
+                        <img
+                          src="/images/icons/garbage@3x.png"
+                          alt="Icon"
+                          class="h-6"
+                          @click="deleteTag(data)"
+                        />
+                      </div>
                     </div>
+                  </template>
+                  <div
+                    v-else
+                    class="flex flex-wrap justify-center text-left content-center w-full border-gray-500"
+                    >
+                    <p class="text-purple w-full">There is no tags added</p>
                   </div>
-                </template>
-                <div
-                  v-else
-                  class="flex flex-wrap justify-center text-left content-center w-full border-gray-500 mb-4"
-                >
-                  <p class="text-purple w-full">There is no marketplace added</p>
+                </div>
+              </div>
+            </div>
+            <div class="w-1/4 p-2">
+              <div class="border rounded w-full h-50 overflow-auto px-3 py-2">
+                <p class="text-center text-2xl text-purple font-semibold mb-2">Recommendation</p>
+                <div class="flex flex-wrap justify-center w-full">
+                  <div class="flex flex-wrap justify-center w-full">
+                    <base-input
+                      v-model="marketplaceSearch"
+                      name="marketplace"
+                      class="w-full"
+                      type="add"
+                      @click.native="show"
+                      placeholder="Search marketplaces"
+                      :custom-classes="['border-2', 'border-purple']"
+                      @input="filterMarketplaces"
+                    />
+                  </div>
+                </div>
+                <div class="mt-2">
+                  <template v-if="recommendations.length > 0">
+                    <div
+                      v-for="data in recommendations"
+                      :key="data.id"
+                      class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4"
+                    >
+                      <p class="text-purple w-1/2">{{data.markeplace.title}}</p>
+                      <div class="flex flex-wrap justify-end w-1/2">
+                        <img
+                          src="/images/icons/garbage@3x.png"
+                          alt="Icon"
+                          class="h-6"
+                          @click="deleteRecommended(data)"
+                        />
+                      </div>
+                    </div>
+                  </template>
+                  <div
+                    v-else
+                    class="flex flex-wrap justify-center text-left content-center w-full border-gray-500"
+                    >
+                    <p class="text-purple w-full">There is no marketplace added</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -558,8 +503,8 @@
         </div>
       </div>
       <multipane-resizer class="mt-0.1 bg-purple full-height"></multipane-resizer>
-      <div class="pane relative" :style="{ flexGrow: 1 }">
-        <div v-if="isChatView" class="custom-side-back chat-side-min-width">
+      <div class="pane relative sidebar-pane" :style="{ flexGrow: 1 }">
+        <div v-if="isChatView" class="custom-side-back chat-side-min-width h-full overflow-auto">
           <div class="chat-head">
             <!-- <img
               src="/images/icons/left_arrow.png"
@@ -570,7 +515,7 @@
           </div>
 
           <!-- Message List start from here -->
-          <div class="p-4">
+          <div class="chat-message overflow-auto p-4">
             <div
               class="w-full mb-5"
               v-for="messageData of messageList"
@@ -596,25 +541,26 @@
                 </div>
               </div>
             </div>                  
-            <div 
-              v-if="audition && audition.appointment_id == this.$route.params.round && audition.status == 1"
-              class="flex w-full"
+            
+          </div>
+          <div 
+            v-if="audition && audition.appointment_id == this.$route.params.round && audition.status == 1"
+            class="flex w-full relative p-4"
             >
-              <input
-                v-model="chatMessage"
-                name="chat_message"
-                class="w-full p-2 chat-input"
-                type="text"
-                placeholder="Write Something..."
-                @keyup.enter="sendMessage()"
-                :custom-classes="['border-2', 'border-purple']"
-              />
-              <img
-                src="/images/icons/send_purple.png"
-                class="cursor-pointer h-8 chat-btn"
-                @click="sendMessage()"
-              />
-            </div>
+            <input
+              v-model="chatMessage"
+              name="chat_message"
+              class="w-full p-2 chat-input"
+              type="text"
+              placeholder="Write Something..."
+              @keyup.enter="sendMessage()"
+              :custom-classes="['border-2', 'border-purple']"
+            />
+            <img
+              src="/images/icons/send_purple.png"
+              class="cursor-pointer h-8 chat-btn"
+              @click="sendMessage()"
+            />
           </div>
         </div>
         <template v-else>
@@ -1960,9 +1906,23 @@ nav {
 .rate-slider:hover .vue-slider-process {
   background-color: #6F2541;
 }
+.vue-slider:hover .vue-slider-dot-handle {
+  border-color: #6F2541;
+}
+
 //end: rating slider custom css
 .contact-btn {
   width: 6.3rem !important;
   height: 1.8rem !important;
 }
+.h-50 {
+  height: calc(50vh - 48px) !important;
+}
+.chat-message {
+  height: calc(100vh - 225px);
+}
+.chat-message span {
+  word-break: break-all;
+}
+
 </style>
