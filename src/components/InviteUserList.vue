@@ -34,16 +34,26 @@
             <div class="w-1/2 text-purple px-2 text-lg text-bold-500"></div>
             <div class="w-1/2 text-purple px-2 text-md"></div>
           </div>
-          <div class="flex justify-right mb-4 items-right px-3 w-full" v-if="subscriptionDetails && subscriptionDetails.grace_period == 0">
-            <div class="w-2/3 text-purple px-2 text-sm"></div>
+          <div class="flex justify-right mb-4 items-right px-3 w-full" v-if="subscriptionDetails">
+            <div class="w-2/3 text-purple px-2 text-sm">
+            Renewal Date : {{subscriptionDetails.ends_at | planDateFormat}}
+            </div>
             <div
-              class="w-2/7 text-purple px-2 text-sm capitalize justify-center content-center"
+              class="w-2/8 text-purple px-2 text-sm capitalize justify-center content-center"
             ></div>
-            <div class="w-2/8 text-purple px-5 pr-0 ml-15 text-sm capitalize margin-left-cancel">
+            <div class="w-2/8 text-purple px-5 pr-0 ml-15 text-sm capitalize margin-left-cancel" v-if="subscriptionDetails && subscriptionDetails.grace_period == 0">
               <a
                 class="flex items-center justify-center content-center cursor-pointer font-bold"
                 @click="cancelSubscription()"
               >Cancel Subscription</a>
+            </div>
+            <div class="w-2/8 text-purple px-5 pr-0 ml-15 text-sm capitalize margin-left-cancel" v-else-if="subscriptionDetails && subscriptionDetails.grace_period == 1">
+              <a
+                class="flex items-center justify-center content-center cursor-pointer font-bold"
+                @click="reSubscription()"
+              >Resume Subscription</a>
+            </div>
+            <div class="w-2/8 text-purple px-5 pr-0 ml-15 text-sm capitalize margin-left-cancel" v-else>              
             </div>
           </div>
         </div>
@@ -80,7 +90,7 @@
                 />
                 <span>
                   {{user.details.first_name +' '+ (user.details.last_name ? user.details.last_name : '')}}
-                  <br />
+                  <br v-if="user.details && (user.details.first_name || user.details.last_name)"/>
                   {{user.email}}
                 </span>
               </div>
@@ -174,6 +184,24 @@
           </div>
           <div class="w-1/4 ml-3">
             <base-button type="button" expanded @click="subscribeConfirmDone()">Yes</base-button>
+          </div>
+        </div>
+      </div>
+    </modal>
+    <modal
+      class="flex flex-col w-full items-center mt-4"
+      :width="540"
+      height="175"
+      name="modal_confirm_re_subscribe"
+    >
+      <div class="py-8 px-3">
+        <p class="text-lg text-purple font-bold text-center">Are you sure, you want to resume the subscription?</p>
+        <div class="w-full flex flex-wrap justify-center overflow-hidden mt-3">
+          <div class="w-1/4">
+            <base-button type="button" expanded @click="reSubscriptionConfirmCancel()">No</base-button>
+          </div>
+          <div class="w-1/4 ml-3">
+            <base-button type="button" expanded @click="reSubscriptionConfirmDone()">Yes</base-button>
           </div>
         </div>
       </div>
@@ -351,17 +379,41 @@ export default {
     subscribeConfirmCancel(){
       this.$modal.hide("modal_confirm_cancel_subscribe");
     },
+    reSubscription() {
+      this.$modal.show("modal_confirm_re_subscribe");
+    },
+    reSubscriptionConfirmCancel(){
+      this.$modal.hide("modal_confirm_re_subscribe");
+    },
+    async reSubscriptionConfirmDone() {      
+      this.isLoading = true;
+      try {
+        this.$modal.hide("modal_confirm_re_subscribe");       
+        const result = await axios.get(`/t/users/resumeSubscription`);
+        this.isLoading = false;
+        console.log("reSubscriptionConfirmDone -> response ::: ", result);
+        this.subscriptionDetails.grace_period = 0;
+        const successMsg = result.data && result.data.message ? result.data.message : "Your subscription has been resume successfully";
+        this.$toasted.success(successMsg);
+        this.getInviteUser();        
+      } catch (e) {
+        this.$toasted.error(DEFINE.common_error_message);
+      } finally {
+        this.isLoading = false;
+      }
+    },
     async subscribeConfirmDone() {
       // this.$modal.show("modal_confirm_cancel_subscribe");
       this.isLoading = true;
       try {
         this.$modal.hide("modal_confirm_cancel_subscribe");       
-        const {
-          data: { data }
-        } = await axios.get(`/t/users/cancelSubscription`);
+        const result = await axios.get(`/t/users/cancelSubscription`);
+        console.log("subscribeConfirmDone -> result", result)
         this.isLoading = false;
         this.subscriptionDetails.grace_period = 1;
-        this.$toasted.success("Your subscription has been cancelled successfully.");
+        const successMsg = result.data && result.data.message ? result.data.message : "Your subscription has been cancelled successfully";
+        this.$toasted.success(successMsg);
+        this.$toasted.success();
         this.getInviteUser();        
       } catch (e) {
         this.$toasted.error(DEFINE.common_error_message);

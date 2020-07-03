@@ -63,6 +63,14 @@ Vue.filter("custTimeFormat", function (value) {
   }
 });
 
+Vue.filter("planDateFormat", function (value) {
+  if (value) {
+    return moment(String(value)).format("MM/DD/YYYY");
+  } else {
+    return '-';
+  }
+});
+
 // only time value should be pass e.g. 10:20 am or 15:30 and display only hours with minutes 00
 Vue.filter("custHoursTimeFormat", function (value) {
   if (value) {
