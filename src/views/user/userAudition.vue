@@ -118,13 +118,16 @@
       </div>
     </modal>
     <multipane class="custom-resizer h-full" layout="vertical">
+      <!-- min-width: 75%; width: 68%; max-width: 100%; noraml user details -->
+      <!-- :style="{ minWidth: 'calc(100% - 426px)', width: 'calc(100% - 426px)', maxWidth: '100%' }" -->
       <div
-        class="pane content-pane bg-white p-2"
-        :style="{ minWidth: 'calc(100% - 426px)', width: 'calc(100% - 426px)', maxWidth: '100%' }"
+        class="pane content-pane bg-white p-2 "
+        :style="isChatView ? { minWidth: 'calc(100% - 426px)', width: 'calc(100% - 426px)', maxWidth: '100%' } : { minWidth: '75%', width: '68%', maxWidth: '100%' }"
         >
-        <div class="flex flex-wrap h-full">
+        
+        <div class="flex flex-wrap">
           <div class="flex w-full">
-            <div class="w-1/4 p-2">
+            <div class="w-5/12 p-2">
               <div class="border rounded w-full h-50 overflow-auto px-0 py-2">
                 <p class="text-center text-2xl text-purple font-semibold mb-2">Availability</p>
                 <v-date-picker
@@ -140,15 +143,15 @@
                 />
               </div>
             </div>
-            <div class="w-1/4 p-2">
-              <div class="border rounded w-full h-50 overflow-auto px-0 py-2">
-                <p class="text-center text-2xl text-purple font-semibold mb-2">Roles</p>
+            <div class="w-3/12 p-2">
+              <div class="border rounded w-full h-50 overflow-auto px-0 py-2 flex flex-wrap content-start">
+                <p class="text-center text-2xl text-purple font-semibold mb-2 w-full">Roles</p>
 
                 <div 
                   v-for="data in currentUserRoles"
                   :key="data.id"
-                  class="flex flex-wrap justify-center">
-                  <div class="w-1/3">
+                  class="flex flex-wrap justify-center w-1/2">
+                  <div class="">
                     <div
                       class="rounded-full w-12 h-12 bg-cover mb-1 mx-auto"
                       :class="{'button-detail': data.id == rol, 'bg-gray-400': data.id != rol}"
@@ -159,7 +162,7 @@
                 </div>
               </div>
             </div>
-            <div v-if="audition.online == 0" class="w-2/4 p-2">
+            <div v-if="audition.online == 0" class="w-4/12 p-2">
               <div class="border rounded w-full h-50 overflow-auto px-0 py-2">
                 <div class="flex flex-wrap justify-center items-center mb-2">
                   <p class="text-center text-2xl text-purple font-semibold">Team Feedback</p>
@@ -231,7 +234,7 @@
                 </div>
               </div>
             </div>
-            <div v-if="audition.online == 1" class="w-2/4 p-2">
+            <div v-if="audition.online == 1" class="w-4/12 p-2">
               <div class="border rounded w-full h-50 overflow-auto">
                 <p class="text-center text-2xl text-purple font-bold">Audition Documents</p>
                 <div class="flex flex-wrap justify-center">
@@ -501,6 +504,7 @@
             </div>
           </div>
         </div>
+        
       </div>
       <multipane-resizer class="mt-0.1 bg-purple full-height"></multipane-resizer>
       <div class="pane relative sidebar-pane" :style="{ flexGrow: 1 }">
@@ -515,7 +519,7 @@
           </div>
 
           <!-- Message List start from here -->
-          <div class="chat-message overflow-auto p-4">
+          <div ref="chatlist" class="chat-message overflow-auto p-4">
             <div
               class="w-full mb-5"
               v-for="messageData of messageList"
@@ -649,14 +653,14 @@
               <div
                 class="flex w-full justify-start"                
               >
-                <a target="_blank" v-bind:href="'mailto:'+performerDetails.email+''" type="button" class="flex contact-btn justify-center mt-12 bg-purple-gradient text-white text-md rounded-sm rounded-tl-md">
+                <a target="_blank" v-bind:href="'mailto:'+performerDetails.email+''" type="button" class="flex contact-btn justify-center mt-6 bg-purple-gradient text-white text-md rounded-sm rounded-tl-md p-1">
                   <img :src="'/images/icons/mail_icon@2x.png'" alt="Icon" class="h-5 mr-2 mt-1" />
                   <span class="mt-1">Contact</span>
                 </a>
               </div>
               <div
                 @click="viewResume()"
-                class="flex w-full justify-start mt-12 cus-cur"
+                class="flex w-full justify-start mt-6 cus-cur"
               >
                 <img :src="'/images/icons/icon.png'" alt="Icon" class="content-center h-8" />
                 <p class="text-purple text-m text-left ml-4 tracking-wide font-semibold w-1/2">Resume</p>
@@ -689,7 +693,7 @@
               </div> -->
               <div
                 @click="getPerformerDetail('appearance')"
-                class="flex w-full justify-start mt-12 cus-cur"
+                class="flex w-full justify-start mt-6 cus-cur"
               >
                 <img :src="'/images/icons/12-layers.png'" alt="Icon" class="content-center h-8" />
                 <p
@@ -697,7 +701,7 @@
                 >Appearance</p>
               </div>
               <div
-                class="flex flex-wrap justify-center mt-12 w-full cursor-pointer"
+                class="flex flex-wrap justify-center mt-6 w-full cursor-pointer"
                 v-if="audition.status!=2"
               >
                 <div class="flex w-1/2" @click="saveFeedback">
@@ -1601,6 +1605,7 @@ export default {
      */
     async initializeChat() {
       const currentChatPath = `${this.chatPrefix}${this.$route.params.audition}`;
+      console.log("initializeChat -> currentChatPath", currentChatPath)
       this.auditionChatRef = db
         .collection("audition_chats")
         .doc(currentChatPath);
@@ -1634,8 +1639,8 @@ export default {
         this.auditionChatRef          
           .collection(`${roundChatPath}`)
           .orderBy("createDate", "asc")
-          .onSnapshot(querySnapshot => {
-            querySnapshot.forEach(doc => {
+          .onSnapshot(async querySnapshot => {
+            await querySnapshot.forEach(doc => {
               // console.log("chatManage -> doc id", doc.id)
               // console.log("chatManage -> doc data", doc.data())
               let data = doc.data();
@@ -1658,7 +1663,8 @@ export default {
                   ...data
                 };
               }
-            });
+            });            
+            this.$refs.chatlist.scrollTop = this.$refs.chatlist.scrollHeight + 120;
           });
       }
       // this.messageList = this.messageList.sort(
@@ -1895,28 +1901,34 @@ nav {
 
 //start: rating slider custom css
 .rate-slider .vue-slider-dot-handle {
-  border: 2px solid #4D2544;
+  border: 2px solid #4D2544 !important;
 }
 .rate-slider .vue-slider-process{
-  background-color: #4D2544;
+  background-color: #4D2544 !important;
 }
 .vue-slider:hover .vue-slider-dot-handle:hover {
-    border-color: #6F2541;
+    border-color: #6F2541 !important;
+}
+.vue-slider .vue-slider-dot-handle-focus {
+    border-color: #6F2541 !important;
+    box-shadow:rgba(111,37,65, 0.4) !important;
 }
 .rate-slider:hover .vue-slider-process {
-  background-color: #6F2541;
+  background-color: #6F2541 !important;
 }
 .vue-slider:hover .vue-slider-dot-handle {
   border-color: #6F2541;
+}
+.rate-slider * {
+  box-shadow:none !important;
 }
 
 //end: rating slider custom css
 .contact-btn {
   width: 6.3rem !important;
-  height: 1.8rem !important;
 }
 .h-50 {
-  height: calc(50vh - 48px) !important;
+  height: calc(70vh - 48px) !important;
 }
 .chat-message {
   height: calc(100vh - 225px);
