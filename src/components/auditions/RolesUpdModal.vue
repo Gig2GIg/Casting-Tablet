@@ -159,6 +159,7 @@
     </base-button>
 
     <base-button
+      v-if="role_count > 1"
       class="pt-2 pb-2 w-48"
       border-classes="rounded-full"
       @click="handleDelete"
@@ -178,6 +179,7 @@ export default {
   name: 'RolesModal',
   props: {
     data: Object,
+    role_count : Number
   },
   data() {
     return {
@@ -191,7 +193,7 @@ export default {
     data: {
       immediate: true,
       handler(value) {
-        console.log("handler -> data", this.data)
+        console.log("handler -> role data", this.data)
         if (value) {
           this.editMode = false;
           this.form = Object.assign({}, value);

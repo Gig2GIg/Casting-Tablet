@@ -583,6 +583,7 @@
     <RolesUpdModal
       v-if="manageRoles"
       :data="selectedRole"
+      :role_count="form && form.roles && form.roles.length ? form.roles.length : 0"
       @save="handleSaveRole"
       @destroy="handleDeleteRole"
       @close="manageRoles = false"
