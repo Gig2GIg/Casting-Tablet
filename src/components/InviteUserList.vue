@@ -36,7 +36,7 @@
           </div>
           <div class="flex justify-right mb-4 items-right px-3 w-full" v-if="subscriptionDetails">
             <div class="w-2/3 text-purple px-2 text-sm">
-            Renewal Date : {{subscriptionDetails.ends_at | planDateFormat}}
+            {{subscriptionDetails && subscriptionDetails.grace_period == 0 ? 'Renewal Date' : 'Expiration Date'}} : {{subscriptionDetails.ends_at | planDateFormat}}
             </div>
             <div
               class="w-2/8 text-purple px-2 text-sm capitalize justify-center content-center"
