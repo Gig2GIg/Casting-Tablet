@@ -556,6 +556,7 @@
               name="chat_message"
               class="w-full p-2 chat-input"
               type="text"
+              autocomplete="off"
               placeholder="Write Something..."
               @keyup.enter="sendMessage()"
               :custom-classes="['border-2', 'border-purple']"
@@ -1396,7 +1397,13 @@ export default {
       if (Object.keys(this.feedback).length == 0) {
         let status = await axios.post("/t/feedbacks/add", this.form);
         this.$toasted.success("Feedback Created");
+        let feedback = {
+          user:this.$route.params.id,
+          round:this.$route.params.round
+        };
+        await this.fetchUserFeedback(feedback);
         await this.fetchTeamFeedback(data);
+        
         return;
       }
       this.form.user_id = this.$route.params.id;

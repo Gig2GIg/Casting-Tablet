@@ -218,8 +218,8 @@
       />
     </div>
     <div class="flex w-full">
-      <!-- v-model="form.additional_info" -->
       <base-input
+        v-model="form.additional_info"
         v-validate="'max:500'"
         name="additional_info"
         class="px-2 w-full h-40"

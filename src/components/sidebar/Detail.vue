@@ -207,7 +207,7 @@
         <div class="w-10/12 border border-gray-300 mt-3" />
         <router-link
           class="w-full"
-          v-if="audition.status == 0 "
+          v-if="audition.status != 2"
           :to="{ name: 'auditions.update', params: {id: audition.id } }"
         >
           <div class="container flex w-full mt-3 cursor-pointer">
@@ -322,6 +322,19 @@
             >Close Round</p>
           </div>
         </div>
+        <div
+          v-if="audition.status == 1 && roundActive.status == 0"
+          class="flex w-full content-center text-center justify-center flex-wrap cursor-pointer"
+          @click="reopenRounds"
+        >
+          <div
+            class="m-3 content-center flex items-center flex m-3 content-center border-2 rounded-sm border-purple w-48 h-10"
+          >
+            <p
+              class="flex-1 light-purple text-sm font-semibold content-center tracking-tighter flex-1"
+            >Re-Open Round</p>
+          </div>
+        </div>
         <div class="w-full border border-gray-300 mt-6 mb-6" />
         <div
           class="flex w-full content-center text-center justify-center flex-wrap cursor-pointer"
@@ -334,6 +347,20 @@
               class="flex-1 light-purple text-sm font-semibold content-center tracking-tighter flex-1"
             >Audition Videos</p>
           </div>
+        </div>
+        <div v-if="showAuditionTrack" class="w-full border border-gray-300 mt-6 mb-6" />
+        <div
+          v-if="showAuditionTrack"
+          class="flex w-full content-center text-center justify-center flex-wrap cursor-pointer"
+        >
+          <button
+            @click="auditionTrack"
+            class="m-3 content-center flex items-center flex m-3 content-center border-2 rounded-sm border-purple w-48 h-10"
+          >
+            <p
+              class="flex-1 text-purple text-sm font-semibold content-center tracking-tighter flex-1"
+            >Audition Track</p>
+          </button>
         </div>
         <div v-if="roundActive.status == 1 && audition.status == 1 && roundActive.status > 0 && audition.online == 0" class="w-full border border-gray-300 mt-6 mb-6" />
         <div
@@ -636,6 +663,8 @@ import SimpleKeyboard from "../shared/SimpleKeyboard";
 import DEFINE from "../../utils/const.js";
 
 import ExcelService from '@/services/ExcelService';
+import TokenService from "@/services/core/TokenService";
+
 
 export default {
   components: {
@@ -700,7 +729,11 @@ export default {
   },
   computed: {
     ...mapState("audition", ["audition", "videos"]),
-    ...mapState("round", ["rounds"])
+    ...mapState("round", ["rounds"]),
+    showAuditionTrack(){
+      const userId = TokenService.getUserId();
+      return this.audition.user_id == userId || this.audition.admin_id == userId;
+    },
   },
   async beforeMount() {
     await this.fetchAuditionData(this.$route.params.id);
@@ -719,7 +752,28 @@ export default {
     onResize() {
       this.innerWidth = window.innerWidth;
     },
-    hiddenPerformerView(){      
+    async auditionTrack() {
+      try {
+        if(this.isLoading){
+          return;
+        }
+        this.isLoading = true;
+        const url = `${process.env.VUE_APP_API_URL}/exportAuditionLogs/${this.$route.params.id}`;
+         window.open(url, '_blank');
+        this.isLoading =  false;
+      } catch (e) {
+        console.log("auditionTrack -> e", e)
+        this.isLoading =  false;
+        let errorMsg;
+        if (e.response && e.response.data) {          
+          errorMsg = e.response.data.message;
+        }
+        errorMsg = errorMsg ? errorMsg : DEFINE.common_error_message;
+        this.$toasted.error(errorMsg);
+      }
+      
+    },
+    hiddenPerformerView() {            
       eventBus.$emit("showHiddenPerformer", true);
     },
     handleNewGroup(round_status) {
@@ -883,13 +937,35 @@ export default {
       await this.closeRound(this.roundActive.id);
       this.handleNewGroup(0);
       this.roundActive.status = 0;
+      this.object = {
+        name: "Select a Round"
+      }
       if(this.lastRound.id == this.roundActive.id){
         this.sendDataToChild(0);
+        // reload rounds list
+        await this.$refs.roundRef.reloadRounds(false);
+      } else {
+        // reload rounds list
+        await this.$refs.roundRef.reloadRounds(true);
       }
-      // reload rounds list
-      await this.$refs.roundRef.reloadRounds(false);
-      
+      console.log("reopenRounds -> this.rounds", this.rounds)
     },
+    async reopenRounds() {      
+      this.$toasted.clear();  
+      try {        
+        const { data: { data } } = await axios.put(`/t/appointment/${this.roundActive.id}/reOpenRound`, {});
+        this.handleNewGroup(1);
+        this.roundActive.status = 1;        
+        this.sendDataToChild(1);
+        // reload rounds list
+        await this.$refs.roundRef.reloadRounds(true);
+        console.log("reopenRounds -> this.rounds", this.rounds)
+      } catch (e) {
+        console.log("reopenRounds -> ex.response", e.response)
+        let errorMsg = e.response && e.response.data && e.response.data.message ? e.response.data.message : DEFINE.common_error_message;
+        this.$toasted.error(errorMsg);
+      }
+    },    
     resetOptions() {
       this.info = true;
       this.manage = false;
@@ -909,8 +985,9 @@ export default {
       if (this.isOpenGroup || this.isLastRoundGroupOpen) {
         this.$toasted.error("Please close group first.");
         return;
-      }
-      if(this.lastRound.status == 1){
+      }      
+      const openRounds = this.rounds.length > 0 ? this.rounds.filter(val => val.status == 1) : [];
+      if(openRounds.length > 0){
         this.$toasted.error("Please close round first.");
         return;
       }
