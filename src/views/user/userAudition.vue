@@ -1077,7 +1077,8 @@ export default {
         adding: false,
         email: '',
       },
-      base_url : ''
+      base_url : '',
+      refreshFBIntrval: undefined,
     };
   },
   computed: {
@@ -1122,9 +1123,13 @@ export default {
     this.base_url = window.location.origin;
     await this.initializeChat();
     // auto refresh feed back
-    setInterval(function () {
-		      this.updateTeamFeedBack(false);
-		 }.bind(this), 5000);
+    this.stopFeedbackRefresh();
+    this.refreshFBIntrval = setInterval(function () {
+        this.updateTeamFeedBack(false);
+    }.bind(this), 5000);
+  },
+  beforeDestroy() {
+      this.stopFeedbackRefresh();
   },
   methods: {
     ...mapActions("user", ["fetch"]),
@@ -1153,6 +1158,11 @@ export default {
       "setRecommendations",
       "deleteRecommendation"
     ]),
+    stopFeedbackRefresh(){
+      clearInterval(this.refreshFBIntrval);
+      this.refreshFBIntrval = undefined;
+
+    },
     goToday() {
       this.$refs.calendar.goToday();
     },

@@ -276,9 +276,9 @@
             </div>
           <!-- </router-link> -->
         </div>
-        <div v-if="audition.status == 0" class="w-full border border-gray-300 mt-6 mb-6" />
+        <div v-if="audition.status != 1" class="w-full border border-gray-300 mt-6 mb-6" />
         <div
-          v-if="audition.status == 0"
+          v-if="audition.status != 1"
           class="flex w-full content-center text-center justify-center flex-wrap cursor-pointer"
         >
           <div
@@ -979,7 +979,7 @@ export default {
     async changeStatus() {
       await this.openAudition(this.audition.id);
       await this.$emit("statusSet", this.audition.status);
-      await this.$refs.roundRef.reloadRounds(true);
+      await this.$refs.roundRef.reloadRounds(false);
     },
     async close() {
       if (this.isOpenGroup || this.isLastRoundGroupOpen) {
