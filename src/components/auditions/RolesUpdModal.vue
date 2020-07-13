@@ -158,14 +158,14 @@
       Edit
     </base-button>
 
-    <base-button
+    <!-- <base-button
       v-if="role_count > 1"
       class="pt-2 pb-2 w-48"
       border-classes="rounded-full"
       @click="handleDelete"
     >
       Delete
-    </base-button>
+    </base-button> -->
   </div>
 </template>
 

@@ -1282,6 +1282,7 @@ export default {
       this.finalUserList = _.orderBy(this.finalUserList, "time", "asc");
     },
     async handleApprMdlFrm(type) {
+      this.$toasted.clear();
       this.comment = this.comment ? this.comment.trim() : "";
       if (
         (type == "rejected" && !this.feedbackText) ||
@@ -1339,6 +1340,7 @@ export default {
       }
     },
     async handleKeepFutureMdlFrm() {
+      this.$toasted.clear();
       try {
         if (this.isLoading) {
           return;

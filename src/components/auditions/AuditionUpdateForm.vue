@@ -76,6 +76,9 @@
         :value="form.online"
       >Online Submission</base-checkbox>
     </div>
+    <div class="flex" :style="!form.online ? 'display: none!important;' : ''" >
+        <base-input  v-model="form.end_date" v-validate="form.online ? 'required' : ''" id="end_date" name="end_date" class="w-1/3 px-2" type="date" :mindate="min_end_date" placeholder="End Date" :custom-classes="['border', 'border-purple']" :message="errors.first('create.end_date')" data-vv-as="end date"  />
+    </div>
     <div class="flex" v-if="!form.online">
       <base-input
         v-model="form.date"
@@ -776,6 +779,7 @@ export default {
       coverFileName :  null,
       coveNameObject : {},
       coverThumbnail : {},
+      min_end_date : new Date()
     };
   },
   watch: {
@@ -796,6 +800,7 @@ export default {
     }
   },
   created() {
+    this.min_end_date.setDate(new Date().getDate() + 1);
     window.addEventListener("resize", this.onResize);
   },
   async mounted() {
@@ -872,7 +877,7 @@ export default {
         this.form_dates[1].to = values.to ? moment(values.to).toDate() : '';        
       }
     });
-
+    this.form.end_date = auditionCopiedObject.end_date ? moment(auditionCopiedObject.end_date).toDate() : '';
     this.form.media = auditionCopiedObject.media;
     this.form.roles = auditionCopiedObject.roles;
     this.form.contributors = auditionCopiedObject.contributors;
@@ -1177,7 +1182,9 @@ export default {
         );
 
         data.online = data.online ? 1 : 0;
-
+        if(data.online && this.form.end_date) {
+          data.end_date = moment(this.form.end_date).format('YYYY-MM-DD');
+        }
         // // Upload files
         // await Promise.all(data.media.map(async (media) => {
         //   const snapshot = await firebase.storage()

@@ -712,7 +712,7 @@
                     >
                       <p
                         class="text-white text-sm font-bold content-center tracking-tighter flex-1"
-                      >Save</p>
+                      >{{isUpdateFeeback ? "Edit":'Save' }}</p>
                     </div>
                   </div>
                 </div>
@@ -1079,6 +1079,7 @@ export default {
       },
       base_url : '',
       refreshFBIntrval: undefined,
+      isUpdateFeeback : false
     };
   },
   computed: {
@@ -1167,6 +1168,7 @@ export default {
       this.$refs.calendar.goToday();
     },
     async userDetailsInit() {
+
       this.manageCurrentUserRoles();
       await this.fetchTags({"round": this.$route.params.round, "user": this.$route.params.id,});
       await this.fetchRecommendation({"round": this.$route.params.audition, "user": this.$route.params.id,});
@@ -1176,8 +1178,9 @@ export default {
         round:this.$route.params.round
       };
       await this.fetchUserFeedback(feedback);
-          
-      if(Object.keys(this.feedback).length>0){
+                
+      if(Object.keys(this.feedback).length > 0) {        
+        this.isUpdateFeeback = true;
         for(data in this.feedback){
           this.workon = this.feedback.work === null ? null : (this.feedback.work == 'vocals' ? 1 :this.feedback.work == 'acting' ? 2 : 3);
           this.favorite = this.feedback.favorite;
@@ -1186,6 +1189,14 @@ export default {
           this.rating = this.feedback.rating ? this.feedback.rating : null;
           this.form.comment = this.feedback.comment;
         }
+      } else {
+        this.isUpdateFeeback = false;
+        this.workon = null;
+        this.favorite = 0;
+        this.emoji = null;
+        this.callback = null;
+        this.rating = 1;
+        this.form.comment = '';
       }
         // Get Assigend Number
         let getPerformerDetails = await axios.get(`/t/auditions/profile/user/${this.$route.params.id}/appointment/${this.$route.params.round}`);
@@ -1251,8 +1262,13 @@ export default {
       this.invitation.email = "";
 
     },
-    viewResume() {
-      this.performerResume = this.performerDetails.resume ? pdf.createLoadingTask(this.performerDetails.resume) : '';
+    viewResume() {      
+      this.$toasted.clear();
+
+      this.performerResume = this.performerDetails.resume ? pdf.createLoadingTask(this.performerDetails.resume) : null;
+      if(!this.performerResume) {
+        this.$toasted.error("This performer doesn't have any resume uploaded yet.");
+      }
       // this.performerResume = this.performerDetails.resume;
       this.performerResume.promise.then(pdf => {
         this.numPages = pdf.numPages;
@@ -1405,6 +1421,7 @@ export default {
       };
       this.isLoading = false;
       if (Object.keys(this.feedback).length == 0) {
+        this.isUpdateFeeback = false;
         let status = await axios.post("/t/feedbacks/add", this.form);
         this.$toasted.success("Feedback Created");
         let feedback = {
@@ -1413,9 +1430,10 @@ export default {
         };
         await this.fetchUserFeedback(feedback);
         await this.fetchTeamFeedback(data);
-        
+        this.isUpdateFeeback = true;
         return;
       }
+      this.isUpdateFeeback = true;
       this.form.user_id = this.$route.params.id;
       let status = await axios.put(
         `/t/auditions/${this.$route.params.round}/feedbacks/update`,
@@ -1622,7 +1640,7 @@ export default {
      */
     async initializeChat() {
       const currentChatPath = `${this.chatPrefix}${this.$route.params.audition}`;
-      console.log("initializeChat -> currentChatPath", currentChatPath)
+      
       this.auditionChatRef = db
         .collection("audition_chats")
         .doc(currentChatPath);
