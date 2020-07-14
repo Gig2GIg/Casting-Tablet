@@ -532,7 +532,7 @@
                 <div class="ml-3 col-chat">
                   <div class="flex w-full mp-box">
                     <span
-                      class="font-bold text-sm"
+                      class="font-bold text-sm capitalize"
                     >
                       {{ messageData.sender && messageData.sender.details ? messageData.sender.details.first_name +' '+ messageData.sender.details.last_name : ''}}</span>
                     <span
@@ -733,11 +733,12 @@
         </template>
       </div>
     </multipane>
-    <modal :width="500" height="650" :adaptive="true" name="resumeModal" class="custom-event-popup">
+    <modal :width="500" height="600" :adaptive="true" name="resumeModal" class="custom-event-popup">
       <button @click="$modal.hide('resumeModal')" class="popup-close-btn">
         <i class="material-icons" style="font-size: 35px;color: black;">clear</i>
       </button>
           <pdf
+            class="p-5"
             v-for="i in numPages"
             :key="i"
             :src="performerResume"
@@ -1422,7 +1423,8 @@ export default {
       this.isLoading = false;
       if (Object.keys(this.feedback).length == 0) {
         this.isUpdateFeeback = false;
-        let status = await axios.post("/t/feedbacks/add", this.form);
+        console.log("saveFeedback -> this.form", this.form)
+        let status = await axios.post("/t/feedbacks/add", this.form);        
         this.$toasted.success("Feedback Created");
         let feedback = {
           user:this.$route.params.id,
@@ -1435,6 +1437,7 @@ export default {
       }
       this.isUpdateFeeback = true;
       this.form.user_id = this.$route.params.id;
+      console.log("update Feedback -> this.form", this.form)
       let status = await axios.put(
         `/t/auditions/${this.$route.params.round}/feedbacks/update`,
         this.form

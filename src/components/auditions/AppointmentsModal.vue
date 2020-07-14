@@ -207,9 +207,6 @@ export default {
           })
         })
     });
-    // this.$refs.appointmentsInput.on('wheel.disableScroll', function (e) {
-    //   e.preventDefault()
-    // })
   },
   methods: {
     makeSlots() {

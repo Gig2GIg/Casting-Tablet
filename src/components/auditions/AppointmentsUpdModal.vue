@@ -164,6 +164,13 @@ export default {
   created() {
     this.appointments = Object.assign({}, this.data);
     this.appointments.status = true;
+    $(function() {
+      $(document).on('focus', 'input[type=number]', function (e) {
+          $(this).on('wheel.disableScroll', function (e) {
+            e.preventDefault()
+          })
+        })
+    });
   },
   methods: {
     makeSlots() {

@@ -211,7 +211,7 @@
                 "fetchAppointmentNotWalk"
             ]),
             async reset() {
-                let stateCheckin = await this.saveCheckIn(this.data);
+                // let stateCheckin = await this.saveCheckIn(this.data);
                 this.$toasted.success("The check-in has been successfully");
                 this.data = {};
                 this.init = true;

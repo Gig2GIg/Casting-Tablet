@@ -1048,6 +1048,7 @@ export default {
       event.preventDefault();
       this.performer_id = performer_id;
       if (is_feedback_sent == 1) {
+        this.$toasted.clear();
         this.$toasted.error("Feedback already send");
       } else {
         if (
@@ -1064,6 +1065,7 @@ export default {
       event.preventDefault();
       this.performer_id = performer_id;
       if (is_feedback_sent == 1) {
+        this.$toasted.clear();
         this.$toasted.error("Feedback already send");
       } else {
         this.$modal.show("showApproveOptionMdl");
@@ -1084,6 +1086,7 @@ export default {
       event.preventDefault();
       this.performer_id = performer_id;
       if (is_feedback_sent == 1) {
+        this.$toasted.clear();
         this.selectedSlot = null;
         this.$toasted.error("Feedback already send");
       } else {
