@@ -733,12 +733,11 @@
         </template>
       </div>
     </multipane>
-    <modal :width="500" height="600" :adaptive="true" name="resumeModal" class="custom-event-popup">
-      <button @click="$modal.hide('resumeModal')" class="popup-close-btn">
+    <modal :width="500" :adaptive="true" name="resumeModal" class="modal-height-90">
+      <button @click="$modal.hide('resumeModal')" class="resume-popup-close-btn">
         <i class="material-icons" style="font-size: 35px;color: black;">clear</i>
       </button>
           <pdf
-            class="p-5"
             v-for="i in numPages"
             :key="i"
             :src="performerResume"
@@ -1975,4 +1974,19 @@ nav {
   word-break: break-all;
 }
 
+.v--modal-box.v--modal {
+  overflow: auto !important;
+}
+.modal-height-90 {
+  height: 100vh !important;
+  top: 0 !important;
+}
+.modal-height-90 .v--modal-box.v--modal {
+  height: 90vh !important;
+  top: 5vh !important;
+}
+.resume-popup-close-btn {
+  top: 18px;
+  left: 18px;
+}
 </style>

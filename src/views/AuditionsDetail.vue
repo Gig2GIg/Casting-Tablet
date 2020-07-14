@@ -114,7 +114,7 @@
                 :key="data.user_id"
               >
                 <router-link
-                  :to="isAuditionVideos || (currentAudition && currentAudition.status == 2) ? { name: 'talent/user', params: {id: data.user_id} } : { name: 'auditions/user', params: {id: data.user_id, round: round.id, audition:$route.params.id} }"
+                  :to="isAuditionVideos || ((currentAudition && currentAudition.status == 2) || (round && round.status != 1)) ? { name: 'talent/user_view', params: {id: data.user_id} } : { name: 'auditions/user', params: {id: data.user_id, round: round.id, audition:$route.params.id} }"
                 >
                   <div class="btn-card-wrap">
                   <card-user
@@ -244,7 +244,7 @@
               >
                 <router-link
                   v-bind:class="{ 'pointer-none' : isShowCreateGroup}"
-                  :to="!isShowCreateGroup ? (currentAudition && currentAudition.status == 2 ? { name: 'talent/user', params: {id: data.user_id} } : { name: 'auditions/user', params: {id: data.user_id, round: round.id, audition:$route.params.id} }) : { name: 'auditions/detail', params: {id: $route.params.id} }"
+                  :to="!isShowCreateGroup ? (((currentAudition && currentAudition.status == 2) || (round && round.status != 1)) ? { name: 'talent/user_view', params: {id: data.user_id} } : { name: 'auditions/user', params: {id: data.user_id, round: round.id, audition:$route.params.id} }) : { name: 'auditions/detail', params: {id: $route.params.id} }"
                 >
                   <div class="btn-card-wrap">
                     <card-user
@@ -756,7 +756,7 @@ export default {
       return newUrl.endsWith("?") ? newUrl.slice(0, -1) : newUrl;
     },
     redirectOnDetails(user_id) {
-      if (this.currentAudition && this.currentAudition.status == 2) {
+      if ((this.currentAudition && this.currentAudition.status == 2) || (this.round && this.round.status != 1)) {
         this.$router.replace(
           this.$route.query.redirect || {
             name: 'talent/user_view',
