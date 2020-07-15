@@ -342,6 +342,13 @@ export default {
   created() {
     this.appointments = Object.assign({}, this.data);
     this.$emit('input', this.appointments);
+    $(function() {
+      $(document).on('focus', 'input[type=number]', function (e) {
+          $(this).on('wheel.disableScroll', function (e) {
+            e.preventDefault()
+          })
+        })
+    });
   },
   computed:{
     ...mapState('round', ['rounds']),

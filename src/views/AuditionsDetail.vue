@@ -114,7 +114,7 @@
                 :key="data.user_id"
               >
                 <router-link
-                  :to="isAuditionVideos || (currentAudition && currentAudition.status == 2) ? { name: 'talent/user', params: {id: data.user_id} } : { name: 'auditions/user', params: {id: data.user_id, round: round.id, audition:$route.params.id} }"
+                  :to="isAuditionVideos || ((currentAudition && currentAudition.status == 2) || (round && round.status != 1)) ? { name: 'talent/user_view', params: {id: data.user_id} } : { name: 'auditions/user', params: {id: data.user_id, round: round.id, audition:$route.params.id} }"
                 >
                   <div class="btn-card-wrap">
                   <card-user
@@ -138,6 +138,17 @@
                       type="button"
                     >
                       <img src="/images/icons/right-tick.svg" alt="right-tick" />
+                    </button>
+                  </div>
+                  <div
+                          @click="approveKeepFutureBtn(data, data.user_id, data.is_feedback_sent, $event)"
+                    class="mt-1 content-center rounded-full yellow-back h-10 flex items-center"
+                  >
+                    <button
+                      class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide"
+                      type="button"
+                    >
+                      <img src="/images/icons/time@2x.png" alt="right-tick" />
                     </button>
                   </div>
                   <div
@@ -233,7 +244,7 @@
               >
                 <router-link
                   v-bind:class="{ 'pointer-none' : isShowCreateGroup}"
-                  :to="!isShowCreateGroup ? (currentAudition && currentAudition.status == 2 ? { name: 'talent/user', params: {id: data.user_id} } : { name: 'auditions/user', params: {id: data.user_id, round: round.id, audition:$route.params.id} }) : { name: 'auditions/detail', params: {id: $route.params.id} }"
+                  :to="!isShowCreateGroup ? (((currentAudition && currentAudition.status == 2) || (round && round.status != 1)) ? { name: 'talent/user_view', params: {id: data.user_id} } : { name: 'auditions/user', params: {id: data.user_id, round: round.id, audition:$route.params.id} }) : { name: 'auditions/detail', params: {id: $route.params.id} }"
                 >
                   <div class="btn-card-wrap">
                     <card-user
@@ -257,6 +268,17 @@
                           type="button"
                         >
                           <img src="/images/icons/right-tick.svg" alt="right-tick" />
+                        </button>
+                      </div>
+                      <div
+                        @click="approveKeepFutureBtn(data, data.user_id, data.is_feedback_sent, $event)"
+                        class="mt-1 content-center rounded-full yellow-back h-10 flex items-center"
+                      >
+                        <button
+                          class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide"
+                          type="button"
+                        >
+                          <img src="/images/icons/time@3x.png" alt="right-tick" />
                         </button>
                       </div>
                       <div
@@ -409,6 +431,35 @@
               <button type="button" @click="dontShowStdBtn">Don’t show me this again</button>
             </form>
           </modal>
+          <!-- start : keep future button -->
+          <modal
+            :width="500"
+            height="380"
+            :adaptive="true"
+            name="showKeepFutureMdl"
+            class="custom-event-popup"
+          >
+            <button @click="$modal.hide('showKeepFutureMdl')" class="popup-close-btn">
+              <i class="material-icons" style="font-size: 35px;color: black;">clear</i>
+            </button>
+            <form @submit.prevent="handleKeepFutureMdlFrm()">
+              <h2 style="text-align: center;" class="text-purple">Instant Feedback</h2>
+              <h2
+                class="text-purple"
+              >Performers who have been "saved for future" will receive the message:</h2>
+              <base-input
+                type="text"
+                v-model="feedbackStdText"
+                readonly
+                class="w-full px-2"
+                :custom-classes="['border', 'border-purple']"
+              />
+              <h2>To change feedback go to Instant Feedback in Settings.</h2>
+              <base-button type="submit" expanded>Done</base-button>
+              <button type="button" @click="dontShowKeepFutureBtn">Don’t show me this again</button>
+            </form>
+          </modal>
+          <!-- end : keep future button -->
           <!--start: enter Check in model modal-->
           <modal
             class="flex flex-col w-full items-center"
@@ -562,6 +613,7 @@ export default {
       comment: "",
       options: [],
       selectedAudition: null,
+      selectedSlot: null,
       feedbackText: "",
       feedbackStdText: "",
       isShowNewGroup: false,
@@ -688,6 +740,11 @@ export default {
       this.handleApprMdlFrm("approved_std");
       this.$modal.hide("showApproveStandardMdl");
     },
+    dontShowKeepFutureBtn() {
+      localStorage.setItem("keep_future_popup_dont_show", "1");
+      this.handleKeepFutureMdlFrm();
+      this.$modal.hide("showKeepFutureMdl");
+    },
     clickFinalPerformer(event, data) {
       event.preventDefault();
     },
@@ -699,7 +756,7 @@ export default {
       return newUrl.endsWith("?") ? newUrl.slice(0, -1) : newUrl;
     },
     redirectOnDetails(user_id) {
-      if (this.currentAudition && this.currentAudition.status == 2) {
+      if ((this.currentAudition && this.currentAudition.status == 2) || (this.round && this.round.status != 1)) {
         this.$router.replace(
           this.$route.query.redirect || {
             name: 'talent/user_view',
@@ -991,6 +1048,7 @@ export default {
       event.preventDefault();
       this.performer_id = performer_id;
       if (is_feedback_sent == 1) {
+        this.$toasted.clear();
         this.$toasted.error("Feedback already send");
       } else {
         if (
@@ -1007,6 +1065,7 @@ export default {
       event.preventDefault();
       this.performer_id = performer_id;
       if (is_feedback_sent == 1) {
+        this.$toasted.clear();
         this.$toasted.error("Feedback already send");
       } else {
         this.$modal.show("showApproveOptionMdl");
@@ -1021,6 +1080,28 @@ export default {
         this.handleApprMdlFrm("approved_std");
       } else {
         this.$modal.show("showApproveStandardMdl");
+      }
+    },
+    approveKeepFutureBtn(currentSlotData, performer_id, is_feedback_sent, event) {
+      event.preventDefault();
+      this.performer_id = performer_id;
+      if (is_feedback_sent == 1) {
+        this.$toasted.clear();
+        this.selectedSlot = null;
+        this.$toasted.error("Feedback already send");
+      } else {
+        this.selectedSlot = currentSlotData;
+        this.approveKeepFutureFeedback();
+      }
+    },
+    approveKeepFutureFeedback() {      
+      if (
+        localStorage.getItem("keep_future_popup_dont_show") &&
+        localStorage.getItem("keep_future_popup_dont_show") == "1"
+      ) {
+        this.handleKeepFutureMdlFrm();
+      } else {
+        this.$modal.show("showKeepFutureMdl");
       }
     },
     fetchOptions(search, loading) {
@@ -1204,6 +1285,7 @@ export default {
       this.finalUserList = _.orderBy(this.finalUserList, "time", "asc");
     },
     async handleApprMdlFrm(type) {
+      this.$toasted.clear();
       this.comment = this.comment ? this.comment.trim() : "";
       if (
         (type == "rejected" && !this.feedbackText) ||
@@ -1257,6 +1339,40 @@ export default {
         this.$modal.hide("showApproveStandardMdl");
         this.comment = "";
         this.selectedAudition = null;
+        this.options = [];
+      }
+    },
+    async handleKeepFutureMdlFrm() {
+      this.$toasted.clear();
+      try {
+        if (this.isLoading) {
+          return;
+        }
+        this.isLoading = true;
+        let requestParam = {
+          appointment_id: this.round.id,
+          user: this.performer_id,
+          evaluator: this.userId,
+          comment: this.feedbackStdText ? this.feedbackStdText.trim() : '',
+          accepted: 2,
+          suggested_appointment_id : null,
+          slot_id : this.selectedSlot.slot_id
+        };        
+        
+        let res = await axios.post(`/t/instantfeedbacks/add`, requestParam);
+        this.$toasted.success(res.data.data);
+        this.isLoading = false;
+        this.getUserlist();
+        this.getGroupdetails();
+        this.$modal.hide("showKeepFutureMdl");
+        this.selectedSlot = null;        
+        this.options = [];
+      } catch (ex) {
+        this.isLoading = false;
+        console.log(ex);
+        this.$toasted.error(ex.response.data.data);
+        this.$modal.hide("showKeepFutureMdl");
+        this.selectedSlot = null;
         this.options = [];
       }
     },
@@ -1760,6 +1876,9 @@ export default {
 .grren-back {
   background-color: #159359;
 }
+.yellow-back {
+  background-color: #D8883A;
+}
 .red-back {
   background-color: #93163e;
 }
@@ -2053,7 +2172,7 @@ export default {
 }
 .comment-box-view .btn-card-wrap .custom-btn-grp {
   position: absolute;
-  left: 154px;
+  left: 170px;
   top: 80px;
 }
 .comment-box-view .btn-card-wrap .card-grid-view .card-img .user-image {

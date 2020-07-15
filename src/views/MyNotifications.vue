@@ -26,9 +26,9 @@
                             </svg>
                         </figure>
                         <div class="flex flex-wrap"
-                            :class="notifications.code = 'autidion_add_contribuidor' && notifications.status !== 'accepted' && notifications.status !== 'rejected' ? 'flex-dir-column' : ''">
+                            :class="notifications.code == 'autidion_add_contribuidor' && notifications.status !== 'accepted' && notifications.status !== 'rejected' ? 'flex-dir-column' : ''">
                             <span class="text-purple text-xl overflow-auto my-auto">{{ notifications.title }}</span>
-                            <div class="flex flex-no-wrap" v-if="notifications.code = 'autidion_add_contribuidor' && notifications.status !== 'accepted' && notifications.status !== 'rejected'">
+                            <div class="flex flex-no-wrap" v-if="notifications.code == 'autidion_add_contribuidor' && notifications.status !== 'accepted' && notifications.status !== 'rejected'">
                                 <div class="cursor-pointer m-3 content-center rounded-full red-light w-40 h-10 flex items-center button-detail accept-decline-btn" @click="manageNotification(notifications,true)">
                                     <p class="text-white text-sm text-center font-bold content-center flex-1">Accept</p>
                                 </div>

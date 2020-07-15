@@ -19,8 +19,11 @@
     </form>
     <div class="flex">
       <base-input v-model="form.title" v-validate="'required|max:255'" name="title" class="w-2/3 px-2" placeholder="Title" :custom-classes="['border', 'border-purple']" :message="errors.first('create.title')" expanded />
-      <base-checkbox class="w-1/3 px-2" v-model="form.online" :custom-classes="['border', 'border-purple']" name="title" :value="form.online">Online Submission
-      </base-checkbox>
+      <base-checkbox class="w-1/3 px-2" v-model="form.online" @input="changeAuditionType" :custom-classes="['border', 'border-purple']" name="title" :value="form.online">Online Submission
+      </base-checkbox>      
+    </div>    
+    <div class="flex" :style="!isOnlineAudition ? 'display: none!important;' : ''" >
+        <base-input  v-model="form.end_date" v-validate="isOnlineAudition ? 'required' : ''" id="end_date" name="end_date" class="w-1/3 px-2" type="date" :mindate="min_end_date" placeholder="End Date" :custom-classes="['border', 'border-purple']" :message="errors.first('create.end_date')" data-vv-as="end date"  />
     </div>
     <p class="px-5 text-purple font-medium py-8 pb-6">Production Information</p>
     <div class="flex w-full">
@@ -49,13 +52,13 @@
       <!-- v-validate="'required'" -->
       <base-input v-model="form.dates[0].from" name="contract_start_date" class="w-1/2 px-2" type="date" :mindate="new Date()" placeholder="Contract Start Date" :custom-classes="['border', 'border-purple']" :message="errors.first('create.contract_start_date')" data-vv-as="start date" @input="handleChangeDates('contract')" />
       <!-- v-validate="'required'" -->
-      <base-input v-model="form.dates[0].to" name="contract_end_date" class="w-1/2 px-2" type="date" :mindate="form.dates[0].from" placeholder="Contract End Date" :custom-classes="['border', 'border-purple']" :message="errors.first('create.contract_end_date')" data-vv-as="end date" @input="handleChangeDates('contract')" />
+      <base-input v-model="form.dates[0].to" name="contract_end_date" class="w-1/2 px-2" type="date" :mindate="form.dates[0].from" placeholder="Contract End Date" :custom-classes="['border', 'border-purple']" :message="errors.first('create.contract_end_date')" data-vv-as="contract end date" @input="handleChangeDates('contract')" />
     </div>
     <div class="flex w-full">
       <!-- v-validate="'required'" -->
       <base-input v-model="form.dates[1].from" :mindate="new Date()" name="rehearsal_start_date" class="w-1/2 px-2" type="date" placeholder="Rehearsal Start Date" :custom-classes="['border', 'border-purple']" :message="errors.first('create.rehearsal_start_date')" data-vv-as="start date" @input="handleChangeDates('rehearsal')" />
       <!-- v-validate="'required'" -->
-      <base-input v-model="form.dates[1].to" :mindate="form.dates[1].from" name="rehearsal_end_date" class="w-1/2 px-2" type="date" placeholder="Rehearsal End Date" :custom-classes="['border', 'border-purple']" :message="errors.first('create.rehearsal_end_date')" data-vv-as="end date" @input="handleChangeDates('rehearsal')" />
+      <base-input v-model="form.dates[1].to" :mindate="form.dates[1].from" name="rehearsal_end_date" class="w-1/2 px-2" type="date" placeholder="Rehearsal End Date" :custom-classes="['border', 'border-purple']" :message="errors.first('create.rehearsal_end_date')" data-vv-as="rehearsal end date" @input="handleChangeDates('rehearsal')" />
     </div>
     <p class="px-5 text-purple font-medium py-8 pb-6">Contact Information</p>
     <div class="flex">
@@ -392,6 +395,8 @@ export default {
         contributors: [],
         media: []
       },
+      min_end_date : new Date(),
+      isOnlineAudition : false,
       document_links: [
         {
           name: "",
@@ -520,9 +525,17 @@ export default {
     }
   },
   created() {
+    this.min_end_date.setDate(new Date().getDate() + 1);
     window.addEventListener("resize", this.onResize);
   },
   methods: {
+    changeAuditionType(){
+      if (this.form.online){
+        this.isOnlineAudition = true;
+      } else {
+        this.isOnlineAudition = false;
+      }
+    },
     handleRenameDoc(media){      
       const index = this.form.media.indexOf(media);
       Vue.set(this.currentDoc, 'index', index);
@@ -822,6 +835,10 @@ export default {
           return;
         }
 
+        if(this.form.online && !this.form.end_date) {
+          this.$toasted.error("The end date field is required.");
+          return;
+        }
         if (
           moment.isDate(this.form.dates[0].from) &&
           !moment.isDate(this.form.dates[0].to)
@@ -876,6 +893,7 @@ export default {
 
         let data = Object.assign({}, this.form);
         if (data.online) {
+          data.end_date = moment(this.form.end_date).format('YYYY-MM-DD');
           data.rounds = [
             {
               location: null,

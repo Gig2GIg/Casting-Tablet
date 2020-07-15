@@ -102,6 +102,7 @@ import axios from 'axios';
                   this.$toasted.success('The round has created successfully.');
                   await  this.fetch(this.$route.params.id);
                   this.options = this.rounds;
+                  console.log("emitCreate -> this.options", this.options)
                   if(this.options != ""){
                     this.selectedOption = this.options.filter(option => option.status == 1);
                     if(this.selectedOption.length>0){
@@ -140,10 +141,11 @@ import axios from 'axios';
                   this.selectedOption = this.selectedOption.length > 0 ? this.selectedOption[0] : this.selectedOption;                  
                 } 
                 console.log("reloadRounds -> this.selectedOption", this.selectedOption) 
-                if(this.audition == 2 && (!this.selectedOption || this.selectedOption.length == 0)) {
+                // if(this.audition == 2 && (!this.selectedOption || this.selectedOption.length == 0)) {
+                if(!this.selectedOption || this.selectedOption.length == 0) {
                   console.log("reloadRounds -> set first round")
-                  this.selectedOption = this.options[0];
-                }              
+                  this.selectedOption = this.options[this.options.length-1];
+                }             
                 this.$emit('setOption', this.selectedOption)
               }
 
