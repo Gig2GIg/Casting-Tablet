@@ -758,7 +758,7 @@ export default {
           return;
         }
         this.isLoading = true;
-        const url = `${process.env.VUE_APP_API_URL}/exportAuditionLogs/${this.$route.params.id}`;
+        const url = `${process.env.VUE_APP_API_URL}exportAuditionLogs/${this.$route.params.id}`;
          window.open(url, '_blank');
         this.isLoading =  false;
       } catch (e) {
