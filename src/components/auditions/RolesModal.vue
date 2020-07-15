@@ -207,7 +207,7 @@ export default {
           }
           else{
             this.preview = this.form.preview;
-            console.log(this.preview);
+            // console.log(this.preview);
           }
         }
       },
@@ -248,7 +248,7 @@ export default {
       // this.preview = URL.createObjectURL(file);
       // this.form.preview = this.preview;
       await ThumbService.imageThumbnail(file, DEFINE.thumbSize.roleImageThumbWidth).then((thumb_data) => {
-          console.log("handleFile -> role cover thumb_data return", thumb_data);
+          // console.log("handleFile -> role cover thumb_data return", thumb_data);
           this.preview = thumb_data.preview;
           Vue.set(this.form, 'preview', thumb_data.preview);
           Vue.set(this.form, 'thumb_file', thumb_data.file);

@@ -71,7 +71,7 @@ export default {
     handleTimePointerClick(time, rotate) {
       this.pointerRotate = rotate
       this.handleTimeChange(time)
-      console.log('time changed')
+      // console.log('time changed')
     },
     handleTimeChange(time) {
       time = parseInt(time)
@@ -86,7 +86,7 @@ export default {
     resetHourDegree() {
       let h = parseInt(this.hour)
       let pointerR = 0
-      console.log("TCL: resetHourDegree new -> HOURS", TIME_ARRAY.HOURS)
+      // console.log("TCL: resetHourDegree new -> HOURS", TIME_ARRAY.HOURS)
       if(TIME_ARRAY.HOURS){
         TIME_ARRAY.HOURS.forEach((hour, index) => {      
           if (h === index + 1) {

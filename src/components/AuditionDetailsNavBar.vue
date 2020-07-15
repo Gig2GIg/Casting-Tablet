@@ -288,7 +288,7 @@ export default {
         this.file.name = 'Record Audition';
         this.videoFileName = null;
       }      
-      console.log("snapImage -> final ", this.thumbnail)
+      // console.log("snapImage -> final ", this.thumbnail)
     },
     imageRenameDoneOld(){
       this.$toasted.clear();
@@ -331,14 +331,14 @@ export default {
             .ref(`temp/thumbnail/${uuid()}.png`)
             .put(this.thumbnail.file);        
             thumbnailUrl = await thumbnailFile.ref.getDownloadURL();
-            console.log("saveFeedback -> thumbnailUrl", thumbnailUrl)
+            // console.log("saveFeedback -> thumbnailUrl", thumbnailUrl)
           }
           
           // upload video file
           var extension = this.file.org_name.substring(this.file.org_name.lastIndexOf('.')+1);
-          console.log("saveFeedback -> extension", extension)
+          // console.log("saveFeedback -> extension", extension)
           let filePath = this.file.name.includes(`${extension}`) ? `temp/${uuid()}_${this.file.name}` : `temp/${uuid()}_${this.file.name}.${extension}`;          
-          console.log("saveFeedback -> filePath", filePath)
+          // console.log("saveFeedback -> filePath", filePath)
 
           let file = await firebase
             .storage()

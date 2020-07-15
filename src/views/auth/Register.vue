@@ -446,7 +446,7 @@ export default {
 
           this.isLoading = true;
           // this.form.address = `${this.form.address1} ${this.form.address2}`;
-          console.log("handleRegister -> this.form", this.form);
+          // console.log("handleRegister -> this.form", this.form);
           // delete this.form.address1;
           // delete this.form.address2;
           await AuthService.register(this.form);

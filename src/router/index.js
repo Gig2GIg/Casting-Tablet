@@ -25,7 +25,7 @@ const router = new VueRouter({
 
     // Wait for the out transition to complete (if necessary)
     router.app.$root.$once('triggerScroll', () => {
-      console.log("router triggerScroll")
+      // console.log("router triggerScroll")
       router.app.$nextTick(() => resolve(position));
     });
   }),

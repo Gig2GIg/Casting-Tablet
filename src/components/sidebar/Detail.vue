@@ -948,7 +948,7 @@ export default {
         // reload rounds list
         await this.$refs.roundRef.reloadRounds(true);
       }
-      console.log("reopenRounds -> this.rounds", this.rounds)
+      // console.log("reopenRounds -> this.rounds", this.rounds)
     },
     async reopenRounds() {      
       this.$toasted.clear();  
@@ -959,7 +959,7 @@ export default {
         this.sendDataToChild(1);
         // reload rounds list
         await this.$refs.roundRef.reloadRounds(true);
-        console.log("reopenRounds -> this.rounds", this.rounds)
+        // console.log("reopenRounds -> this.rounds", this.rounds)
       } catch (e) {
         console.log("reopenRounds -> ex.response", e.response)
         let errorMsg = e.response && e.response.data && e.response.data.message ? e.response.data.message : DEFINE.common_error_message;

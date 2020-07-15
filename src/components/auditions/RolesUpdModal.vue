@@ -193,7 +193,7 @@ export default {
     data: {
       immediate: true,
       handler(value) {
-        console.log("handler -> role data", this.data)
+        // console.log("handler -> role data", this.data)
         if (value) {
           this.editMode = false;
           this.form = Object.assign({}, value);

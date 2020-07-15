@@ -22,7 +22,7 @@ export default {
   methods: {
     sendDataToChild(data){
       this.search = data;
-      console.log(this.search);
+      // console.log(this.search);
     },
   },
 };

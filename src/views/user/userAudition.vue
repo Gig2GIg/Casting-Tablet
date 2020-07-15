@@ -1247,20 +1247,25 @@ export default {
     },
     async sharedProfile() {
       this.$toasted.clear();
-      if(!this.invitation.email || this.invitation.email == '') {        
-        this.$toasted.error('Please enter email!');
-        return;
-      } 
-      let requestParam = {
-        "code": this.performerDetails.share_code,
-        "email": this.invitation.email,
-        "link"  : `${this.base_url}/talent-shared/${window.btoa(this.$route.params.id)}`
+      try {
+        if(!this.invitation.email || this.invitation.email == '') {        
+          this.$toasted.error('Please enter email!');
+          return;
+        } 
+        let requestParam = {
+          "code": this.performerDetails.share_code,
+          "email": this.invitation.email,
+          "link"  : `${this.base_url}/talent-shared/${window.btoa(this.$route.params.id)}`
+        }
+
+        await axios.post(`/t/performers/code`, requestParam);
+        this.$toasted.success('The user code has been shared successfully');
+        this.invitation.email = "";
+      } catch (error) {
+        console.log(error.response);        
+        let errMsg = error.response && error.response.data && error.response.data.data ?  error.response.data.data : DEFINE.common_error_message;
+        this.$toasted.error(errMsg);
       }
-
-      await axios.post(`/t/performers/code`, requestParam);
-      this.$toasted.success('The user code has been shared successfully');
-      this.invitation.email = "";
-
     },
     viewResume() {      
       this.$toasted.clear();
@@ -1422,7 +1427,7 @@ export default {
       this.isLoading = false;
       if (Object.keys(this.feedback).length == 0) {
         this.isUpdateFeeback = false;
-        console.log("saveFeedback -> this.form", this.form)
+        // console.log("saveFeedback -> this.form", this.form)
         let status = await axios.post("/t/feedbacks/add", this.form);        
         this.$toasted.success("Feedback Created");
         let feedback = {
@@ -1436,7 +1441,7 @@ export default {
       }
       this.isUpdateFeeback = true;
       this.form.user_id = this.$route.params.id;
-      console.log("update Feedback -> this.form", this.form)
+      // console.log("update Feedback -> this.form", this.form)
       let status = await axios.put(
         `/t/auditions/${this.$route.params.round}/feedbacks/update`,
         this.form

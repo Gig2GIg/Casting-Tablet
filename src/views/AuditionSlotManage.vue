@@ -148,7 +148,7 @@ export default {
     ...mapActions("appointment", ["fetchAllAppointments"]),
     async getUserList(){
       await this.fetchIndividualUserList(this.$route.params.id);      
-      console.log("getUserList -> this.userList", this.userList)
+      // console.log("getUserList -> this.userList", this.userList)
       this.finalUserList = this.userList;
       setTimeout(() =>{
         this.initDropdrag();

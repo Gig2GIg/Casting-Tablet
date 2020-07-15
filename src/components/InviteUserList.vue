@@ -362,7 +362,7 @@ export default {
      */
     changePaymentDetails() {
       this.$toasted.clear();
-      console.log("plan_change -> plan_change");
+      // console.log("plan_change -> plan_change");
       this.$router.push({ name: "plan_change" });
     },
     /**
@@ -391,7 +391,7 @@ export default {
         this.$modal.hide("modal_confirm_re_subscribe");       
         const result = await axios.get(`/t/users/resumeSubscription`);
         this.isLoading = false;
-        console.log("reSubscriptionConfirmDone -> response ::: ", result);
+        // console.log("reSubscriptionConfirmDone -> response ::: ", result);
         this.subscriptionDetails.grace_period = 0;
         const successMsg = result.data && result.data.message ? result.data.message : "Your subscription has been resume successfully";
         this.$toasted.success(successMsg);
@@ -408,7 +408,7 @@ export default {
       try {
         this.$modal.hide("modal_confirm_cancel_subscribe");       
         const result = await axios.get(`/t/users/cancelSubscription`);
-        console.log("subscribeConfirmDone -> result", result)
+        // console.log("subscribeConfirmDone -> result", result)
         this.isLoading = false;
         this.subscriptionDetails.grace_period = 1;
         const successMsg = result.data && result.data.message ? result.data.message : "Your subscription has been cancelled successfully";

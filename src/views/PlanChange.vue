@@ -90,7 +90,7 @@ export default {
   methods: {
     async handleChangePlan() {     
       this.$toasted.clear();
-      console.log("handleChangePlan -> this.form", this.form)
+      // console.log("handleChangePlan -> this.form", this.form)
       try {
         if (this.isLoading || !(await this.$validator.validateAll())) {
           return;

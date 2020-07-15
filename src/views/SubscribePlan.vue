@@ -169,10 +169,10 @@ export default {
       console.log("User cancelled the loader.");
     },
     handleSelectPlan(selectedPlan) {
-      console.log("handleSelectPlan -> selectedPlan", selectedPlan);
+      // console.log("handleSelectPlan -> selectedPlan", selectedPlan);
       if (selectedPlan) {
         this.selectedPlan = selectedPlan;
-        console.log("handleSelectPlan -> this.step", this.step);
+        // console.log("handleSelectPlan -> this.step", this.step);
       } else {
         this.selectedPlan = null;
       }

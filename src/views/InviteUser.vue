@@ -127,10 +127,10 @@ export default {
   },
   methods: {
     async handleInviteUser() {
-      console.log("handleInviteUser -> handleInviteUser");
+      // console.log("handleInviteUser -> handleInviteUser");
       this.$toasted.clear();
       if (await this.$validator.validateAll()) {
-        console.log("handleInviteUser -> this.form", this.form);
+        // console.log("handleInviteUser -> this.form", this.form);
         let valueArr = this.form.map(function(item) {
           return item.email;
         });
