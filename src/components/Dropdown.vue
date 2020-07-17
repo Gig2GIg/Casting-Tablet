@@ -77,8 +77,7 @@ import axios from 'axios';
            async emitCreate(){
               if(this.online == 0){
                 this.$emit('updateOption', "create");
-              }
-              else{
+              } else {
                 let data = {
                   date: '',
                   time: '0',
@@ -97,34 +96,34 @@ import axios from 'axios';
                   round: this.rounds.length + 1,
                   status: true
                 };
-                try{
-                  await axios.post(`/t/appointment/${this.$route.params.id}/rounds`, data);
-                  this.$toasted.success('The round has created successfully.');
-                  await  this.fetch(this.$route.params.id);
-                  this.options = this.rounds;
-                  // console.log("emitCreate -> this.options", this.options)
-                  if(this.options != ""){
-                    this.selectedOption = this.options.filter(option => option.status == 1);
-                    if(this.selectedOption.length>0){
-                      this.create = false;
-                    }
-                    this.selectedOption = this.selectedOption.length > 0 ? this.selectedOption[0] : this.selectedOption;
-                    this.$emit('setOption', this.selectedOption)
+              }
+              try{
+                await axios.post(`/t/appointment/${this.$route.params.id}/rounds`, data);
+                this.$toasted.success('The round has created successfully.');
+                await  this.fetch(this.$route.params.id);
+                this.options = this.rounds;
+                // console.log("emitCreate -> this.options", this.options)
+                if(this.options != ""){
+                  this.selectedOption = this.options.filter(option => option.status == 1);
+                  if(this.selectedOption.length>0){
+                    this.create = false;
+                  }
+                  this.selectedOption = this.selectedOption.length > 0 ? this.selectedOption[0] : this.selectedOption;
+                  this.$emit('setOption', this.selectedOption)
+                }
+
+                  if (this.placeholder)
+                  {
+                      this.placeholderText = this.placeholder;
+                      this.$emit('setOption', this.selectedOption);
                   }
 
-                    if (this.placeholder)
-                    {
-                        this.placeholderText = this.placeholder;
-                        this.$emit('setOption', this.selectedOption);
-                    }
-
-                    if (this.closeOnOutsideClick) {
-                      document.addEventListener('click', this.clickHandler);
-                    }
-                }
-                catch(e){
-                  this.$toasted.error(e);
-                }
+                  if (this.closeOnOutsideClick) {
+                    document.addEventListener('click', this.clickHandler);
+                  }
+              }
+              catch(e){
+                this.$toasted.error(e);
               }
 
             },
