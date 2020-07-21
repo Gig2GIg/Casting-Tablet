@@ -9,30 +9,7 @@
           class="absolute left-0 pl-1"        
         />
         <h1 class="absolute left-0 text-white text-lg back-mrg-l">Back</h1>
-      </div>
-      <div class=" w-8/11 z-40">
-          <div v-show="invitation.adding" class="mt-16 mr-32 shadow-lg bg-white absolute left-50 top-0 z-40">
-            <base-input
-              v-model="invitation.email"
-              v-validate="'required|email'"
-              name="email"
-              placeholder="Email"
-              :custom-classes="['border', 'border-purple']"
-              :message="errors.first('invitation.email')"
-              expanded
-            />
-
-            <base-button
-              class="pt-2 pb-2"
-              type="submit"
-              expanded
-              @click.native="sharedProfile"
-            >
-              Send
-            </base-button>
-          </div>
-      </div>
-      <img :src="'/images/icons/12-layers@3x.png'" class="h-10  ml-auto mr-5" alt="star" @click="invitation.adding =invitation.adding == true?false:true" >
+      </div>      
       <div
         v-if="audition.online != 1"
         class="w-1/5 flex flex-wrap justify-center content-center h-10 border-2 ml-auto border-white rounded-sm cursor-pointer"
@@ -59,6 +36,29 @@
           <p class="w-full text-white tracking-wide text-lg ml-5 tracking-tight truncate">Chat</p>
         </div>
       </div>
+      <div class=" w-8/11 z-40">
+          <div v-show="invitation.adding" class="mt-16 mr-32 shadow-lg bg-white absolute left-50 top-0 z-40">
+            <base-input
+              v-model="invitation.email"
+              v-validate="'required|email'"
+              name="email"
+              placeholder="Email"
+              :custom-classes="['border', 'border-purple']"
+              :message="errors.first('invitation.email')"
+              expanded
+            />
+
+            <base-button
+              class="pt-2 pb-2"
+              type="submit"
+              expanded
+              @click.native="sharedProfile"
+            >
+              Send
+            </base-button>
+          </div>
+      </div>
+      <img :src="'/images/icons/12-layers@3x.png'" class="h-10  ml-auto mr-5" alt="star" @click="invitation.adding =invitation.adding == true?false:true" >
       <img v-if="favorite == 0" :src="'/images/icons/4-layers.png'" class="w-6 m-6" alt="star" @click="favorite=1">
       <img v-else  :src="'/images/icons/Path_56@2x.png'" class="w-6 m-6" alt="star" @click="favorite=0">
     <div class="flex items-center border-l border-white text-white ml-auto cursor-pointer">
@@ -220,11 +220,11 @@
                         </div>
                         <div class="flex flex-col px-2 w-1/3">
                           <p
-                            v-if="data.rating && data.rating != ''"
+                            v-if="data.rating != null"
                             class="text-purple text-xs font-bold mb-1">Rating</p>
                           
                           <div
-                            v-if="data.rating && data.rating != ''"
+                            v-if="data.rating != null"
                             class="bg-white border border-purple rounded-full py-0 px-4 text-sm font-bold text-center flex items-center justify-center button-detail text-white w-full"
                           >{{ data.rating }}</div>
                         </div>
@@ -1025,7 +1025,7 @@ export default {
       rol: "",
       emoji: null,
       callback: null,
-      rating: 1,
+      rating: 0,
       favorite: 0,
       attrs: [],
       slot: "",
@@ -1063,7 +1063,7 @@ export default {
       messageList: [],
       casterUserList : {},
       sliderOptions : {
-          min: 1,
+          min: 0,
           max: 10,
           interval: 0.5,
           disabled: false,
@@ -1186,7 +1186,7 @@ export default {
           this.favorite = this.feedback.favorite;
           this.emoji = this.feedback.evaluation;
           this.callback = this.feedback.callback == 1 ?true: this.feedback.callback === null ? null : false;
-          this.rating = this.feedback.rating ? this.feedback.rating : null;
+          this.rating = this.feedback.rating != null ? this.feedback.rating : 0;
           this.form.comment = this.feedback.comment;
         }
       } else {
@@ -1195,7 +1195,7 @@ export default {
         this.favorite = 0;
         this.emoji = null;
         this.callback = null;
-        this.rating = 1;
+        this.rating = 0;
         this.form.comment = '';
       }
         // Get Assigend Number
