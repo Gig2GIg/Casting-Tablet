@@ -290,9 +290,9 @@
             >Open Auditions</p>
           </div>
         </div>
-        <div v-if="audition.online != 1 && audition.status == 0 "  class="w-full border border-gray-300 mt-6 mb-6" />
+        <div v-if="audition && audition.online != 1 && audition.status == 0 "  class="w-full border border-gray-300 mt-6 mb-6" />
         <div
-          v-if="audition.online != 1 && audition.status == 0"
+          v-if="audition && audition.online != 1 && audition.status == 0"
           class="flex w-full content-center text-center justify-center flex-wrap cursor-pointer"
         >
           <div
@@ -304,6 +304,22 @@
             >Appointments</p>
           </div>
         </div>
+        <template v-if="audition && audition.online != 1 && audition.status == 0">
+          <div class="w-full border border-gray-300 mt-6 mb-6" />
+          <div            
+            class="flex w-full content-center text-center justify-center flex-wrap cursor-pointer"
+          >
+            <div
+              class="m-3 content-center flex items-center flex m-3 content-center border-2 rounded-sm border-purple w-48 h-10"
+              @click="goToPushNotifications"
+            >
+              <p
+                class="flex-1 light-purple text-sm font-semibold content-center tracking-tighter flex-1"
+              >Push Notifications</p>
+            </div>
+          </div>
+        </template>
+        
         <div
           v-if="audition.status == 1 && roundActive.status == 1"
           class="w-full border border-gray-300 mt-6 mb-6"
@@ -1117,6 +1133,10 @@ export default {
     goToManageAppointments(){
       this.$router.push({ name: 'audition-slot/manage',params:{id: this.$route.params.id } });
       // this.$router.replace(`/audition-slot/manage/${this.$route.params.id}`);
+    },
+    // got to push notifications screen for notify performer who have slot assign
+    goToPushNotifications() {
+      this.$router.push({ name: 'audition-push/send',params:{id: this.$route.params.id } });
     }
   }
 };
