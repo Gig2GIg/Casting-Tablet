@@ -33,7 +33,7 @@
 
     <router-link :to="{ name: 'register' }" class="mt-16">
       <!-- Create Account -->
-      <span class="text-2lg">Get Started Now!</span>
+      <span class="text-2lg">Get Started Now</span>
     </router-link>
   </div>
 </template>

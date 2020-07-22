@@ -215,7 +215,7 @@
                           
                           <div
                             v-if="data.work && data.work != ''"
-                            class="bg-white border border-purple rounded-full py-0 px-4 text-sm font-bold text-center flex items-center justify-center button-detail text-white w-full"
+                            class="bg-white border border-purple rounded-full py-0 px-4 text-sm font-bold text-center flex items-center justify-center button-detail text-white w-full capitalize"
                           >{{ data.work }}</div>
                         </div>
                         <div class="flex flex-col px-2 w-1/3">

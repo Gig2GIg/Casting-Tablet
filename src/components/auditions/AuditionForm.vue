@@ -206,7 +206,7 @@
             </a>
           </div>
 
-          <base-input v-model="coverFileName" :custom-classes="['border border-b border-gray-300']" name="cover_file_name" placeholder="Cover Name" data-vv-as="cover name" class="w-8/12" />
+          <!-- <base-input v-model="coverFileName" :custom-classes="['border border-b border-gray-300']" name="cover_file_name" placeholder="Cover Name" data-vv-as="cover name" class="w-8/12" /> -->
         </section>
         <!-- <section class="preview-area">
                 <p>Image Preview</p>
@@ -1144,13 +1144,13 @@ export default {
     },
     async cropSaveImage() {
       this.$toasted.clear();
-      if(!this.coverFileName || this.coverFileName == '' || this.coverFileName.trim() == ''){
-        this.$toasted.error('Please enter cover filename!');
-        return;
-      } else if(this.coverFileName && this.coverFileName.length > 150){
-        this.$toasted.error('Cover filename is too long, it should not be more than 150 characters!');
-        return;
-      }
+      // if(!this.coverFileName || this.coverFileName == '' || this.coverFileName.trim() == ''){
+      //   this.$toasted.error('Please enter cover filename!');
+      //   return;
+      // } else if(this.coverFileName && this.coverFileName.length > 150){
+      //   this.$toasted.error('Cover filename is too long, it should not be more than 150 characters!');
+      //   return;
+      // }
       
       this.coverThumbnail = {};
       const croppedImg = this.$refs.cropper.getCroppedCanvas().toDataURL();
@@ -1210,13 +1210,13 @@ export default {
     },
     cropImageDone() {
       this.$toasted.clear();
-      if(!this.coverFileName || this.coverFileName == '' || this.coverFileName.trim() == ''){
-        this.$toasted.error('Please enter cover filename!');
-        return;
-      } else if(this.coverFileName && this.coverFileName.length > 150){
-        this.$toasted.error('Cover filename is too long, it should not be more than 150 characters!');
-        return;
-      }
+      // if(!this.coverFileName || this.coverFileName == '' || this.coverFileName.trim() == ''){
+      //   this.$toasted.error('Please enter cover filename!');
+      //   return;
+      // } else if(this.coverFileName && this.coverFileName.length > 150){
+      //   this.$toasted.error('Cover filename is too long, it should not be more than 150 characters!');
+      //   return;
+      // }
       if (this.cropImg) {
         this.previewCover = this.cropImg;
       }
