@@ -90,8 +90,34 @@
           <button class="w-1/3 mt-4 py-3 px-4 border-4 border-purple text-purple rounded-full focus:outline-none" type="button" @click.prevent="round.manageAppointments = true">Manage Appointments
           </button>
           <AppointmentsModal v-if="round.manageAppointments" :data="round.appointment" @change="round.appointment = $event" @close="round.manageAppointments = false" />
-        </div>
+        </div>        
       </div>
+      <template v-if="!form.online">
+        <div class="flex flex-wrap py-6">          
+          <div class="overflow-auto w-10/12">
+            <span class="text-purple text-lg font-bold ml-5">Will this audition require socially distanced group entrances?</span>
+          </div>
+          <div class="w-1/12">
+            <label class="switch cursor-pointer" for="grouping_enable">
+              <input
+                id="grouping_enable"
+                type="checkbox"
+                v-model="form.grouping_enabled"
+                :checked="false"
+              >
+              <span class="slider round" />
+            </label>
+          </div>
+        </div>
+        <div class="flex flex-wrap">          
+          <div class="overflow-auto w-full">
+            <p class="text-purple text-mg ml-5">Allow for automatic assignment of grouping of performers, based on the parameters set below. Groups can be used to notify performers of updates and changes.</p>
+          </div>            
+        </div>
+        <div class="flex" v-if="form.grouping_enabled">
+            <group-size-dropdown class="text-red-600 bg-white mt-5" :options="group_size_array" :selected="selected_group_size" :setgroupsize.sync="set_group_size" @setGroupSizeOption="methodToGroupSizeOnSelect" v-on:updateOption="methodToGroupSizeOnSelect" :placeholder="'Group Size'"></group-size-dropdown>              
+        </div>
+      </template>
       <modal width="80%" height="500px" :adaptive="true" name="location_model">
         <template>
           <div class="close-btn search wrap">
@@ -395,6 +421,7 @@ export default {
         contributors: [],
         media: []
       },
+      group_size_array : DEFINE.group_size_array,
       min_end_date : new Date(),
       isOnlineAudition : false,
       document_links: [
@@ -511,6 +538,8 @@ export default {
         round: 1,
         index: 0
       },
+      selected_group_size : '',
+      set_group_size : '',
       coverThumbnail : {},
       coverFileName :  null,
       coveNameObject : {},
@@ -908,6 +937,10 @@ export default {
             }
           ];
         } else {
+            if(data.grouping_enabled && (!data.grouping_capacity || data.grouping_capacity < 1)){
+              this.$toasted.error("Please select group size.");
+              return;
+            }
             data.online = false;
             let roundHasError = false;
             let rounErrorMsg = "Please enter valid details of rounds."
@@ -942,6 +975,9 @@ export default {
                         latitudeDelta: 0.0043,
                         longitudeDelta: 0.0043
                     };
+                    
+                    data.rounds[i].grouping_enabled = data.grouping_enabled ? data.grouping_enabled  : false;
+                    data.rounds[i].grouping_capacity = data.grouping_capacity ? data.grouping_capacity : 0;
                     delete data.rounds[i].selectedLocation;
                 }
             }
@@ -1244,6 +1280,10 @@ export default {
       this.$refs.coverFile.value = "";
       this.setUserData();
     },
+    async methodToGroupSizeOnSelect(value) {
+      this.set_group_size = value;
+      this.form.grouping_capacity = this.set_group_size;
+    },
     async methodToRunOnSelect(payload) {      
       if (payload == "create") {
         // if select create new round then add new one in option list
@@ -1421,6 +1461,64 @@ textarea {
 .mrtop-minus-crop {
  margin-top: -8px !important;
 }
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 75px;
+    height: 34px;
+}
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+
+input:checked + .slider {
+  background-color: #4d2545;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #4d2545;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(38px);
+  -ms-transform: translateX(38px);
+  transform: translateX(38px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
 </style>
 
 

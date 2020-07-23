@@ -334,6 +334,34 @@
       />
     </div>
 
+    <template v-if="!form.online">
+        <div class="flex flex-wrap py-6">          
+          <div class="overflow-auto w-10/12">
+            <span class="text-purple text-lg font-bold ml-5">Will this audition require socially distanced group entrances?</span>
+          </div>
+          <div class="w-1/12">
+          <!-- v-model="form.grouping_enabled" -->
+            <label class="switch cursor-pointer" for="grouping_enable">
+              <input
+                id="grouping_enable"
+                type="checkbox"                
+                :checked="form.grouping_enabled ? true : false"
+                disabled="true"
+              >
+              <span class="slider round" />
+            </label>
+          </div>
+        </div>
+        <div class="flex flex-wrap">          
+          <div class="overflow-auto w-full">
+            <p class="text-purple text-mg ml-5">Allow for automatic assignment of grouping of performers, based on the parameters set below. Groups can be used to notify performers of updates and changes.</p>
+          </div>            
+        </div>
+        <div class="flex" v-if="form.grouping_enabled">
+            <group-size-dropdown class="text-red-600 bg-white mt-5" :options="group_size_array" :selected="selected_group_size" :setgroupsize.sync="set_group_size" @setGroupSizeOption="methodToGroupSizeOnSelect" v-on:updateOption="methodToGroupSizeOnSelect" :placeholder="'Group Size'" :disabled="true" ></group-size-dropdown>              
+        </div>
+      </template>
+
     <div class="flex pt-12">
       <div class="tags w-2/5">
         <p class="px-4 text-purple py-4">Union Status</p>
@@ -691,6 +719,9 @@ export default {
         contributors: [],
         media: []
       },
+      group_size_array : DEFINE.group_size_array,
+      selected_group_size : '',
+      set_group_size : '',
       union_status: [
         // {
         //   value: "any",
@@ -826,6 +857,8 @@ export default {
     
     this.form.dates = auditionCopiedObject.dates.length ? auditionCopiedObject.dates : [];
     this.form.online = auditionCopiedObject.online && auditionCopiedObject.online == 1 ? true : false;
+    this.form.grouping_enabled = auditionCopiedObject.grouping_enabled ? auditionCopiedObject.grouping_enabled : false;
+    this.selected_group_size = this.form.grouping_capacity = auditionCopiedObject.grouping_capacity ? auditionCopiedObject.grouping_capacity : null;
     this.form.appointment = auditionCopiedObject.apointment.general;
 
     this.form.appointment.type = this.form.appointment.type == "time" ? 1 : 2;
@@ -894,7 +927,10 @@ export default {
     onResize() {
       this.innerWidth = window.innerWidth;
     },
-
+    async methodToGroupSizeOnSelect(value) {
+      this.set_group_size = value;
+      this.form.grouping_capacity = this.set_group_size;
+    },
     openLocationModel() {
       this.$modal.show("location_model");
       this.geolocate();
@@ -1524,5 +1560,62 @@ textarea {
 }
 .mrtop-minus-crop {
  margin-top: -8px !important;
+}
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 75px;
+    height: 34px;
+}
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+
+input:checked + .slider {
+  background-color: #4d2545;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #4d2545;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(38px);
+  -ms-transform: translateX(38px);
+  transform: translateX(38px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
 }
 </style>

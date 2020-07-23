@@ -11,6 +11,7 @@ const DEFINE = {
     common_error_message : 'Oops! something went to wrong!',
     no_plan_subscirbed_error : "You don't have any subscription to access this feature.",
     no_plan_sub_user_subscirbed_error : "You don't have any subscription to access this feature, please contact admin.",
+    group_size_array : [1,2,3,4,5,6,7,8,9,10],
     thumbSize :{
         defaultWidth : 200,
         defaultHeight : 200,
