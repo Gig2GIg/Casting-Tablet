@@ -22,6 +22,7 @@
         </span>
         <!-- <span class="-mt-2">{{ $dayjs(time).format('MMMM Do') }}</span> -->
         <span class="text-xs">{{ time }}</span>
+        <span v-if="grouping_enabled && group_number > 0" class="text-xs">Group {{group_number}}</span>
       </div>
     </div>
   </div>
@@ -37,6 +38,14 @@ export default {
     time: {
       type: String,
       required: false,
+    },
+    grouping_enabled: {
+      type: Boolean,
+      default: false,
+    },
+    group_number: {
+      type: Number,
+      default: 0,
     },
     tag: {
       type: String,
