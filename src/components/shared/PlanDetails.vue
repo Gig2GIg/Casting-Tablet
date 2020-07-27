@@ -23,8 +23,9 @@
           <div
             class="relative flex flex-col h-48 items-center justify-center bg-cus-orange border-tl-radius-6 border-tr-radius-6"
           >
-            <span class="text-xl text-white" v-if="plan.is_custom == 0" >Up to {{Number(plan.allowed_performers).toLocaleString()}} Performers</span>
-            <span class="text-xl text-white" v-else>{{Number(plan.allowed_performers).toLocaleString()}}+ Performers</span>
+            <span class="text-m text-white font-bold">{{plan.header}}</span>
+            <!-- <span class="text-xl text-white" v-if="plan.is_custom == 0" >Up to {{Number(plan.allowed_performers).toLocaleString()}} Performers</span>
+            <span class="text-xl text-white" v-else>{{Number(plan.allowed_performers).toLocaleString()}}+ Performers</span> -->
           </div>
           <div class="relative flex flex-col card-data shadow-md">
             <div class="flex flex-col px-4 text-center w-full h-full items-center justify-center">
