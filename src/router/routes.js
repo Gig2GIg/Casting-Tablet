@@ -141,6 +141,11 @@ export default [
       name: 'audition-slot/manage',
       component: () => import(/* webpackChunkName: 'auditions.detail' */ '@/views/AuditionSlotManage'),
     },
+    {
+      path: '/audition-push/send/:id',
+      name: 'audition-push/send',
+      component: () => import(/* webpackChunkName: 'auditions.detail' */ '@/views/AuditionPushSend'),
+    },
   ]),
   ...mapRoutes({ layout: 'tour',isPrimeModule: false }, [
     {

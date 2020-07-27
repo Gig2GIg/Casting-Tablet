@@ -79,6 +79,7 @@
                 <card-user
                   :title="data.name"
                   :time="''"
+                  :grouping_enabled="false"
                   :image="data.image"
                   class="custom-perfom-list relative"
                 />
@@ -120,6 +121,8 @@
                   <card-user
                     :title="data.name"
                     :time="currentAudition && currentAudition.online != 1 ? data.time : ''"
+                    :grouping_enabled="currentAudition && currentAudition.online != 1 && data.grouping_enabled ? true : false"
+                    :group_number="currentAudition && currentAudition.online != 1 ? data.group_number : 0"
                     :image="data.image"
                     :favorite="!isAuditionVideos ? data.favorite : 0"
                         class="custom-perfom-list card-grid-view"
@@ -250,6 +253,8 @@
                     <card-user
                       :title="data.name"
                       :time="currentAudition && currentAudition.online != 1 ? data.time : ''"
+                      :grouping_enabled="currentAudition && currentAudition.online != 1 && data.grouping_enabled ? true : false"
+                      :group_number="currentAudition && currentAudition.online != 1 ? data.group_number : 0"
                       :image="data.image"
                       :favorite="data.favorite"
                       class="custom-perfom-list card-grid-view"
@@ -1392,6 +1397,8 @@ export default {
           this.finalCastPerformerList[data].image = filtered_data[j].image;
           this.finalCastPerformerList[data].name = filtered_data[j].name;
           this.finalCastPerformerList[data].time = filtered_data[j].time;
+          this.finalCastPerformerList[data].grouping_enabled = filtered_data[j].grouping_enabled;
+          this.finalCastPerformerList[data].group_number = filtered_data[j].group_number;
           // this.finalCast[data].rol_id = filtered_data[j].rol;
         }
       }
@@ -1426,7 +1433,8 @@ export default {
           this.finalCastPerformerList[data].image = filtered_data[j].image;
           this.finalCastPerformerList[data].name = filtered_data[j].name;
           this.finalCastPerformerList[data].time = filtered_data[j].time;
-          this.finalCastPerformerList[data].time = filtered_data[j].time;
+          this.finalCastPerformerList[data].grouping_enabled = filtered_data[j].grouping_enabled;
+          this.finalCastPerformerList[data].group_number = filtered_data[j].group_number;
           this.finalCastPerformerList[data].birth = filtered_data[j].birth;
           this.finalCastPerformerList[data].email = filtered_data[j].email;
           // this.finalCast[data].rol_id = filtered_data[j].rol;
@@ -1451,6 +1459,8 @@ export default {
             role.finalcast_id = filtered_data[0].id;
             role.user_id = filtered_data[0].user_id;
             role.time = filtered_data[0].time;
+            role.grouping_enabled = filtered_data[0].grouping_enabled;
+            role.group_number = filtered_data[0].group_number;
             role.birth = filtered_data[0].birth;
             role.email = filtered_data[0].email;
           } else {
@@ -1459,6 +1469,8 @@ export default {
             role.user_id = null;
             role.image = role.image.thumbnail ? role.image.thumbnail : role.image.url;
             role.time = "";
+            role.grouping_enabled = false
+            role.group_number = ""
             role.birth = null;
             role.email = null;
           }
@@ -1468,6 +1480,8 @@ export default {
           role.user_id = null;
           role.image = role.image.thumbnail ? role.image.thumbnail : role.image.url;
           role.time = "";
+          role.grouping_enabled = false
+          role.group_number = ""
           role.birth = null;
           role.email = null;
         }
@@ -1512,6 +1526,8 @@ export default {
           this.finalCastPerformerList[data].image = filtered_data[j].image;
           this.finalCastPerformerList[data].name = filtered_data[j].name;
           this.finalCastPerformerList[data].time = filtered_data[j].time;
+          this.finalCastPerformerList[data].grouping_enabled = filtered_data[j].grouping_enabled;
+          this.finalCastPerformerList[data].group_number = filtered_data[j].group_number;
           // this.finalCast[data].rol_id = filtered_data[j].rol;
         }
       }
@@ -1534,6 +1550,8 @@ export default {
             role.finalcast_id = filtered_data[0].id;
             role.user_id = filtered_data[0].user_id;
             role.time = filtered_data[0].time;
+            role.grouping_enabled = filtered_data[0].grouping_enabled;
+            role.group_number = filtered_data[0].group_number;
             role.birth = filtered_data[0].birth;
             role.email = filtered_data[0].email;
           } else {
@@ -1542,6 +1560,8 @@ export default {
             role.user_id = null;
             role.image = role.image.thumbnail ? role.image.thumbnail : role.image.url;
             role.time = "";
+            role.grouping_enabled = false;
+            role.group_number = "";
             role.birth = null;
             role.email = null;
           }
@@ -1551,6 +1571,8 @@ export default {
           role.user_id = null;
           role.image = role.image.thumbnail ? role.image.thumbnail : role.image.url;
           role.time = "";
+          role.grouping_enabled = false;
+          role.group_number = "";
           role.birth = null;
           role.email = null;
         }
@@ -1606,7 +1628,8 @@ export default {
           finalCastPerformerList[data].image = filtered_data[j].image;
           finalCastPerformerList[data].name = filtered_data[j].name;
           finalCastPerformerList[data].time = filtered_data[j].time;
-          finalCastPerformerList[data].time = filtered_data[j].time;
+          finalCastPerformerList[data].grouping_enabled = filtered_data[j].grouping_enabled;
+          finalCastPerformerList[data].group_number = filtered_data[j].group_number;
           finalCastPerformerList[data].birth = filtered_data[j].birth;
           finalCastPerformerList[data].email = filtered_data[j].email;
           finalCastPerformerList[data].website = filtered_data[j].website;
@@ -1636,6 +1659,8 @@ export default {
             role.finalcast_id = filtered_data[0].id;
             role.user_id = filtered_data[0].user_id;
             role.time = filtered_data[0].time;
+            role.grouping_enabled = filtered_data[0].grouping_enabled;
+            role.group_number = filtered_data[0].group_number;
             role.birth = filtered_data[0].birth;
             role.email = filtered_data[0].email;
             role.website = filtered_data[0].website;
@@ -1648,6 +1673,8 @@ export default {
             role.user_id = null;
             role.image = role.image.thumbnail ? role.image.thumbnail : role.image.url;
             role.time = "";
+            role.grouping_enabled = false;
+            role.group_number = "";
             role.birth = null;
             role.email = null;
             role.website = null;
@@ -1661,6 +1688,8 @@ export default {
           role.user_id = null;
           role.image = role.image.thumbnail ? role.image.thumbnail : role.image.url;
           role.time = "";
+          role.grouping_enabled = false;
+            role.group_number = "";
           role.birth = null;
           role.email = null;
           role.website = null;
