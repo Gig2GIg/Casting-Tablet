@@ -2,7 +2,7 @@
   <div>
     <loading
       :active.sync="isLoading"
-      :can-cancel="true"
+      :can-cancel="false"
       :on-cancel="onCancel"
       :is-full-page="fullPage"
     ></loading>
@@ -88,6 +88,7 @@
         <input ref="inputFile" accept=".png, .jpg, .jpeg" type="file" hidden @change="handleImage" />
 
         <base-input
+          key="agency_name-input"
           v-model="form.agency_name"
           v-validate="'required|max:255'"
           name="agency_name"
@@ -97,6 +98,7 @@
         />
 
         <base-input
+          key="profesion-input"
           v-model="form.profesion"
           v-validate="'required|max:255'"
           name="profesion"

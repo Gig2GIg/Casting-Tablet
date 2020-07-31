@@ -304,7 +304,7 @@
             >Appointments</p>
           </div>
         </div>
-        <template v-if="audition && audition.online != 1 && audition.status == 0">
+        <template v-if="audition && audition.online != 1">
           <div class="w-full border border-gray-300 mt-6 mb-6" />
           <div            
             class="flex w-full content-center text-center justify-center flex-wrap cursor-pointer"
@@ -321,7 +321,7 @@
         </template>
         
         <div
-          v-if="audition.status == 1 && roundActive.status == 1"
+          v-if="audition.status == 1 && (roundActive.status == 1 || roundActive.status == 0)"
           class="w-full border border-gray-300 mt-6 mb-6"
         />
         <!--  -->
