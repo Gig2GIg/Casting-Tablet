@@ -1,8 +1,7 @@
 <template>
   <div class="flex flex-col min-h-full cover">
-    <auth-nav-bar v-if="showNavBar" :isRouteNavigate="signupStep === 4 ? true : false" />
+    <auth-nav-bar v-if="showNavBar" :isRouteNavigate="false" />
     <div
-      v-if="signupStep !== 4"
       class="cursor-pointer flex content-around w-100 items-center relative cmb-10 back-div ml-5"
       @click="back"
     >

@@ -361,7 +361,13 @@ export default {
     ...mapActions("profile", ["fetch"]),
     async nextStep() {      
       if (await this.$validator.validateAll()) {
-        if(this.step == 3) {
+        if(this.step === 2) {
+          if (!this.updatedImageBlob || !this.updatedImageFile) {
+            this.$toasted.clear();
+            this.$toasted.error("The image field is required.");
+            return;
+          }
+        } else if(this.step == 3) {
           this.$toasted.clear();
           if(!payment.validateCardNumber(this.form.card_number)){
             this.$toasted.error("Please enter valid card number!");
