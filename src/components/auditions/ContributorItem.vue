@@ -17,7 +17,7 @@
     </template>
     <template v-else>
       <div
-        class="flex items-center justify-center text-white w-full h-full cursor-pointer"
+        class="flex items-center justify-center text-white w-full h-full cursor-pointer outside-click-exclude"
         style="background-color: #93183E;"
         @click="$emit('destroy', contributor)"
       >

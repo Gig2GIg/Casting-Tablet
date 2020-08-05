@@ -410,7 +410,7 @@
                     v-model="form.comment"
                     name="tag"
                     class="w-3/4 mb-3"
-                    type="add"
+                    type="textarea"
                     placeholder="Add Comment"
                     :custom-classes="['border-2', 'border-purple']"
                   />

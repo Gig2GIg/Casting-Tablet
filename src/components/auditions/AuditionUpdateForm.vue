@@ -9,25 +9,29 @@
     ></loading>
     <div class="flex flex-row-reverse mb-4 px-2">
       <div
-        class="relative flex items-center text-purple cursor-pointer"
+        class="relative flex items-center text-purple cursor-pointer outside-click-exclude"
         @click="manageInvitations = !manageInvitations"
       >
-        <img src="/images/icons/person.png" alt="Icon" class="h-4 mr-2" />
-        <span class="select-none">Add Invitations</span>
+        <img src="/images/icons/person.png" alt="Icon" class="h-4 mr-2 outside-click-exclude" />
+        <span class="select-none outside-click-exclude">Add Invitations</span>
       </div>
     </div>
 
     <form
-      v-if="manageInvitations"
+      v-show="manageInvitations"
+      v-outside-click="{
+      exclude: ['outside-click-exclude'],
+        handler: closeInviteForm
+      }"
       class="bubble absolute right-0 w-64 -mr-12 z-50 p-3"
       data-vv-scope="invitation"
       @submit.prevent="handleInvitation"
     >
       <base-button
         v-if="!invitation.adding"
-        class="pt-2 pb-2"
+        class="pt-2 pb-2 outside-click-exclude"
         border-classes="rounded-full border border-purple"
-        color="bg-white"
+        color="bg-white "
         :hover="['bg-purple', 'text-white']"
         text="text-purple"
         expanded
@@ -45,7 +49,7 @@
           expanded
         />
 
-        <base-button class="pt-2 pb-2" type="submit" expanded>Send</base-button>
+        <base-button class="pt-2 pb-2 outside-click-exclude" type="submit" expanded>Send</base-button>
       </div>
 
       <contributor-item
@@ -1453,6 +1457,9 @@ export default {
     },
     fileRenameDone(){
       this.$modal.hide('rename_file_name');
+    },
+    closeInviteForm() {
+      this.manageInvitations = false;
     }
   }
 };

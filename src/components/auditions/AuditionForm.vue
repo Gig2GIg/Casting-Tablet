@@ -3,17 +3,21 @@
   <form class="relative" data-vv-scope="create" @submit.prevent="handleCreate">
     <loading :active.sync="isLoading" :can-cancel="true" :on-cancel="onCancel" :is-full-page="fullPage"></loading>
     <div class="flex flex-row-reverse mb-4 px-2">
-      <div class="relative flex items-center text-purple cursor-pointer" @click="manageInvitations = !manageInvitations">
-        <img src="/images/icons/person.png" alt="Icon" class="h-4 mr-2" />
-        <span class="select-none">Add Invitations</span>
+      <div class="relative flex items-center text-purple cursor-pointer outside-click-exclude" @click="manageInvitations = !manageInvitations">
+        <img src="/images/icons/person.png" alt="Icon" class="h-4 mr-2 outside-click-exclude" />
+        <span class="select-none outside-click-exclude">Add Invitations</span>
       </div>
     </div>
-    <form v-if="manageInvitations" class="bubble absolute right-0 w-64 -mr-12 z-50 p-3" data-vv-scope="invitation" @submit.prevent="handleInvitation">
-      <base-button v-if="!invitation.adding" class="pt-2 pb-2" border-classes="rounded-full border border-purple" color="bg-white" :hover="['bg-purple', 'text-white']" text="text-purple" expanded @click="invitation.adding = true">Add Contributor
+    <form ref="contributorform" v-show="manageInvitations" v-outside-click="{
+      exclude: ['outside-click-exclude'],
+        handler: closeInviteForm
+      }"
+      class="bubble absolute right-0 w-64 -mr-12 z-50 p-3" data-vv-scope="invitation" @submit.prevent="handleInvitation">
+      <base-button v-if="!invitation.adding" class="pt-2 pb-2 outside-click-exclude" border-classes="rounded-full border border-purple outside-click-exclude" color="bg-white" :hover="['bg-purple', 'text-white']" text="text-purple" expanded @click="invitation.adding = true">Add Contributor
       </base-button>
       <div v-show="invitation.adding">
         <base-input v-model="invitation.email" v-validate="'required|email'" name="email" placeholder="Email" :custom-classes="['border', 'border-purple']" :message="errors.first('invitation.email')" expanded />
-        <base-button class="pt-2 pb-2" type="submit" expanded>Send</base-button>
+        <base-button class="pt-2 pb-2 outside-click-exclude" type="submit" expanded>Send</base-button>
       </div>
       <contributor-item v-for="contributor in form.contributors" :key="contributor.email" class="-mx-3" :contributor="contributor" @destroy="handleDeleteContributor" />
     </form>
@@ -335,7 +339,7 @@
   </form>
 </template>
 <script>
-  import Vue from "vue";
+import Vue from "vue";
 import uuid from "uuid/v1";
 import firebase from "firebase/app";
 import axios from "axios";
@@ -375,6 +379,9 @@ import customTimePicker from "../custom/custom-clock-picker/components/customTim
 import ThumbService from '@/services/ThumbService';
 
 import _ from "lodash";
+
+import OutsideClick from '@/utils/outSideClickDirective';
+Vue.directive('outside-click', OutsideClick)
 
 export default {
   name: "AuditionForm",
@@ -1303,10 +1310,12 @@ export default {
       } else {
         //manage selected round details
         this.selected_round = payload;
-      }      
-      
+      }            
+    },
+    closeInviteForm() {
+      this.manageInvitations = false;
     }
-  }  
+  }
 };
 </script>
 <style scoped>
