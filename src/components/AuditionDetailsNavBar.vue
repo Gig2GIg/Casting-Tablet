@@ -82,7 +82,7 @@
       </div>
 
       </div>
-    <div class="flex items-center border-l border-white text-white ml-auto cursor-pointer">
+    <div class="flex items-center border-l border-white text-white ml-auto cursor-pointer" @click="goToSettings" title="Settings" >
       <span class="mx-4">
         {{user.details && user.details.first_name ? user.details.first_name : ''}} {{user.details && user.details.last_name ? user.details.last_name : '' }}
       </span>
@@ -374,6 +374,11 @@ export default {
     closeGroup() {
       this.isClickCloseGroup = true;
       eventBus.$emit("clickCloseGroup", this.isClickCloseGroup);
+    },
+    goToSettings() {
+      this.$router.push({
+        name: "my.settings"
+      });
     }
   }
 };

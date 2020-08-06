@@ -61,7 +61,7 @@
       <img :src="'/images/icons/12-layers@3x.png'" class="h-10  ml-auto mr-5" alt="star" @click="invitation.adding =invitation.adding == true?false:true" >
       <img v-if="favorite == 0" :src="'/images/icons/4-layers.png'" class="w-6 m-6" alt="star" @click="favorite=1">
       <img v-else  :src="'/images/icons/Path_56@2x.png'" class="w-6 m-6" alt="star" @click="favorite=0">
-    <div class="flex items-center border-l border-white text-white ml-auto cursor-pointer">
+    <div class="flex items-center border-l border-white text-white ml-auto cursor-pointer" @click="goToSettings" title="Settings" >
       <span class="mx-4">
         {{profile.details && profile.details.first_name ? profile.details.first_name : ""}} {{profile.details ? profile.details.last_name : ""}}
       </span>
@@ -1791,7 +1791,12 @@ export default {
       }
       this.chatMessage = "";
       // console.log("sendMessage -> this.messageList", this.messageList);
-    }
+    },
+    goToSettings() {
+      this.$router.push({
+        name: "my.settings"
+      });
+    }   
   },
 };
 </script>

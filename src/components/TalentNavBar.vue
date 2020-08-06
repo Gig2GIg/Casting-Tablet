@@ -41,7 +41,7 @@
       </div>
       <img :src="'/images/icons/Path_31@3x_1.png'" class="h-6  ml-auto mr-5" alt="star" @click="invitation.adding = invitation.adding == true?false:true">
       </div>
-    <div class="flex items-center border-l border-white text-white ml-auto cursor-pointer login-user-details">
+    <div class="flex items-center border-l border-white text-white ml-auto cursor-pointer login-user-details" @click="goToSettings" title="Settings" >
       <span class="mx-4">
         {{user.details && user.details.first_name ? user.details.first_name : ''}} {{user.details && user.details.last_name ? user.details.last_name : ''}}
       </span>
@@ -109,6 +109,11 @@ export default {
       this.$emit('onAdd', this.counter++);
       // this.fetchUserList();
     },
+    goToSettings() {
+      this.$router.push({
+        name: "my.settings"
+      });
+    }
   },
 };
 </script>

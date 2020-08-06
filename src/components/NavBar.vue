@@ -1,6 +1,6 @@
 <template>
   <nav class="flex items-center h-12">    
-    <div class="flex items-center border-l border-white text-white ml-auto cursor-pointer">
+    <div class="flex items-center border-l border-white text-white ml-auto cursor-pointer" @click="goToSettings" title="Settings" >
       <span class="mx-4">
         {{ user.details && user.details.first_name ? user.details.first_name + ' ' + user.details.last_name:"" }}
       </span>
@@ -51,7 +51,12 @@ export default {
   },
   methods: {
     ...mapActions('audition', ['fetchUpcoming', 'fetchPassed']),
-    ...mapActions('profile', ['fetch'])    
+    ...mapActions('profile', ['fetch']),
+    goToSettings() {
+      this.$router.push({
+        name: "my.settings"
+      });
+    }   
   },
 };
 </script>

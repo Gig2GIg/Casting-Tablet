@@ -15,8 +15,8 @@
       >
       </div>
     </div>
-    <div class="w-7/12 text-center">News & Updates</div>
-    <div class="flex items-center border-l border-white text-white ml-auto cursor-pointer">
+    <div class="w-2/4 text-center">News & Updates</div>
+    <div class="flex items-center border-l border-white text-white ml-auto cursor-pointer" @click="goToSettings" title="Settings" >
       <span class="mx-4">
         {{ user.details && user.details.first_name ? user.details.first_name + ' ' + user.details.last_name:"" }}
       </span>
@@ -71,6 +71,11 @@ export default {
       $emit('onAdd', '1')
       // this.fetchUserList();
     },
+    goToSettings() {
+      this.$router.push({
+        name: "my.settings"
+      });
+    }
   },
 };
 </script>

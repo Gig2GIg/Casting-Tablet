@@ -1,6 +1,6 @@
 <template>
   <nav class="flex justify-center items-center h-12 text-white">      
-    <div class=" cursor-pointer flex content-around w-100 items-center relative cmb-10" @click="back">
+    <div class=" cursor-pointer flex content-around w-1/4 items-center relative cmb-10" @click="back">
       <img
         src="/images/icons/left_arrow_white.png"
         class="absolute left-0 pl-1"        
@@ -8,7 +8,7 @@
       <h1 class="absolute left-0 text-white text-lg back-mrg-l">{{audition_title}}</h1>
     </div>
     
-     <div class="flex items-center border-l border-white text-white ml-auto cursor-pointer">
+     <div class="flex items-center border-l border-white text-white ml-auto cursor-pointer" @click="goToSettings" title="Settings" >
       <span class="mx-4">
         {{user.details && user.details.first_name ? user.details.first_name : ''}} {{user.details && user.details.last_name ? user.details.last_name : '' }}
       </span>      
@@ -59,6 +59,11 @@ export default {
     back(){
       this.$router.push({ name: 'auditions/detail',params:{id: this.$route.params.id } });
     },
+    goToSettings() {
+      this.$router.push({
+        name: "my.settings"
+      });
+    }
   }
 };
 </script>

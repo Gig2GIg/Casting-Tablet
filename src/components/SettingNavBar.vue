@@ -12,7 +12,7 @@
 
     <div class="text-center">{{hideMenuInfo ? 'Subscription' : 'Settings'}}</div>
 
-    <div class="flex items-center border-l border-white text-white ml-auto cursor-pointer">
+    <div class="flex items-center border-l border-white text-white ml-auto cursor-pointer" v-if="hideMenuInfo" @click="backToSetting" title="Settings">
       <span
         class="mx-4"
       >{{ (user.details && user.details.first_name) ? user.details.first_name + ' ' + user.details.last_name:"" }}</span>
@@ -24,11 +24,19 @@
               alt="Avatar"
           />
       </div>
-      <!-- <img
-        v-lazy="user.image ? (user.image.thumbnail ? user.image.thumbnail : user.image.url) : ''"
-        class="w-12 img-h48 object-cover"
-        alt="Avatar"
-      /> -->
+    </div>
+    <div class="flex items-center border-l border-white text-white ml-auto cursor-pointer" v-else>
+      <span
+        class="mx-4"
+      >{{ (user.details && user.details.first_name) ? user.details.first_name + ' ' + user.details.last_name:"" }}</span>
+      <div v-lazy-container="{ selector: 'img' }" >
+          <img
+              :data-loading="loading_placeholder" :data-error="user_placeholder"
+              :data-src="user.image && user.image.thumbnail ? user.image.thumbnail : (user.image && user.image.url ? user.image.url : '')"
+              class="w-12 img-h48 object-cover"
+              alt="Avatar"
+          />
+      </div>
     </div>
   </nav>
 </template>

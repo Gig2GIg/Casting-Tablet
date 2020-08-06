@@ -26,7 +26,7 @@
       </div>
       <img v-if="this.encCode" :src="'/images/icons/12-layers@3x.png'" class="h-10  ml-auto mr-5" alt="star" @click="invitation.adding =invitation.adding == true?false:true">
       </div>
-    <div class="flex items-center border-l border-white text-white float-right cursor-pointer">
+    <div class="flex items-center border-l border-white text-white float-right cursor-pointer" @click="goToSettings" title="Settings" >
       <span class="mx-4">
         {{profile.details && profile.details.first_name ? profile.details.first_name : ''}} {{profile.details && profile.details.last_name ? profile.details.last_name : '' }}
       </span>
@@ -732,6 +732,11 @@ export default {
       this.currentVideo = null;
       this.$modal.hide("modal_file_name_manage");
     },
+    goToSettings() {
+      this.$router.push({
+        name: "my.settings"
+      });
+    }
   },
 };
 </script>
