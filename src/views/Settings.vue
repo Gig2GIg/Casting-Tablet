@@ -655,14 +655,14 @@
             <div class="overflow-auto w-10/12">
               <span
                 class="text-purple text-lg capitalize"
-              >{{ notifications.code.replace('_', ' ') }} ({{ notifications.status }})</span>
+              >{{ notifications.setting.replace('_', ' ') }}</span>
             </div>
             <div class="w-1/12">
               <label class="switch">
                 <input
                   id="notifications"
                   type="checkbox"
-                  :checked="notifications.status === 'on' ? true : false"
+                  :checked="notifications.value === 1 ? true : false"
                   @change="disableNotification(notifications)"
                 />
                 <span class="slider round" />
@@ -1116,6 +1116,9 @@ export default {
           case "appinfo":
             this.getCMSContent();
             break;
+          case "notifications":
+            this.notificationsList();
+            break;
           // case "contact_us":
           //   this.getCMSContent();
           //   break;
@@ -1299,6 +1302,43 @@ export default {
       } catch (e) {
         console.log(e);
       }
+    },
+    async notificationsList() {
+      try {
+        const url = 'users/settings';
+        const {
+          data: {
+            data,
+          },
+        } = await axios.get(url);
+        this.listNotificacions = data;        
+        // console.log(data);
+      } catch (ex) {
+        console.log(ex);
+      }
+    },
+    async disableNotification(obj) {      
+      let message = 'Notification Disabled';
+      const url = `users/settings/${obj.id}`;
+      try {
+        this.$toasted.clear()
+        if (!obj.value) {
+          message = 'Notification Enabled';
+        }
+        const paramData = {
+          "value": obj.value ? false : true
+        };
+        const {
+          data: {
+            data,
+          },
+        } = await axios.put(url, paramData);
+        this.$toasted.show(message);
+      } catch (ex) {
+        this.$toasted.error(ex);
+        console.log(ex);
+      }
+      this.notificationsList();
     },
     handleProfileFile(e) {
       const file = e.target.files[0];
