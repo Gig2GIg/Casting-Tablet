@@ -317,7 +317,7 @@
           <div class="flex w-full">
             <div class="w-2/4 p-2">
               <div class="border rounded w-full h-50 overflow-auto px-3 py-2">
-                <div class="flex flex-wrap justify-center flex-col content-center w-full mb-5">
+                <div class="flex flex-wrap justify-center flex-col content-center w-full mb-5" v-if="audition.contract != 'ACADEMIC'" >
                   <p class="text-center text-2xl text-purple font-semibold mb-2">Feedback</p>
                   <div class="flex flex-wrap justify-center w-full mt-2">
                     <figure
