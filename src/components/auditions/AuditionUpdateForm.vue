@@ -758,6 +758,11 @@ export default {
           key: "UNPAID",
           name: "Unpaid",
           selected: false
+        },
+        {
+          key: "ACADEMIC",
+          name: "Academic",
+          selected: false
         }
       ],
       production_types: [
