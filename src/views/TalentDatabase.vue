@@ -75,17 +75,17 @@ export default {
       isLoading: true,
       currentFilter:this.search,
       selectedGender:{
-          key: 'male', name: 'male', selected: true,
+          key: 'ANY', name: 'any', selected: true,
       },
       selectedUnion:{
-          value: '1', name: 'UNION', selected: true,
+          value: '0', name: 'ANY', selected: true,
       },
       union_status: [
         {
-          value: '0', name: 'ANY', selected: false,
+          value: '0', name: 'ANY', selected: true,
         },
         {
-          value: '1', name: 'UNION', selected: true,
+          value: '1', name: 'UNION', selected: false,
         },
         {
           value: '2', name: 'Non Union', selected: false,
@@ -93,10 +93,10 @@ export default {
       ],
       gender_list: [
         {
-          key: 'ANY', name: 'any', selected: false,
+          key: 'ANY', name: 'any', selected: true,
         },
         {
-          key: 'male', name: 'male', selected: true,
+          key: 'male', name: 'male', selected: false,
         },
         {
           key: 'female', name: 'female', selected: false,
