@@ -146,7 +146,7 @@
                     <br/>Appointments
                 </div>
             </div>
-            <div v-for="data in appointments" :key="data.id" class="w-full">
+            <div v-for="data in appointments" :key="data.id" class="w-full mt-2">
                 <div class="flex w-full -mb-5">
                     <div class="w-1/2 text-center m-8 float-left">
                         <h4 class="text-left text-sm text-purple">{{ data.name }}</h4>
