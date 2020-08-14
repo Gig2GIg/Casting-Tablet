@@ -58,7 +58,7 @@
         v-else
         :list="slotsData"
         :disabled="!enabled"
-        class="list-group mt-2"
+        class="list-group mt-10"
         ghost-class="ghost"
         :move="checkMove"
         @start="dragging = true"
