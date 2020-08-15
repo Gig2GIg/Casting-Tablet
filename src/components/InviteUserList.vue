@@ -8,7 +8,7 @@
     ></loading>
     <div
       class="tags w-full mx-auto invite-block-hieght text-purple"
-      v-if="!isLoading && !notSuscription"
+      v-if="!notSuscription"
     >
       <div class="py-4 px-4 mr-2 flex flex-wrap justify-center">
         <div class="w-full mr-2">
@@ -97,7 +97,17 @@
               <div
                 class="w-2/5 ml-4 text-purple px-2 text-sm joined-date"
               >{{user.details.created_at | formatDate}}</div>
-              <div class="w-2/10 ml-4 text-purple px-2 active-btn">
+              <div class="w-2/5 ml-4 text-purple active-btn">
+                  <div
+                    v-if="user.is_profile_completed == 0"
+                    class="cursor-pointer m-3 content-center rounded-full red-light w-full h-8 flex items-center button-detail accept-decline-btn"
+                    @click="resendInviteUser(user)"
+                  >
+                  <p class="text-white text-sm text-center content-center flex-1">Resend Email</p>
+                </div>
+              </div>
+              <div class="w-2/20 ml-4 text-purple px-2 active-btn">
+                
                 <div
                   v-if="user.is_active == 1"
                   class="cursor-pointer m-3 content-center rounded-full red-light w-full h-8 flex items-center button-detail accept-decline-btn"
@@ -284,6 +294,24 @@ export default {
         // this.$toasted.error(
         //   "You don't have any subscription plan, please subscribe plan."
         // );
+      } finally {
+        this.isLoading = false;
+      }
+    },
+    /**
+     * On user resnd email invitation email send again
+     */
+    async resendInviteUser(user) {
+      this.$toasted.clear();
+      this.isLoading = true;
+      try {
+        const data = await axios.get(`/t/users/resendInvitation/${user.id}`);        
+        this.isLoading = false;
+        this.getInviteUser();
+        const successMsg = data.data && data.data.message ? data.data.message : "Invitation email sent successfully";
+        this.$toasted.success(successMsg);
+      } catch (e) {
+        this.$toasted.error(DEFINE.common_error_message);
       } finally {
         this.isLoading = false;
       }
