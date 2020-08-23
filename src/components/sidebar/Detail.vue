@@ -265,6 +265,23 @@
           v-if="roundActive.status == 1 && audition.status == 1 && roundActive.status > 0 && audition.online == 0"
           class="flex w-full content-center text-center justify-center flex-wrap cursor-pointer"
         >
+          <button
+            @click="openManualConfirmCheckInmodal"
+            class="m-3 content-center flex items-center flex m-3 content-center border-2 rounded-sm border-purple w-48 h-10"
+          >
+            <p
+              class="flex-1 text-purple text-sm font-semibold content-center tracking-tighter flex-1"
+            >Enter Manual Check-In Mode</p>
+          </button>
+        </div>
+        <div
+          v-if="roundActive.status == 1 && audition.status == 1 && roundActive.status > 0 && audition.online == 0"
+          class="w-full border border-gray-300 mt-6 mb-6"
+        />
+        <div
+          v-if="roundActive.status == 1 && audition.status == 1 && roundActive.status > 0 && audition.online == 0"
+          class="flex w-full content-center text-center justify-center flex-wrap cursor-pointer"
+        >
           <!-- <router-link :to="{ name: 'monitor-update', params: {id: roundActive.id,auditionId:audition.id } }"> -->
             <div
               @click="openConfirmMonitorInmodal"
@@ -542,6 +559,26 @@
                 </div>
                 <div class="w-1/4 ml-3">
                   <base-button type="submit" expanded @click="confirmCheckInmode(true)">
+                      Yes
+                  </base-button>
+                </div>
+
+            </div>
+        </div>
+    </modal>
+
+    <modal class="flex flex-col w-full items-center" :width="540" height="175" name="modal_manual_confirm_check_in_mode">
+        <div class="py-8 px-3">
+              <h1 class="text-lg text-purple font-bold text-center">Open Manual Check In?</h1>
+              <p class="text-lg text-purple text-center">Are you sure you want to open Manual Check In for audition?</p>
+            <div class="w-full flex flex-wrap justify-center overflow-hidden mt-3">
+                <div class="w-1/4">
+                  <base-button type="submit" expanded @click="confirmManualCheckInmode(false)">
+                      No
+                  </base-button>
+                </div>
+                <div class="w-1/4 ml-3">
+                  <base-button type="submit" expanded @click="confirmManualCheckInmode(true)">
                       Yes
                   </base-button>
                 </div>
@@ -1040,6 +1077,21 @@ export default {
     },
     openConfirmCheckInmodal() {
       this.$modal.show("modal_confirm_check_in_mode");
+    },
+    openManualConfirmCheckInmodal() {
+      this.$modal.show("modal_manual_confirm_check_in_mode");
+    },
+    confirmManualCheckInmode(mode) {
+      this.$modal.hide("modal_manual_confirm_check_in_mode");
+      if (mode) {
+        this.$router.push({
+        name: "auditions/manualCheckIn",
+        params: {
+            id: this.roundActive.id,
+            auditionId: this.audition.id
+          }
+        });
+      }
     },
     confirmCheckInmode(mode) {
       this.$modal.hide("modal_confirm_check_in_mode");

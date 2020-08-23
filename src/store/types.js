@@ -22,8 +22,6 @@ export const FETCH_ROUNDS_SUCCESS = 'Fetch Rounds Successful';
 export const FETCH_ROUNDS_FAILURE = 'Fetch Rounds Failed';
 export const FETCH_USER_APPOINTMENT_SUCCESS = 'Fetch User Appointment Successful';
 export const FETCH_USER_APPOINTMENT_FAILURE = 'Fetch User Appointment Failed';
-export const SAVE_USER_CHECKIN_SUCCESS = 'Fetch User check-in Successful';
-export const SAVE_USER_CHECKIN_FAILURE = 'Fetch User check-in Failed';
 
 export const FETCH_APPOINTMENT_NOT_WALK_SUCCESS = 'Fetch Appointment Not Walk Successful';
 export const FETCH_APPOINTMENT_NOT_WALK_FAILURE = 'Fetch Appointment Not Walk Failed';

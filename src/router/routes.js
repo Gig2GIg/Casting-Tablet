@@ -75,6 +75,14 @@ export default [
     },
   ]),
 
+  ...mapRoutes({ layout: 'manualCheckIn', isPrimeModule: true }, [
+    {
+      path: '/auditions/:id/manualCheckIn/:auditionId',
+      name: 'auditions/manualCheckIn',
+      component: () => import(/* webpackChunkName: 'auditions' */ '@/views/auditions/AuditionManualCheckIn'),
+    },
+  ]),
+
   ...mapRoutes({ layout: 'monitor', isPrimeModule: true }, [
     {
       path: '/auditions/:id/monitor-mode/:auditionId',

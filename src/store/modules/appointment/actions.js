@@ -42,11 +42,9 @@ export default {
   async saveCheckIn({ commit }, userData) {
     try {
       const {data: { data }} = await axios.post("appointments/auditions", userData);
-      commit(types.SAVE_USER_CHECKIN_SUCCESS, data);
       return true;
     } catch (e) {
       console.log(e);
-      commit(types.SAVE_USER_CHECKIN_FAILURE);
       return false;
     }
   },
