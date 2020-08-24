@@ -263,7 +263,7 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss" scoped>
 .top-1\/2 {
   top: 50%;
   transform: translateY(-50%);

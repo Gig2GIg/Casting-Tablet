@@ -12,7 +12,7 @@
       <a class="flex items-center cursor-pointer bg-white bg-white-hover br-12 p-2" @click="openConfirmCheckOutmodal()">
           <figure class="flex justify-center"><img src="/images/icons/sign_out.png" alt="Icon" class="h-4">
           </figure>
-          <span class="ml-1">Exit Check-In</span>
+          <span class="ml-1" style="color: black">Exit Check-In</span>
       </a>
     </div> 
     <transition
@@ -23,7 +23,7 @@
     
       <router-view class="flex flex-row flex-1 h-full" />
     </transition>
-    <modal class="flex flex-col w-full items-center" :width="540" height="175" name="modal_confirm_check_out_mode">
+    <modal class="flex flex-col w-full items-center" :width="540" height="197" name="modal_confirm_check_out_mode">
         <div class="py-8 px-3">
             <h1 class="text-lg text-purple font-bold text-center">Close Check In?</h1>
             <p class="text-lg text-purple text-center">Are you sure you want to close Check In for audition?</p>
@@ -172,6 +172,9 @@ nav {
 }
 .br-12{
   border-radius: 12px;
+}
+.pass-code-input {
+  margin-left: 8.5rem !important;
 }
 .bg-white-hover:hover {
     background-color: #ececec !important;

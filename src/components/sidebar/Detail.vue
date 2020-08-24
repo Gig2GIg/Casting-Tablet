@@ -547,7 +547,7 @@
       </div>
     </transition>
     <!--start: enter Check in model modal-->
-    <modal class="flex flex-col w-full items-center" :width="540" height="175" name="modal_confirm_check_in_mode">
+    <modal class="flex flex-col w-full items-center" :width="540" height="197" name="modal_confirm_check_in_mode">
         <div class="py-8 px-3">
               <h1 class="text-lg text-purple font-bold text-center">Open Check In?</h1>
               <p class="text-lg text-purple text-center">Are you sure you want to open Check In for audition?</p>
@@ -567,7 +567,7 @@
         </div>
     </modal>
 
-    <modal class="flex flex-col w-full items-center" :width="540" height="175" name="modal_manual_confirm_check_in_mode">
+    <modal class="flex flex-col w-full items-center" :width="540" height="197" name="modal_manual_confirm_check_in_mode">
         <div class="py-8 px-3">
               <h1 class="text-lg text-purple font-bold text-center">Open Manual Check In?</h1>
               <p class="text-lg text-purple text-center">Are you sure you want to open Manual Check In for audition?</p>
@@ -641,7 +641,7 @@
     <!--end: enter Check in model modal-->
 
     <!--start: enter monitor mode in model modal-->
-    <modal class="flex flex-col w-full items-center" :width="540" height="175" name="modal_confirm_monitor_in_mode">
+    <modal class="flex flex-col w-full items-center" :width="540" height="197" name="modal_confirm_monitor_in_mode">
         <div class="py-8 px-3">
             <h1 class="text-lg text-purple font-bold text-center">Enter Monitor Mode?</h1>
             <p class="text-lg text-purple text-center">Are you sure you want to open Monitor Mode?</p>
@@ -1257,7 +1257,7 @@ export default {
   }
 };
 </script>
-<style>
+<style scoped>
 .purple-light {
   color: #4d2545 !important;
 }
@@ -1430,7 +1430,7 @@ ul.submanu-content > li > a {
 }
 
 .pass-code-input {
-  margin-left: 10.5rem !important;
+  margin-left: 8.5rem !important;
 }
 .manage-scroll{
   width: 100%;
@@ -1453,9 +1453,9 @@ ul.submanu-content > li > a {
 .actions a {
   display: inline-block;
   padding: 5px 15px;
-  background: #782541;
-  color: white;
-  text-decoration: none;
+  background: #782541 !important;
+  color: white !important;
+  text-decoration: none !important;
   border-radius: 3px;
   margin-right: 1rem;
   margin-bottom: 1rem;

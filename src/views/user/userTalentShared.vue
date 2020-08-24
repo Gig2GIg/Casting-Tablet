@@ -456,7 +456,7 @@ export default {
   },
 };
 </script>
-<style>
+<style lang="scss">
   .custom-resizer {
   width: 100%;
   height: 400px;

@@ -1800,7 +1800,7 @@ export default {
   },
 };
 </script>
-<style>
+<style lang="scss" scoped>
 .custom-resizer {
   width: 100%;
   height: 400px;
@@ -1841,7 +1841,7 @@ nav {
   height: 48px;
 }
 .full-height {
-  /* height: 66rem !important; */
+  // height: 66rem !important;
   height: auto !important;
 }
 .cus-cur {
