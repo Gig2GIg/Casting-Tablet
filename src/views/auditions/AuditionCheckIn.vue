@@ -190,7 +190,7 @@
         created() {
             let passCode = localStorage.getItem(DEFINE.set_pass_code_key);
             if(!passCode || passCode == ''){
-                this.$toasted.error("You have not passcode to access check-in mode.");
+                this.$toasted.error("You don't have passcode to access check-in mode.");
                 this.$router.push({ name: 'auditions/detail', params: {id: this.$route.params.auditionId } });
             }            
         },

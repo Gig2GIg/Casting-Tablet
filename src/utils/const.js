@@ -4,6 +4,7 @@ const DEFINE = {
     role_placeholder: "/images/roles.png",
     loading_placeholder: "/images/Loadingsome.gif",
     set_pass_code_key : 'checkin_set_pass_code',
+    set_manual_pass_code_key : 'manual_checkin_set_pass_code',
     set_monitor_pass_code_key : 'monitor_set_pass_code',
     contact_us : "support@gig2gig.com",
     CHAT_PEFIX : process.env.VUE_APP_CHAT_PREFIX,

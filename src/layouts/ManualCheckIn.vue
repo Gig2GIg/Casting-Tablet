@@ -47,11 +47,11 @@
             <p class="text-lg text-purple font-bold text-center mb-2">Enter Passcode</p>
             <div class="flex w-full pass-code-input">
               <form class="w-full max-w-xs">
-                <input class="text-black rounded-full overflow-hidden w-full h-full py-3 pl-6 pr-10 placeholder-purple focus:outline-none border border-purple" type="password" :value="checkInPassCode"   @input="onInputChange" placeholder="Passcode" autocomplete="off"    />              
+                <input class="text-black rounded-full overflow-hidden w-full h-full py-3 pl-6 pr-10 placeholder-purple focus:outline-none border border-purple" type="password" :value="manualCheckInPassCode" @input="onInputChange" placeholder="Passcode" autocomplete="off" />              
               </form>
             </div>
             <div class="flex w-full mt-3">
-              <SimpleKeyboard @onChange="onChange" @onKeyPress="onKeyPress" :input="checkInPassCode" :layout="layout" :theme="theme"/>              
+              <SimpleKeyboard @onChange="onChange" @onKeyPress="onKeyPress" :input="manualCheckInPassCode" :layout="layout" :theme="theme"/>              
             </div>
             <div class="w-full flex flex-wrap justify-center overflow-hidden mt-3">
                 <div class="w-1/4">
@@ -64,7 +64,6 @@
                         Set
                     </base-button>
                 </div>
-
             </div>
         </div>
     </modal>
@@ -84,7 +83,7 @@ export default {
     return {
       showNavBar: true,
       showCheckInExit : false,
-      checkInPassCode: "",
+      manualCheckInPassCode: "",
       layout: {
         default: ["1 2 3", "4 5 6", "7 8 9", "0"],
         // default: ["1 2 3", "4 5 6", "7 8 9", "{shift} 0 _", "{bksp}"],
@@ -115,29 +114,29 @@ export default {
     confirmCheckOutmode(mode) {
       this.$modal.hide("modal_confirm_check_out_mode");
       if (mode) {
-        this.$router.push({ name: 'auditions/detail', params: {id: this.$route.params.auditionId } });
+        this.$modal.show("modal_passcode_check_out_mode");
       }
     }, 
     onChange(input) {
-      this.checkInPassCode = input;
+      this.manualCheckInPassCode = input;
     },
     onKeyPress(button) {
       // console.log("button", button);
     },
     onInputChange(input) {
-      this.checkInPassCode = input.target.value;      
+      this.manualCheckInPassCode = input.target.value;      
     },
     cancelPassCodeCheckOut(){
       this.$modal.hide("modal_passcode_check_out_mode");
     },
     checkPassCodeCheckOut(){
         this.$toasted.clear();
-        if(!this.checkInPassCode || this.checkInPassCode == ''){
+        if(!this.manualCheckInPassCode || this.manualCheckInPassCode == ''){
           this.$toasted.error("Please enter passcode.");
           return;
         }
-        let setPasscode = localStorage.getItem(DEFINE.set_pass_code_key);
-        if(window.atob(setPasscode)== this.checkInPassCode){
+        let setPasscode = localStorage.getItem(DEFINE.set_manual_pass_code_key);
+        if(window.atob(setPasscode)== this.manualCheckInPassCode){
           localStorage.removeItem(DEFINE.set_pass_code_key);          
           this.$router.push({ name: 'auditions/detail', params: {id: this.$route.params.auditionId } });
         } else {

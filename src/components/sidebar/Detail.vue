@@ -612,6 +612,32 @@
             </div>
         </div>
     </modal>
+
+    <modal class="flex flex-col w-full items-center" :width="600" height="490" name="modal_manual_passcode_check_in_mode">
+        <div class="py-8 px-3">
+            <p class="text-lg text-purple font-bold text-center mb-2">Set Passcode</p>
+            <div class="flex w-full pass-code-input">
+              <form class="w-full max-w-xs">
+                <input class="text-black rounded-full overflow-hidden w-full h-full py-3 pl-6 pr-10 placeholder-purple focus:outline-none border border-purple" type="password" :value="manualCheckInPassCode" @input="onInputChangeManual" placeholder="Passcode" autocomplete="off"/>
+              </form>
+            </div>
+            <div class="flex w-full mt-3">
+              <SimpleKeyboard @onChange="onChangeManual" @onKeyPress="onKeyPressManual" :input="manualCheckInPassCode" :layout="layout" :theme="theme"/>
+            </div>
+            <div class="w-full flex flex-wrap justify-center overflow-hidden mt-3">
+                <div class="w-1/4">
+                  <base-button type="button" expanded @click="cancelManualSetPassCodeCheckIn()">
+                      Cancel
+                  </base-button>
+                </div>
+                <div class="w-1/4 ml-3">
+                  <base-button type="button" expanded @click="saveSetManualPassCodeCheckIn()">
+                      Set
+                  </base-button>
+                </div>
+            </div>
+        </div>
+    </modal>
     <!--end: enter Check in model modal-->
 
     <!--start: enter monitor mode in model modal-->
@@ -639,7 +665,7 @@
             <p class="text-lg text-purple font-bold text-center mb-2">Set Passcode</p>
             <div class="flex w-full pass-code-input">
               <form class="w-full max-w-xs">
-                <input class="text-black rounded-full overflow-hidden w-full h-full py-3 pl-6 pr-10 placeholder-purple focus:outline-none border border-purple" type="password" :value="monitorInPassCode"   @input="onInputChangeMonitor" placeholder="Passcode" autocomplete="off"    />
+                <input class="text-black rounded-full overflow-hidden w-full h-full py-3 pl-6 pr-10 placeholder-purple focus:outline-none border border-purple" type="password" :value="monitorInPassCode" @input="onInputChangeMonitor" placeholder="Passcode" autocomplete="off"    />
               </form>
             </div>
             <div class="flex w-full mt-3">
@@ -748,6 +774,7 @@ export default {
       isLastRoundGroupOpen: false,
       lastRound: "",
       checkInPassCode: "",
+      manualCheckInPassCode: "",
       monitorInPassCode: "",
       layout: {
         default: ["1 2 3", "4 5 6", "7 8 9", "0"],
@@ -1084,13 +1111,15 @@ export default {
     confirmManualCheckInmode(mode) {
       this.$modal.hide("modal_manual_confirm_check_in_mode");
       if (mode) {
-        this.$router.push({
-        name: "auditions/manualCheckIn",
-        params: {
-            id: this.roundActive.id,
-            auditionId: this.audition.id
-          }
-        });
+        this.$modal.show("modal_manual_passcode_check_in_mode");
+
+        // this.$router.push({
+        // name: "auditions/manualCheckIn",
+        // params: {
+        //     id: this.roundActive.id,
+        //     auditionId: this.audition.id
+        //   }
+        // });
       }
     },
     confirmCheckInmode(mode) {
@@ -1102,17 +1131,32 @@ export default {
     onChange(input) {
       this.checkInPassCode = input;
     },
+    onChangeManual(input) {
+      this.manualCheckInPassCode = input;
+    },
     onKeyPress(button) {
+      // console.log("button", button);
+    },
+    onKeyPressManual(button) {
       // console.log("button", button);
     },
     onInputChange(input) {
       this.checkInPassCode = input.target.value;
+    },
+    onInputChangeManual(input) {
+      this.manualCheckInPassCode = input.target.value;
     },
     cancelSetPassCodeCheckIn() {
       this.$modal.hide("modal_passcode_check_in_mode");
       this.checkInPassCode = "";
       localStorage.removeItem(DEFINE.set_pass_code_key);
     },
+    cancelManualSetPassCodeCheckIn() {
+      this.$modal.hide("modal_manual_passcode_check_in_mode");
+      this.manualCheckInPassCode = "";
+      localStorage.removeItem(DEFINE.set_manual_pass_code_key);
+    },
+
     saveSetPassCodeCheckIn() {
       this.$toasted.clear();
       if (!this.checkInPassCode || this.checkInPassCode == "") {
@@ -1131,6 +1175,26 @@ export default {
           id: this.roundActive.id,
           title: this.audition.title,
           date: this.audition.date,
+          auditionId: this.audition.id
+        }
+      });
+    },
+    saveSetManualPassCodeCheckIn() {
+      this.$toasted.clear();
+      if (!this.manualCheckInPassCode || this.manualCheckInPassCode == "") {
+        this.$toasted.error("Please enter passcode.");
+        return;
+      }
+      localStorage.setItem(
+        DEFINE.set_manual_pass_code_key,
+        window.btoa(this.manualCheckInPassCode)
+      );
+      this.$modal.hide("modal_passcode_check_in_mode");
+      this.manualCheckInPassCode = "";
+      this.$router.push({
+        name: "auditions/manualCheckIn",
+        params: {
+          id: this.roundActive.id,
           auditionId: this.audition.id
         }
       });
