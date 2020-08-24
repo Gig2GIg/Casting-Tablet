@@ -104,7 +104,7 @@ export default {
   }
 };
 </script>
-<style lang="scss" scoped>
+<style>
   .button { 
     margin-top: 35px;
   }

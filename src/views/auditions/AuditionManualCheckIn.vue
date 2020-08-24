@@ -7,43 +7,48 @@
             :is-full-page="fullPage"
         >
         </loading>
-        <div class="flex flex-col flex-1 justify-center items-center py-16 h-full table-responsive" id='vue-root'>
+        <div class="flex flex-col flex-1 justify-center items-center py-8" id='vue-root'>
             <template>
-                <section>
-                    <b-table
-                        :data="rows"
-                        :bordered="true"
-                        :striped="true"
-                        :narrowed="false"
-                        :hoverable="false"
-                        :default-sort-direction="defaultSortDirection"
-                        :sort-icon="sortIcon"
-                        :sort-icon-size="sortIconSize"
-                        :focusable="false"
-                        :mobile-cards="false">
+                <section class="w-full">
+                    <div class="container">
+                        <p class="w-full text-3xl mb-5 text-white text-center">Manual Check-In</p>
+                        <div class="table-responsive">
+                            <b-table
+                                :data="rows"
+                                :bordered="true"
+                                :striped="true"
+                                :narrowed="false"
+                                :hoverable="false"
+                                :default-sort-direction="defaultSortDirection"
+                                :sort-icon="sortIcon"
+                                :sort-icon-size="sortIconSize"
+                                :focusable="false"
+                                :mobile-cards="false">
 
-                        <b-table-column field="image" label="Picture" v-slot="props">
-                            <img :src=props.row.image width='100' height='100'>
-                        </b-table-column>
+                                <b-table-column field="image" label="Picture" v-slot="props" centered>
+                                    <img :src=props.row.image width='50' height='50'>
+                                </b-table-column>
 
-                        <b-table-column field="name" label="Name" sortable v-slot="props">
-                            {{ props.row.name }}
-                        </b-table-column>
+                                <b-table-column field="name" label="Name" sortable v-slot="props">
+                                    {{ props.row.name }}
+                                </b-table-column>
 
-                        <b-table-column field="status" label="Status" v-slot="props">
-                            {{ props.row.status }}
-                        </b-table-column>
+                                <b-table-column field="status" label="Status" v-slot="props">
+                                    {{ props.row.status }}
+                                </b-table-column>
 
-                        <b-table-column field="appointment_time" label="Appointment Time" centered v-slot="props">
-                            {{ props.row.appointment_time }} <p v-if="props.row.is_checked_in">(Checked-In)</p>
-                        </b-table-column>
+                                <b-table-column field="appointment_time" label="Appointment Time" v-slot="props">
+                                    {{ props.row.appointment_time }} <p v-if="props.row.is_checked_in">(Checked-In)</p>
+                                </b-table-column>
 
-                        <b-table-column label="Action" v-slot="props">
-                            <button v-if="!props.row.is_checked_in" class="button field is-success" @click="updateCheckIn(props.row)">
-                                <span>Check-In</span>
-                            </button>
-                        </b-table-column>
-                    </b-table>
+                                <b-table-column label="Action" v-slot="props" centered>
+                                    <button v-if="!props.row.is_checked_in" class="py-2 px-4 border border-purple uppercase rounded cursor-pointer bg-white text-purple" @click="updateCheckIn(props.row)">
+                                        <span>Check-In</span>
+                                    </button>
+                                </b-table-column>
+                            </b-table>
+                        </div>
+                    </div>
                 </section>
             </template>
 
@@ -208,7 +213,7 @@
         }
     };
 </script>
-<style scoped>
+<style>
     body,
     html {
         height: 100%;
@@ -219,5 +224,39 @@
     .back-button {
         margin-left: 27.5rem !important;
         margin-top: -1.9rem !important
+    }
+    .container {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    .table-responsive {
+        max-width: 100%;
+        overflow: auto;
+    }
+    .table {
+        border-collapse: collapse !important;
+    }
+
+    .table td{
+        vertical-align: middle !important;
+    }
+    .table img{
+        display: inline-block !important;
+    }
+    .table th{
+        vertical-align: middle !important;
+    }
+    .manualCheckIn-layout {
+        height: auto !important;
+    }
+    .table button span {
+        white-space: nowrap;
+    }
+    .mdi-arrow-up {
+        width: 0;
+        height: 0;
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+        border-top: 4px solid #4D2545;
     }
 </style>

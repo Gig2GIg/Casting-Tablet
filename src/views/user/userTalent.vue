@@ -740,7 +740,7 @@ export default {
   },
 };
 </script>
-<style lang="scss">
+<style>
   .custom-resizer {
   width: 100%;
   height: 400px;
@@ -1000,7 +1000,7 @@ ul.submanu-content > li > a {
     left: -6px !important;
     right: -6px !important;
 }
-// social link css
+/* social link css */
 .social-a{
   margin-right: 5px;
   background: #cacaca;

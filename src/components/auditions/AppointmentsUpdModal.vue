@@ -221,7 +221,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style>
 .rounded-2lg {
   border-radius: 1.5em;
 }

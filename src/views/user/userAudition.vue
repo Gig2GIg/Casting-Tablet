@@ -1800,7 +1800,7 @@ export default {
   },
 };
 </script>
-<style lang="scss">
+<style>
 .custom-resizer {
   width: 100%;
   height: 400px;
@@ -1841,7 +1841,7 @@ nav {
   height: 48px;
 }
 .full-height {
-  // height: 66rem !important;
+  /* height: 66rem !important; */
   height: auto !important;
 }
 .cus-cur {
@@ -1946,7 +1946,7 @@ nav {
   height: 28rem !important;
 }
 
-//start: rating slider custom css
+/* //start: rating slider custom css */
 .rate-slider .vue-slider-dot-handle {
   border: 2px solid #4D2544 !important;
 }
@@ -1970,7 +1970,7 @@ nav {
   box-shadow:none !important;
 }
 
-//end: rating slider custom css
+/* //end: rating slider custom css */
 .contact-btn {
   width: 6.3rem !important;
 }
