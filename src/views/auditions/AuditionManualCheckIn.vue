@@ -65,7 +65,7 @@
       >
         <div class="flex justify-center w-full">
           <div class="w-full flex justify-center rounded-lg shadow-xl">
-            <div class="p-6">
+            <div class="p-6 w-full">
               <p class="text-purple text-center">Appointment type</p>
               <base-select
                 v-model="slot_id"
