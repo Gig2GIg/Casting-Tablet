@@ -114,7 +114,8 @@ export default {
     confirmCheckOutmode(mode) {
       this.$modal.hide("modal_confirm_check_out_mode");
       if (mode) {
-        this.$modal.show("modal_passcode_check_out_mode");
+        this.$router.push({ name: 'auditions/detail', params: {id: this.$route.params.auditionId } });
+        // this.$modal.show("modal_passcode_check_out_mode");
       }
     }, 
     onChange(input) {

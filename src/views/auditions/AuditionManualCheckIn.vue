@@ -84,8 +84,8 @@
           </div>
         </div>
         <div class="w-full flex justify-center overflow-hidden">
-          <base-button type="submit" class="mx-3 my-5" expanded @click="slotModalClose()">No</base-button>
-          <base-button type="submit" class="mx-3 my-5" expanded @click.native="checkIn">Yes</base-button>
+          <base-button type="submit" class="mx-3 my-5" expanded @click="slotModalClose()">Cancel</base-button>
+          <base-button type="submit" class="mx-3 my-5" expanded @click.native="checkIn">Check-In</base-button>
         </div>
       </modal>
 
@@ -104,7 +104,6 @@
                       Yes
                   </base-button>
                 </div>
-
             </div>
         </div>
     </modal>
@@ -139,7 +138,7 @@ export default {
       data: {},
       isLoading: false,
       nowTime: moment().format("HH:mm"),
-      defaultSortDirection: "asc",
+      defaultSortDirection: "desc",
       sortIcon: "arrow-up",
       sortIconSize: "is-small",
       checkInData: null,
@@ -147,14 +146,14 @@ export default {
     };
   },
   created() {
-    let passCode = localStorage.getItem(DEFINE.set_manual_pass_code_key);
-    if (!passCode || passCode == "") {
-      this.$toasted.error("You don't have passcode to access check-in mode.");
-      this.$router.push({
-        name: "auditions/detail",
-        params: { id: this.$route.params.auditionId },
-      });
-    }
+    // let passCode = localStorage.getItem(DEFINE.set_manual_pass_code_key);
+    // if (!passCode || passCode == "") {
+    //   this.$toasted.error("You don't have passcode to access check-in mode.");
+    //   this.$router.push({
+    //     name: "auditions/detail",
+    //     params: { id: this.$route.params.auditionId },
+    //   });
+    // }
     this.getAllperforemrsWithSorting();
   },
   computed: {

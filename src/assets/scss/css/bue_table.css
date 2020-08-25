@@ -1226,7 +1226,7 @@ th:not([align]) {
   height: 0;
   border-left: 4px solid transparent;
   border-right: 4px solid transparent;
-  border-top: 4px solid #4d2545;
+  border-bottom: 4px solid #4d2545;
 }
 
 

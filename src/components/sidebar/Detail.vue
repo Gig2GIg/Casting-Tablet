@@ -1111,15 +1111,14 @@ export default {
     confirmManualCheckInmode(mode) {
       this.$modal.hide("modal_manual_confirm_check_in_mode");
       if (mode) {
-        this.$modal.show("modal_manual_passcode_check_in_mode");
-
-        // this.$router.push({
-        // name: "auditions/manualCheckIn",
-        // params: {
-        //     id: this.roundActive.id,
-        //     auditionId: this.audition.id
-        //   }
-        // });
+        // this.$modal.show("modal_manual_passcode_check_in_mode");
+        this.$router.push({
+        name: "auditions/manualCheckIn",
+        params: {
+            id: this.roundActive.id,
+            auditionId: this.audition.id
+          }
+        });
       }
     },
     confirmCheckInmode(mode) {
