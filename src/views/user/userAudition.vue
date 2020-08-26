@@ -3,13 +3,13 @@
   <div>
     <loading :active.sync="isLoading" :can-cancel="true" :is-full-page="fullPage"></loading>
     <nav class="flex items-center h-12">
-      <div class=" cursor-pointer flex content-around w-1/6 items-center relative cmb-10" @click="backAudition()">
-        <img
-          src="/images/icons/left_arrow_white.png"
-          class="absolute left-0 pl-1"        
-        />
+      <div
+        class="cursor-pointer flex content-around w-1/6 items-center relative cmb-10"
+        @click="backAudition()"
+      >
+        <img src="/images/icons/left_arrow_white.png" class="absolute left-0 pl-1" />
         <h1 class="absolute left-0 text-white text-lg back-mrg-l">Back</h1>
-      </div>      
+      </div>
       <div
         v-if="audition.online != 1"
         class="w-1/5 flex flex-wrap justify-center content-center h-10 border-2 ml-auto border-white rounded-sm cursor-pointer"
@@ -24,8 +24,8 @@
           >{{file.name}}</p>
         </div>
       </div>
-      <div v-else class="w-1/5"></div>      
-      <div        
+      <div v-else class="w-1/5"></div>
+      <div
         class="w-1/8 flex flex-wrap justify-center content-center h-10 border-2 ml-auto border-white rounded-sm cursor-pointer"
         @click="chatManage()"
       >
@@ -36,54 +36,66 @@
           <p class="w-full text-white tracking-wide text-lg ml-5 tracking-tight truncate">Chat</p>
         </div>
       </div>
-      <div class=" w-8/11 z-40">
-          <div v-show="invitation.adding" class="mt-16 mr-32 shadow-lg bg-white absolute left-50 top-0 z-40">
-            <base-input
-              v-model="invitation.email"
-              v-validate="'required|email'"
-              name="email"
-              placeholder="Email"
-              :custom-classes="['border', 'border-purple']"
-              :message="errors.first('invitation.email')"
-              expanded
-            />
+      <div class="w-8/11 z-40">
+        <div
+          v-show="invitation.adding"
+          class="mt-16 mr-32 shadow-lg bg-white absolute left-50 top-0 z-40"
+        >
+          <base-input
+            v-model="invitation.email"
+            v-validate="'required|email'"
+            name="email"
+            placeholder="Email"
+            :custom-classes="['border', 'border-purple']"
+            :message="errors.first('invitation.email')"
+            expanded
+          />
 
-            <base-button
-              class="pt-2 pb-2"
-              type="submit"
-              expanded
-              @click.native="sharedProfile"
-            >
-              Send
-            </base-button>
-          </div>
+          <base-button class="pt-2 pb-2" type="submit" expanded @click.native="sharedProfile">Send</base-button>
+        </div>
       </div>
-      <img :src="'/images/icons/12-layers@3x.png'" class="h-10  ml-auto mr-5" alt="star" @click="invitation.adding =invitation.adding == true?false:true" >
-      <img v-if="favorite == 0" :src="'/images/icons/4-layers.png'" class="w-6 m-6" alt="star" @click="favorite=1">
-      <img v-else  :src="'/images/icons/Path_56@2x.png'" class="w-6 m-6" alt="star" @click="favorite=0">
-    <div class="flex items-center border-l border-white text-white ml-auto cursor-pointer" @click="goToSettings" title="Settings" >
-      <span class="mx-4">
-        {{profile.details && profile.details.first_name ? profile.details.first_name : ""}} {{profile.details ? profile.details.last_name : ""}}
-      </span>
-      <div v-lazy-container="{ selector: 'img' }" >
-        <img
-            :data-loading="loading_placeholder" :data-error="user_placeholder"
+      <img
+        :src="'/images/icons/12-layers@3x.png'"
+        class="h-10 ml-auto mr-5"
+        alt="star"
+        @click="invitation.adding =invitation.adding == true?false:true"
+      />
+      <img
+        v-if="favorite == 0"
+        :src="'/images/icons/4-layers.png'"
+        class="w-6 m-6"
+        alt="star"
+        @click="favorite=1"
+      />
+      <img
+        v-else
+        :src="'/images/icons/Path_56@2x.png'"
+        class="w-6 m-6"
+        alt="star"
+        @click="favorite=0"
+      />
+      <div
+        class="flex items-center border-l border-white text-white ml-auto cursor-pointer"
+        @click="goToSettings"
+        title="Settings"
+      >
+        <span
+          class="mx-4"
+        >{{profile.details && profile.details.first_name ? profile.details.first_name : ""}} {{profile.details ? profile.details.last_name : ""}}</span>
+        <div v-lazy-container="{ selector: 'img' }">
+          <img
+            :data-loading="loading_placeholder"
+            :data-error="user_placeholder"
             :data-src="(profile.image && profile.image.thumbnail) ? (profile.image.thumbnail ? profile.image.thumbnail : profile.image.url) : ''"
             class="w-12 img-h48 object-cover"
             alt="Avatar"
-        />
+          />
+        </div>
       </div>
-    </div>
-  </nav>
-  <input
-    ref="inputFile"
-    accept=".mp4"
-    type="file"
-    hidden
-    @change="handleFile"
-  >
-  <modal name="marketplace" :scrollable="true" height="auto">
-    <div class="w-full shadow-lg border border-gray-300">
+    </nav>
+    <input ref="inputFile" accept=".mp4" type="file" hidden @change="handleFile" />
+    <modal name="marketplace" :scrollable="true" height="auto">
+      <div class="w-full shadow-lg border border-gray-300">
         <p class="text-center text-2xl text-purple font-bold" @click="show">Marketplaces</p>
         <div class="flex flex-wrap justify-center w-full">
           <div class="flex flex-wrap justify-center w-full">
@@ -121,10 +133,9 @@
       <!-- min-width: 75%; width: 68%; max-width: 100%; noraml user details -->
       <!-- :style="{ minWidth: 'calc(100% - 426px)', width: 'calc(100% - 426px)', maxWidth: '100%' }" -->
       <div
-        class="pane content-pane bg-white p-2 "
+        class="pane content-pane bg-white p-2"
         :style="isChatView ? { minWidth: 'calc(100% - 426px)', width: 'calc(100% - 426px)', maxWidth: '100%' } : { minWidth: '75%', width: '68%', maxWidth: '100%' }"
-        >
-        
+      >
         <div class="flex flex-wrap">
           <div class="flex w-full">
             <div class="w-5/12 p-2">
@@ -144,19 +155,22 @@
               </div>
             </div>
             <div class="w-3/12 p-2">
-              <div class="border rounded w-full h-50 overflow-auto px-0 py-2 flex flex-wrap content-start">
+              <div
+                class="border rounded w-full h-50 overflow-auto px-0 py-2 flex flex-wrap content-start"
+              >
                 <p class="text-center text-2xl text-purple font-semibold mb-2 w-full">Roles</p>
 
-                <div 
+                <div
                   v-for="data in currentUserRoles"
                   :key="data.id"
-                  class="flex flex-wrap justify-center w-1/2">
-                  <div class="">
+                  class="flex flex-wrap justify-center w-1/2"
+                >
+                  <div class>
                     <div
                       class="rounded-full w-12 h-12 bg-cover mb-1 mx-auto"
                       :class="{'button-detail': data.id == rol, 'bg-gray-400': data.id != rol}"
-                      :style="{ backgroundImage: 'url(' + data.image.url + ')' }">  
-                    </div>
+                      :style="{ backgroundImage: 'url(' + data.image.url + ')' }"
+                    ></div>
                     <p class="text-purple text-xs font-bold text-center">{{ data.name }}</p>
                   </div>
                 </div>
@@ -169,7 +183,8 @@
                   <div
                     v-if="!isRealodTeamFeedback"
                     class="reafresh-spacing w-5 h-5 ml-3"
-                    @click="updateTeamFeedBack(true)">
+                    @click="updateTeamFeedBack(true)"
+                  >
                     <img src="/images/icons/reload.png" alt="Reload" />
                   </div>
                   <div v-else class="reafresh-spacing w-5 h-5 ml-3">
@@ -180,17 +195,20 @@
                 <div class="flex flex-wrap justify-center">
                   <div
                     v-if="teamFeedback.length == 0 && !isRealodTeamFeedback"
-                    class="text-purple font-bold h-full">Not records created yet</div>
+                    class="text-purple font-bold h-full"
+                  >Not records created yet</div>
                   <template v-if="!isRealodTeamFeedback">
                     <div
                       v-for="data in teamFeedback"
                       :key="data.id"
-                      class="text-center w-full flex flex-col justify-center">
+                      class="text-center w-full flex flex-col justify-center"
+                    >
                       <div class="w-full mb-5 mx-auto flex justify-center items-end">
                         <div class="flex flex-col w-1/6 px-2">
                           <figure
                             v-if="data.evaluation != null"
-                            class="flex justify-center items-center w-8 h-8 border-2 border-purple rounded-sm text-purple text-xs font-bold mx-1">
+                            class="flex justify-center items-center w-8 h-8 border-2 border-purple rounded-sm text-purple text-xs font-bold mx-1"
+                          >
                             <img
                               :src="'/images/icons/'+data.evaluation+'.png'"
                               alt="Icon"
@@ -201,8 +219,9 @@
                         <div class="flex flex-col px-2 w-1/3">
                           <p
                             v-if="data.callback != null"
-                            class="text-purple text-xs font-bold mb-1">Call Back</p>
-                          
+                            class="text-purple text-xs font-bold mb-1"
+                          >Call Back</p>
+
                           <div
                             v-if="data.callback != null"
                             class="bg-white border border-purple rounded-full py-0 px-4 text-sm font-bold text-center flex items-center justify-center button-detail text-white w-full"
@@ -211,8 +230,9 @@
                         <div class="flex flex-col px-2 w-1/3">
                           <p
                             v-if="data.work && data.work != ''"
-                            class="text-purple text-xs font-bold mb-1">Work On</p>
-                          
+                            class="text-purple text-xs font-bold mb-1"
+                          >Work On</p>
+
                           <div
                             v-if="data.work && data.work != ''"
                             class="bg-white border border-purple rounded-full py-0 px-4 text-sm font-bold text-center flex items-center justify-center button-detail text-white w-full capitalize"
@@ -221,8 +241,9 @@
                         <div class="flex flex-col px-2 w-1/3">
                           <p
                             v-if="data.rating != null"
-                            class="text-purple text-xs font-bold mb-1">Rating</p>
-                          
+                            class="text-purple text-xs font-bold mb-1"
+                          >Rating</p>
+
                           <div
                             v-if="data.rating != null"
                             class="bg-white border border-purple rounded-full py-0 px-4 text-sm font-bold text-center flex items-center justify-center button-detail text-white w-full"
@@ -317,21 +338,24 @@
           <div class="flex w-full">
             <div class="w-2/4 p-2">
               <div class="border rounded w-full h-50 overflow-auto px-3 py-2">
-                <div class="flex flex-wrap justify-center flex-col content-center w-full mb-5" v-if="audition.contract != 'ACADEMIC'" >
+                <div
+                  class="flex flex-wrap justify-center flex-col content-center w-full mb-5"
+                  v-if="audition.contract != 'ACADEMIC'"
+                >
                   <p class="text-center text-2xl text-purple font-semibold mb-2">Feedback</p>
                   <div class="flex flex-wrap justify-center w-full mt-2">
                     <figure
                       :class="{'border-2 border-purple': emoji==1}"
                       class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg"
                       @click="emoji=1"
-                      >
+                    >
                       <img :src="'/images/icons/1.png'" alt="Icon" class="content-center h-8" />
                     </figure>
                     <figure
                       :class="{'border-2 border-purple': emoji==2}"
                       class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg"
                       @click="emoji=2"
-                      >
+                    >
                       <img :src="'/images/icons/2.png'" alt="Icon" class="content-center h-8" />
                     </figure>
 
@@ -339,7 +363,7 @@
                       :class="{'border-2 border-purple': emoji==3}"
                       class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg"
                       @click="emoji=3"
-                      >
+                    >
                       <img :src="'/images/icons/3.png'" alt="Icon" class="content-center h-8" />
                     </figure>
 
@@ -347,7 +371,7 @@
                       :class="{'border-2 border-purple': emoji==4}"
                       class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg"
                       @click="emoji=4"
-                      >
+                    >
                       <img :src="'/images/icons/4.png'" alt="Icon" class="content-center h-8" />
                     </figure>
 
@@ -355,7 +379,7 @@
                       :class="{'border-2 border-purple': emoji==5}"
                       class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg"
                       @click="emoji=5"
-                      >
+                    >
                       <img :src="'/images/icons/5.png'" alt="Icon" class="content-center h-8" />
                     </figure>
                   </div>
@@ -366,13 +390,13 @@
                     <div
                       @click="callback = 1"
                       :class="{'button-detail text-white': callback == 1, 'text-purple': callback != 1}"
-                      class="bg-white border border-purple rounded-full w-24 h-10 text-sm font-bold text-center flex items-center justify-center mx-2">Yes
-                    </div>
+                      class="bg-white border border-purple rounded-full w-24 h-10 text-sm font-bold text-center flex items-center justify-center mx-2"
+                    >Yes</div>
                     <div
                       @click="callback = 0"
                       :class="{'button-detail text-white': callback == 0, 'text-purple': callback != 0}"
-                      class="bg-white border border-purple rounded-full w-24 h-10 text-sm font-boldtext-center flex items-center justify-center mx-2">No
-                    </div>
+                      class="bg-white border border-purple rounded-full w-24 h-10 text-sm font-boldtext-center flex items-center justify-center mx-2"
+                    >No</div>
                   </div>
                 </div>
                 <div class="flex flex-wrap justify-center flex-col content-center w-full mb-5">
@@ -381,29 +405,29 @@
                     <div
                       @click="workon = 1"
                       :class="{'button-detail text-white': workon == 1, 'text-purple': workon != 1}"
-                      class="bg-white border border-purple rounded-full w-24 h-10 text-sm font-bold text-center flex items-center justify-center mx-2">Vocals
-                    </div>
+                      class="bg-white border border-purple rounded-full w-24 h-10 text-sm font-bold text-center flex items-center justify-center mx-2"
+                    >Vocals</div>
                     <div
                       @click="workon = 2"
                       :class="{'button-detail text-white': workon == 2, 'text-purple': workon != 2}"
-                      class="bg-white border border-purple rounded-full w-24 h-10 text-sm font-bold text-center flex items-center justify-center mx-2">Acting
-                    </div>
+                      class="bg-white border border-purple rounded-full w-24 h-10 text-sm font-bold text-center flex items-center justify-center mx-2"
+                    >Acting</div>
                     <div
                       @click="workon = 3"
                       :class="{'button-detail text-white': workon == 3, 'text-purple': workon != 3}"
-                      class="bg-white border border-purple rounded-full w-24 h-10 text-sm font-bold text-center flex items-center justify-center mx-2">Dancing
-                    </div>
+                      class="bg-white border border-purple rounded-full w-24 h-10 text-sm font-bold text-center flex items-center justify-center mx-2"
+                    >Dancing</div>
                   </div>
                 </div>
                 <div class="flex flex-wrap justify-center flex-col content-center w-full mb-5">
                   <p class="text-center text-2xl text-purple font-semibold mb-2">Rate</p>
-                  <vue-slider 
-                      class="w-3/4 mb-10 mx-auto rate-slider"
-                      v-model="rating"
-                      ref="slider"
-                      v-bind="sliderOptions"
-                      :lazy="true"
-                    />
+                  <vue-slider
+                    class="w-3/4 mb-10 mx-auto rate-slider"
+                    v-model="rating"
+                    ref="slider"
+                    v-bind="sliderOptions"
+                    :lazy="true"
+                  />
                 </div>
                 <div class="flex flex-wrap justify-center flex-col content-center w-full">
                   <base-input
@@ -437,7 +461,7 @@
                       v-for="data in tags"
                       :key="data.id"
                       class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4"
-                      >
+                    >
                       <p class="text-purple w-1/2">{{data.title}}</p>
                       <div class="flex flex-wrap justify-end w-1/2">
                         <img
@@ -452,7 +476,7 @@
                   <div
                     v-else
                     class="flex flex-wrap justify-center text-left content-center w-full border-gray-500"
-                    >
+                  >
                     <p class="text-purple w-full">There is no tags added</p>
                   </div>
                 </div>
@@ -496,7 +520,7 @@
                   <div
                     v-else
                     class="flex flex-wrap justify-center text-left content-center w-full border-gray-500"
-                    >
+                  >
                     <p class="text-purple w-full">There is no marketplace added</p>
                   </div>
                 </div>
@@ -504,7 +528,6 @@
             </div>
           </div>
         </div>
-        
       </div>
       <multipane-resizer class="mt-0.1 bg-purple full-height"></multipane-resizer>
       <div class="pane relative sidebar-pane" :style="{ flexGrow: 1 }">
@@ -514,43 +537,37 @@
               src="/images/icons/left_arrow.png"
               class="absolute left-0 cursor-pointer"
               @click="chatToDetails"
-            /> -->
+            />-->
             <h1>Audition Chat</h1>
           </div>
 
           <!-- Message List start from here -->
           <div ref="chatlist" class="chat-message overflow-auto p-4">
-            <div
-              class="w-full mb-5"
-              v-for="messageData of messageList"
-              :key="messageData.id"
-              >
+            <div class="w-full mb-5" v-for="messageData of messageList" :key="messageData.id">
               <div class="flex content-center">
                 <div class="flex h-8 chat-image">
-                  <img v-lazy="messageData.sender && messageData.sender.image && messageData.sender.image.thumbnail ? messageData.sender.image.thumbnail :  (messageData.sender && messageData.sender.image ? messageData.sender.image.url : '')" alt="Icon" class="rounded-full h-8" />
+                  <img
+                    v-lazy="messageData.sender && messageData.sender.image && messageData.sender.image.thumbnail ? messageData.sender.image.thumbnail :  (messageData.sender && messageData.sender.image ? messageData.sender.image.url : '')"
+                    alt="Icon"
+                    class="rounded-full h-8"
+                  />
                 </div>
                 <div class="ml-3 col-chat">
                   <div class="flex w-full mp-box">
                     <span
                       class="font-bold text-sm capitalize"
-                    >
-                      {{ messageData.sender && messageData.sender.details ? messageData.sender.details.first_name +' '+ messageData.sender.details.last_name : ''}}</span>
-                    <span
-                      class="text-sm"
-                      >
-                    {{ chatTimeFormat(messageData.createDate) | chatDateTime}}
-                    </span>
+                    >{{ messageData.sender && messageData.sender.details ? messageData.sender.details.first_name +' '+ messageData.sender.details.last_name : ''}}</span>
+                    <span class="text-sm">{{ chatTimeFormat(messageData.createDate) | chatDateTime}}</span>
                   </div>
                   <span class="w-full text-sm">{{messageData.message}}</span>
                 </div>
               </div>
-            </div>                  
-            
+            </div>
           </div>
-          <div 
+          <div
             v-if="audition && audition.appointment_id == this.$route.params.round && audition.status == 1"
             class="flex w-full relative p-4"
-            >
+          >
             <input
               v-model="chatMessage"
               name="chat_message"
@@ -593,11 +610,11 @@
                   :custom-classes="['border-2', 'border-purple']"
                 />
               </div>
-                <img :src="data.image" alt="Icon" class="-ml-3 h-300 object-cover" />
-                <p class="text-purple text-xl font-bold mt-4 w-full">{{data.name}}</p>
-                <p
-                  class="text-purple text-m font-bold mt-2 w-full"
-                >{{performerDetails.details && performerDetails.details.city ? performerDetails.details.city : ""}}</p>
+              <img :src="data.image" alt="Icon" class="-ml-3 h-300 object-cover" />
+              <p class="text-purple text-xl font-bold mt-4 w-full">{{data.name}}</p>
+              <p
+                class="text-purple text-m font-bold mt-2 w-full"
+              >{{performerDetails.details && performerDetails.details.city ? performerDetails.details.city : ""}}</p>
               <div class="flex w-full mt-5">
                 <a
                   class="social-a flex items-center justify-center content-center w-12 h-12"
@@ -650,21 +667,32 @@
                     class="h-6"
                   />
                 </a>
-              </div>              
-              <div
-                class="flex w-full justify-start"                
-              >
-                <a target="_blank" v-bind:href="'mailto:'+performerDetails.email+''" type="button" class="flex contact-btn justify-center mt-6 bg-purple-gradient text-white text-md rounded-sm rounded-tl-md p-1">
+              </div>
+              <div class="flex w-full justify-start">
+                <a
+                  target="_blank"
+                  v-bind:href="'mailto:'+performerDetails.email+''"
+                  type="button"
+                  class="flex contact-btn justify-center mt-6 bg-purple-gradient text-white text-md rounded-sm rounded-tl-md p-1"
+                >
                   <img :src="'/images/icons/mail_icon@2x.png'" alt="Icon" class="h-5 mr-2 mt-1" />
                   <span class="mt-1">Contact</span>
                 </a>
               </div>
+              <!-- <div @click="viewResume()" class="flex w-full justify-start mt-6 cus-cur">
+                <img :src="'/images/icons/icon.png'" alt="Icon" class="content-center h-8" />
+                <p
+                  class="text-purple text-m text-left ml-4 tracking-wide font-semibold w-1/2"
+                >Resume</p>
+              </div>-->
               <div
-                @click="viewResume()"
+                @click="getPerformerDetail('doc')"
                 class="flex w-full justify-start mt-6 cus-cur"
               >
                 <img :src="'/images/icons/icon.png'" alt="Icon" class="content-center h-8" />
-                <p class="text-purple text-m text-left ml-4 tracking-wide font-semibold w-1/2">Resume</p>
+                <p
+                  class="text-purple text-m text-left ml-4 tracking-wide font-semibold w-1/2"
+                >Resume & Docs</p>
               </div>
               <!-- <div
                 @click="getPerformerDetail('info')"
@@ -672,7 +700,7 @@
               >
                 <img :src="'/images/icons/person.png'" alt="Icon" class="content-center h-8" />
                 <p class="text-purple text-m text-left ml-4 tracking-wide font-semibold w-1/2">Info</p>
-              </div> -->
+              </div>-->
 
               <!-- <div
                 @click="getPerformerDetail('credit')"
@@ -691,7 +719,7 @@
                 <p
                   class="text-purple text-m text-left ml-4 tracking-wide font-semibold w-1/2"
                 >Education & Training</p>
-              </div> -->
+              </div>-->
               <div
                 @click="getPerformerDetail('appearance')"
                 class="flex w-full justify-start mt-6 cus-cur"
@@ -700,6 +728,40 @@
                 <p
                   class="text-purple text-m text-left ml-4 tracking-wide font-semibold w-1/2"
                 >Appearance</p>
+              </div>
+              <div
+                @click="getPerformerDetail('video')"
+                class="flex w-full justify-start mt-6 cus-cur"
+              >
+                <img :src="'/images/icons/video-icon.png'" alt="Icon" class="content-center h-8" />
+                <p
+                  class="text-purple text-m text-left ml-4 tracking-wide font-semibold w-1/2"
+                >Videos</p>
+              </div>
+              <div
+                @click="getPerformerDetail('audio')"
+                class="flex w-full justify-start mt-6 cus-cur"
+              >
+                <img :src="'/images/icons/music-icon.png'" alt="Icon" class="content-center h-8" />
+                <p class="text-purple text-m text-left ml-4 tracking-wide font-semibold w-1/2">Music</p>
+              </div>
+              <div
+                @click="getPerformerDetail('image')"
+                class="flex w-full justify-start mt-6 cus-cur"
+              >
+                <img :src="'/images/icons/photo-icon.png'" alt="Icon" class="content-center h-8" />
+                <p
+                  class="text-purple text-m text-left ml-4 tracking-wide font-semibold w-1/2"
+                >Photos</p>
+              </div>
+              <div
+                @click="getPerformerDetail('sheet')"
+                class="flex w-full justify-start mt-6 cus-cur"
+              >
+                <img :src="'/images/icons/sheet-icon.png'" alt="Icon" class="content-center h-8" />
+                <p
+                  class="text-purple text-m text-left ml-4 tracking-wide font-semibold w-1/2"
+                >Sheet Music</p>
               </div>
               <div
                 class="flex flex-wrap justify-center mt-6 w-full cursor-pointer"
@@ -717,13 +779,18 @@
                   </div>
                 </div>
               </div>
-              <div class="flex flex-wrap justify-center mt-1 w-full cursor-pointer" v-if="nextPerformerId">
+              <div
+                class="flex flex-wrap justify-center mt-1 w-full cursor-pointer"
+                v-if="nextPerformerId"
+              >
                 <div class="flex w-1/2" @click="gotoNextPerformer()">
                   <div class="flex w-full text-center justify-center flex-wrap">
-                    <div class="m-3 content-center border border-purple bg-white rounded-full w-32 h-10 flex items-center">
-                      <p class="text-purple text-sm font-bold content-center tracking-tighter flex-1">
-                        Next
-                      </p>
+                    <div
+                      class="m-3 content-center border border-purple bg-white rounded-full w-32 h-10 flex items-center"
+                    >
+                      <p
+                        class="text-purple text-sm font-bold content-center tracking-tighter flex-1"
+                      >Next</p>
                     </div>
                   </div>
                 </div>
@@ -737,14 +804,8 @@
       <button @click="$modal.hide('resumeModal')" class="resume-popup-close-btn">
         <i class="material-icons" style="font-size: 35px;color: black;">clear</i>
       </button>
-          <pdf
-            v-for="i in numPages"
-            :key="i"
-            :src="performerResume"
-            :page="i"
-            
-          ></pdf>
-          <!-- style="display: inline-block; width: 25%" -->
+      <pdf v-for="i in numPages" :key="i" :src="performerResume" :page="i"></pdf>
+      <!-- style="display: inline-block; width: 25%" -->
     </modal>
     <modal :width="500" height="200" :adaptive="true" name="infoModal" class="custom-event-popup">
       <button @click="$modal.hide('infoModal')" class="popup-close-btn">
@@ -979,6 +1040,326 @@
         </div>
       </div>
     </modal>
+    <modal
+      class="flex flex-col w-full items-center modal-height-90 custom-event-popup"
+      :width="500"
+      name="docModal"
+    >
+      <div>
+        <div class="flex flex-col w-full shadow-md overflow-hidden p-3">
+          <h1 class="text-purple text-lg font-bold">Resume & Docs</h1>
+          <div class>
+            <div
+              v-for="documentos in this.docs"
+              :key="documentos.id"
+              class="flex w-full shadow-lg mb-3 height-73"
+            >
+              <div class="flex-col bg-purple mt-1 music-icon-parent music-border">
+                <img
+                  src="/images/icons/doc-icon3x.png"
+                  alt="Icon"
+                  class="custo-static-icon music-icon overflow-hidden"
+                />
+                <span class="text-lg truncate text-white uppercase">PDF</span>
+              </div>
+              <div
+                class="flex h-100 content-center items-center relative w-full h-full bg-white mp-box"
+              >
+                <span class="text-2xl truncate-custom mb-0 text-center ml-2">{{ documentos.name }}</span>
+
+                <ul id="navigation">
+                  <li>
+                    <a
+                      href="javascript:void(0);"
+                      :class="{ active }"
+                      class="more-icon-a align-right cursor-pointer"
+                      title="More"
+                      @click="openMenu(documentos.id)"
+                    >
+                      <img
+                        src="/images/icons/more-icon@3x.png"
+                        alt="Icon"
+                        class="h-6 absolute right-0 bottom-0"
+                      />
+                    </a>
+                    <div
+                      class="dropdown cus-dropdown submanu"
+                      v-bind:class="{ 'isOpen' : openId==documentos.id}"
+                    >
+                      <ul class="submanu-content">
+                        <li>
+                          <a :href="documentos.url" title="Open in" target="_blank">Open in</a>
+                        </li>
+                      </ul>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <span v-if="!this.docs.length">You don't have any files added.</span>
+          </div>
+        </div>
+      </div>
+    </modal>
+
+    <modal
+      class="flex flex-col w-full items-center modal-height-90 custom-event-popup"
+      :width="650"
+      name="videoModal"
+    >
+      <div>
+        <div class="flex flex-col w-full shadow-md overflow-hidden p-3">
+          <h1 class="text-purple text-lg font-bold">Videos</h1>
+          <div class>
+            <div
+              v-for="video in this.videos"
+              :key="video.id"
+              class="w-full rounded-lg shadow-lg mb-3"
+            >
+              <div class="flex-col" v-if="isValidYoutubeLink(video.url)">
+                <youtube :video-id="getYoutbeId(video.url)"></youtube>
+              </div>
+              <div class="flex-col" v-else>
+                <iframe
+                  class="yt_player_iframe w-full h-iframe"
+                  id="vi"
+                  :src="`${video.url}?rel=0&cc_load_policy=1`"
+                  frameborder="0"
+                  :autoplay="videoAutoPlay"
+                  allow="accelerometer; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen
+                />
+              </div>
+              <div class="flex relative flex-wrap w-full h-full bg-purple video-player-border">
+                <span
+                  class="text-2xl truncate text-left text-white ml-2 pt-2 pb-2 video-name"
+                >{{ video.name }}</span>
+
+                <ul id="navigation">
+                  <li>
+                    <a
+                      href="javascript:void(0);"
+                      :class="{ active }"
+                      class="more-icon-a align-right cursor-pointer"
+                      title="More"
+                      @click="openMenu(video.id)"
+                    >
+                      <img
+                        src="/images/icons/more-icon-white@3x.png"
+                        alt="Icon"
+                        class="h-6 absolute right-0 bottom-0"
+                      />
+                    </a>
+                    <div
+                      class="dropdown cus-dropdown submanu"
+                      v-bind:class="{ 'isOpen' : openId==video.id}"
+                    >
+                      <ul class="submanu-content">
+                        <li>
+                          <a :href="video.url" title="Open in" target="_blank">Open in</a>
+                        </li>
+                      </ul>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <span v-if="!this.videos.length">You don't have any files added.</span>
+          </div>
+        </div>
+      </div>
+    </modal>
+
+    <modal
+      class="flex flex-col w-full items-center modal-height-90 custom-event-popup"
+      :width="500"
+      name="audioModal"
+    >
+      <div>
+        <div class="flex flex-col w-full shadow-md overflow-hidden p-3">
+          <h1 class="text-purple text-lg font-bold">Music</h1>
+          <div class>
+            <div
+              v-for="music in this.music"
+              :key="music.id"
+              class="flex w-full shadow-lg mb-3 height-73 bg-purple music-border"
+            >
+              <div class="flex-col mt-1 music-icon-parent">
+                <img
+                  src="/images/icons/music@2x.png"
+                  alt="Icon"
+                  class="custo-static-icon music-icon overflow-hidden"
+                />
+                <span class="text-lg truncate text-white uppercase">MP3</span>
+              </div>
+              <div
+                class="flex h-100 content-center items-center relative w-full h-full bg-white mp-box"
+              >
+                <span
+                  class="text-2xl truncate-custom mb-0 text-center text-purple ml-2"
+                >{{ music.name }}</span>
+
+                <ul id="navigation">
+                  <li>
+                    <a
+                      href="javascript:void(0);"
+                      :class="{ active }"
+                      class="more-icon-a align-right cursor-pointer"
+                      title="More"
+                      @click="openMenu(music.id)"
+                    >
+                      <img
+                        src="/images/icons/more-icon@3x.png"
+                        alt="Icon"
+                        class="h-6 absolute right-0 bottom-0"
+                      />
+                    </a>
+                    <div
+                      class="dropdown cus-dropdown submanu"
+                      v-bind:class="{ 'isOpen' : openId==music.id}"
+                    >
+                      <ul class="submanu-content">
+                        <li>
+                          <a :href="music.url" title="Open in" target="_blank">Open in</a>
+                        </li>
+                      </ul>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <span v-if="!this.music.length">You don't have any files added.</span>
+          </div>
+        </div>
+      </div>
+    </modal>
+
+    <modal
+      class="flex flex-col w-full items-center modal-height-90 custom-event-popup"
+      :width="500"
+      name="imageModal"
+    >
+      <div>
+        <div class="flex flex-col w-full shadow-md overflow-hidden p-3">
+          <h1 class="text-purple text-lg font-bold">Photos</h1>
+          <div class>
+            <div
+              v-for="photo in this.photos"
+              :key="photo.id"
+              class="flex w-full shadow-lg mb-3 height-73"
+            >
+              <div class="flex-col">
+                <img
+                  class="custom-photo-icon image-rounded"
+                  v-lazy="photo.thumbnail ? photo.thumbnail : photo.url"
+                  alt="image"
+                />
+              </div>
+              <div
+                class="flex h-100 content-center items-center relative w-full h-full bg-white mp-box"
+              >
+                <span
+                  class="text-2xl truncate-custom mb-0 text-center text-purple ml-2"
+                >{{ photo.name }}</span>
+
+                <ul id="navigation">
+                  <li>
+                    <a
+                      href="javascript:void(0);"
+                      :class="{ active }"
+                      class="more-icon-a align-right cursor-pointer"
+                      title="More"
+                      @click="openMenu(photo.id)"
+                    >
+                      <img
+                        src="/images/icons/more-icon@3x.png"
+                        alt="Icon"
+                        class="h-6 absolute right-0 bottom-0"
+                      />
+                    </a>
+                    <div
+                      class="dropdown cus-dropdown submanu"
+                      v-bind:class="{ 'isOpen' : openId==photo.id}"
+                    >
+                      <ul class="submanu-content">
+                        <li>
+                          <a :href="photo.url" title="Open in" target="_blank">Open in</a>
+                        </li>
+                      </ul>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <span v-if="!this.photos.length">You don't have any files added.</span>
+          </div>
+        </div>
+      </div>
+    </modal>
+
+    <modal
+      class="flex flex-col w-full items-center modal-height-90 custom-event-popup"
+      :width="500"
+      name="sheetModal"
+    >
+      <div>
+        <div class="flex flex-col w-full shadow-md overflow-hidden p-3">
+          <h1 class="text-purple text-lg font-bold">Sheet Music</h1>
+          <div class>
+            <div
+              v-for="sheet in this.sheets"
+              :key="sheet.id"
+              class="flex w-full shadow-lg mb-3 height-73"
+            >
+              <div class="flex-col bg-purple mt-1 music-icon-parent music-border">
+                <img
+                  src="/images/icons/doc-icon3x.png"
+                  alt="Icon"
+                  class="custo-static-icon music-icon overflow-hidden"
+                />
+                <span class="text-lg text-white uppercase">PDF</span>
+              </div>
+              <div
+                class="flex h-100 content-center items-center relative w-full h-full bg-white mp-box"
+              >
+                <span
+                  class="text-2xl truncate-custom mb-0 text-center text-purple ml-2"
+                >{{ sheet.name }}</span>
+
+                <ul id="navigation">
+                  <li>
+                    <a
+                      href="javascript:void(0);"
+                      :class="{ active }"
+                      class="more-icon-a align-right cursor-pointer"
+                      title="More"
+                      @click="openMenu(sheet.id)"
+                    >
+                      <img
+                        src="/images/icons/more-icon@3x.png"
+                        alt="Icon"
+                        class="h-6 absolute right-0 bottom-0"
+                      />
+                    </a>
+                    <div
+                      class="dropdown cus-dropdown submanu"
+                      v-bind:class="{ 'isOpen' : openId==sheet.id}"
+                    >
+                      <ul class="submanu-content">
+                        <li>
+                          <a :href="sheet.url" title="Open in" target="_blank">Open in</a>
+                        </li>
+                      </ul>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <span v-if="!this.sheets.length">You don't have any files added.</span>
+          </div>
+        </div>
+      </div>
+    </modal>
   </div>
 </template>
 
@@ -1000,13 +1381,20 @@ import Loading from "vue-loading-overlay";
 import ThumbService from "@/services/ThumbService";
 import DEFINE from "@/utils/const.js";
 
-import VueSlider from 'vue-slider-component'
-import 'vue-slider-component/theme/antd.css'
-import pdf from 'vue-pdf'
+import VueSlider from "vue-slider-component";
+import "vue-slider-component/theme/antd.css";
+import pdf from "vue-pdf";
+import VueYouTubeEmbed from "vue-youtube-embed";
+import { getIdFromURL, getTimeFromURL } from "vue-youtube-embed";
 
+Vue.use(VueYouTubeEmbed);
+Vue.use(VueYouTubeEmbed, { global: false });
 
 import "@firebase/firestore";
 const db = firebase.firestore();
+const $ = require("jquery");
+
+window.$ = $;
 
 export default {
   // ...
@@ -1016,10 +1404,11 @@ export default {
     Calendar,
     Loading,
     VueSlider,
-    pdf
+    pdf,
   },
   data() {
     return {
+      active: false,
       isLoading: false,
       fullPage: true,
       rol: "",
@@ -1038,48 +1427,57 @@ export default {
       form: {},
       dates: {},
       file: {
-        name: "Record Audition"
+        name: "Record Audition",
       },
       selectAttribute: {
         bar: true,
-        color: "red"
+        color: "red",
       },
       addNumberText: "",
-      isAssignedNumber:false,
-      performerDetails:{},
-      currentUserRoles : [],
-      isRealodTeamFeedback : false,
-      thumbnail : {},
-      videoFileName : null,
-      isLoadedVideo : false,
-      currentVideo : null,
-      nextPerformerId : null,
-      user_placeholder : DEFINE.role_placeholder,
-      loading_placeholder : DEFINE.loading_placeholder,
+      isAssignedNumber: false,
+      performerDetails: {},
+      currentUserRoles: [],
+      isRealodTeamFeedback: false,
+      thumbnail: {},
+      videoFileName: null,
+      isLoadedVideo: false,
+      currentVideo: null,
+      nextPerformerId: null,
+      user_placeholder: DEFINE.role_placeholder,
+      loading_placeholder: DEFINE.loading_placeholder,
       isChatView: false,
       chatPrefix: DEFINE.CHAT_PEFIX,
       auditionChatRef: null,
       chatMessage: "",
       messageList: [],
-      casterUserList : {},
-      sliderOptions : {
-          min: 0,
-          max: 10,
-          interval: 0.5,
-          disabled: false,
-          clickable: true,
-          tooltip: 'always',
-          tooltipPlacement: 'bottom',
+      casterUserList: {},
+      sliderOptions: {
+        min: 0,
+        max: 10,
+        interval: 0.5,
+        disabled: false,
+        clickable: true,
+        tooltip: "always",
+        tooltipPlacement: "bottom",
       },
-      performerResume : '',
+      performerResume: "",
       numPages: undefined,
       invitation: {
         adding: false,
-        email: '',
+        email: "",
       },
-      base_url : '',
+      base_url: "",
       refreshFBIntrval: undefined,
-      isUpdateFeeback : false
+      isUpdateFeeback: false,
+      docs: [],
+      videos: [],
+      music: [],
+      photos: [],
+      sheets: [],
+      materialList: [],
+      videoAutoPlay: false,
+      openId: "",
+      isOpen: false
     };
   },
   computed: {
@@ -1087,36 +1485,36 @@ export default {
       "audition",
       "userList",
       "teamFeedback",
-      "onlineMedia"
+      "onlineMedia",
     ]),
     ...mapState("user", ["user"]),
     ...mapState("feedback", [
       "feedback",
       "tags",
       "marketplace",
-      "recommendations"
+      "recommendations",
     ]),
     ...mapState("profile", {
       profile: "user",
       calendar: "calendar",
-      contract: "contract"
+      contract: "contract",
     }),
-    getAssignNumber: function() {
+    getAssignNumber: function () {
       return this.addNumberText ? this.addNumberText.toString() : "";
-    }
+    },
   },
   watch: {
-    userList: function() {
+    userList: function () {
       this.setNextPerform();
     },
     "$route.query"() {
-      // console.log("route.query")      
+      // console.log("route.query")
       this.userDetailsInit();
-    }
+    },
   },
   async mounted() {
     await this.fetchAuditionData(this.$route.params.audition);
-    await this.fetchUserList(this.$route.params.round);    
+    await this.fetchUserList(this.$route.params.round);
     this.userDetailsInit();
     this.getCasterUsers();
   },
@@ -1125,12 +1523,15 @@ export default {
     await this.initializeChat();
     // auto refresh feed back
     this.stopFeedbackRefresh();
-    this.refreshFBIntrval = setInterval(function () {
+    this.refreshFBIntrval = setInterval(
+      function () {
         this.updateTeamFeedBack(false);
-    }.bind(this), 5000);
+      }.bind(this),
+      5000
+    );
   },
   beforeDestroy() {
-      this.stopFeedbackRefresh();
+    this.stopFeedbackRefresh();
   },
   methods: {
     ...mapActions("user", ["fetch"]),
@@ -1139,14 +1540,14 @@ export default {
       "fetchUserList",
       "fetchTeamFeedback",
       "searchMarketplace",
-      "fetchOnlineMedia"
+      "fetchOnlineMedia",
     ]),
     ...mapActions("profile", { fetchProfile: "fetch" }),
     ...mapActions("profile", {
       fetchProfile: "fetch",
       fetchData: "fetchData",
       myCalendar: "myCalendar",
-      fetchContract: "fetchContract"
+      fetchContract: "fetchContract",
     }),
     ...mapActions("feedback", [
       "fetchUserFeedback",
@@ -1157,35 +1558,54 @@ export default {
       "delete",
       "searchMarketplace",
       "setRecommendations",
-      "deleteRecommendation"
+      "deleteRecommendation",
     ]),
-    stopFeedbackRefresh(){
+    stopFeedbackRefresh() {
       clearInterval(this.refreshFBIntrval);
       this.refreshFBIntrval = undefined;
-
     },
     goToday() {
       this.$refs.calendar.goToday();
     },
     async userDetailsInit() {
-
       this.manageCurrentUserRoles();
-      await this.fetchTags({"round": this.$route.params.round, "user": this.$route.params.id,});
-      await this.fetchRecommendation({"round": this.$route.params.audition, "user": this.$route.params.id,});
-      await this.fetchOnlineMedia({"round": this.$route.params.round, "user": this.$route.params.id,});
+      await this.fetchTags({
+        round: this.$route.params.round,
+        user: this.$route.params.id,
+      });
+      await this.fetchRecommendation({
+        round: this.$route.params.audition,
+        user: this.$route.params.id,
+      });
+      await this.fetchOnlineMedia({
+        round: this.$route.params.round,
+        user: this.$route.params.id,
+      });
       let feedback = {
-        user:this.$route.params.id,
-        round:this.$route.params.round
+        user: this.$route.params.id,
+        round: this.$route.params.round,
       };
       await this.fetchUserFeedback(feedback);
-                
-      if(Object.keys(this.feedback).length > 0) {        
+
+      if (Object.keys(this.feedback).length > 0) {
         this.isUpdateFeeback = true;
-        for(data in this.feedback){
-          this.workon = this.feedback.work === null ? null : (this.feedback.work == 'vocals' ? 1 :this.feedback.work == 'acting' ? 2 : 3);
+        for (data in this.feedback) {
+          this.workon =
+            this.feedback.work === null
+              ? null
+              : this.feedback.work == "vocals"
+              ? 1
+              : this.feedback.work == "acting"
+              ? 2
+              : 3;
           this.favorite = this.feedback.favorite;
           this.emoji = this.feedback.evaluation;
-          this.callback = this.feedback.callback == 1 ?true: this.feedback.callback === null ? null : false;
+          this.callback =
+            this.feedback.callback == 1
+              ? true
+              : this.feedback.callback === null
+              ? null
+              : false;
           this.rating = this.feedback.rating != null ? this.feedback.rating : 0;
           this.form.comment = this.feedback.comment;
         }
@@ -1196,51 +1616,61 @@ export default {
         this.emoji = null;
         this.callback = null;
         this.rating = 0;
-        this.form.comment = '';
+        this.form.comment = "";
       }
-        // Get Assigend Number
-        let getPerformerDetails = await axios.get(`/t/auditions/profile/user/${this.$route.params.id}/appointment/${this.$route.params.round}`);
-        if(getPerformerDetails.status == 200){
-          this.performerDetails = getPerformerDetails.data.data;        
-          this.addNumberText = getPerformerDetails.data.data.assign_number;
-          if(this.addNumberText && this.addNumberText != ''){
-            this.isAssignedNumber = true;
-          } else {
-            this.isAssignedNumber = false;
-          }
-          
-        }else{
-          this.performerDetails = {};
-          this.addNumberText = "";
+      // Get Assigend Number
+      let getPerformerDetails = await axios.get(
+        `/t/auditions/profile/user/${this.$route.params.id}/appointment/${this.$route.params.round}`
+      );
+      if (getPerformerDetails.status == 200) {
+        this.performerDetails = getPerformerDetails.data.data;
+        this.addNumberText = getPerformerDetails.data.data.assign_number;
+        if (this.addNumberText && this.addNumberText != "") {
           this.isAssignedNumber = true;
+        } else {
+          this.isAssignedNumber = false;
         }
-      this.currentUser = this.userList.filter(userList => userList.user_id == this.$route.params.id);
-      if(this.currentUser != ""){
+      } else {
+        this.performerDetails = {};
+        this.addNumberText = "";
+        this.isAssignedNumber = true;
+      }
+      this.currentUser = this.userList.filter(
+        (userList) => userList.user_id == this.$route.params.id
+      );
+      if (this.currentUser != "") {
         this.slot = this.currentUser[0].slot_id;
         this.rol = this.currentUser[0].rol;
-      }    
-      let data = {"appointment_id": this.$route.params.round, "performer": this.$route.params.id}
+      }
+      let data = {
+        appointment_id: this.$route.params.round,
+        performer: this.$route.params.id,
+      };
       await this.fetchTeamFeedback(data);
       await this.myCalendar(this.$route.params.id);
       this.asignEvents();
     },
     async getCasterUsers() {
       try {
-        const { data : { data } } = await axios.get(`/auditions/getAuditionUserData/${this.$route.params.audition}`);        
+        const {
+          data: { data },
+        } = await axios.get(
+          `/auditions/getAuditionUserData/${this.$route.params.audition}`
+        );
         this.casterUserList = {};
         data.forEach((val, index) => {
           this.casterUserList[val.id] = val;
-        });        
+        });
         // console.log("getCasterUsers -> casterUserList", this.casterUserList)
-      } catch(e){
-        console.log("getCasterUsers -> e", e)        
+      } catch (e) {
+        console.log("getCasterUsers -> e", e);
       }
     },
-    async updateTeamFeedBack(loaderView){
+    async updateTeamFeedBack(loaderView) {
       this.isRealodTeamFeedback = loaderView;
       let data = {
         appointment_id: this.$route.params.round,
-        performer: this.$route.params.id
+        performer: this.$route.params.id,
       };
       await this.fetchTeamFeedback(data);
       this.isRealodTeamFeedback = false;
@@ -1248,42 +1678,51 @@ export default {
     async sharedProfile() {
       this.$toasted.clear();
       try {
-        if(!this.invitation.email || this.invitation.email == '') {        
-          this.$toasted.error('Please enter email!');
+        if (!this.invitation.email || this.invitation.email == "") {
+          this.$toasted.error("Please enter email!");
           return;
-        } 
-        let requestParam = {
-          "code": this.performerDetails.share_code,
-          "email": this.invitation.email,
-          "link"  : `${this.base_url}/talent-shared/${window.btoa(this.$route.params.id)}`
         }
+        let requestParam = {
+          code: this.performerDetails.share_code,
+          email: this.invitation.email,
+          link: `${this.base_url}/talent-shared/${window.btoa(
+            this.$route.params.id
+          )}`,
+        };
 
         await axios.post(`/t/performers/code`, requestParam);
-        this.$toasted.success('The user code has been shared successfully');
+        this.$toasted.success("The user code has been shared successfully");
         this.invitation.email = "";
       } catch (error) {
-        console.log(error.response);        
-        let errMsg = error.response && error.response.data && error.response.data.data ?  error.response.data.data : DEFINE.common_error_message;
+        console.log(error.response);
+        let errMsg =
+          error.response && error.response.data && error.response.data.data
+            ? error.response.data.data
+            : DEFINE.common_error_message;
         this.$toasted.error(errMsg);
       }
     },
-    viewResume() {      
+    viewResume() {
       this.$toasted.clear();
 
-      this.performerResume = this.performerDetails.resume ? pdf.createLoadingTask(this.performerDetails.resume) : null;
-      if(!this.performerResume) {
-        this.$toasted.error("This performer doesn't have any resume uploaded yet.");
+      this.performerResume = this.performerDetails.resume
+        ? pdf.createLoadingTask(this.performerDetails.resume)
+        : null;
+      if (!this.performerResume) {
+        this.$toasted.error(
+          "This performer doesn't have any resume uploaded yet."
+        );
       }
       // this.performerResume = this.performerDetails.resume;
-      this.performerResume.promise.then(pdf => {
+      this.performerResume.promise.then((pdf) => {
         this.numPages = pdf.numPages;
       });
       this.$modal.show("resumeModal");
     },
-    getPerformerDetail(type) {
+    async getPerformerDetail(type) {
       // if (type == "info") {
       //   this.$modal.show("infoModal");
-      // } else 
+      // } else
       if (type == "appearance") {
         this.$modal.show("appearance");
       }
@@ -1293,18 +1732,128 @@ export default {
       // if (type == "eduTra") {
       //   this.$modal.show("eduTraModal");
       // }
-      
+      if (type == "doc") {
+        this.isOpen = false;
+        this.openId = "";
+        this.isLoading = true;
+        try {
+          let docs = await axios.get(
+            `/t/media/user/list/doc?performer_id=${this.$route.params.id}`
+          );
+          this.docs = docs.data.data;
+          this.isLoading = false;
+        } catch (e) {
+          this.isLoading = false;
+          this.$toasted.error("Something went wrong in fetching data!");
+        } finally {
+          this.isLoading = false;
+        }
+
+        this.$modal.show("docModal");
+      }
+      if (type == "video") {
+        this.isOpen = false;
+        this.openId = "";
+        this.isLoading = true;
+        try {
+          let videos = await axios.get(
+            `/t/media/user/list/video?performer_id=${this.$route.params.id}`
+          );
+          this.videos = videos.data.data;
+          this.isLoading = false;
+        } catch (e) {
+          this.isLoading = false;
+          this.$toasted.error("Something went wrong in fetching data!");
+        } finally {
+          this.isLoading = false;
+        }
+
+        this.$modal.show("videoModal");
+      }
+      if (type == "audio") {
+        this.isOpen = false;
+        this.openId = "";
+        this.isLoading = true;
+        try {
+          let music = await axios.get(
+            `/t/media/user/list/audio?performer_id=${this.$route.params.id}`
+          );
+          this.music = music.data.data;
+          this.isLoading = false;
+        } catch (e) {
+          this.isLoading = false;
+          this.$toasted.error("Something went wrong in fetching data!");
+        } finally {
+          this.isLoading = false;
+        }
+
+        this.$modal.show("audioModal");
+      }
+      if (type == "sheet") {
+        this.isOpen = false;
+        this.openId = "";
+        this.isLoading = true;
+        try {
+          let sheets = await axios.get(
+            `/t/media/user/list/sheet?performer_id=${this.$route.params.id}`
+          );
+          this.sheets = sheets.data.data;
+          this.isLoading = false;
+        } catch (e) {
+          this.isLoading = false;
+          this.$toasted.error("Something went wrong in fetching data!");
+        } finally {
+          this.isLoading = false;
+        }
+
+        this.$modal.show("sheetModal");
+      }
+      if (type == "image") {
+        this.isOpen = false;
+        this.openId = "";
+        this.isLoading = true;
+        try {
+          let photos = await axios.get(
+            `/t/media/user/list/image?performer_id=${this.$route.params.id}`
+          );
+          this.photos = photos.data.data;
+          this.isLoading = false;
+        } catch (e) {
+          this.isLoading = false;
+          this.$toasted.error("Something went wrong in fetching data!");
+        } finally {
+          this.isLoading = false;
+        }
+
+        this.$modal.show("imageModal");
+      }
+    },
+    isValidYoutubeLink(url) {
+      const regExp = /^(http(s)?:\/\/)?((w){3}.)?youtu(be|.be)?(\.com)?\/.+/;
+      return url.match(regExp);
+    },
+    getYoutbeId(url) {
+      return this.$youtube.getIdFromURL(url);
+    },
+    openMenu: function (id) {
+      this.isOpen = false;
+
+      if (this.openId == id) {
+        this.openId = "";
+      } else {
+        this.openId = id;
+      }
     },
     manageCurrentUserRoles() {
       this.currentUserRoles = [];
       let currentUser = this.userList.filter(
-        userList => userList.user_id == this.$route.params.id
+        (userList) => userList.user_id == this.$route.params.id
       );
       let userrolesArray =
         currentUser.length > 0 && currentUser[0] && currentUser[0].rol
           ? currentUser[0].rol.split(",")
           : [];
-      this.audition.roles.map(rol => {
+      this.audition.roles.map((rol) => {
         if (userrolesArray.includes(`${rol.id}`)) {
           this.currentUserRoles.push(rol);
         }
@@ -1329,7 +1878,7 @@ export default {
         await axios.post(`/assignNumber`, {
           user_id: this.$route.params.id,
           appointment_id: appointmentId,
-          assign_no: this.addNumberText
+          assign_no: this.addNumberText,
         });
         this.isShowAddNoField = false;
         this.isAssignedNumber = true;
@@ -1380,7 +1929,7 @@ export default {
             appointment_id: this.$route.params.round,
             performer: this.$route.params.id,
             slot_id: this.slot,
-            name: this.file.name
+            name: this.file.name,
           };
           let files = await axios.post(
             "/t/auditions/video/save",
@@ -1422,17 +1971,17 @@ export default {
       this.form.evaluator = TokenService.getUserId();
       let data = {
         appointment_id: this.$route.params.round,
-        performer: this.$route.params.id
+        performer: this.$route.params.id,
       };
       this.isLoading = false;
       if (Object.keys(this.feedback).length == 0) {
         this.isUpdateFeeback = false;
         // console.log("saveFeedback -> this.form", this.form)
-        let status = await axios.post("/t/feedbacks/add", this.form);        
+        let status = await axios.post("/t/feedbacks/add", this.form);
         this.$toasted.success("Feedback Created");
         let feedback = {
-          user:this.$route.params.id,
-          round:this.$route.params.round
+          user: this.$route.params.id,
+          round: this.$route.params.round,
         };
         await this.fetchUserFeedback(feedback);
         await this.fetchTeamFeedback(data);
@@ -1463,7 +2012,7 @@ export default {
         await ThumbService.videoThumbnail(
           file,
           DEFINE.thumbSize.videoThumbWidth
-        ).then(thumb_data => {
+        ).then((thumb_data) => {
           Vue.set(this.thumbnail, "preview", thumb_data.preview);
           Vue.set(this.thumbnail, "file", thumb_data.file);
         });
@@ -1501,7 +2050,7 @@ export default {
     asignEvents() {
       var finalList = new Array();
       if (this.calendar && this.calendar.length > 0) {
-        this.calendar.map(function(value) {
+        this.calendar.map(function (value) {
           let splitInitDate = value.start_date.split("-");
           let splitFinalDate = value.end_date.split("-");
           finalList.push({
@@ -1514,7 +2063,7 @@ export default {
               splitFinalDate[0],
               splitFinalDate[1] - 1,
               splitFinalDate[2]
-            )
+            ),
           });
         });
       }
@@ -1522,11 +2071,11 @@ export default {
         {
           bar: {
             color: "yellow",
-            class: "calender-bar-inside-line"
+            class: "calender-bar-inside-line",
           },
           key: "today",
-          dates: finalList
-        }
+          dates: finalList,
+        },
       ];
     },
     async setTags() {
@@ -1535,14 +2084,14 @@ export default {
           title: this.tag,
           id: null,
           appointment_id: this.$route.params.round,
-          user_id: this.$route.params.id
+          user_id: this.$route.params.id,
         };
 
         if (await this.storeTag(data))
           this.$toasted.success("Tag created successfully");
         await this.fetchTags({
           round: this.$route.params.round,
-          user: this.$route.params.id
+          user: this.$route.params.id,
         });
       } else {
         this.$toasted.error("Tag not created, try later");
@@ -1556,13 +2105,13 @@ export default {
           marketplace_id: this.currentMarketplace.id,
           audition_id: this.$route.params.audition,
           user_id: this.$route.params.id,
-          appointment_id: this.$route.params.round
+          appointment_id: this.$route.params.round,
         };
         if (await this.storeRecommendation(data))
           this.$toasted.success("Recommendation created successfully");
         await this.fetchRecommendation({
           round: this.$route.params.audition,
-          user: this.$route.params.id
+          user: this.$route.params.id,
         });
       } else {
         this.$toasted.error(
@@ -1590,7 +2139,7 @@ export default {
         this.$toasted.success("Tag deleted successfully");
         await this.fetchTags({
           round: this.$route.params.round,
-          user: this.$route.params.id
+          user: this.$route.params.id,
         });
       } catch (e) {
         this.$toasted.error("Tag not deleted, try later");
@@ -1603,7 +2152,7 @@ export default {
         this.$toasted.success("Recommendation deleted successfully");
         await this.fetchRecommendation({
           round: this.$route.params.audition,
-          user: this.$route.params.id
+          user: this.$route.params.id,
         });
       } catch (e) {
         console.log(e);
@@ -1634,11 +2183,13 @@ export default {
     },
     getChatUserDetails(user_id) {
       // it should be dynamic when audition wise all user list get
-      return this.casterUserList && this.casterUserList[user_id] ? this.casterUserList[user_id] : null;
+      return this.casterUserList && this.casterUserList[user_id]
+        ? this.casterUserList[user_id]
+        : null;
     },
-    chatTimeFormat(timestamp){
+    chatTimeFormat(timestamp) {
       // console.log("chatTimeFormat -> timestamp", timestamp)
-      const date = timestamp ?  timestamp.toDate() : null;
+      const date = timestamp ? timestamp.toDate() : null;
       // console.log("chatTimeFormat -> date", date)
       return date;
     },
@@ -1647,13 +2198,13 @@ export default {
      */
     async initializeChat() {
       const currentChatPath = `${this.chatPrefix}${this.$route.params.audition}`;
-      
+
       this.auditionChatRef = db
         .collection("audition_chats")
         .doc(currentChatPath);
       await this.auditionChatRef
         .get()
-        .then(doc => {
+        .then((doc) => {
           if (!doc.exists) {
             // console.log("initializeChat -> create doc");
             this.auditionChatRef.set({});
@@ -1661,7 +2212,7 @@ export default {
             // console.log("initializeChat -> already exist doc");
           }
         })
-        .catch(err => {
+        .catch((err) => {
           console.log("Error getting document", err);
         });
     },
@@ -1672,41 +2223,42 @@ export default {
       this.isChatView = !this.isChatView;
       // console.log("chatManage -> this.isChatView", this.isChatView);
       if (this.isChatView) {
-        if(Object.keys(this.casterUserList).length === 0) {
+        if (Object.keys(this.casterUserList).length === 0) {
           await this.getCasterUsers();
-        }        
+        }
         // const currentChatPath = `${this.chatPrefix}${this.$route.params.audition}`;
         const roundChatPath = `${this.$route.params.round}`;
         // console.log("chatManage -> this.auditionChatRef", this.auditionChatRef)
-        this.auditionChatRef          
+        this.auditionChatRef
           .collection(`${roundChatPath}`)
           .orderBy("createDate", "asc")
-          .onSnapshot(async querySnapshot => {
-            await querySnapshot.forEach(doc => {
+          .onSnapshot(async (querySnapshot) => {
+            await querySnapshot.forEach((doc) => {
               // console.log("chatManage -> doc id", doc.id)
               // console.log("chatManage -> doc data", doc.data())
               let data = doc.data();
               data.sender = this.getChatUserDetails(data.sender_id);
               // console.log("chatManage -> data", data)
-              
+
               const index =
                 this.messageList && this.messageList.length > 0
-                  ? this.messageList.findIndex(e => e.id === doc.id)
+                  ? this.messageList.findIndex((e) => e.id === doc.id)
                   : -1;
 
               if (index === -1) {
                 this.messageList.push({
                   id: doc.id,
-                  ...data
+                  ...data,
                 });
               } else {
                 this.messageList[index] = {
                   id: doc.id,
-                  ...data
+                  ...data,
                 };
               }
-            });            
-            this.$refs.chatlist.scrollTop = this.$refs.chatlist.scrollHeight + 120;
+            });
+            this.$refs.chatlist.scrollTop =
+              this.$refs.chatlist.scrollHeight + 120;
           });
       }
       // this.messageList = this.messageList.sort(
@@ -1718,72 +2270,81 @@ export default {
     chatToDetails() {
       this.isChatView = false;
     },
-    show () {
-      this.$modal.show('marketplace');
+    show() {
+      this.$modal.show("marketplace");
     },
-    hide () {
-      this.$modal.hide('marketplace');
+    hide() {
+      this.$modal.hide("marketplace");
     },
-    setUrl(url){      
+    setUrl(url) {
       var pattern = /^((http|https|ftp):\/\/)/;
-      if(!pattern.test(url)) {
-          url = "http://" + url;
+      if (!pattern.test(url)) {
+        url = "http://" + url;
       }
       return url;
     },
-    loadedVideo(){
-        this.isLoadedVideo = true;
+    loadedVideo() {
+      this.isLoadedVideo = true;
     },
-    playVideo(videoData){
-        this.isLoadedVideo = false;
-        this.currentVideo = videoData.url;
-        this.$modal.show('video_modal');
+    playVideo(videoData) {
+      this.isLoadedVideo = false;
+      this.currentVideo = videoData.url;
+      this.$modal.show("video_modal");
     },
     /**
      * Form nav bar click on back button then navigate to audition details
      */
-    backAudition(){
-      this.$router.push({ name: 'auditions/detail', params: { id: this.$route.params.audition } });
+    backAudition() {
+      this.$router.push({
+        name: "auditions/detail",
+        params: { id: this.$route.params.audition },
+      });
     },
     /**
      * When click on next button then navigate to next performer details of current audition
      */
-    gotoNextPerformer(){        
-      if(this.nextPerformerId){
-        this.$router.push({ name: 'auditions/user', params: { audition: this.$route.params.audition , round: this.$route.params.round , id: this.nextPerformerId } });
+    gotoNextPerformer() {
+      if (this.nextPerformerId) {
+        this.$router.push({
+          name: "auditions/user",
+          params: {
+            audition: this.$route.params.audition,
+            round: this.$route.params.round,
+            id: this.nextPerformerId,
+          },
+        });
         this.setNextPerform();
       }
-        
     },
     /**
      * Find out next perfomer id
      */
     setNextPerform() {
-      if(this.userList && this.userList.length > 0 ){
-        const userIndex = this.userList.findIndex(x => x.user_id == this.$route.params.id);
-          if (userIndex > -1 && userIndex < (this.userList.length-1)) {
-            this.nextPerformerId = this.userList[userIndex+1].user_id;
-          } else {       
-            this.nextPerformerId = null;            
-          }
+      if (this.userList && this.userList.length > 0) {
+        const userIndex = this.userList.findIndex(
+          (x) => x.user_id == this.$route.params.id
+        );
+        if (userIndex > -1 && userIndex < this.userList.length - 1) {
+          this.nextPerformerId = this.userList[userIndex + 1].user_id;
+        } else {
+          this.nextPerformerId = null;
+        }
       } else {
         this.nextPerformerId = null;
       }
     },
-    async sendMessage() {      
+    async sendMessage() {
       if (this.chatMessage && this.chatMessage != "") {
         // const currentChatPath = `${this.chatPrefix}${this.$route.params.audition}`;
         const roundChatPath = `${this.$route.params.round}`;
-        let chatMessageDoc = this.auditionChatRef.collection(
-          roundChatPath
-        );
+        let chatMessageDoc = this.auditionChatRef.collection(roundChatPath);
         const message = this.chatMessage;
-        this.chatMessage = '';
+        this.chatMessage = "";
         await chatMessageDoc.add({
           message: message,
           sender_id: parseInt(TokenService.getUserId()),
           createDate: new Date(),
-          read: false
+          read: false,
         });
       } else {
         this.$toasted.clear();
@@ -1794,9 +2355,9 @@ export default {
     },
     goToSettings() {
       this.$router.push({
-        name: "my.settings"
+        name: "my.settings",
       });
-    }   
+    },
   },
 };
 </script>
@@ -1809,7 +2370,7 @@ export default {
   text-align: left;
   padding: 30px 15px;
   overflow: hidden;
-  background: #F0F0F0;
+  background: #f0f0f0;
 }
 .custom-resizer > .multipane-resizer {
   margin: 0;
@@ -1858,6 +2419,105 @@ nav {
 .h-300 {
   height: 290px;
 }
+.button-detail {
+  background-image: linear-gradient(#4d2545, #782541);
+}
+ul li {
+  position: relative;
+  margin: 0.25em;
+  text-align: center;
+}
+ul#navigation {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+}
+.dropdown {
+  position: absolute;
+  left: 50%;
+  margin-top: 0.55em;
+  border-radius: 0.35em;
+  background-color: rgba(33, 37, 41, 0.15);
+  /*visibility: hidden;
+  opacity: 0;*/
+}
+
+.cus-dropdown {
+  position: absolute;
+  left: 50%;
+  margin-top: 0.55em;
+  border-radius: 0.35em;
+  background-color: rgba(33, 37, 41, 0.15);
+  visibility: hidden;
+  opacity: 0;
+}
+.cus-spn-cls {
+  margin-left: 10px;
+}
+
+.dropdown.isOpen {
+  visibility: visible;
+  opacity: 1;
+}
+.dropdown.submanu {
+  position: absolute;
+  left: -130px;
+  top: 2px;
+  width: 130px;
+  background-color: #f7f7f7;
+  z-index: 111;
+}
+.dropdown.submanu ul {
+  width: 100%;
+}
+ul#navigation li:first-child {
+  position: relative;
+}
+.sidebar .sidebar-content {
+  min-height: calc(100vh - 48px);
+}
+ul#navigation > li > a {
+  padding: 0.55em 1em;
+  transition: all 200ms ease;
+}
+ul#navigation {
+  align-self: flex-end;
+}
+.submanu-content li a[title="Share"]::after,
+.submanu-content li a[title="Open in"]::after,
+.submanu-content li a[title="Rename"]::after,
+.submanu-content li a[title="Delete"]::after {
+  content: "";
+  background-repeat: no-repeat;
+  width: 18px;
+  height: 18px;
+  position: absolute;
+  left: 10px;
+  top: 3px;
+  background-size: 18px 18px;
+}
+.submanu-content li a[title="Share"]::after {
+  background-image: url(/images/icons/icon1.png);
+}
+.submanu-content li a[title="Open in"]::after {
+  background-image: url(/images/icons/icon2.png);
+}
+.submanu-content li a[title="Rename"]::after {
+  background-image: url(/images/icons/edit2.png);
+}
+.submanu-content li a[title="Delete"]::after {
+  background-image: url(/images/icons/icon3.png);
+}
+ul.submanu-content > li > a {
+  display: block;
+  padding: 0;
+  position: relative;
+  padding-left: 48px;
+  text-align: left;
+  margin-bottom: 8px;
+  cursor: pointer;
+}
 .calender-bar-inside-line {
   margin-bottom: 15px !important;
   background-color: #d8893a !important;
@@ -1893,26 +2553,26 @@ nav {
   margin-bottom: 1rem;
 }
 
-.v--modal-box.v--modal {
-  overflow: auto !important;
-  min-height: 200px !important;
-}
+// .v--modal-box.v--modal {
+//   overflow: auto !important;
+//   min-height: 200px !important;
+// }
 
 .w-70 {
   width: 70%;
 }
 
-.chat-side-min-width{
+.chat-side-min-width {
   width: 100%;
   border-radius: 4px;
-  background-color: rgba(255,255,255, 0.4);
+  background-color: rgba(255, 255, 255, 0.4);
 }
 
 .back-mrg-l {
   padding-left: 22px !important;
 }
 .chat-head {
-  background-color: #BFBFBF;
+  background-color: #bfbfbf;
   border-radius: 4px 4px 0px 0px;
   height: 45px;
   line-height: 45px;
@@ -1948,26 +2608,26 @@ nav {
 
 /* //start: rating slider custom css */
 .rate-slider .vue-slider-dot-handle {
-  border: 2px solid #4D2544 !important;
+  border: 2px solid #4d2544 !important;
 }
-.rate-slider .vue-slider-process{
-  background-color: #4D2544 !important;
+.rate-slider .vue-slider-process {
+  background-color: #4d2544 !important;
 }
 .vue-slider:hover .vue-slider-dot-handle:hover {
-    border-color: #6F2541 !important;
+  border-color: #6f2541 !important;
 }
 .vue-slider .vue-slider-dot-handle-focus {
-    border-color: #6F2541 !important;
-    box-shadow:rgba(111,37,65, 0.4) !important;
+  border-color: #6f2541 !important;
+  box-shadow: rgba(111, 37, 65, 0.4) !important;
 }
 .rate-slider:hover .vue-slider-process {
-  background-color: #6F2541 !important;
+  background-color: #6f2541 !important;
 }
 .vue-slider:hover .vue-slider-dot-handle {
-  border-color: #6F2541;
+  border-color: #6f2541;
 }
 .rate-slider * {
-  box-shadow:none !important;
+  box-shadow: none !important;
 }
 
 /* //end: rating slider custom css */
@@ -1983,20 +2643,19 @@ nav {
 .chat-message span {
   word-break: break-all;
 }
-
-.v--modal-box.v--modal {
-  overflow: auto !important;
+.resume-popup-close-btn {
+  top: 18px;
+  left: 18px;
 }
 .modal-height-90 {
   height: 100vh !important;
   top: 0 !important;
 }
+.v--modal-box.v--modal {
+  overflow: auto !important;
+}
 .modal-height-90 .v--modal-box.v--modal {
   height: 90vh !important;
   top: 5vh !important;
-}
-.resume-popup-close-btn {
-  top: 18px;
-  left: 18px;
 }
 </style>

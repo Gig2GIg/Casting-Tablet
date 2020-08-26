@@ -1,9 +1,18 @@
 <template>
-<div>
-  <nav class="flex items-center h-12">
-    <div class="w-full flex flex-col">
-      <div class=" w-1/2 z-40">
-          <div v-show="invitation.adding" class="mt-16 mr-32 shadow-lg bg-white absolute right-0 top-0 z-40">
+  <div>
+    <loading
+      :active.sync="isLoading"
+      :can-cancel="true"
+      :on-cancel="onCancel"
+      :is-full-page="fullPage"
+    ></loading>
+    <nav class="flex items-center h-12">
+      <div class="w-full flex flex-col">
+        <div class="w-1/2 z-40">
+          <div
+            v-show="invitation.adding"
+            class="mt-16 mr-32 shadow-lg bg-white absolute right-0 top-0 z-40"
+          >
             <base-input
               v-model="invitation.email"
               v-validate="'required|email'"
@@ -14,632 +23,1195 @@
               expanded
             />
 
-            <base-button
-              class="pt-2 pb-2"
-              type="submit"
-              expanded
-              @click.native="sendData"
-            >
-              Send
-            </base-button>
+            <base-button class="pt-2 pb-2" type="submit" expanded @click.native="sendData">Send</base-button>
           </div>
-      </div>
-      <img v-if="this.encCode" :src="'/images/icons/12-layers@3x.png'" class="h-10  ml-auto mr-5" alt="star" @click="invitation.adding =invitation.adding == true?false:true">
-      </div>
-    <div class="flex items-center border-l border-white text-white float-right cursor-pointer" @click="goToSettings" title="Settings" >
-      <span class="mx-4">
-        {{profile.details && profile.details.first_name ? profile.details.first_name : ''}} {{profile.details && profile.details.last_name ? profile.details.last_name : '' }}
-      </span>
-      <!-- <i class="material-icons mr-4">
-        keyboard_arrow_down
-      </i> -->
-      <div v-lazy-container="{ selector: 'img' }" >
+        </div>
         <img
-            :data-loading="loading_placeholder" :data-error="user_placeholder"
+          v-if="this.encCode"
+          :src="'/images/icons/12-layers@3x.png'"
+          class="h-10 ml-auto mr-5"
+          alt="star"
+          @click="invitation.adding =invitation.adding == true?false:true"
+        />
+      </div>
+      <div
+        class="flex items-center border-l border-white text-white float-right cursor-pointer"
+        @click="goToSettings"
+        title="Settings"
+      >
+        <span
+          class="mx-4"
+        >{{profile.details && profile.details.first_name ? profile.details.first_name : ''}} {{profile.details && profile.details.last_name ? profile.details.last_name : '' }}</span>
+        <!-- <i class="material-icons mr-4">
+        keyboard_arrow_down
+        </i>-->
+        <div v-lazy-container="{ selector: 'img' }">
+          <img
+            :data-loading="loading_placeholder"
+            :data-error="user_placeholder"
             :data-src="profile.image && profile.image.thumbnail ? profile.image.thumbnail : (profile.image && profile.image.url ? profile.image.url : '')"
             class="w-12 img-h48 object-cover"
             alt="Avatar"
-        />
+          />
+        </div>
       </div>
-    </div>
-  </nav>
-  <multipane class="custom-resizer h-full " layout="vertical">
-    <div class="flex p-5" :style="isShowAuditionVideo? { minWidth: '68%', width: '68%', maxWidth: '100%' } : { minWidth: '75%', width: '100%', maxWidth: '100%' }">
-      <div class="flex flex-wrap justify-center content-start w-1/2 shadow-2xl rounded-lg">
-          <div v-if="tuser && tuser.image && tuser.image.url" class="w-full bg-cover rounded-t-lg user-profile width-fix" :style="{ backgroundImage: 'url(' + tuser.image.url + ')'}">
-          </div>
-          <div v-else class="h-56 w-full bg-cover rounded-t-lg" :style="{ backgroundImage: 'url(' + image + ')' }">
-          </div>
-          <p class="text-purple text-xl font-bold mt-4 text-center w-full">{{tuser.details ? `${tuser.details.first_name} ${tuser.details.last_name}` : ''}}</p>
-          <p class="text-purple text-m font-bold mt-2 text-center w-full">{{tuser.details ? tuser.details.city : ''}}</p>
+    </nav>
+    <multipane class="custom-resizer h-full" layout="vertical">
+      <div
+        class="flex p-5"
+        :style="isShowAuditionVideo? { minWidth: '68%', width: '68%', maxWidth: '100%' } : { minWidth: '75%', width: '100%', maxWidth: '100%' }"
+      >
+        <div class="flex flex-wrap justify-center content-start w-1/2 shadow-2xl rounded-lg">
+          <div
+            v-if="tuser && tuser.image && tuser.image.url"
+            class="w-full bg-cover rounded-t-lg user-profile width-fix"
+            :style="{ backgroundImage: 'url(' + tuser.image.url + ')'}"
+          ></div>
+          <div
+            v-else
+            class="h-56 w-full bg-cover rounded-t-lg"
+            :style="{ backgroundImage: 'url(' + image + ')' }"
+          ></div>
+          <p
+            class="text-purple text-xl font-bold mt-4 text-center w-full"
+          >{{tuser.details ? `${tuser.details.first_name} ${tuser.details.last_name}` : ''}}</p>
+          <p
+            class="text-purple text-m font-bold mt-2 text-center w-full"
+          >{{tuser.details ? tuser.details.city : ''}}</p>
 
           <!-- start : add social links of current performer -->
           <div class="flex w-full mt-5 justify-center">
-            <a class="social-a flex items-center justify-center content-center w-12 h-12" v-if="tuser.details && tuser.details.facebook" :href="setUrl(tuser.details.facebook)" target="_blank" rel="noopener noreferrer" >
-              <img            
-              :src="'/images/icons/fb_link.png'"
-              alt="Icon"
-              class="h-6"
+            <a
+              class="social-a flex items-center justify-center content-center w-12 h-12"
+              v-if="tuser.details && tuser.details.facebook"
+              :href="setUrl(tuser.details.facebook)"
+              target="_blank"
+              rel="noopener noreferrer"
             >
+              <img :src="'/images/icons/fb_link.png'" alt="Icon" class="h-6" />
             </a>
-            <a class="social-a flex items-center justify-center content-center w-12 h-12" v-if="tuser.details && tuser.details.instagram" :href="setUrl(tuser.details.instagram)" target="_blank" rel="noopener noreferrer" >
-            <img
-                v-if="tuser.details && tuser.details.instagram"
-              :src="'/images/icons/instagram_link.png'"
-              alt="Icon"
-              class="h-6"
+            <a
+              class="social-a flex items-center justify-center content-center w-12 h-12"
+              v-if="tuser.details && tuser.details.instagram"
+              :href="setUrl(tuser.details.instagram)"
+              target="_blank"
+              rel="noopener noreferrer"
             >
-            </a>
-            <a class="social-a flex items-center justify-center content-center w-12 h-12" v-if="tuser.details && tuser.details.twitter" :href="setUrl(tuser.details.twitter)" target="_blank" rel="noopener noreferrer" >
               <img
-                  v-if="tuser.details && tuser.details.twitter"
+                v-if="tuser.details && tuser.details.instagram"
+                :src="'/images/icons/instagram_link.png'"
+                alt="Icon"
+                class="h-6"
+              />
+            </a>
+            <a
+              class="social-a flex items-center justify-center content-center w-12 h-12"
+              v-if="tuser.details && tuser.details.twitter"
+              :href="setUrl(tuser.details.twitter)"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img
+                v-if="tuser.details && tuser.details.twitter"
                 :src="'/images/icons/twitter_link.png'"
                 alt="Icon"
                 class="h-6"
-              >
+              />
             </a>
-            <a class="social-a flex items-center justify-center content-center w-12 h-12" v-if="tuser.details && tuser.details.linkedin" :href="setUrl(tuser.details.linkedin)" target="_blank" rel="noopener noreferrer" >
-            <img
-                v-if="tuser.details && tuser.details.linkedin"
-              :src="'/images/icons/linkedin_link.png'"
-              alt="Icon"
-              class="h-6"
+            <a
+              class="social-a flex items-center justify-center content-center w-12 h-12"
+              v-if="tuser.details && tuser.details.linkedin"
+              :href="setUrl(tuser.details.linkedin)"
+              target="_blank"
+              rel="noopener noreferrer"
             >
+              <img
+                v-if="tuser.details && tuser.details.linkedin"
+                :src="'/images/icons/linkedin_link.png'"
+                alt="Icon"
+                class="h-6"
+              />
             </a>
-          
-
           </div>
           <!-- end : add social links of current performer -->
           <div class="w-full m-8">
-            <div @click="getPerformerDetail('info')" class="flex w-full justify-start mt-2 cursor-pointer">
+            <div
+              @click="getPerformerDetail('info')"
+              class="flex w-full justify-start mt-2 cursor-pointer"
+            >
               <img
-                :src="'/images/icons/person.png'"
+                :src="'/images/icons/user-info-icon@4x.png'"
                 alt="Icon"
                 class="content-center h-8"
-              >
+              />
               <p class="text-purple text-m text-left ml-4 tracking-wide w-1/2">Info</p>
             </div>
-            <div @click="getPerformerDetail('credit')" class="flex w-full justify-start mt-12 cursor-pointer">
-              <img
-                :src="'/images/icons/icon.png'"
-                alt="Icon"
-                class="content-center h-8"
-              >
+            <div
+              @click="getPerformerDetail('credit')"
+              class="flex w-full justify-start mt-12 cursor-pointer"
+            >
+              <img :src="'/images/icons/credits-icon@4x.png'" alt="Icon" class="content-center h-8" />
               <p class="text-purple text-m text-left ml-4 tracking-wide w-1/2">Credit</p>
             </div>
-            <div @click="getPerformerDetail('eduTra')" class="flex w-full justify-start mt-12 cursor-pointer">
+            <div
+              @click="getPerformerDetail('eduTra')"
+              class="flex w-full justify-start mt-12 cursor-pointer"
+            >
               <img
-                :src="'/images/icons/book.png'"
+                :src="'/images/icons/education-icon@4x.png'"
                 alt="Icon"
                 class="content-center h-8"
-              >
+              />
               <p class="text-purple text-m text-left ml-4 tracking-wide w-1/2">Education & Training</p>
             </div>
-            <div @click="getPerformerDetail('appearance')" class="flex w-full justify-start mt-12 cursor-pointer">
+            <div
+              @click="getPerformerDetail('appearance')"
+              class="flex w-full justify-start mt-12 cursor-pointer"
+            >
               <img
-                :src="'/images/icons/12-layers.png'"
+                :src="'/images/icons/appearance-icon@4x.png'"
                 alt="Icon"
                 class="content-center h-8"
-              >
+              />
               <p class="text-purple text-m text-left ml-4 tracking-wide w-1/2">Appearance</p>
             </div>
-          </div>
-      </div>
-      <div class="flex flex-wrap px-10 w-full h-full">
-        <div class="flex w-full">
-          <div class="w-1/3 ml-5 flex flex-wrap content-center justify-center calendar shadow-lg">
-            <div>
-              <p class="text-center text-2xl text-purple">Availability</p>
-              <v-date-picker class="border-none calendar-bar-inline"  :select-attribute='selectAttribute' :attributes="attrs" locale="en" mode='range' v-model="dates" show-caps is-inline  :rows="2" />
+            <div
+              @click="getPerformerDetail('doc')"
+              class="flex w-full justify-start mt-12 cursor-pointer"
+            >
+              <img :src="'/images/icons/my-media@3x.png'" alt="Icon" class="content-center h-8" />
+              <p class="text-purple text-m text-left ml-4 tracking-wide w-1/2">Resume & Docs</p>
             </div>
+            <div
+              @click="getPerformerDetail('video')"
+              class="flex w-full justify-start mt-12 cursor-pointer"
+            >
+              <img :src="'/images/icons/video-icon@2x.png'" alt="Icon" class="content-center h-8" />
+              <p class="text-purple text-m text-left ml-4 tracking-wide w-1/2">Videos</p>
+            </div>
+            <div
+              @click="getPerformerDetail('audio')"
+              class="flex w-full justify-start mt-12 cursor-pointer"
+            >
+              <img :src="'/images/icons/music-icon@3x.png'" alt="Icon" class="content-center h-8" />
+              <p class="text-purple text-m text-left ml-4 tracking-wide w-1/2">Music</p>
+            </div>
+            <div
+              @click="getPerformerDetail('image')"
+              class="flex w-full justify-start mt-12 cursor-pointer"
+            >
+              <img :src="'/images/icons/photo-icon@2x.png'" alt="Icon" class="content-center h-8" />
+              <p class="text-purple text-m text-left ml-4 tracking-wide w-1/2">Photos</p>
+            </div>
+            <div
+              @click="getPerformerDetail('sheet')"
+              class="flex w-full justify-start mt-12 cursor-pointer"
+            >
+              <img :src="'/images/icons/sheet-icon@3x.png'" alt="Icon" class="content-center h-8" />
+              <p class="text-purple text-m text-left ml-4 tracking-wide w-1/2">Sheet Music</p>
+            </div>
+            <!-- <div
+              @click="getPerformerDetail('list')"
+              class="flex w-full justify-start mt-12 cursor-pointer"
+            >
+              <img
+                :src="'/images/icons/audition-icon@3x.png'"
+                alt="Icon"
+                class="content-center h-8"
+              />
+              <p class="text-purple text-m text-left ml-4 tracking-wide w-1/2">Audition Materials</p>
+            </div>-->
           </div>
-          <div class="w-full ml-5 shadow-lg">
-            <p class="text-center text-2xl text-purple font-bold">Contract Information</p>
-            <div class="flex flex-wrap justify-center">
-              <div class="container flex w-full mt-3">
-              <div class="flex w-full text-center justify-center flex-wrap">
+        </div>
+        <div class="flex flex-wrap px-10 w-full h-full">
+          <div class="flex w-full">
+            <div class="w-1/3 ml-5 flex flex-wrap content-center justify-center calendar shadow-lg">
+              <div>
+                <p class="text-center text-2xl text-purple">Availability</p>
+                <v-date-picker
+                  class="border-none calendar-bar-inline"
+                  :select-attribute="selectAttribute"
+                  :attributes="attrs"
+                  locale="en"
+                  mode="range"
+                  v-model="dates"
+                  show-caps
+                  is-inline
+                  :rows="2"
+                />
+              </div>
+            </div>
+            <div class="w-full ml-5 shadow-lg">
+              <p class="text-center text-2xl text-purple font-bold">Contract Information</p>
+              <div class="flex flex-wrap justify-center">
                 <div class="container flex w-full mt-3">
-                  <div class="container flex w-full mt-3">
-                    <div class="flex w-full text-center justify-center flex-wrap">
-                      <div
-                        v-for="data in contract"
-                        :key="data.id"
-                        class="flex m-3 content-center w-full h-16 flex justify-center"
-                      >
-                        <div class="flex justify-center w-9/12 button-detail rounded-lg shadow-lg">
-                          <div class="flex justify-center content-center flex-wrap w-1/2 h-full">
-                            <img
-                              v-if="data.type == 'audio'"
-                              src="/images/icons/mp4Icon@3x.png"
-                              alt="Icon"
-                              class="h-10"
+                  <div class="flex w-full text-center justify-center flex-wrap">
+                    <div class="container flex w-full mt-3">
+                      <div class="container flex w-full mt-3">
+                        <div class="flex w-full text-center justify-center flex-wrap">
+                          <div
+                            v-for="data in contract"
+                            :key="data.id"
+                            class="flex m-3 content-center w-full h-16 flex justify-center"
+                          >
+                            <div
+                              class="flex justify-center w-9/12 button-detail rounded-lg shadow-lg"
                             >
-                            <img
-                              v-else-if="data.type == 'video'"
-                              src="/images/icons/mp3-icon@3x.png"
-                              alt="Icon"
-                              class="h-10"
-                            >
-                            <img
-                              v-else-if="data.type == 'doc'"
-                              src="/images/icons/pdf-icon@3x.png"
-                              alt="Icon"
-                              class="h-10"
-                            >
-                          </div>
-                          <div class="flex content-center relative flex-wrap w-full h-full bg-white">
-                            <span class="text-center text-purple font-bold w-full">{{ data.name }}</span>
-                            <img
-                              src="/images/icons/more-icon@3x.png"
-                              alt="Icon"
-                              class="h-6 absolute right-0 bottom-0"
-                            >
+                              <div
+                                class="flex justify-center content-center flex-wrap w-1/2 h-full"
+                              >
+                                <img
+                                  v-if="data.type == 'audio'"
+                                  src="/images/icons/mp4Icon@3x.png"
+                                  alt="Icon"
+                                  class="h-10"
+                                />
+                                <img
+                                  v-else-if="data.type == 'video'"
+                                  src="/images/icons/mp3-icon@3x.png"
+                                  alt="Icon"
+                                  class="h-10"
+                                />
+                                <img
+                                  v-else-if="data.type == 'doc'"
+                                  src="/images/icons/pdf-icon@3x.png"
+                                  alt="Icon"
+                                  class="h-10"
+                                />
+                              </div>
+                              <div
+                                class="flex content-center relative flex-wrap w-full h-full bg-white"
+                              >
+                                <span
+                                  class="text-center text-purple font-bold w-full"
+                                >{{ data.name }}</span>
+                                <img
+                                  src="/images/icons/more-icon@3x.png"
+                                  alt="Icon"
+                                  class="h-6 absolute right-0 bottom-0"
+                                />
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-              <p v-if="contract==''" class="text-purple font-bold">No informaton added yet.</p>
-            </div>
-          </div>
-        </div>
-        <div class="flex w-full h-96 mt-16">
-          <div class="w-1/2 shadow-lg ml-5 border border-gray-300 overflow-auto">
-            <p class="text-center text-2xl text-purple font-bold">Tags</p>
-            <div class="m-4">
-              <template v-if="tags.length > 0">
-                <div v-for="data in tags" :key="data.id" class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
-                  <p class="text-purple w-1/2">{{data.title}}</p>
-                  <div class="flex flex-wrap justify-end w-1/2">
-                    <!-- <img src="/images/icons/garbage@3x.png" alt="Icon" class="h-6" @click="deleteTag(data)"> -->
-                  </div>
-                </div>
-              </template>
-              <div v-else class="flex flex-wrap justify-center text-center content-center w-full border-gray-500 mb-4">
-                <p class="text-purple w-full">There is no tags added</p>
+                <p v-if="contract==''" class="text-purple font-bold">No informaton added yet.</p>
               </div>
             </div>
           </div>
-          <div class="w-1/2 shadow-lg ml-5 border border-gray-300 overflow-auto">
-            <p class="text-center text-2xl text-purple font-bold">Comments</p>
-            <div class="m-4">
-              <template v-if="comments.length > 0">
-                <div v-for="data in comments" :key="data.id" class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
-                  <p class="text-purple w-1/2">{{data.comment}}</p>
-                  <div class="flex flex-wrap justify-end w-1/2">
-                    <!-- <img src="/images/icons/garbage@3x.png" alt="Icon" class="h-6" @click="deleteTag(data)"> -->
-                  </div>
-                </div>
-              </template>
-              <div v-else class="flex flex-wrap justify-center text-center content-center w-full border-gray-500 mb-4">
-                <p class="text-purple w-full">There is no comments added</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="custom-video-wrap ml-5 shadow-lg border border-gray-300">
-          <h2>Audition Videos</h2>
-            <ul class="custom-video-list" :class="{'single-video-list': isShowAuditionVideo}">
-              <li   v-for="data in auditionList"
+          <div class="flex w-full h-96 mt-16">
+            <div class="w-1/2 shadow-lg ml-5 border border-gray-300 overflow-auto">
+              <p class="text-center text-2xl text-purple font-bold">Tags</p>
+              <div class="m-4">
+                <template v-if="tags.length > 0">
+                  <div
+                    v-for="data in tags"
                     :key="data.id"
-                    @click="getVideoList(data)"
-                    class="">
+                    class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4"
+                  >
+                    <p class="text-purple w-1/2">{{data.title}}</p>
+                    <div class="flex flex-wrap justify-end w-1/2">
+                      <!-- <img src="/images/icons/garbage@3x.png" alt="Icon" class="h-6" @click="deleteTag(data)"> -->
+                    </div>
+                  </div>
+                </template>
+                <div
+                  v-else
+                  class="flex flex-wrap justify-center text-center content-center w-full border-gray-500 mb-4"
+                >
+                  <p class="text-purple w-full">There is no tags added</p>
+                </div>
+              </div>
+            </div>
+            <div class="w-1/2 shadow-lg ml-5 border border-gray-300 overflow-auto">
+              <p class="text-center text-2xl text-purple font-bold">Comments</p>
+              <div class="m-4">
+                <template v-if="comments.length > 0">
+                  <div
+                    v-for="data in comments"
+                    :key="data.id"
+                    class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4"
+                  >
+                    <p class="text-purple w-1/2">{{data.comment}}</p>
+                    <div class="flex flex-wrap justify-end w-1/2">
+                      <!-- <img src="/images/icons/garbage@3x.png" alt="Icon" class="h-6" @click="deleteTag(data)"> -->
+                    </div>
+                  </div>
+                </template>
+                <div
+                  v-else
+                  class="flex flex-wrap justify-center text-center content-center w-full border-gray-500 mb-4"
+                >
+                  <p class="text-purple w-full">There is no comments added</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="custom-video-wrap ml-5 shadow-lg border border-gray-300">
+            <h2>Audition Videos</h2>
+            <ul class="custom-video-list" :class="{'single-video-list': isShowAuditionVideo}">
+              <li v-for="data in auditionList" :key="data.id" @click="getVideoList(data)" class>
                 <div class="video-info-wrap">
                   <strong>{{ data.title }}</strong>
                   <p>{{ data.videos }} Videos</p>
-                  <figure><img :src="data.cover" alt="Icon" class="h-10" /></figure>
+                  <figure>
+                    <img :src="data.cover" alt="Icon" class="h-10" />
+                  </figure>
                 </div>
               </li>
             </ul>
+          </div>
         </div>
       </div>
-    </div>
-  <multipane-resizer class="mt-96 bg-purple h-20" v-show="isShowAuditionVideo"></multipane-resizer>
-  <div v-show="isShowAuditionVideo" class="pane relative" :style="{ flexGrow: 1 }">
-
-
-
-     <div
-        v-show="isShowAuditionVideo"
-        :class="{'hidden': !isShowAuditionVideo}"
-        class="absolute flex flex-wrap w-full justify-center align-content-start minh-100vh"
-      >
-
-      <div class="container flex w-full mt-2">
+      <multipane-resizer class="mt-96 bg-purple h-20" v-show="isShowAuditionVideo"></multipane-resizer>
+      <div v-show="isShowAuditionVideo" class="pane relative" :style="{ flexGrow: 1 }">
+        <div
+          v-show="isShowAuditionVideo"
+          :class="{'hidden': !isShowAuditionVideo}"
+          class="absolute flex flex-wrap w-full justify-center align-content-start minh-100vh"
+        >
           <div class="container flex w-full mt-2">
-            <div class="custom-side-back">
-              <div class="flex content-around w-100 items-center relative cmb-10">
-                <img
-                  src="/images/icons/left_arrow.png"
-                  class="absolute left-0"
-                  @click="resetOptions"
-                />
-                <h1 class="text-purple text-lg font-bold">Audition Videos</h1>
-              </div>
+            <div class="container flex w-full mt-2">
+              <div class="custom-side-back">
+                <div class="flex content-around w-100 items-center relative cmb-10">
+                  <img
+                    src="/images/icons/left_arrow.png"
+                    class="absolute left-0"
+                    @click="resetOptions"
+                  />
+                  <h1 class="text-purple text-lg font-bold">Audition Videos</h1>
+                </div>
 
-              <div
-                v-for="data in videos"
-                :key="data.id"
-                class="flex m-3 content-center w-full h-16 flex justify-center custom-side-video-list"
-              >
-                <div :class="[data.thumbnail ? 'flex justify-center custom-video-list-w button-detail rounded-lg my-1' : 'flex justify-center w-full h-80 button-detail rounded-lg']">
-                  <div class="flex flex-col flex-none items-center justify-center text-white flex-wrap w-1/5 h-14" v-if="data.thumbnail">
-                    <img :src="data.thumbnail" alt="Icon" class="h-full w-full image-rounded" />
-                  </div>
-                  <div class="flex justify-center content-center flex-wrap w-1/2 h-full" v-else>
-                    <img src="/images/icons/mp4Icon@3x.png" alt="Icon" class="h-10" />
-                  </div>
+                <div
+                  v-for="data in videos"
+                  :key="data.id"
+                  class="flex m-3 content-center w-full h-16 flex justify-center custom-side-video-list"
+                >
                   <div
-                    class="flex content-center items-center relative w-1/5 h-16 bg-white mp-box custom-side-video-info"
+                    :class="[data.thumbnail ? 'flex justify-center custom-video-list-w button-detail rounded-lg my-1' : 'flex justify-center w-full h-80 button-detail rounded-lg']"
                   >
-                    <span class="text-center cus-spn-cls text-purple font-bold w-full">{{ data.name }}</span>
-                    <ul id="navigation">
-                      <li>
-                        <a
-                          href="javascript:void(0);"
-                          :class="{ active }"
-                          @click="openMenu(data.id)"
-                        >
-                          <img
-                            src="/images/icons/more-icon@3x.png"
-                            alt="Icon"
-                            class="h-6 absolute right-0 bottom-0"
-                          />
-                        </a>
-                        <div class="dropdown cus-dropdown submanu" v-bind:class="{ 'isOpen' : openId==data.id}">
-                          <ul class="submanu-content">
-                            <li>
-                              <a :href="data.url" title="Share" target="_blank">Share</a>
-                            </li>
-                            <li>
-                              <a :href="data.url" title="Open in" target="_blank">Open in</a>
-                            </li>
-                            <li>
-                              <a
-                                href="javascript:void(0);"
-                                @click="renameAuditionVideo(data)"
-                                title="Rename"
-                              >Rename</a>
-                            </li>
-                          </ul>
-                        </div>
-                      </li>
-                    </ul>
+                    <div
+                      class="flex flex-col flex-none items-center justify-center text-white flex-wrap w-1/5 h-14"
+                      v-if="data.thumbnail"
+                    >
+                      <img :src="data.thumbnail" alt="Icon" class="h-full w-full image-rounded" />
+                    </div>
+                    <div class="flex justify-center content-center flex-wrap w-1/2 h-full" v-else>
+                      <img src="/images/icons/mp4Icon@3x.png" alt="Icon" class="h-10" />
+                    </div>
+                    <div
+                      class="flex content-center items-center relative w-1/5 h-16 bg-white mp-box custom-side-video-info"
+                    >
+                      <span
+                        class="text-center cus-spn-cls text-purple font-bold w-full"
+                      >{{ data.name }}</span>
+                      <ul id="navigation">
+                        <li>
+                          <a
+                            href="javascript:void(0);"
+                            :class="{ active }"
+                            @click="openMenu(data.id)"
+                          >
+                            <img
+                              src="/images/icons/more-icon@3x.png"
+                              alt="Icon"
+                              class="h-6 absolute right-0 bottom-0"
+                            />
+                          </a>
+                          <div
+                            class="dropdown cus-dropdown submanu"
+                            v-bind:class="{ 'isOpen' : openId==data.id}"
+                          >
+                            <ul class="submanu-content">
+                              <li>
+                                <a :href="data.url" title="Share" target="_blank">Share</a>
+                              </li>
+                              <li>
+                                <a :href="data.url" title="Open in" target="_blank">Open in</a>
+                              </li>
+                              <li>
+                                <a
+                                  href="javascript:void(0);"
+                                  @click="renameAuditionVideo(data)"
+                                  title="Rename"
+                                >Rename</a>
+                              </li>
+                            </ul>
+                          </div>
+                        </li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+      </div>
+    </multipane>
 
-  </div>
-  </div>
-  </multipane>
-
-  <modal :width="500" height="200" :adaptive="true" name="infoModal" class="custom-event-popup">
-    <button @click="$modal.hide('infoModal')" class="popup-close-btn">
-      <i class="material-icons" style="font-size: 35px;color: black;">clear</i>
-    </button>
-    <div class="m-4">
-      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
-        <strong class="text-purple w-full">Stage Name</strong>
-        <p class="text-purple w-full">{{tuser.details ? tuser.details.stage_name : ""}}</p>
-      </div>
-    </div>
-    <div class="m-4">
-      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
-        <strong class="text-purple w-full">Professional/ Working Title</strong>
-        <p class="text-purple w-full">{{tuser.details ? tuser.details.profesion : ""}}</p>
-      </div>
-    </div>
-  </modal>
-  <modal :width="500" height="330" :adaptive="true" name="creditModal">
-    <button @click="$modal.hide('creditModal')" class="popup-close-btn">
-      <i class="material-icons" style="font-size: 35px;color: black;">clear</i>
-    </button>
-    <div class="m-4">
-      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
-        <strong class="text-purple w-full">Production Type</strong>
-        <p class="text-purple w-full">{{tuser.credits && tuser.credits[0] ? tuser.credits[0].type : ""}}</p>
-      </div>
-    </div>
-    <div class="m-4">
-      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
-        <strong class="text-purple w-full">Project Name</strong>
-        <p class="text-purple w-full">{{tuser.credits && tuser.credits[0] ? tuser.credits[0].name : ""}}</p>
-      </div>
-    </div>
-    <div class="m-4">
-      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
-        <strong class="text-purple w-full">Role</strong>
-        <p class="text-purple w-full">{{tuser.credits && tuser.credits[0] ? tuser.credits[0].rol : ""}}</p>
-      </div>
-    </div>
-    <div class="m-4">
-      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
-        <strong class="text-purple w-full">Director/Production Company</strong>
-        <p class="text-purple w-full">{{tuser.credits && tuser.credits[0] ? tuser.credits[0].production : ""}}</p>
-      </div>
-    </div>
-  </modal>
-  <modal :width="500" height="390" :adaptive="true" name="eduTraModal">
-    <button @click="$modal.hide('eduTraModal')" class="popup-close-btn">
-      <i class="material-icons" style="font-size: 35px;color: black;">clear</i>
-    </button>
-    <div class="m-4">
-      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
-        <strong class="text-purple w-full">School</strong>
-        <p class="text-purple w-full">{{tuser.education && tuser.education[0] ? tuser.education[0].school : ""}}</p>
-      </div>
-    </div>
-    <div class="m-4">
-      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
-        <strong class="text-purple w-full">Degree/Cource</strong>
-        <p class="text-purple w-full">{{tuser.education && tuser.education[0] ? tuser.education[0].degree : ""}}</p>
-      </div>
-    </div>
-    <div class="m-4">
-      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
-        <strong class="text-purple w-full">Instructor</strong>
-        <p class="text-purple w-full">{{tuser.education && tuser.education[0] ? tuser.education[0].instructor : ""}}</p>
-      </div>
-    </div>
-    <div class="m-4">
-      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
-        <strong class="text-purple w-full">Location</strong>
-        <p class="text-purple w-full">{{tuser.education && tuser.education[0] ? tuser.education[0].location : ""}}</p>
-      </div>
-    </div>
-    <div class="m-4">
-      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
-        <strong class="text-purple w-full">Year</strong>
-        <p class="text-purple w-full">{{tuser.education && tuser.education[0] ? tuser.education[0].year : ""}}</p>
-      </div>
-    </div>
-  </modal>
-  <modal :width="500" height="390" :adaptive="true" name="appearance">
-    <button @click="$modal.hide('appearance')" class="popup-close-btn">
-      <i class="material-icons" style="font-size: 35px;color: black;">clear</i>
-    </button>
-    <div class="m-4">
-      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
-        <strong class="text-purple w-full">Height</strong>
-        <p class="text-purple w-full">{{tuser.aparence ? tuser.aparence.height : ""}}</p>
-      </div>
-    </div>
-    <div class="m-4">
-      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
-        <strong class="text-purple w-full">Weight</strong>
-        <p class="text-purple w-full">{{tuser.aparence ? tuser.aparence.weight : ""}}</p>
-      </div>
-    </div>
-    <div class="m-4">
-      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
-        <strong class="text-purple w-full">Hair Color</strong>
-        <p class="text-purple w-full">{{tuser.aparence ? tuser.aparence.hair : ""}}</p>
-      </div>
-    </div>
-    <div class="m-4">
-      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
-        <strong class="text-purple w-full">Eye Color</strong>
-        <p class="text-purple w-full">{{tuser.aparence ? tuser.aparence.eyes : ""}}</p>
-      </div>
-    </div>
-    <div class="m-4">
-      <div class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4">
-        <strong class="text-purple w-full">Race</strong>
-        <p class="text-purple w-full">{{tuser.aparence ? tuser.aparence.race : ""}}</p>
-      </div>
-    </div>
-  </modal>
-
-  <modal class="flex flex-col w-full items-center" :width="360" :height="300" name="modal_file_name_manage">
-        <div class="flex flex-col items-center text-purple text-lg mt-5 mb-2">
-                <h1>File Rename</h1>
+    <modal :width="500" height="200" :adaptive="true" name="infoModal" class="custom-event-popup">
+      <button @click="$modal.hide('infoModal')" class="popup-close-btn">
+        <i class="material-icons" style="font-size: 35px;color: black;">clear</i>
+      </button>
+      <div class="m-4">
+        <div
+          class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4"
+        >
+          <strong class="text-purple w-full">Stage Name</strong>
+          <p class="text-purple w-full">{{tuser.details ? tuser.details.stage_name : ""}}</p>
         </div>
-        <div class="content my-info-content" >         
-          <section class="image-preview-area">           
-            <div class="flex justify-center mb-4 items-center px-3 w-full">
-              <div class="w-full  ml-4 text-purple px-2">
-                  <base-input
-                      v-model="videoFileName"
-                      :custom-classes="['border border-b border-gray-300']"
-                      name="file_name"
-                      placeholder="File Name"
-                      data-vv-as="file name"
-                  />
+      </div>
+      <div class="m-4">
+        <div
+          class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4"
+        >
+          <strong class="text-purple w-full">Professional/ Working Title</strong>
+          <p class="text-purple w-full">{{tuser.details ? tuser.details.profesion : ""}}</p>
+        </div>
+      </div>
+    </modal>
+
+    <modal
+      class="flex flex-col w-full items-center modal-height-90 custom-event-popup"
+      :width="500"
+      name="docModal"
+    >
+      <div>
+        <div class="flex flex-col w-full shadow-md overflow-hidden p-3">
+          <h1 class="text-purple text-lg font-bold">Resume & Docs</h1>
+          <div class>
+            <div
+              v-for="documentos in this.docs"
+              :key="documentos.id"
+              class="flex w-full shadow-lg mb-3 height-73"
+            >
+              <div class="flex-col bg-purple mt-1 music-icon-parent music-border">
+                <img
+                  src="/images/icons/doc-icon3x.png"
+                  alt="Icon"
+                  class="custo-static-icon music-icon overflow-hidden"
+                />
+                <span class="text-lg truncate text-white uppercase">PDF</span>
+              </div>
+              <div
+                class="flex h-100 content-center items-center relative w-full h-full bg-white mp-box"
+              >
+                <span class="text-2xl truncate-custom mb-0 text-center ml-2">{{ documentos.name }}</span>
+
+                <ul id="navigation">
+                  <li>
+                    <a
+                      href="javascript:void(0);"
+                      :class="{ active }"
+                      class="more-icon-a align-right cursor-pointer"
+                      title="More"
+                      @click="openMenu(documentos.id)"
+                    >
+                      <img
+                        src="/images/icons/more-icon@3x.png"
+                        alt="Icon"
+                        class="h-6 absolute right-0 bottom-0"
+                      />
+                    </a>
+                    <div
+                      class="dropdown cus-dropdown submanu"
+                      v-bind:class="{ 'isOpen' : openId==documentos.id}"
+                    >
+                      <ul class="submanu-content">
+                        <li>
+                          <a :href="documentos.url" title="Open in" target="_blank">Open in</a>
+                        </li>
+                      </ul>
+                    </div>
+                  </li>
+                </ul>
               </div>
             </div>
-            <div class="container flex w-full mt-3 cursor-pointer">
-              <div class="flex w-full text-center justify-center flex-wrap actions">
-                  <a
-                  href="#"
-                  role="button"
-                  @click.prevent="mediaFileRenameDone"
-                  >
-                  Done
-                  </a>
-                  <a
-                  href="#"
-                  role="button"
-                  @click.prevent="mediaFileRenameCancel"
-                  >
-                  Cancel
-                  </a>
+            <span v-if="!this.docs.length">You don't have any files added.</span>
+          </div>
+        </div>
+      </div>
+    </modal>
+
+    <modal
+      class="flex flex-col w-full items-center modal-height-90 custom-event-popup"
+      :width="650"
+      name="videoModal"
+    >
+      <div>
+        <div class="flex flex-col w-full shadow-md overflow-hidden p-3">
+          <h1 class="text-purple text-lg font-bold">Videos</h1>
+          <div class>
+            <div
+              v-for="video in this.videos"
+              :key="video.id"
+              class="w-full rounded-lg shadow-lg mb-3"
+            >
+              <div class="flex-col" v-if="isValidYoutubeLink(video.url)">
+                <youtube :video-id="getYoutbeId(video.url)"></youtube>
+              </div>
+              <div class="flex-col" v-else>
+                <iframe
+                  class="yt_player_iframe w-full h-iframe"
+                  id="vi"
+                  :src="`${video.url}?rel=0&cc_load_policy=1`"
+                  frameborder="0"
+                  :autoplay="videoAutoPlay"
+                  allow="accelerometer; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen
+                />
+              </div>
+              <div class="flex relative flex-wrap w-full h-full bg-purple video-player-border">
+                <span
+                  class="text-2xl truncate text-left text-white ml-2 pt-2 pb-2 video-name"
+                >{{ video.name }}</span>
+
+                <ul id="navigation">
+                  <li>
+                    <a
+                      href="javascript:void(0);"
+                      :class="{ active }"
+                      class="more-icon-a align-right cursor-pointer"
+                      title="More"
+                      @click="openMenu(video.id)"
+                    >
+                      <img
+                        src="/images/icons/more-icon-white@3x.png"
+                        alt="Icon"
+                        class="h-6 absolute right-0 bottom-0"
+                      />
+                    </a>
+                    <div
+                      class="dropdown cus-dropdown submanu"
+                      v-bind:class="{ 'isOpen' : openId==video.id}"
+                    >
+                      <ul class="submanu-content">
+                        <li>
+                          <a :href="video.url" title="Open in" target="_blank">Open in</a>
+                        </li>
+                      </ul>
+                    </div>
+                  </li>
+                </ul>
               </div>
             </div>
-          </section>
+            <span v-if="!this.videos.length">You don't have any files added.</span>
+          </div>
         </div>
-      </modal>
+      </div>
+    </modal>
 
+    <modal
+      class="flex flex-col w-full items-center modal-height-90 custom-event-popup"
+      :width="500"
+      name="audioModal"
+    >
+      <div>
+        <div class="flex flex-col w-full shadow-md overflow-hidden p-3">
+          <h1 class="text-purple text-lg font-bold">Music</h1>
+          <div class>
+            <div
+              v-for="music in this.music"
+              :key="music.id"
+              class="flex w-full shadow-lg mb-3 height-73 bg-purple music-border"
+            >
+              <div class="flex-col mt-1 music-icon-parent">
+                <img
+                  src="/images/icons/music@2x.png"
+                  alt="Icon"
+                  class="custo-static-icon music-icon overflow-hidden"
+                />
+                <span class="text-lg truncate text-white uppercase">MP3</span>
+              </div>
+              <div
+                class="flex h-100 content-center items-center relative w-full h-full bg-white mp-box"
+              >
+                <span
+                  class="text-2xl truncate-custom mb-0 text-center text-purple ml-2"
+                >{{ music.name }}</span>
 
-</div>
+                <ul id="navigation">
+                  <li>
+                    <a
+                      href="javascript:void(0);"
+                      :class="{ active }"
+                      class="more-icon-a align-right cursor-pointer"
+                      title="More"
+                      @click="openMenu(music.id)"
+                    >
+                      <img
+                        src="/images/icons/more-icon@3x.png"
+                        alt="Icon"
+                        class="h-6 absolute right-0 bottom-0"
+                      />
+                    </a>
+                    <div
+                      class="dropdown cus-dropdown submanu"
+                      v-bind:class="{ 'isOpen' : openId==music.id}"
+                    >
+                      <ul class="submanu-content">
+                        <li>
+                          <a :href="music.url" title="Open in" target="_blank">Open in</a>
+                        </li>
+                      </ul>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <span v-if="!this.music.length">You don't have any files added.</span>
+          </div>
+        </div>
+      </div>
+    </modal>
 
+    <modal
+      class="flex flex-col w-full items-center modal-height-90 custom-event-popup"
+      :width="500"
+      name="imageModal"
+    >
+      <div>
+        <div class="flex flex-col w-full shadow-md overflow-hidden p-3">
+          <h1 class="text-purple text-lg font-bold">Photos</h1>
+          <div class>
+            <div
+              v-for="photo in this.photos"
+              :key="photo.id"
+              class="flex w-full shadow-lg mb-3 height-73"
+            >
+              <div class="flex-col">
+                <img
+                  class="custom-photo-icon image-rounded"
+                  v-lazy="photo.thumbnail ? photo.thumbnail : photo.url"
+                  alt="image"
+                />
+              </div>
+              <div
+                class="flex h-100 content-center items-center relative w-full h-full bg-white mp-box"
+              >
+                <span
+                  class="text-2xl truncate-custom mb-0 text-center text-purple ml-2"
+                >{{ photo.name }}</span>
 
+                <ul id="navigation">
+                  <li>
+                    <a
+                      href="javascript:void(0);"
+                      :class="{ active }"
+                      class="more-icon-a align-right cursor-pointer"
+                      title="More"
+                      @click="openMenu(photo.id)"
+                    >
+                      <img
+                        src="/images/icons/more-icon@3x.png"
+                        alt="Icon"
+                        class="h-6 absolute right-0 bottom-0"
+                      />
+                    </a>
+                    <div
+                      class="dropdown cus-dropdown submanu"
+                      v-bind:class="{ 'isOpen' : openId==photo.id}"
+                    >
+                      <ul class="submanu-content">
+                        <li>
+                          <a :href="photo.url" title="Open in" target="_blank">Open in</a>
+                        </li>
+                      </ul>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <span v-if="!this.photos.length">You don't have any files added.</span>
+          </div>
+        </div>
+      </div>
+    </modal>
+
+    <modal
+      class="flex flex-col w-full items-center modal-height-90 custom-event-popup"
+      :width="500"
+      name="sheetModal"
+    >
+      <div>
+        <div class="flex flex-col w-full shadow-md overflow-hidden p-3">
+          <h1 class="text-purple text-lg font-bold">Sheet Music</h1>
+          <div class>
+            <div
+              v-for="sheet in this.sheets"
+              :key="sheet.id"
+              class="flex w-full shadow-lg mb-3 height-73"
+            >
+              <div class="flex-col bg-purple mt-1 music-icon-parent music-border">
+                <img
+                  src="/images/icons/doc-icon3x.png"
+                  alt="Icon"
+                  class="custo-static-icon music-icon overflow-hidden"
+                />
+                <span class="text-lg text-white uppercase">PDF</span>
+              </div>
+              <div
+                class="flex h-100 content-center items-center relative w-full h-full bg-white mp-box"
+              >
+                <span
+                  class="text-2xl truncate-custom mb-0 text-center text-purple ml-2"
+                >{{ sheet.name }}</span>
+
+                <ul id="navigation">
+                  <li>
+                    <a
+                      href="javascript:void(0);"
+                      :class="{ active }"
+                      class="more-icon-a align-right cursor-pointer"
+                      title="More"
+                      @click="openMenu(sheet.id)"
+                    >
+                      <img
+                        src="/images/icons/more-icon@3x.png"
+                        alt="Icon"
+                        class="h-6 absolute right-0 bottom-0"
+                      />
+                    </a>
+                    <div
+                      class="dropdown cus-dropdown submanu"
+                      v-bind:class="{ 'isOpen' : openId==sheet.id}"
+                    >
+                      <ul class="submanu-content">
+                        <li>
+                          <a :href="sheet.url" title="Open in" target="_blank">Open in</a>
+                        </li>
+                      </ul>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <span v-if="!this.sheets.length">You don't have any files added.</span>
+          </div>
+        </div>
+      </div>
+    </modal>
+
+    <!-- <modal
+      class="flex flex-col w-full items-center modal-height-90 custom-event-popup"
+      :width="500"
+      name="listModal"
+    >
+      <div>
+        <div class="flex flex-col w-full shadow-md overflow-hidden p-3">
+          <h1 class="text-purple text-lg font-bold">Audition Materials</h1>
+          <div class="relative w-2/5 pb-4">
+            <div
+              v-for="materials in this.ma"
+              :key="materials.id"
+              class="flex w-full rounded-lg shadow-lg overflow-hidden mb-3 cursor-pointer"
+              @click="materilaDocumentView(materials)"
+            >
+              <div class="flex-col">
+                <img class="custom-photo-icon object-cover" v-lazy="materials.cover" alt="Cover" />
+              </div>
+              <div class="flex-col p-4">
+                <span class="text-2xl truncate mb-3 audition-extension">{{ materials.name }}</span>
+              </div>
+            </div>
+            <span v-if="!this.ma.length">You don't have any audition materials.</span>
+          </div>
+        </div>
+      </div>
+    </modal>-->
+
+    <modal :width="500" height="330" :adaptive="true" name="creditModal">
+      <button @click="$modal.hide('creditModal')" class="popup-close-btn">
+        <i class="material-icons" style="font-size: 35px;color: black;">clear</i>
+      </button>
+      <div class="m-4">
+        <div
+          class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4"
+        >
+          <strong class="text-purple w-full">Production Type</strong>
+          <p
+            class="text-purple w-full"
+          >{{tuser.credits && tuser.credits[0] ? tuser.credits[0].type : ""}}</p>
+        </div>
+      </div>
+      <div class="m-4">
+        <div
+          class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4"
+        >
+          <strong class="text-purple w-full">Project Name</strong>
+          <p
+            class="text-purple w-full"
+          >{{tuser.credits && tuser.credits[0] ? tuser.credits[0].name : ""}}</p>
+        </div>
+      </div>
+      <div class="m-4">
+        <div
+          class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4"
+        >
+          <strong class="text-purple w-full">Role</strong>
+          <p
+            class="text-purple w-full"
+          >{{tuser.credits && tuser.credits[0] ? tuser.credits[0].rol : ""}}</p>
+        </div>
+      </div>
+      <div class="m-4">
+        <div
+          class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4"
+        >
+          <strong class="text-purple w-full">Director/Production Company</strong>
+          <p
+            class="text-purple w-full"
+          >{{tuser.credits && tuser.credits[0] ? tuser.credits[0].production : ""}}</p>
+        </div>
+      </div>
+    </modal>
+    <modal :width="500" height="390" :adaptive="true" name="eduTraModal">
+      <button @click="$modal.hide('eduTraModal')" class="popup-close-btn">
+        <i class="material-icons" style="font-size: 35px;color: black;">clear</i>
+      </button>
+      <div class="m-4">
+        <div
+          class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4"
+        >
+          <strong class="text-purple w-full">School</strong>
+          <p
+            class="text-purple w-full"
+          >{{tuser.education && tuser.education[0] ? tuser.education[0].school : ""}}</p>
+        </div>
+      </div>
+      <div class="m-4">
+        <div
+          class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4"
+        >
+          <strong class="text-purple w-full">Degree/Cource</strong>
+          <p
+            class="text-purple w-full"
+          >{{tuser.education && tuser.education[0] ? tuser.education[0].degree : ""}}</p>
+        </div>
+      </div>
+      <div class="m-4">
+        <div
+          class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4"
+        >
+          <strong class="text-purple w-full">Instructor</strong>
+          <p
+            class="text-purple w-full"
+          >{{tuser.education && tuser.education[0] ? tuser.education[0].instructor : ""}}</p>
+        </div>
+      </div>
+      <div class="m-4">
+        <div
+          class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4"
+        >
+          <strong class="text-purple w-full">Location</strong>
+          <p
+            class="text-purple w-full"
+          >{{tuser.education && tuser.education[0] ? tuser.education[0].location : ""}}</p>
+        </div>
+      </div>
+      <div class="m-4">
+        <div
+          class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4"
+        >
+          <strong class="text-purple w-full">Year</strong>
+          <p
+            class="text-purple w-full"
+          >{{tuser.education && tuser.education[0] ? tuser.education[0].year : ""}}</p>
+        </div>
+      </div>
+    </modal>
+    <modal :width="500" height="390" :adaptive="true" name="appearance">
+      <button @click="$modal.hide('appearance')" class="popup-close-btn">
+        <i class="material-icons" style="font-size: 35px;color: black;">clear</i>
+      </button>
+      <div class="m-4">
+        <div
+          class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4"
+        >
+          <strong class="text-purple w-full">Height</strong>
+          <p class="text-purple w-full">{{tuser.aparence ? tuser.aparence.height : ""}}</p>
+        </div>
+      </div>
+      <div class="m-4">
+        <div
+          class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4"
+        >
+          <strong class="text-purple w-full">Weight</strong>
+          <p class="text-purple w-full">{{tuser.aparence ? tuser.aparence.weight : ""}}</p>
+        </div>
+      </div>
+      <div class="m-4">
+        <div
+          class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4"
+        >
+          <strong class="text-purple w-full">Hair Color</strong>
+          <p class="text-purple w-full">{{tuser.aparence ? tuser.aparence.hair : ""}}</p>
+        </div>
+      </div>
+      <div class="m-4">
+        <div
+          class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4"
+        >
+          <strong class="text-purple w-full">Eye Color</strong>
+          <p class="text-purple w-full">{{tuser.aparence ? tuser.aparence.eyes : ""}}</p>
+        </div>
+      </div>
+      <div class="m-4">
+        <div
+          class="flex flex-wrap justify-center text-left content-center w-full border-b-2 border-gray-500 mb-4"
+        >
+          <strong class="text-purple w-full">Race</strong>
+          <p class="text-purple w-full">{{tuser.aparence ? tuser.aparence.race : ""}}</p>
+        </div>
+      </div>
+    </modal>
+
+    <modal
+      class="flex flex-col w-full items-center"
+      :width="360"
+      :height="300"
+      name="modal_file_name_manage"
+    >
+      <div class="flex flex-col items-center text-purple text-lg mt-5 mb-2">
+        <h1>File Rename</h1>
+      </div>
+      <div class="content my-info-content">
+        <section class="image-preview-area">
+          <div class="flex justify-center mb-4 items-center px-3 w-full">
+            <div class="w-full ml-4 text-purple px-2">
+              <base-input
+                v-model="videoFileName"
+                :custom-classes="['border border-b border-gray-300']"
+                name="file_name"
+                placeholder="File Name"
+                data-vv-as="file name"
+              />
+            </div>
+          </div>
+          <div class="container flex w-full mt-3 cursor-pointer">
+            <div class="flex w-full text-center justify-center flex-wrap actions">
+              <a href="#" role="button" @click.prevent="mediaFileRenameDone">Done</a>
+              <a href="#" role="button" @click.prevent="mediaFileRenameCancel">Cancel</a>
+            </div>
+          </div>
+        </section>
+      </div>
+    </modal>
+  </div>
 </template>
 
 <script>
-
-import { mapActions, mapState, mapGetters } from 'vuex';
-import { Multipane, MultipaneResizer } from 'vue-multipane';
-import { Calendar } from 'vue-sweet-calendar'
-import axios from 'axios';
+import { mapActions, mapState, mapGetters } from "vuex";
+import Vue from "vue";
+import { Multipane, MultipaneResizer } from "vue-multipane";
+import { Calendar } from "vue-sweet-calendar";
+import axios from "axios";
 import moment from "moment";
-import 'vue-sweet-calendar/dist/SweetCalendar.css'
-import { async } from 'q';
+import Loading from "vue-loading-overlay";
+import "vue-loading-overlay/dist/vue-loading.css";
+import "vue-sweet-calendar/dist/SweetCalendar.css";
+import { async } from "q";
 import TokenService from "../../services/core/TokenService";
 import DEFINE from "@/utils/const.js";
+import VueYouTubeEmbed from "vue-youtube-embed";
+import { getIdFromURL, getTimeFromURL } from "vue-youtube-embed";
+
+Vue.use(VueYouTubeEmbed);
+Vue.use(VueYouTubeEmbed, { global: false });
+
+const $ = require("jquery");
+
+window.$ = $;
 
 export default {
   // ...
   components: {
     Multipane,
     MultipaneResizer,
-    Calendar
+    Calendar,
+    Loading,
   },
   props: ["image", "code"],
   data() {
     return {
-      isLoading: true,
-      rol:'',
-      emoji:3,
+      isLoading: false,
+      fullPage: true,
+      rol: "",
+      emoji: 3,
       attrs: [],
       callback: 1,
-      favorite:0,
-      slot:'',
-      dates:[],
+      favorite: 0,
+      slot: "",
+      dates: [],
       selectAttribute: {
         bar: true,
-        color: 'red'
+        color: "red",
       },
-      workon:1,
-      tags:[],
-      currentUser:[],
-      form:{},
+      workon: 1,
+      tags: [],
+      currentUser: [],
+      form: {},
       invitation: {
         adding: false,
-        email: '',
+        email: "",
       },
-      auditionList:[],
-      isShowAuditionVideo : false,
+      auditionList: [],
+      isShowAuditionVideo: false,
       active: false,
-      videos : [],
+      video: [],
+      comments: [],
+      base_url: "",
+      encCode: "",
+      videoFileName: "",
+      currentVideo: null,
+      currentAdition: null,
+      user_placeholder: DEFINE.role_placeholder,
+      loading_placeholder: DEFINE.loading_placeholder,
+      docs: [],
+      videos: [],
+      music: [],
+      photos: [],
+      sheets: [],
+      materialList: [],
+      videoAutoPlay : false,
       openId: "",
-      comments:[],
-      base_url : '',
-      encCode : '',
-      videoFileName : '',
-      currentVideo : null,
-      currentAdition : null,
-      user_placeholder : DEFINE.role_placeholder,
-      loading_placeholder : DEFINE.loading_placeholder
+      isOpen: false
     };
   },
   computed: {
-    ...mapState('audition', ['audition', 'userList', 'teamFeedback']),
-    ...mapState('user', ['user']),
-    ...mapState('profile', {profile:'user', tuser:'tuser', calendar:'calendar', contract:'contract'}),
+    ...mapState("audition", ["audition", "userList", "teamFeedback"]),
+    ...mapState("user", ["user"]),
+    ...mapState("profile", {
+      profile: "user",
+      tuser: "tuser",
+      calendar: "calendar",
+      contract: "contract",
+    }),
   },
   async mounted() {
-
     this.image;
-    
+
     await this.fetchProfile();
     await this.myCalendar(this.$route.params.id);
     await this.fetchContract(this.$route.params.id);
     await this.fetchData(this.$route.params.id);
 
     this.asignEvents();
-    
-    let { data: { data } } = await axios.get(`/t/performers/tags?user=${this.$route.params.id}`);
+
+    let {
+      data: { data },
+    } = await axios.get(`/t/performers/tags?user=${this.$route.params.id}`);
     this.tags = data;
-    let commentsData = await axios.get(`/t/performers/comments?user=${this.$route.params.id}`);
-    if(commentsData.status == 200){
+    let commentsData = await axios.get(
+      `/t/performers/comments?user=${this.$route.params.id}`
+    );
+    if (commentsData.status == 200) {
       this.comments = commentsData.data.data;
-    }else{
+    } else {
       this.comments = [];
     }
-    let getAuditionList = await axios.get(`/t/auditions/list/${this.$route.params.id}`);
-    if(getAuditionList.data.data.length){
+    let getAuditionList = await axios.get(
+      `/t/auditions/list/${this.$route.params.id}`
+    );
+    if (getAuditionList.data.data.length) {
       this.auditionList = getAuditionList.data.data;
-    }    
-    
-    
+    }
+
     // debugger;
   },
-  created(){
+  created() {
     this.base_url = window.location.origin;
     this.encCode = this.$route.params.code;
-
   },
   methods: {
-    ...mapActions('user', ['fetch']),
-    ...mapActions('audition', ['fetchAuditionData', 'fetchUserList', 'fetchTeamFeedback','deleteVideo', 'renameVideo']),
-    ...mapActions('profile', {fetchProfile: "fetch", fetchData:"fetchData", myCalendar:'myCalendar', fetchContract:'fetchContract'}),
+    ...mapActions("user", ["fetch"]),
+    ...mapActions("audition", [
+      "fetchAuditionData",
+      "fetchUserList",
+      "fetchTeamFeedback",
+      "deleteVideo",
+      "renameVideo",
+    ]),
+    ...mapActions("profile", {
+      fetchProfile: "fetch",
+      fetchData: "fetchData",
+      myCalendar: "myCalendar",
+      fetchContract: "fetchContract",
+    }),
     goToday() {
-      this.$refs.calendar.goToday()
+      this.$refs.calendar.goToday();
     },
-    asignEvents(){
-        var finalList = new Array();
-        if(this.calendar && this.calendar.length > 0){
-          this.calendar.map(function(value) {
+    asignEvents() {
+      var finalList = new Array();
+      if (this.calendar && this.calendar.length > 0) {
+        this.calendar.map(function (value) {
           let splitInitDate = value.start_date.split("-");
           let splitFinalDate = value.end_date.split("-");
           finalList.push({
-              start: new Date(splitInitDate[0], splitInitDate[1] - 1, splitInitDate[2]),
-              end: new Date(splitFinalDate[0], splitFinalDate[1] - 1, splitFinalDate[2])
-            });
+            start: new Date(
+              splitInitDate[0],
+              splitInitDate[1] - 1,
+              splitInitDate[2]
+            ),
+            end: new Date(
+              splitFinalDate[0],
+              splitFinalDate[1] - 1,
+              splitFinalDate[2]
+            ),
           });
-        }
-        
+        });
+      }
+
       finalList;
       // debugger;
       this.attrs = [
         {
           bar: {
-            color: 'yellow',
-            class: 'calender-bar-inside-line',
+            color: "yellow",
+            class: "calender-bar-inside-line",
           },
-          key: 'today',
+          key: "today",
           dates: finalList,
         },
       ];
     },
-    async sendData(){
+    async sendData() {
       // debugger;
 
-      let data={
-        "code": window.atob(this.encCode),
-        "email": this.invitation.email,
-        "link"  : `${this.base_url}/talent-shared/${window.btoa(this.$route.params.id)}`
-      }
+      let data = {
+        code: window.atob(this.encCode),
+        email: this.invitation.email,
+        link: `${this.base_url}/talent-shared/${window.btoa(
+          this.$route.params.id
+        )}`,
+      };
 
       await axios.post(`/t/performers/code`, data);
-      this.$toasted.success('The user code has been shared successfully');
+      this.$toasted.success("The user code has been shared successfully");
       this.invitation.email = "";
-
     },
-    async saveFeedback(){
-      this.form.callback = this.callback == 1 ?true:false;
+    async saveFeedback() {
+      this.form.callback = this.callback == 1 ? true : false;
       this.form.data = this.$route.params.audition;
       this.form.appointment_id = this.$route.params.round;
       this.form.user = this.$route.params.id;
-      this.form.work = this.workon == 1 ? 'vocals' :this.workon == 2 ? 'acting' : 'dancing';
-      this.form.favorite = this.favorite
+      this.form.work =
+        this.workon == 1 ? "vocals" : this.workon == 2 ? "acting" : "dancing";
+      this.form.favorite = this.favorite;
       this.form.evaluation = this.emoji;
       this.form.slot_id = this.slot;
       // this.form.evaluator = this.profile.details.id;
       this.form.evaluator = TokenService.getUserId();
-      let status = await axios.post('/t/feedbacks/add', this.form);
-      this.$toasted.success('Feedback Created');
-
+      let status = await axios.post("/t/feedbacks/add", this.form);
+      this.$toasted.success("Feedback Created");
     },
-    async getVideoList(data){
+    async getVideoList(data) {
       this.currentAdition = data;
-      if(!data.videos || data.videos == 0){
+      if (!data.video || data.video == 0) {
         this.isShowAuditionVideo = false;
         return;
       }
@@ -648,7 +1220,7 @@ export default {
           `/t/auditions/video/list/${data.id}/performer/${this.$route.params.id}`
         );
 
-        this.videos = VideoRes.data.data ? VideoRes.data.data : [];
+        this.video = VideoRes.data.data ? VideoRes.data.data : [];
         this.isShowAuditionVideo = true;
         this.scrollToTop();
       } catch (ex) {
@@ -657,7 +1229,7 @@ export default {
         this.$toasted.error(ex.response.data.message);
       }
     },
-    openMenu: function(id) {
+    openMenu: function (id) {
       this.isOpen = false;
 
       if (this.openId == id) {
@@ -667,33 +1239,152 @@ export default {
       }
     },
     resetOptions() {
-        this.isShowAuditionVideo = false;
+      this.isShowAuditionVideo = false;
     },
     scrollToTop() {
-      window.scrollTo(0,0);
+      window.scrollTo(0, 0);
     },
-    setUrl(url){      
+    setUrl(url) {
       var pattern = /^((http|https|ftp):\/\/)/;
-      if(!pattern.test(url)) {
-          url = "http://" + url;
+      if (!pattern.test(url)) {
+        url = "http://" + url;
       }
       return url;
     },
-    getPerformerDetail(type){
-      if(type == 'info'){
-        this.$modal.show('infoModal');
+    async getPerformerDetail(type) {
+      if (type == "info") {
+        this.$modal.show("infoModal");
       }
-      if(type == 'credit'){
-        this.$modal.show('creditModal');
+      if (type == "credit") {
+        this.$modal.show("creditModal");
       }
-      if(type == 'eduTra'){
-        this.$modal.show('eduTraModal');
+      if (type == "eduTra") {
+        this.$modal.show("eduTraModal");
       }
-      if(type == 'appearance'){
-        this.$modal.show('appearance');
+      if (type == "appearance") {
+        this.$modal.show("appearance");
       }
+      if (type == "doc") {
+        this.isOpen = false;
+        this.openId = "";
+        this.isLoading = true;
+        try {
+          let docs = await axios.get(
+            `/t/media/user/list/doc?performer_id=${this.$route.params.id}`
+          );
+          this.docs = docs.data.data;
+          this.isLoading = false;
+        } catch (e) {
+          this.isLoading = false;
+          this.$toasted.error("Something went wrong in fetching data!");
+        } finally {
+          this.isLoading = false;
+        }
+
+        this.$modal.show("docModal");
+      }
+      if (type == "video") {
+        this.isOpen = false;
+        this.openId = "";
+        this.isLoading = true;
+        try {
+          let videos = await axios.get(
+            `/t/media/user/list/video?performer_id=${this.$route.params.id}`
+          );
+          this.videos = videos.data.data;
+          this.isLoading = false;
+        } catch (e) {
+          this.isLoading = false;
+          this.$toasted.error("Something went wrong in fetching data!");
+        } finally {
+          this.isLoading = false;
+        }
+
+        this.$modal.show("videoModal");
+      }
+      if (type == "audio") {
+        this.isOpen = false;
+        this.openId = "";
+        this.isLoading = true;
+        try {
+          let music = await axios.get(
+            `/t/media/user/list/audio?performer_id=${this.$route.params.id}`
+          );
+          this.music = music.data.data;
+          this.isLoading = false;
+        } catch (e) {
+          this.isLoading = false;
+          this.$toasted.error("Something went wrong in fetching data!");
+        } finally {
+          this.isLoading = false;
+        }
+
+        this.$modal.show("audioModal");
+      }
+      if (type == "sheet") {
+        this.isOpen = false;
+        this.openId = "";
+        this.isLoading = true;
+        try {
+          let sheets = await axios.get(
+            `/t/media/user/list/sheet?performer_id=${this.$route.params.id}`
+          );
+          this.sheets = sheets.data.data;
+          this.isLoading = false;
+        } catch (e) {
+          this.isLoading = false;
+          this.$toasted.error("Something went wrong in fetching data!");
+        } finally {
+          this.isLoading = false;
+        }
+
+        this.$modal.show("sheetModal");
+      }
+      if (type == "image") {
+        this.isOpen = false;
+        this.openId = "";
+        this.isLoading = true;
+        try {
+          let photos = await axios.get(
+            `/t/media/user/list/image?performer_id=${this.$route.params.id}`
+          );
+          this.photos = photos.data.data;
+          this.isLoading = false;
+        } catch (e) {
+          this.isLoading = false;
+          this.$toasted.error("Something went wrong in fetching data!");
+        } finally {
+          this.isLoading = false;
+        }
+
+        this.$modal.show("imageModal");
+      }
+      // if (type == "list") {
+      //   this.isLoading = true;
+      //   try {
+      //     let materialList = await axios.get(
+      //       `/t/media/auditon/list?performer_id=${this.$route.params.id}`
+      //     );
+      //     this.materialList = materialList.data.data;
+      //     this.isLoading = false;
+      //   } catch (e) {
+      //     this.isLoading = false;
+      //     this.$toasted.error("Something went wrong in fetching data!");
+      //   } finally {
+      //     this.isLoading = false;
+      //   }
+
+      //   this.$modal.show("listModal");
+      // }
     },
-    renameAuditionVideo(videoData){
+    isValidYoutubeLink(url) {
+      const regExp = /^(http(s)?:\/\/)?((w){3}.)?youtu(be|.be)?(\.com)?\/.+/;
+      return url.match(regExp);
+    },
+    getYoutbeId(url) {
+      return this.$youtube.getIdFromURL(url);
+    },
+    renameAuditionVideo(videoData) {
       this.videoFileName = videoData.name;
       this.currentVideo = videoData;
       this.$modal.show("modal_file_name_manage");
@@ -714,34 +1405,43 @@ export default {
         );
         return;
       }
-      try {        
-        let currentVideo = JSON.parse((JSON.stringify(this.currentVideo)));
-        await this.renameVideo([currentVideo, this.videoFileName, this.currentAdition.id]);
+      try {
+        let currentVideo = JSON.parse(JSON.stringify(this.currentVideo));
+        await this.renameVideo([
+          currentVideo,
+          this.videoFileName,
+          this.currentAdition.id,
+        ]);
         this.getVideoList(this.currentAdition);
-        this.$toasted.success("Filename updated successfully");        
-        this.videoFileName = '';
-        this.currentVideo = '';
-        this.$modal.hide("modal_file_name_manage");         
+        this.$toasted.success("Filename updated successfully");
+        this.videoFileName = "";
+        this.currentVideo = "";
+        this.$modal.hide("modal_file_name_manage");
       } catch (ex) {
-        this.$toasted.error("Filename not updated successfully, please try again!");
+        this.$toasted.error(
+          "Filename not updated successfully, please try again!"
+        );
         console.log(ex);
       }
     },
     mediaFileRenameCancel() {
-      this.videoFileName = '';
+      this.videoFileName = "";
       this.currentVideo = null;
       this.$modal.hide("modal_file_name_manage");
     },
     goToSettings() {
       this.$router.push({
-        name: "my.settings"
+        name: "my.settings",
       });
-    }
+    },
+    onCancel() {
+      console.log("User cancelled the loader.");
+    },
   },
 };
 </script>
 <style lang="scss">
-  .custom-resizer {
+.custom-resizer {
   width: 100%;
   height: 400px;
 }
@@ -755,7 +1455,8 @@ export default {
 .custom-resizer > .pane ~ .pane {
 }
 .custom-resizer > .multipane-resizer {
-  margin: 0; left: 0;
+  margin: 0;
+  left: 0;
   position: relative;
   &:before {
     display: block;
@@ -777,72 +1478,72 @@ export default {
   }
 }
 nav {
-  background-image: linear-gradient(#4D2545, #782541);
+  background-image: linear-gradient(#4d2545, #782541);
 }
 .bubble {
-	background: #fff;
-  border-radius: .4em;
-  box-shadow: 0px 0px 6px #B2B2B2;
+  background: #fff;
+  border-radius: 0.4em;
+  box-shadow: 0px 0px 6px #b2b2b2;
 }
 .custom-video-wrap {
-    padding: 30px;
-    width: 100%;
-    margin-top: 30px;
+  padding: 30px;
+  width: 100%;
+  margin-top: 30px;
 }
 .custom-video-wrap h2 {
-    font-size: 20px;
-    color: #4D2545;
-    text-align: center;
-    font-weight: 600;
-    margin-bottom: 27px;
+  font-size: 20px;
+  color: #4d2545;
+  text-align: center;
+  font-weight: 600;
+  margin-bottom: 27px;
 }
 .custom-video-list {
-    width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    height: 273px;
-    overflow-y: auto;
-    overflow-x: hidden;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  height: 273px;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 .custom-video-list li {
-    width: 48%;
-    margin: 0;
-    margin-bottom: 27px;
-    cursor: pointer;
+  width: 48%;
+  margin: 0;
+  margin-bottom: 27px;
+  cursor: pointer;
 }
 .video-info-wrap {
-    padding: 15px;
-    display: flex;
-    position: relative;
-    text-align: left;
-    flex-wrap: wrap;
-    border: 1px solid #D6D6D6;
-    border-radius: 4px;
+  padding: 15px;
+  display: flex;
+  position: relative;
+  text-align: left;
+  flex-wrap: wrap;
+  border: 1px solid #d6d6d6;
+  border-radius: 4px;
 }
 .video-info-wrap strong {
-    font-size: 15px;
-    font-weight: 600;
-    color: #4D2545;
-    width: calc(100% - 90px);
+  font-size: 15px;
+  font-weight: 600;
+  color: #4d2545;
+  width: calc(100% - 90px);
 }
 .video-info-wrap p {
-    font-size: 13px;
-    color: #aaa;
-    width: calc(100% - 90px);
+  font-size: 13px;
+  color: #aaa;
+  width: calc(100% - 90px);
 }
 .video-info-wrap figure {
-    position: absolute;
-    right: -5px;
-    width: 100px;
-    height: 70px;
-    border-radius: 4px 4px 4px 19px;
-    overflow: hidden;
-    top: -5px;
+  position: absolute;
+  right: -5px;
+  width: 100px;
+  height: 70px;
+  border-radius: 4px 4px 4px 19px;
+  overflow: hidden;
+  top: -5px;
 }
 .video-info-wrap figure img {
-    height: 100% !important;
-    width: 100%;
+  height: 100% !important;
+  width: 100%;
 }
 .button-detail {
   background-image: linear-gradient(#4d2545, #782541);
@@ -877,7 +1578,7 @@ ul#navigation {
   visibility: hidden;
   opacity: 0;
 }
-.cus-spn-cls{
+.cus-spn-cls {
   margin-left: 10px;
 }
 
@@ -979,29 +1680,29 @@ ul.submanu-content > li > a {
   width: 170px !important;
 }
 .custom-video-list.single-video-list li {
-    width: 100%;
+  width: 100%;
 }
 .custom-side-video-list {
-    margin-left: 0 !important;
-    margin-right: 0 !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
 }
 .custom-side-video-info {
-    width: calc(100% - 50px) !important;
-    font-size: 14px;
+  width: calc(100% - 50px) !important;
+  font-size: 14px;
 }
-.img-h48{
+.img-h48 {
   height: 48px;
 }
 .calender-bar-inside-line {
   margin-bottom: 15px !important;
-  background-color: #D8893A !important;
+  background-color: #d8893a !important;
 }
 .calendar-bar-inline .vc-day-layer[data-v-47ef1cd6] {
-    left: -6px !important;
-    right: -6px !important;
+  left: -6px !important;
+  right: -6px !important;
 }
 /* social link css */
-.social-a{
+.social-a {
   margin-right: 5px;
   background: #cacaca;
   border-radius: 10040px !important;
@@ -1032,12 +1733,22 @@ ul.submanu-content > li > a {
 }
 .user-profile {
   background-position: center;
-  
 }
 .custom-video-list-w {
   width: 319px !important;
 }
-.user-profile.width-fix{
-  padding-top:100%;
+.user-profile.width-fix {
+  padding-top: 100%;
+}
+.modal-height-90 {
+  height: 100vh !important;
+  top: 0 !important;
+}
+.v--modal-box.v--modal {
+  overflow: auto !important;
+}
+.modal-height-90 .v--modal-box.v--modal {
+  height: 90vh !important;
+  top: 5vh !important;
 }
 </style>
