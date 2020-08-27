@@ -192,11 +192,11 @@
           </div>
         </div>
         <div class="w-10/12 border border-gray-300 mt-3"></div>
-        <div class="container flex w-full mt-3">
+        <div class="container flex mt-3 custom-contributor">
           <div
             v-for="data in audition.contributors"
             :key="data.id"
-            class="flex justify-center w-full"
+            class="flex justify-center w-full px-2"
           >
             <figure class="flex justify-center mr-4 w-6">
               <img :src="`/images/icons/person.png`" alt="Icon" class="h-6" />
@@ -1467,7 +1467,11 @@ ul.submanu-content > li > a {
   border-bottom-left-radius: 10px;
   border-top-left-radius: 10px;
 }
-
+.custom-contributor {
+      white-space: nowrap;
+    width: 400px;
+    overflow-x: auto;
+}
 
 </style>
 

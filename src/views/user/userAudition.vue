@@ -1043,16 +1043,18 @@
     <modal
       class="flex flex-col w-full items-center modal-height-90 custom-event-popup"
       :width="500"
+      :height="600"
       name="docModal"
     >
       <div>
         <div class="flex flex-col w-full shadow-md overflow-hidden p-3">
-          <h1 class="text-purple text-lg font-bold">Resume & Docs</h1>
+          <h1 class="text-purple text-lg font-bold" style="margin-bottom: 10px; margin-top: 10px;">Resume & Docs</h1>
           <div class>
             <div
               v-for="documentos in this.docs"
               :key="documentos.id"
               class="flex w-full shadow-lg mb-3 height-73"
+              style="align-items: center;"
             >
               <div class="flex-col bg-purple mt-1 music-icon-parent music-border">
                 <img
@@ -1064,8 +1066,9 @@
               </div>
               <div
                 class="flex h-100 content-center items-center relative w-full h-full bg-white mp-box"
+                style="justify-content: space-between;"
               >
-                <span class="text-2xl truncate-custom mb-0 text-center ml-2">{{ documentos.name }}</span>
+                <span class="text-2xl truncate-custom mb-0 text-center text-purple ml-2">{{ documentos.name }}</span>
 
                 <ul id="navigation">
                   <li>
@@ -1105,11 +1108,12 @@
     <modal
       class="flex flex-col w-full items-center modal-height-90 custom-event-popup"
       :width="650"
+      :height="600"
       name="videoModal"
     >
       <div>
-        <div class="flex flex-col w-full shadow-md overflow-hidden p-3">
-          <h1 class="text-purple text-lg font-bold">Videos</h1>
+        <div class="flex flex-col w-full shadow-md overflow-hidden" style="padding-left: 15px;">
+          <h1 class="text-purple text-lg font-bold" style="margin-bottom: 10px; margin-top: 10px;">Videos</h1>
           <div class>
             <div
               v-for="video in this.videos"
@@ -1173,18 +1177,20 @@
     <modal
       class="flex flex-col w-full items-center modal-height-90 custom-event-popup"
       :width="500"
+      :height="600"
       name="audioModal"
     >
       <div>
         <div class="flex flex-col w-full shadow-md overflow-hidden p-3">
-          <h1 class="text-purple text-lg font-bold">Music</h1>
+          <h1 class="text-purple text-lg font-bold" style="margin-bottom: 10px; margin-top: 10px;">Music</h1>
           <div class>
             <div
               v-for="music in this.music"
               :key="music.id"
-              class="flex w-full shadow-lg mb-3 height-73 bg-purple music-border"
+              class="flex w-full shadow-lg mb-3 height-73"
+              style="align-items: center;"
             >
-              <div class="flex-col mt-1 music-icon-parent">
+              <div class="flex-col mt-1 bg-purple music-icon-parent music-border">
                 <img
                   src="/images/icons/music@2x.png"
                   alt="Icon"
@@ -1194,6 +1200,7 @@
               </div>
               <div
                 class="flex h-100 content-center items-center relative w-full h-full bg-white mp-box"
+                style="justify-content: space-between;"
               >
                 <span
                   class="text-2xl truncate-custom mb-0 text-center text-purple ml-2"
@@ -1237,26 +1244,29 @@
     <modal
       class="flex flex-col w-full items-center modal-height-90 custom-event-popup"
       :width="500"
+      :height="600"
       name="imageModal"
     >
       <div>
         <div class="flex flex-col w-full shadow-md overflow-hidden p-3">
-          <h1 class="text-purple text-lg font-bold">Photos</h1>
+          <h1 class="text-purple text-lg font-bold" style="margin-bottom: 10px; margin-top: 10px;">Photos</h1>
           <div class>
             <div
               v-for="photo in this.photos"
               :key="photo.id"
               class="flex w-full shadow-lg mb-3 height-73"
+              style="align-items: center;"
             >
               <div class="flex-col">
                 <img
-                  class="custom-photo-icon image-rounded"
+                  class="custom-photo-icon image-rounded custom-fixed-image"
                   v-lazy="photo.thumbnail ? photo.thumbnail : photo.url"
                   alt="image"
                 />
               </div>
               <div
                 class="flex h-100 content-center items-center relative w-full h-full bg-white mp-box"
+                style="justify-content: space-between;"
               >
                 <span
                   class="text-2xl truncate-custom mb-0 text-center text-purple ml-2"
@@ -1300,16 +1310,18 @@
     <modal
       class="flex flex-col w-full items-center modal-height-90 custom-event-popup"
       :width="500"
+      :height="600"
       name="sheetModal"
     >
       <div>
         <div class="flex flex-col w-full shadow-md overflow-hidden p-3">
-          <h1 class="text-purple text-lg font-bold">Sheet Music</h1>
+          <h1 class="text-purple text-lg font-bold" style="margin-bottom: 10px; margin-top: 10px;">Sheet Music</h1>
           <div class>
             <div
               v-for="sheet in this.sheets"
               :key="sheet.id"
               class="flex w-full shadow-lg mb-3 height-73"
+              style="align-items: center;"
             >
               <div class="flex-col bg-purple mt-1 music-icon-parent music-border">
                 <img
@@ -1321,6 +1333,7 @@
               </div>
               <div
                 class="flex h-100 content-center items-center relative w-full h-full bg-white mp-box"
+                style="justify-content: space-between;"
               >
                 <span
                   class="text-2xl truncate-custom mb-0 text-center text-purple ml-2"
@@ -2629,7 +2642,16 @@ ul.submanu-content > li > a {
 .rate-slider * {
   box-shadow: none !important;
 }
-
+.mp-box > span {
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    overflow: hidden;
+    width: 170px !important;
+}
+.image-rounded {
+  border-radius: 10px 0 0 10px;
+  overflow: hidden;
+}
 /* //end: rating slider custom css */
 .contact-btn {
   width: 6.3rem !important;
@@ -2655,7 +2677,33 @@ ul.submanu-content > li > a {
   overflow: auto !important;
 }
 .modal-height-90 .v--modal-box.v--modal {
-  height: 90vh !important;
-  top: 5vh !important;
+    height: 90vh !important;
+    top: 5vh !important;
+}
+.video-player-border {
+  border-radius: 0 0 10px 10px;
+  justify-content: space-between;
+}
+.music-border {
+  border-bottom-left-radius: 10px;
+  border-top-left-radius: 10px;
+}
+.music-icon-parent {
+  padding: 6px;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+.custom-fixed-image {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  object-position: center;
 }
 </style>
