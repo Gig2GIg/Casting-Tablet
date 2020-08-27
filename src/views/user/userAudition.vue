@@ -615,7 +615,7 @@
               <p
                 class="text-purple text-m font-bold mt-2 w-full"
               >{{performerDetails.details && performerDetails.details.city ? performerDetails.details.city : ""}}</p>
-              <div class="flex w-full mt-5">
+              <div class="flex w-full mt-3">
                 <a
                   class="social-a flex items-center justify-center content-center w-12 h-12"
                   v-if="performerDetails.details && performerDetails.details.facebook"
@@ -673,10 +673,10 @@
                   target="_blank"
                   v-bind:href="'mailto:'+performerDetails.email+''"
                   type="button"
-                  class="flex contact-btn justify-center mt-6 bg-purple-gradient text-white text-md rounded-sm rounded-tl-md p-1"
+                  class="flex contact-btn justify-center mt-3 bg-purple-gradient text-white text-md rounded-sm rounded-tl-md p-1"
                 >
                   <img :src="'/images/icons/mail_icon@2x.png'" alt="Icon" class="h-5 mr-2 mt-1" />
-                  <span class="mt-1">Contact</span>
+                  <span class="">Contact</span>
                 </a>
               </div>
               <!-- <div @click="viewResume()" class="flex w-full justify-start mt-6 cus-cur">
@@ -687,7 +687,7 @@
               </div>-->
               <div
                 @click="getPerformerDetail('doc')"
-                class="flex w-full justify-start mt-6 cus-cur"
+                class="flex w-full justify-start mt-3 cus-cur"
               >
                 <img :src="'/images/icons/icon.png'" alt="Icon" class="content-center h-8" />
                 <p
@@ -722,7 +722,7 @@
               </div>-->
               <div
                 @click="getPerformerDetail('appearance')"
-                class="flex w-full justify-start mt-6 cus-cur"
+                class="flex w-full justify-start mt-3 cus-cur"
               >
                 <img :src="'/images/icons/12-layers.png'" alt="Icon" class="content-center h-8" />
                 <p
@@ -731,7 +731,7 @@
               </div>
               <div
                 @click="getPerformerDetail('video')"
-                class="flex w-full justify-start mt-6 cus-cur"
+                class="flex w-full justify-start mt-3 cus-cur"
               >
                 <img :src="'/images/icons/video-icon.png'" alt="Icon" class="content-center h-8" />
                 <p
@@ -747,7 +747,7 @@
               </div>
               <div
                 @click="getPerformerDetail('image')"
-                class="flex w-full justify-start mt-6 cus-cur"
+                class="flex w-full justify-start mt-3 cus-cur"
               >
                 <img :src="'/images/icons/photo-icon.png'" alt="Icon" class="content-center h-8" />
                 <p
@@ -756,15 +756,15 @@
               </div>
               <div
                 @click="getPerformerDetail('sheet')"
-                class="flex w-full justify-start mt-6 cus-cur"
+                class="flex w-full justify-start mt-3 cus-cur"
               >
                 <img :src="'/images/icons/sheet-icon.png'" alt="Icon" class="content-center h-8" />
                 <p
-                  class="text-purple text-m text-left ml-4 tracking-wide font-semibold w-1/2"
+                  class="text-purple text-m text-left ml-4 tracking-wide font-semibold"
                 >Sheet Music</p>
               </div>
               <div
-                class="flex flex-wrap justify-center mt-6 w-full cursor-pointer"
+                class="flex flex-wrap justify-center mt-3 w-full cursor-pointer"
                 v-if="audition.status!=2"
               >
                 <div class="flex w-1/2" @click="saveFeedback">
@@ -2381,7 +2381,7 @@ export default {
 }
 .custom-resizer > .pane {
   text-align: left;
-  padding: 30px 15px;
+  padding: 15px 15px;
   overflow: hidden;
   background: #f0f0f0;
 }
