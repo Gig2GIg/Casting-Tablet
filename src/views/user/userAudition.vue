@@ -1099,7 +1099,7 @@
                 </ul>
               </div>
             </div>
-            <span v-if="!this.docs.length">You don't have any files added.</span>
+            <span v-if="!this.docs.length">No Media Added</span>
           </div>
         </div>
       </div>
@@ -1168,7 +1168,7 @@
                 </ul>
               </div>
             </div>
-            <span v-if="!this.videos.length">You don't have any files added.</span>
+            <span v-if="!this.videos.length">No Media Added</span>
           </div>
         </div>
       </div>
@@ -1235,7 +1235,7 @@
                 </ul>
               </div>
             </div>
-            <span v-if="!this.music.length">You don't have any files added.</span>
+            <span v-if="!this.music.length">No Media Added</span>
           </div>
         </div>
       </div>
@@ -1301,7 +1301,7 @@
                 </ul>
               </div>
             </div>
-            <span v-if="!this.photos.length">You don't have any files added.</span>
+            <span v-if="!this.photos.length">No Media Added</span>
           </div>
         </div>
       </div>
@@ -1368,7 +1368,7 @@
                 </ul>
               </div>
             </div>
-            <span v-if="!this.sheets.length">You don't have any files added.</span>
+            <span v-if="!this.sheets.length">No Media Added</span>
           </div>
         </div>
       </div>

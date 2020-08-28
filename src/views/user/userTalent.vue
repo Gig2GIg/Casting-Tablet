@@ -322,7 +322,7 @@
                   v-else
                   class="flex flex-wrap justify-center text-center content-center w-full border-gray-500 mb-4"
                 >
-                  <p class="text-purple w-full">There is no tags added</p>
+                  <p class="text-purple w-full">There are no tags added</p>
                 </div>
               </div>
             </div>
@@ -345,7 +345,7 @@
                   v-else
                   class="flex flex-wrap justify-center text-center content-center w-full border-gray-500 mb-4"
                 >
-                  <p class="text-purple w-full">There is no comments added</p>
+                  <p class="text-purple w-full">There are no comments added</p>
                 </div>
               </div>
             </div>
@@ -538,7 +538,7 @@
                 </ul>
               </div>
             </div>
-            <span v-if="!this.docs.length">You don't have any files added.</span>
+            <span v-if="!this.docs.length">No Media Added</span>
           </div>
         </div>
       </div>
@@ -609,7 +609,7 @@
                 </ul>
               </div>
             </div>
-            <span v-if="!this.videos.length">You don't have any files added.</span>
+            <span v-if="!this.videos.length">No Media Added</span>
           </div>
         </div>
       </div>
@@ -678,7 +678,7 @@
                 </ul>
               </div>
             </div>
-            <span v-if="!this.music.length">You don't have any files added.</span>
+            <span v-if="!this.music.length">No Media Added</span>
           </div>
         </div>
       </div>
@@ -746,7 +746,7 @@
                 </ul>
               </div>
             </div>
-            <span v-if="!this.photos.length">You don't have any files added.</span>
+            <span v-if="!this.photos.length">No Media Added</span>
           </div>
         </div>
       </div>
@@ -815,7 +815,7 @@
                 </ul>
               </div>
             </div>
-            <span v-if="!this.sheets.length">You don't have any files added.</span>
+            <span v-if="!this.sheets.length">No Media Added</span>
           </div>
         </div>
       </div>

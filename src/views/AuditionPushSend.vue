@@ -9,7 +9,7 @@
     ></loading>
     <div class="flex mb-4 px-2 text-mr">
       <div class="relative flex items-center text-purple font-medium">
-        Notification will be sent to all users who have acquired an appointment for this audition.
+        Notifications will be sent to all users who have acquired an appointment for this audition.
       </div>
     </div>
     <div class="flex">
