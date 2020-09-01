@@ -106,7 +106,7 @@
           :message="errors.first('profesion')"
           data-vv-as="job title"
         />
-        <base-select
+        <!-- <base-select
           key="gender-input"
           v-model="form.gender"
           v-validate="'required'"
@@ -118,7 +118,7 @@
           <option value="male">Male</option>
           <option value="female">Female</option>
           <option value="other">Other</option>
-        </base-select>
+        </base-select> -->
       </template>
       <template v-else-if="step === 3">
         <base-input

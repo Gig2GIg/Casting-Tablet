@@ -602,7 +602,7 @@
             <div
               class="m-3 content-center rounded-full red-light w-40 h-10 flex items-center button-detail"
             >
-              <p class="text-white text-sm font-bold content-center tracking-tighter flex-1">Update</p>
+              <p class="py-2 px-4 bg-purple-gradient rounded-full text-white text-sm font-bold content-center tracking-tighter flex-1">Save</p>
             </div>
           </div>
         </div>

@@ -774,7 +774,7 @@
                     >
                       <p
                         class="text-white text-sm font-bold content-center tracking-tighter flex-1"
-                      >{{isUpdateFeeback ? "Edit":'Save' }}</p>
+                      >{{isUpdateFeeback ? "Save":'Save' }}</p>
                     </div>
                   </div>
                 </div>

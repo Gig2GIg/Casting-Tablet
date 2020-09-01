@@ -46,7 +46,7 @@
           <div class="w-full text-center">
             <h1
               class="font-bold text-l text-left ml-20 tracking-wide purple-light"
-            >{{ audition.apointment?audition.apointment.slots.length:0 }} Apointments</h1>
+            >{{ audition.apointment?audition.apointment.slots.length:0 }} Appointments</h1>
           </div>
         </div>
 

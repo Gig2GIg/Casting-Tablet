@@ -10,9 +10,9 @@ const DEFINE = {
     CHAT_PEFIX : process.env.VUE_APP_CHAT_PREFIX,
     account_email : "accounts@gig2gig.com",    
     common_error_message : 'Oops! something went to wrong!',
-    no_plan_subscirbed_error : "You don't have any subscription to access this feature.",
-    no_plan_sub_user_subscirbed_error : "You don't have any subscription to access this feature, please contact admin.",
-    group_size_array : [1,2,3,4,5,6,7,8,9,10],
+    no_plan_subscirbed_error : "You don't have any subscription to access these features.",
+    no_plan_sub_user_subscirbed_error : "You don't have any subscription to access these features, please contact admin.",
+    group_size_array : [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50],
     thumbSize :{
         defaultWidth : 200,
         defaultHeight : 200,

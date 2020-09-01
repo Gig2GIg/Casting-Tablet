@@ -8,7 +8,7 @@
     ></loading>
     <div class="w-full w-calc" >      
       <div v-if="!isLoading && (!finalUserList || finalUserList.length == 0)" class="flex items-center flex-wrap ml-5 mt-5">
-        <h4 class="w-full text-center text-purple font-semibold text-2xl">There are no performances</h4>
+        <h4 class="w-full text-center text-purple font-semibold text-2xl">There are no Performers</h4>
       </div>
       <div class=" flex flex-wrap ml-5">
         <div class="col-6">

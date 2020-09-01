@@ -22,19 +22,19 @@
         v-if="!showHiddenPerformer && status == 1 && userList.length == 0 "
         class="flex items-center flex-wrap ml-5 h-full"
       >
-        <h4 class="w-full text-center text-purple font-semibold text-2xl">No performers added yet</h4>
+        <h4 class="w-full text-center text-purple font-semibold text-2xl">No Performers added yet</h4>
       </div>
       <div
         v-else-if="showHiddenPerformer && (!hiddenPerformerList || hiddenPerformerList.length == 0)"
         class="flex items-center flex-wrap ml-5 h-full"
       >
-        <h4 class="w-full text-center text-purple font-semibold text-2xl">There are no performances</h4>
+        <h4 class="w-full text-center text-purple font-semibold text-2xl">There are no Performers</h4>
       </div>
       <div
         v-else-if="isAuditionVideos && (!finalUserList || finalUserList.length == 0)"
         class="flex items-center flex-wrap ml-5 h-full"
       >
-        <h4 class="w-full text-center text-purple font-semibold text-2xl">There are no performances</h4>
+        <h4 class="w-full text-center text-purple font-semibold text-2xl">There are no Performers</h4>
       </div>
       <div
         v-else-if="isShowPerformer && !showHiddenPerformer && (status == 1 || round.length >0) && (currentAudition && currentAudition.status == 1) && (round && round.status == 1) && !isAuditionVideos && !finalCastState"
@@ -548,11 +548,11 @@
       <div class="export-btn">
         <div
           v-if="mainRoles.length > 0"
-          class="purple-back cursor-pointer m-3 content-center flex items-center flex m-3 content-center border-2 rounded-sm border-purple w-48 h-10"
+          class="purple-back cursor-pointer m-3 content-center flex items-center flex m-3 content-center  rounded-sm w-48 h-10"
         >
           <p
             @click="exportRoleData"
-            class="flex-1 text-white text-sm font-semibold content-center text-center tracking-tighter flex-1"
+            class="py-2 px-4 bg-purple-gradient flex-1 text-white text-sm font-semibold content-center text-center tracking-tighter flex-1"
           >Export</p>
         </div>
       </div>

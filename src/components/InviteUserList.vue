@@ -63,7 +63,6 @@
             <div class="w-2/6 text-purple px-2 text-lg"></div>
             <div class="w-2/10 text-purple px-2 text-md">
               <div
-                v-if="subscriptionDetails"
                 class="cursor-pointer m-3 content-center rounded-full red-light w-full h-8 flex items-center button-detail accept-decline-btn"
                 @click="inviteUsers()"
               >
