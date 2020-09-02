@@ -477,7 +477,7 @@
                     v-else
                     class="flex flex-wrap justify-center text-left content-center w-full border-gray-500"
                   >
-                    <p class="text-purple w-full">There is no tags added</p>
+                    <p class="text-purple w-full">There are no tags added</p>
                   </div>
                 </div>
               </div>
@@ -521,7 +521,7 @@
                     v-else
                     class="flex flex-wrap justify-center text-left content-center w-full border-gray-500"
                   >
-                    <p class="text-purple w-full">There is no marketplace added</p>
+                    <p class="text-purple w-full">There are no marketplaces added</p>
                   </div>
                 </div>
               </div>
@@ -530,7 +530,7 @@
         </div>
       </div>
       <multipane-resizer class="mt-0.1 bg-purple full-height"></multipane-resizer>
-      <div class="pane relative sidebar-pane" :style="{ flexGrow: 1 }">
+      <div class="pane relative sidebar-pane" style="flexGrow: 1; overflow-y: auto">
         <div v-if="isChatView" class="custom-side-back chat-side-min-width h-full overflow-auto">
           <div class="chat-head">
             <!-- <img

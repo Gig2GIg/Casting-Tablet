@@ -44,9 +44,12 @@
         <div class="w-10/12 border border-gray-300" />
         <div class="container flex w-full mt-3">
           <div class="w-full text-center">
-            <h1
+            <h1 v-if="audition.online == 0"
               class="font-bold text-l text-left ml-20 tracking-wide purple-light"
-            >{{ audition.apointment?audition.apointment.slots.length:0 }} Appointments</h1>
+            >{{ audition.apointment?audition.apointment.slots.length:0 }} Appointment(s)</h1>
+            <h1 v-if="audition.online == 1"
+              class="font-bold text-l text-left ml-20 tracking-wide purple-light"
+            >{{ audition.submissions?audition.submissions:0 }} Submission(s)</h1>
           </div>
         </div>
 
@@ -423,9 +426,9 @@
             >Final Cast List</p>
           </div>
         </div>
-        <div v-if="audition.status == 2" class="w-full border border-gray-300 mt-6 mb-6" />
+        <div v-if="audition.status != 0" class="w-full border border-gray-300 mt-6 mb-6" />
         <div
-          v-if="audition.status == 2"
+          v-if="audition.status != 0"
           class="flex w-full content-center text-center justify-center flex-wrap cursor-pointer"
           @click="exportAnalytics()"
         >
@@ -752,8 +755,8 @@ export default {
   props: [],
   data() {
     return {
-      info: true,
-      manage: false,
+      info: false,
+      manage: true,
       statusChild: 1,
       roundActive: false,
       videoSection: false,

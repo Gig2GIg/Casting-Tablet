@@ -22,13 +22,13 @@
         v-if="!showHiddenPerformer && status == 1 && userList.length == 0 "
         class="flex items-center flex-wrap ml-5 h-full"
       >
-        <h4 class="w-full text-center text-purple font-semibold text-2xl">No Performers added yet</h4>
+        <h4 class="w-full text-center text-purple font-semibold text-2xl">No Performers Yet</h4>
       </div>
       <div
         v-else-if="showHiddenPerformer && (!hiddenPerformerList || hiddenPerformerList.length == 0)"
         class="flex items-center flex-wrap ml-5 h-full"
       >
-        <h4 class="w-full text-center text-purple font-semibold text-2xl">There are no Performers</h4>
+        <h4 class="w-full text-center text-purple font-semibold text-2xl">No Performers Yet</h4>
       </div>
       <div
         v-else-if="isAuditionVideos && (!finalUserList || finalUserList.length == 0)"
