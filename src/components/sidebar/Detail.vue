@@ -82,7 +82,7 @@
 
         <div class="container flex w-full mt-3 justify-center flex-wrap">
           <div class="flex w-9/12 text-justify">
-            <p class="text-purple text-sm">{{ audition.description }}</p>
+            <p class="text-purple text-sm break-class">{{ audition.description }}</p>
           </div>
         </div>
 
@@ -1471,10 +1471,13 @@ ul.submanu-content > li > a {
   border-top-left-radius: 10px;
 }
 .custom-contributor {
-      white-space: nowrap;
-    width: 400px;
-    overflow-x: auto;
+  white-space: nowrap;
+  width: 400px;
+  overflow-x: auto;
 }
-
+.break-class{
+  word-break: break-all;
+  white-space: normal;
+}
 </style>
 
