@@ -63,7 +63,7 @@
             <div class="w-2/6 text-purple px-2 text-lg"></div>
             <div class="w-2/10 text-purple px-2 text-md">
               <div
-                class="cursor-pointer m-3 content-center rounded-full red-light w-full h-8 flex items-center button-detail accept-decline-btn"
+                class="py-2 px-4 bg-purple-gradient rounded-full cursor-pointer m-3 content-center red-light w-full h-8 flex items-center button-detail accept-decline-btn"
                 @click="inviteUsers()"
               >
                 <p class="text-white text-sm text-center content-center flex-1">Invite Users</p>
