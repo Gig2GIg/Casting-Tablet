@@ -129,7 +129,7 @@
                         v-bind:class="{ 'after-clck-new-grp' : isShowCreateGroup, 'relative' : !isCommentView}"
                   />
                 <div
-                        v-show="!isAuditionVideos && auditionData.online == 0 && (currentAudition.user_id == userId || currentAudition.admin_id == userId) && currentAudition.status == 1 && round && round.status == 1"
+                        v-show="!isAuditionVideos && auditionData.online == 0 && currentAudition.status == 1 && round && round.status == 1"
                   class="custom-btn-grp"
                 >
                   <div
