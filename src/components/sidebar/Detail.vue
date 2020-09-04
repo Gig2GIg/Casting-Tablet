@@ -1049,8 +1049,8 @@ export default {
       }
     },    
     resetOptions() {
-      this.info = true;
-      this.manage = false;
+      this.info = false;
+      this.manage = true;
       this.videoSection = false;
       let videosDetails = {
         videos: [],
