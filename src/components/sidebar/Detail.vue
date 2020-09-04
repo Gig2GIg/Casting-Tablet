@@ -384,9 +384,8 @@
             >Audition Videos</p>
           </div>
         </div>
-        <div v-if="showAuditionTrack" class="w-full border border-gray-300 mt-6 mb-6" />
+        <div class="w-full border border-gray-300 mt-6 mb-6" />
         <div
-          v-if="showAuditionTrack"
           class="flex w-full content-center text-center justify-center flex-wrap cursor-pointer"
         >
           <button
