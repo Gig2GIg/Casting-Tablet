@@ -486,7 +486,7 @@
               <div class="border rounded w-full h-50 overflow-auto px-3 py-2">
                 <p class="text-center text-2xl text-purple font-semibold mb-2">Recommendation</p>
                 <div class="flex flex-wrap justify-center w-full">
-                  <div class="flex flex-wrap justify-center w-full">
+                  <!-- <div class="flex flex-wrap justify-center w-full">
                     <base-input
                       v-model="marketplaceSearch"
                       name="marketplace"
@@ -497,9 +497,20 @@
                       :custom-classes="['border-2', 'border-purple']"
                       @input="filterMarketplaces"
                     />
+                  </div> -->
+                  <div class="flex flex-wrap justify-center flex-col content-center w-full">
+                    <base-input
+                      v-model="form.recommendation"
+                      name="tag"
+                      class="mb-3"
+                      type="textarea"
+                      rows="5"
+                      placeholder="Add Recommendation"
+                      :custom-classes="['border-2', 'border-purple']"
+                    />
                   </div>
                 </div>
-                <div class="mt-2">
+                <!-- <div class="mt-2">
                   <template v-if="recommendations.length > 0">
                     <div
                       v-for="data in recommendations"
@@ -523,7 +534,7 @@
                   >
                     <p class="text-purple w-full">There are no marketplaces added</p>
                   </div>
-                </div>
+                </div> -->
               </div>
             </div>
           </div>
@@ -676,7 +687,7 @@
                   class="flex contact-btn justify-center mt-3 bg-purple-gradient text-white text-md rounded-sm rounded-tl-md p-1"
                 >
                   <img :src="'/images/icons/mail_icon@2x.png'" alt="Icon" class="h-5 mr-2 mt-1" />
-                  <span class="">Contact</span>
+                  <span class>Contact</span>
                 </a>
               </div>
               <!-- <div @click="viewResume()" class="flex w-full justify-start mt-6 cus-cur">
@@ -759,9 +770,7 @@
                 class="flex w-full justify-start mt-3 cus-cur"
               >
                 <img :src="'/images/icons/sheet-icon.png'" alt="Icon" class="content-center h-8" />
-                <p
-                  class="text-purple text-m text-left ml-4 tracking-wide font-semibold"
-                >Sheet Music</p>
+                <p class="text-purple text-m text-left ml-4 tracking-wide font-semibold">Sheet Music</p>
               </div>
               <div
                 class="flex flex-wrap justify-center mt-3 w-full cursor-pointer"
@@ -1048,7 +1057,10 @@
     >
       <div>
         <div class="flex flex-col w-full shadow-md overflow-hidden p-3">
-          <h1 class="text-purple text-lg font-bold" style="margin-bottom: 10px; margin-top: 10px;">Resume & Docs</h1>
+          <h1
+            class="text-purple text-lg font-bold"
+            style="margin-bottom: 10px; margin-top: 10px;"
+          >Resume & Docs</h1>
           <div class>
             <div
               v-for="documentos in this.docs"
@@ -1068,7 +1080,9 @@
                 class="flex h-100 content-center items-center relative w-full h-full bg-white mp-box"
                 style="justify-content: space-between;"
               >
-                <span class="text-2xl truncate-custom mb-0 text-center text-purple ml-2">{{ documentos.name }}</span>
+                <span
+                  class="text-2xl truncate-custom mb-0 text-center text-purple ml-2"
+                >{{ documentos.name }}</span>
 
                 <ul id="navigation">
                   <li>
@@ -1113,7 +1127,10 @@
     >
       <div>
         <div class="flex flex-col w-full shadow-md overflow-hidden" style="padding-left: 15px;">
-          <h1 class="text-purple text-lg font-bold" style="margin-bottom: 10px; margin-top: 10px;">Videos</h1>
+          <h1
+            class="text-purple text-lg font-bold"
+            style="margin-bottom: 10px; margin-top: 10px;"
+          >Videos</h1>
           <div class>
             <div
               v-for="video in this.videos"
@@ -1182,7 +1199,10 @@
     >
       <div>
         <div class="flex flex-col w-full shadow-md overflow-hidden p-3">
-          <h1 class="text-purple text-lg font-bold" style="margin-bottom: 10px; margin-top: 10px;">Music</h1>
+          <h1
+            class="text-purple text-lg font-bold"
+            style="margin-bottom: 10px; margin-top: 10px;"
+          >Music</h1>
           <div class>
             <div
               v-for="music in this.music"
@@ -1249,7 +1269,10 @@
     >
       <div>
         <div class="flex flex-col w-full shadow-md overflow-hidden p-3">
-          <h1 class="text-purple text-lg font-bold" style="margin-bottom: 10px; margin-top: 10px;">Photos</h1>
+          <h1
+            class="text-purple text-lg font-bold"
+            style="margin-bottom: 10px; margin-top: 10px;"
+          >Photos</h1>
           <div class>
             <div
               v-for="photo in this.photos"
@@ -1315,7 +1338,10 @@
     >
       <div>
         <div class="flex flex-col w-full shadow-md overflow-hidden p-3">
-          <h1 class="text-purple text-lg font-bold" style="margin-bottom: 10px; margin-top: 10px;">Sheet Music</h1>
+          <h1
+            class="text-purple text-lg font-bold"
+            style="margin-bottom: 10px; margin-top: 10px;"
+          >Sheet Music</h1>
           <div class>
             <div
               v-for="sheet in this.sheets"
@@ -1490,7 +1516,7 @@ export default {
       materialList: [],
       videoAutoPlay: false,
       openId: "",
-      isOpen: false
+      isOpen: false,
     };
   },
   computed: {
@@ -1621,6 +1647,7 @@ export default {
               : false;
           this.rating = this.feedback.rating != null ? this.feedback.rating : 0;
           this.form.comment = this.feedback.comment;
+          this.form.recommendation = this.feedback.recommendation;
         }
       } else {
         this.isUpdateFeeback = false;
@@ -1630,6 +1657,7 @@ export default {
         this.callback = null;
         this.rating = 0;
         this.form.comment = "";
+        this.form.recommendation = "";
       }
       // Get Assigend Number
       let getPerformerDetails = await axios.get(
@@ -2643,10 +2671,10 @@ ul.submanu-content > li > a {
   box-shadow: none !important;
 }
 .mp-box > span {
-    text-overflow: ellipsis !important;
-    white-space: nowrap !important;
-    overflow: hidden;
-    width: 170px !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  overflow: hidden;
+  width: 170px !important;
 }
 .image-rounded {
   border-radius: 10px 0 0 10px;
@@ -2677,8 +2705,8 @@ ul.submanu-content > li > a {
   overflow: auto !important;
 }
 .modal-height-90 .v--modal-box.v--modal {
-    height: 90vh !important;
-    top: 5vh !important;
+  height: 90vh !important;
+  top: 5vh !important;
 }
 .video-player-border {
   border-radius: 0 0 10px 10px;

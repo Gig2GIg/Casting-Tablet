@@ -1,105 +1,346 @@
 <!-- eslint-disable max-len -->
 <template>
   <form class="relative" data-vv-scope="create" @submit.prevent="handleCreate">
-    <loading :active.sync="isLoading" :can-cancel="true" :on-cancel="onCancel" :is-full-page="fullPage"></loading>
+    <loading
+      :active.sync="isLoading"
+      :can-cancel="true"
+      :on-cancel="onCancel"
+      :is-full-page="fullPage"
+    ></loading>
     <div class="flex flex-row-reverse mb-4 px-2">
-      <div class="relative flex items-center text-purple cursor-pointer outside-click-exclude" @click="manageInvitations = !manageInvitations">
+      <div
+        class="relative flex items-center text-purple cursor-pointer outside-click-exclude"
+        @click="manageInvitations = !manageInvitations"
+      >
         <img src="/images/icons/person.png" alt="Icon" class="h-4 mr-2 outside-click-exclude" />
         <span class="select-none outside-click-exclude">Add Invitations</span>
       </div>
     </div>
-    <form ref="contributorform" v-show="manageInvitations" v-outside-click="{
+    <form
+      ref="contributorform"
+      v-show="manageInvitations"
+      v-outside-click="{
       exclude: ['outside-click-exclude'],
         handler: closeInviteForm
       }"
-      class="bubble absolute right-0 w-64 -mr-12 z-50 p-3" data-vv-scope="invitation" @submit.prevent="handleInvitation">
-      <base-button v-if="!invitation.adding" class="pt-2 pb-2 outside-click-exclude" border-classes="rounded-full border border-purple outside-click-exclude" color="bg-white" :hover="['bg-purple', 'text-white']" text="text-purple" expanded @click="invitation.adding = true">Add Contributor
-      </base-button>
+      class="bubble absolute right-0 w-64 -mr-12 z-50 p-3"
+      data-vv-scope="invitation"
+      @submit.prevent="handleInvitation"
+    >
+      <base-button
+        v-if="!invitation.adding"
+        class="pt-2 pb-2 outside-click-exclude"
+        border-classes="rounded-full border border-purple outside-click-exclude"
+        color="bg-white"
+        :hover="['bg-purple', 'text-white']"
+        text="text-purple"
+        expanded
+        @click="invitation.adding = true"
+      >Add Contributor</base-button>
       <div v-show="invitation.adding">
-        <base-input v-model="invitation.email" v-validate="'required|email'" name="email" placeholder="Email" :custom-classes="['border', 'border-purple']" :message="errors.first('invitation.email')" expanded />
+        <base-input
+          v-model="invitation.email"
+          v-validate="'required|email'"
+          name="email"
+          placeholder="Email"
+          :custom-classes="['border', 'border-purple']"
+          :message="errors.first('invitation.email')"
+          expanded
+        />
         <base-button class="pt-2 pb-2 outside-click-exclude" type="submit" expanded>Send</base-button>
       </div>
-      <contributor-item v-for="contributor in form.contributors" :key="contributor.email" class="-mx-3" :contributor="contributor" @destroy="handleDeleteContributor" />
+      <contributor-item
+        v-for="contributor in form.contributors"
+        :key="contributor.email"
+        class="-mx-3"
+        :contributor="contributor"
+        @destroy="handleDeleteContributor"
+      />
     </form>
     <div class="flex">
-      <base-input v-model="form.title" v-validate="'required|max:255'" name="title" class="w-2/3 px-2" placeholder="Title" :custom-classes="['border', 'border-purple']" :message="errors.first('create.title')" expanded />
-      <base-checkbox class="w-1/3 px-2" v-model="form.online" @input="changeAuditionType" :custom-classes="['border', 'border-purple']" name="title" :value="form.online">Online Submission
-      </base-checkbox>      
-    </div>    
-    <div class="flex" :style="!isOnlineAudition ? 'display: none!important;' : ''" >
-        <base-input  v-model="form.end_date" v-validate="isOnlineAudition ? 'required' : ''" id="end_date" name="end_date" class="w-1/3 px-2" type="date" :mindate="min_end_date" placeholder="End Date" :custom-classes="['border', 'border-purple']" :message="errors.first('create.end_date')" data-vv-as="end date"  />
+      <base-input
+        v-model="form.title"
+        v-validate="'required|max:255'"
+        name="title"
+        class="w-2/3 px-2"
+        placeholder="Title"
+        :custom-classes="['border', 'border-purple']"
+        :message="errors.first('create.title')"
+        expanded
+      />
+      <base-checkbox
+        class="w-1/3 px-2"
+        v-model="form.online"
+        @input="changeAuditionType"
+        :custom-classes="['border', 'border-purple']"
+        name="title"
+        :value="form.online"
+      >Online Submission</base-checkbox>
+    </div>
+    <div class="flex" :style="!isOnlineAudition ? 'display: none!important;' : ''">
+      <base-input
+        v-model="form.end_date"
+        style="height: 50px !important"
+        v-validate="isOnlineAudition ? 'required' : ''"
+        id="end_date"
+        name="end_date"
+        class="w-1/3 px-2"
+        type="date"
+        :mindate="min_end_date"
+        placeholder="End Date"
+        :custom-classes="['border', 'border-purple']"
+        :message="errors.first('create.end_date')"
+        data-vv-as="end date"
+      />
+      <template>
+        <custom-time-picker
+          class="timepicker-custom cus-des-timepicker text-left w-1/3 px-2"
+          style="margin-top: 8px; width: 100% !important;"
+          :onTimeChange="endTimeChangeHandler"
+          :defaultFocused="false"
+          v-validate="isOnlineAudition ? 'required' : ''"
+          :message="errors.first('create.end_date')"
+          placeholder="Cut off time"
+          :HOURS="24"
+          colorPalette="dark"
+          theme="material"
+          :defaultHour="0"
+          :defaultMinute="0"
+        ></custom-time-picker>
+      </template>
     </div>
     <p class="px-5 text-purple font-medium py-8 pb-6">Production Information</p>
     <div class="flex w-full">
-      <base-input v-model="form.description" v-validate="'required|max:500'" name="description" class="px-2 py-2 w-2/3" type="textarea" placeholder="Description" :custom-classes="['border', 'border-purple', 'mt-0', { 'mb-0': !errors.has('create.description') }]" :message="errors.first('create.description')" />
+      <base-input
+        v-model="form.description"
+        v-validate="'required|max:500'"
+        name="description"
+        class="px-2 py-2 w-2/3"
+        type="textarea"
+        placeholder="Description"
+        :custom-classes="['border', 'border-purple', 'mt-0', { 'mb-0': !errors.has('create.description') }]"
+        :message="errors.first('create.description')"
+      />
       <div class="px-2 py-2 w-1/3">
-        <div class="flex rounded-large h-full items-center border border-purple cursor-pointer justify-center bg-grey-500 overflow-hidden" @click="$refs.coverFile.click()">
+        <div
+          class="flex rounded-large h-full items-center border border-purple cursor-pointer justify-center bg-grey-500 overflow-hidden"
+          @click="$refs.coverFile.click()"
+        >
           <div v-if="!previewCover" class="flex flex-col py-5 flex-no-wrap justify-between">
             <p class="pb-6 text-purple">Cover photo</p>
             <img src="/images/icons/file.svg" />
           </div>
           <img v-else :src="previewCover" alt="Cover" class="w-full h-full object-cover" />
         </div>
-        <input ref="coverFile" accept=".png, .jpg, .jpeg" type="file" hidden @change="handleCoverFile" />
+        <input
+          ref="coverFile"
+          accept=".png, .jpg, .jpeg"
+          type="file"
+          hidden
+          @change="handleCoverFile"
+        />
       </div>
     </div>
     <div class="flex w-full">
       <!-- v-validate="'required|max:500'" -->
-      <base-input v-model="form.personal_information" name="personal_information" class="px-2 w-full h-40" type="textarea" placeholder="Personal Information" :custom-classes="['border', 'border-purple']" :message="errors.first('create.personal_information')" data-vv-as="Personal information" />
+      <base-input
+        v-model="form.personal_information"
+        name="personal_information"
+        class="px-2 w-full h-40"
+        type="textarea"
+        placeholder="Personal Information"
+        :custom-classes="['border', 'border-purple']"
+        :message="errors.first('create.personal_information')"
+        data-vv-as="Personal information"
+      />
     </div>
     <div class="flex w-full">
       <!-- v-validate="'required|max:500'" -->
-      <base-input v-model="form.additional_info" v-validate="'max:500'" name="additional_info" class="px-2 w-full h-40" type="textarea" placeholder="Additional Information" :custom-classes="['border', 'border-purple']" :message="errors.first('create.additional_info')" data-vv-as="additional information" />
+      <base-input
+        v-model="form.additional_info"
+        v-validate="'max:500'"
+        name="additional_info"
+        class="px-2 w-full h-40"
+        type="textarea"
+        placeholder="Additional Information"
+        :custom-classes="['border', 'border-purple']"
+        :message="errors.first('create.additional_info')"
+        data-vv-as="additional information"
+      />
     </div>
     <p class="px-5 text-purple font-medium py-8 pb-6">Contract Information</p>
     <div class="flex w-full">
       <!-- v-validate="'required'" -->
-      <base-input v-model="form.dates[0].from" name="contract_start_date" class="w-1/2 px-2" type="date" :mindate="new Date()" placeholder="Contract Start Date" :custom-classes="['border', 'border-purple']" :message="errors.first('create.contract_start_date')" data-vv-as="start date" @input="handleChangeDates('contract')" />
+      <base-input
+        v-model="form.dates[0].from"
+        name="contract_start_date"
+        class="w-1/2 px-2"
+        type="date"
+        :mindate="new Date()"
+        placeholder="Contract Start Date"
+        :custom-classes="['border', 'border-purple']"
+        :message="errors.first('create.contract_start_date')"
+        data-vv-as="start date"
+        @input="handleChangeDates('contract')"
+      />
       <!-- v-validate="'required'" -->
-      <base-input v-model="form.dates[0].to" name="contract_end_date" class="w-1/2 px-2" type="date" :mindate="form.dates[0].from" placeholder="Contract End Date" :custom-classes="['border', 'border-purple']" :message="errors.first('create.contract_end_date')" data-vv-as="contract end date" @input="handleChangeDates('contract')" />
+      <base-input
+        v-model="form.dates[0].to"
+        name="contract_end_date"
+        class="w-1/2 px-2"
+        type="date"
+        :mindate="form.dates[0].from"
+        placeholder="Contract End Date"
+        :custom-classes="['border', 'border-purple']"
+        :message="errors.first('create.contract_end_date')"
+        data-vv-as="contract end date"
+        @input="handleChangeDates('contract')"
+      />
     </div>
     <div class="flex w-full">
       <!-- v-validate="'required'" -->
-      <base-input v-model="form.dates[1].from" :mindate="new Date()" name="rehearsal_start_date" class="w-1/2 px-2" type="date" placeholder="Rehearsal Start Date" :custom-classes="['border', 'border-purple']" :message="errors.first('create.rehearsal_start_date')" data-vv-as="start date" @input="handleChangeDates('rehearsal')" />
+      <base-input
+        v-model="form.dates[1].from"
+        :mindate="new Date()"
+        name="rehearsal_start_date"
+        class="w-1/2 px-2"
+        type="date"
+        placeholder="Rehearsal Start Date"
+        :custom-classes="['border', 'border-purple']"
+        :message="errors.first('create.rehearsal_start_date')"
+        data-vv-as="start date"
+        @input="handleChangeDates('rehearsal')"
+      />
       <!-- v-validate="'required'" -->
-      <base-input v-model="form.dates[1].to" :mindate="form.dates[1].from" name="rehearsal_end_date" class="w-1/2 px-2" type="date" placeholder="Rehearsal End Date" :custom-classes="['border', 'border-purple']" :message="errors.first('create.rehearsal_end_date')" data-vv-as="rehearsal end date" @input="handleChangeDates('rehearsal')" />
+      <base-input
+        v-model="form.dates[1].to"
+        :mindate="form.dates[1].from"
+        name="rehearsal_end_date"
+        class="w-1/2 px-2"
+        type="date"
+        placeholder="Rehearsal End Date"
+        :custom-classes="['border', 'border-purple']"
+        :message="errors.first('create.rehearsal_end_date')"
+        data-vv-as="rehearsal end date"
+        @input="handleChangeDates('rehearsal')"
+      />
     </div>
     <p class="px-5 text-purple font-medium py-8 pb-6">Contact Information</p>
     <div class="flex">
-      <base-input v-model="form.url" v-validate="'url'" name="url" class="w-full px-2" placeholder="Audition URL" :custom-classes="['border', 'border-purple']" :message="errors.first('create.url')" />
+      <base-input
+        v-model="form.url"
+        v-validate="'url'"
+        name="url"
+        class="w-full px-2"
+        placeholder="Audition URL"
+        :custom-classes="['border', 'border-purple']"
+        :message="errors.first('create.url')"
+      />
     </div>
     <div class="flex">
-      <base-input v-model="form.phone" v-validate="'max:255'" name="phone" v-mask="'(###) ###-####'" class="w-1/3 px-2" placeholder="Phone" :custom-classes="['border', 'border-purple']" :message="errors.first('create.phone')" />
-      <base-input v-model="form.email" v-validate="'email'" name="email" class="w-1/3 px-2" placeholder="Email" :custom-classes="['border', 'border-purple']" :message="errors.first('create.email')" />
-      <base-input v-model="form.other_info" v-validate="'max:255'" name="other_info" class="w-1/3 px-2" placeholder="Other" :custom-classes="['border', 'border-purple']" :message="errors.first('create.other_info')" data-vv-as="other information" />
+      <base-input
+        v-model="form.phone"
+        v-validate="'max:255'"
+        name="phone"
+        v-mask="'(###) ###-####'"
+        class="w-1/3 px-2"
+        placeholder="Phone"
+        :custom-classes="['border', 'border-purple']"
+        :message="errors.first('create.phone')"
+      />
+      <base-input
+        v-model="form.email"
+        v-validate="'email'"
+        name="email"
+        class="w-1/3 px-2"
+        placeholder="Email"
+        :custom-classes="['border', 'border-purple']"
+        :message="errors.first('create.email')"
+      />
+      <base-input
+        v-model="form.other_info"
+        v-validate="'max:255'"
+        name="other_info"
+        class="w-1/3 px-2"
+        placeholder="Other"
+        :custom-classes="['border', 'border-purple']"
+        :message="errors.first('create.other_info')"
+        data-vv-as="other information"
+      />
     </div>
     <template v-if="!form.online">
       <p class="px-5 text-purple font-medium py-8 pb-6">Rounds</p>
       <div class="flex">
-        <round-dropdown-form class="text-red-600 bg-white" :options="rounds" :selected="selected_round" :setround.sync="set_selected_round" @setOption="methodToRunOnSelect" v-on:updateOption="methodToRunOnSelect" :placeholder="'Select a Round'"></round-dropdown-form>
+        <round-dropdown-form
+          class="text-red-600 bg-white"
+          :options="rounds"
+          :selected="selected_round"
+          :setround.sync="set_selected_round"
+          @setOption="methodToRunOnSelect"
+          v-on:updateOption="methodToRunOnSelect"
+          :placeholder="'Select a Round'"
+        ></round-dropdown-form>
       </div>
       <div v-for="(round,index) of rounds" :key="index">
         <div class="flex" v-if="selected_round.index == index">
-          <base-input v-validate="'required'" name="date" v-model="round.date" :mindate="new Date()" class="w-1/3 px-2" type="date" placeholder="Date" :custom-classes="['border', 'border-purple']" :message="errors.first('create.date')" />
+          <base-input
+            v-validate="'required'"
+            name="date"
+            v-model="round.date"
+            :mindate="new Date()"
+            class="w-1/3 px-2"
+            type="date"
+            placeholder="Date"
+            :custom-classes="['border', 'border-purple']"
+            :message="errors.first('create.date')"
+          />
           <template>
             <div class="relative h-12 my-2">
-              <custom-time-picker class="timepicker-custom cus-des-timepicker px-2 text-left" :onTimeChange="timeChangeHandler" :defaultFocused="false" v-validate="'required'" :message="errors.first('create.time')" placeholder="Time" :HOURS="24" colorPalette="dark" theme="material" :defaultHour="round.defaultHour" :defaultMinute="round.defaultMinute">
-              </custom-time-picker>
+              <custom-time-picker
+                class="timepicker-custom cus-des-timepicker px-2 text-left"
+                :onTimeChange="timeChangeHandler"
+                :defaultFocused="false"
+                v-validate="'required'"
+                :message="errors.first('create.time')"
+                placeholder="Time"
+                :HOURS="24"
+                colorPalette="dark"
+                theme="material"
+                :defaultHour="round.defaultHour"
+                :defaultMinute="round.defaultMinute"
+              ></custom-time-picker>
             </div>
           </template>
-          <button class="w-1/3 location-icon border border-purple rounded-full h-full py-3 px-6 h-12 my-2 text-left text-purple" v-validate="'required'" :custom-classes="['border', 'border-purple']" name="location" type="button" :message="errors.first('create.location')" @click="openLocationModel()">{{round.isSelected ? 'Location Saved' : 'Location'}}
-          </button>
+          <button
+            class="w-1/3 location-icon border border-purple rounded-full h-full py-3 px-6 h-12 my-2 text-left text-purple"
+            v-validate="'required'"
+            :custom-classes="['border', 'border-purple']"
+            name="location"
+            type="button"
+            :message="errors.first('create.location')"
+            @click="openLocationModel()"
+          >{{round.isSelected ? 'Location Saved' : 'Location'}}</button>
         </div>
         <div class="flex" v-if="selected_round.index == index">
-          <button class="w-1/3 mt-4 py-3 px-4 border-4 border-purple text-purple rounded-full focus:outline-none" type="button" @click.prevent="round.manageAppointments = true">Manage Appointments
-          </button>
-          <AppointmentsModal v-if="round.manageAppointments" :data="round.appointment" @change="round.appointment = $event" @close="round.manageAppointments = false" />
-        </div>        
+          <button
+            class="w-1/3 mt-4 py-3 px-4 border-4 border-purple text-purple rounded-full focus:outline-none"
+            type="button"
+            @click.prevent="round.manageAppointments = true"
+          >Manage Appointments</button>
+          <AppointmentsModal
+            v-if="round.manageAppointments"
+            :data="round.appointment"
+            @change="round.appointment = $event"
+            @close="round.manageAppointments = false"
+          />
+        </div>
       </div>
       <template v-if="!form.online">
-        <div class="flex flex-wrap py-6">          
+        <div class="flex flex-wrap py-6">
           <div class="overflow-auto w-10/12">
-            <span class="text-purple text-lg font-bold ml-5">Will this audition require socially distanced group entrances?</span>
+            <span
+              class="text-purple text-lg font-bold ml-5"
+            >Will this audition require socially distanced group entrances?</span>
           </div>
           <div class="w-1/12">
             <label class="switch cursor-pointer" for="grouping_enable">
@@ -108,18 +349,28 @@
                 type="checkbox"
                 v-model="form.grouping_enabled"
                 :checked="false"
-              >
+              />
               <span class="slider round" />
             </label>
           </div>
         </div>
-        <div class="flex flex-wrap">          
+        <div class="flex flex-wrap">
           <div class="overflow-auto w-full">
-            <p class="text-purple text-mg ml-5">Allow for automatic assignment of grouping of performers, based on the parameters set below. Groups can be used to notify performers of updates and changes.</p>
-          </div>            
+            <p
+              class="text-purple text-mg ml-5"
+            >Allow for automatic assignment of grouping of performers, based on the parameters set below. Groups can be used to notify performers of updates and changes.</p>
+          </div>
         </div>
         <div class="flex" v-if="form.grouping_enabled">
-            <group-size-dropdown class="text-red-600 bg-white mt-5" :options="group_size_array" :selected="selected_group_size" :setgroupsize.sync="set_group_size" @setGroupSizeOption="methodToGroupSizeOnSelect" v-on:updateOption="methodToGroupSizeOnSelect" :placeholder="'Group Size'"></group-size-dropdown>              
+          <group-size-dropdown
+            class="text-red-600 bg-white mt-5"
+            :options="group_size_array"
+            :selected="selected_group_size"
+            :setgroupsize.sync="set_group_size"
+            @setGroupSizeOption="methodToGroupSizeOnSelect"
+            v-on:updateOption="methodToGroupSizeOnSelect"
+            :placeholder="'Group Size'"
+          ></group-size-dropdown>
         </div>
       </template>
       <modal width="80%" height="500px" :adaptive="true" name="location_model">
@@ -127,17 +378,33 @@
           <div class="close-btn search wrap">
             <div>
               <label class="search-btn-wrap">
-                <button type="button"><i class="material-icons" @click="closeLocationModel('close')" style="font-size: 35px;">clear</i></button>
-                <gmap-autocomplete class="w-1/3 px-2 border border-purple rounded-full h-full location-input" @place_changed="setPlace">
-                </gmap-autocomplete>
-                <button type="button" class="w-1/4 w-2btn border border-purple bg-purple-gradient text-white rounded-full h-full" @click="closeLocationModel('save')">Save
+                <button type="button">
+                  <i
+                    class="material-icons"
+                    @click="closeLocationModel('close')"
+                    style="font-size: 35px;"
+                  >clear</i>
                 </button>
+                <gmap-autocomplete
+                  class="w-1/3 px-2 border border-purple rounded-full h-full location-input"
+                  @place_changed="setPlace"
+                ></gmap-autocomplete>
+                <button
+                  type="button"
+                  class="w-1/4 w-2btn border border-purple bg-purple-gradient text-white rounded-full h-full"
+                  @click="closeLocationModel('save')"
+                >Save</button>
               </label>
               <br />
             </div>
-            <br>
+            <br />
             <gmap-map :center="center" :zoom="12" style="width:100%;  height: 400px;">
-              <gmap-marker :key="index" v-for="(m, index) in markers" :position="m.position" @click="center=m.position"></gmap-marker>
+              <gmap-marker
+                :key="index"
+                v-for="(m, index) in markers"
+                :position="m.position"
+                @click="center=m.position"
+              ></gmap-marker>
             </gmap-map>
           </div>
         </template>
@@ -147,59 +414,140 @@
       <div class="tags w-2/5">
         <p class="px-4 text-purple py-4">Union Status</p>
         <div class="flex px-4">
-          <div v-for="union in union_status" :key="union.key" class="py-2 px-4 border border-purple uppercase mr-2 rounded-full cursor-pointer" :class="[union.selected ? 'bg-purple text-white' : 'bg-white text-purple']" @click="setTags($event, 'union_status', false)">{{ union.name }}
-          </div>
+          <div
+            v-for="union in union_status"
+            :key="union.key"
+            class="py-2 px-4 border border-purple uppercase mr-2 rounded-full cursor-pointer"
+            :class="[union.selected ? 'bg-purple text-white' : 'bg-white text-purple']"
+            @click="setTags($event, 'union_status', false)"
+          >{{ union.name }}</div>
         </div>
         <p class="px-5 text-purple py-4">Contract type</p>
         <div class="flex px-4">
-          <div v-for="contract_type in contract_types" :key="contract_type.key" class="py-2 px-4 uppercase border border-orange-500 mr-2 rounded-full cursor-pointer" :class="[contract_type.selected ? 'bg-orange-500 text-white' : 'bg-white text-orange-500']" @click="setTags($event, 'contract_types', false)">{{ contract_type.name }}
-          </div>
+          <div
+            v-for="contract_type in contract_types"
+            :key="contract_type.key"
+            class="py-2 px-4 uppercase border border-orange-500 mr-2 rounded-full cursor-pointer"
+            :class="[contract_type.selected ? 'bg-orange-500 text-white' : 'bg-white text-orange-500']"
+            @click="setTags($event, 'contract_types', false)"
+          >{{ contract_type.name }}</div>
         </div>
         <p class="px-4 text-purple pt-4 pb-2">Production Type</p>
         <div class="flex flex-wrap px-4">
-          <div v-for="production_type in production_types" :key="production_type.key" class="py-2 px-4 uppercase border border-pink-800 my-2 mr-2 rounded-full cursor-pointer" :class="[production_type.selected ? 'bg-pink-800 text-white' : 'bg-white text-pink-800']" @click="setTags($event, 'production_types', true)">{{ production_type.name }}
-          </div>
+          <div
+            v-for="production_type in production_types"
+            :key="production_type.key"
+            class="py-2 px-4 uppercase border border-pink-800 my-2 mr-2 rounded-full cursor-pointer"
+            :class="[production_type.selected ? 'bg-pink-800 text-white' : 'bg-white text-pink-800']"
+            @click="setTags($event, 'production_types', true)"
+          >{{ production_type.name }}</div>
         </div>
       </div>
       <div class="managers w-3/5 flex flex-col items-end">
         <div v-if="!!form.roles.length" class="flex flex-col items-center my-5 w-2/3">
           <p class="text-purple text-lg mb-4">Roles</p>
-          <carousel class="flex-none w-full" :per-page="innerWidth < 1920 ? 3 : 4" :pagination-enabled="false" :navigation-enabled="true" :navigation-prev-label="'&#x279C;'" :navigation-next-label="'&#x279C;'">
-            <slide v-for="(role, index) in form.roles" :key="index" :data-index="index" @slide-click="openRole" class="py-2 pr-2 cml-6">
+          <carousel
+            class="flex-none w-full"
+            :per-page="innerWidth < 1920 ? 3 : 4"
+            :pagination-enabled="false"
+            :navigation-enabled="true"
+            :navigation-prev-label="'&#x279C;'"
+            :navigation-next-label="'&#x279C;'"
+          >
+            <slide
+              v-for="(role, index) in form.roles"
+              :key="index"
+              :data-index="index"
+              @slide-click="openRole"
+              class="py-2 pr-2 cml-6"
+            >
               <div class="flex flex-col items-center cursor-pointer box-shadow">
-                <div class="bg-purple-gradient flex items-center justify-center rounded-full h-12 w-12">
-                  <img :src="role && role.preview ? role.preview :imgUrlAlt" @error="imgUrlAlt" alt="Cover" class="w-full h-full object-cover rounded-full" />
+                <div
+                  class="bg-purple-gradient flex items-center justify-center rounded-full h-12 w-12"
+                >
+                  <img
+                    :src="role && role.preview ? role.preview :imgUrlAlt"
+                    @error="imgUrlAlt"
+                    alt="Cover"
+                    class="w-full h-full object-cover rounded-full"
+                  />
                 </div>
                 <span class="text-purple font-medium mt-2">{{ role.name }}</span>
               </div>
             </slide>
           </carousel>
         </div>
-        <button class="w-2/3 mt-4 py-3 px-4 border-4 border-purple text-purple rounded-full focus:outline-none" type="button" @click.prevent="manageRoles = true">{{ form.roles.length ? 'Edit' : 'Add' }} Roles
-        </button>
+        <button
+          class="w-2/3 mt-4 py-3 px-4 border-4 border-purple text-purple rounded-full focus:outline-none"
+          type="button"
+          @click.prevent="manageRoles = true"
+        >{{ form.roles.length ? 'Edit' : 'Add' }} Roles</button>
         <div v-if="!!form.media.length" class="flex flex-col items-center my-5 w-2/3">
           <p class="text-purple text-lg mb-4">Documents</p>
-          <carousel class="flex-none w-full" :per-page="innerWidth < 1920 ? 1 : 2" :pagination-enabled="false" :navigation-enabled="true" :navigation-prev-label="'&#x279C;'" :navigation-next-label="'&#x279C;'">
+          <carousel
+            class="flex-none w-full"
+            :per-page="innerWidth < 1920 ? 1 : 2"
+            :pagination-enabled="false"
+            :navigation-enabled="true"
+            :navigation-prev-label="'&#x279C;'"
+            :navigation-next-label="'&#x279C;'"
+          >
             <slide v-for="(media, index) in form.media" :key="index">
-              <DocumentItem :media="media" @destroy="handleDeleteDocument" @renamedoc="handleRenameDoc" />
+              <DocumentItem
+                :media="media"
+                @destroy="handleDeleteDocument"
+                @renamedoc="handleRenameDoc"
+              />
             </slide>
           </carousel>
         </div>
-        <button class="w-2/3 py-3 px-4 border-4 border-purple text-purple rounded-full focus:outline-none mb-4" type="button" :class="{ 'mt-4': !form.media.length }" @click="openDocumentOptionModal">Manage Documents
-        </button>
+        <button
+          class="w-2/3 py-3 px-4 border-4 border-purple text-purple rounded-full focus:outline-none mb-4"
+          type="button"
+          :class="{ 'mt-4': !form.media.length }"
+          @click="openDocumentOptionModal"
+        >Manage Documents</button>
         <base-button class="mt-auto w-2/3 mb-12" type="submit">Create Audition</base-button>
       </div>
     </div>
-    <RolesModal v-if="manageRoles" :data="selectedRole" @save="handleSaveRole" @destroy="handleDeleteRole" @close="manageRoles = false" />
+    <RolesModal
+      v-if="manageRoles"
+      :data="selectedRole"
+      @save="handleSaveRole"
+      @destroy="handleDeleteRole"
+      @close="manageRoles = false"
+    />
     <!-- Cover image crop modal -->
-    <modal class="flex flex-col w-full items-center my-info-mdel modal-height-96 crop-modal" :width="600" name="modal_crop_image">
+    <modal
+      class="flex flex-col w-full items-center my-info-mdel modal-height-96 crop-modal"
+      :width="600"
+      name="modal_crop_image"
+    >
       <div class="content my-info-content flex-col" ng-if="imgSrc">
-          <div class="w-full content-center justify-center text-center mrtop-minus-crop">
-            <span class="text-center text-sm w-full text-purple">Please upload an image, which has a size of more than width {{cover_image_size.min_width}} X height {{cover_image_size.min_height}}.</span>
-          </div>
+        <div class="w-full content-center justify-center text-center mrtop-minus-crop">
+          <span
+            class="text-center text-sm w-full text-purple"
+          >Please upload an image, which has a size of more than width {{cover_image_size.min_width}} X height {{cover_image_size.min_height}}.</span>
+        </div>
         <section class="cropper-area">
           <div class="img-cropper">
-            <vue-cropper ref="cropper" :aspectRatio="1/1" :initialAspectRatio="1/1" :src="imgSrc" preview=".preview" drag-mode="crop" :minCropBoxWidth="minHeight" :minCropBoxHeight="minWidth" :minContainerWidth="minWidthCropContainer" :minContainerHeight="minHeightCropContainer" :minCanvasWidth="minWidth" :minCanvasHeight="minHeight" :auto-crop-area="1" alt="Profile Picture" :img-style="{ 'width': '400px', 'height': '400px' }" />
+            <vue-cropper
+              ref="cropper"
+              :aspectRatio="1/1"
+              :initialAspectRatio="1/1"
+              :src="imgSrc"
+              preview=".preview"
+              drag-mode="crop"
+              :minCropBoxWidth="minHeight"
+              :minCropBoxHeight="minWidth"
+              :minContainerWidth="minWidthCropContainer"
+              :minContainerHeight="minHeightCropContainer"
+              :minCanvasWidth="minWidth"
+              :minCanvasHeight="minHeight"
+              :auto-crop-area="1"
+              alt="Profile Picture"
+              :img-style="{ 'width': '400px', 'height': '400px' }"
+            />
           </div>
           <div class="actions">
             <a href="#" role="button" @click.prevent="cropSaveImage">Crop & Save</a>
@@ -230,10 +578,8 @@
                     @click.prevent="cropImageDone"
                     >
                     Done
-                    </a> -->
-            <a href="#" role="button" @click.prevent="cropImageCancel">
-              Cancel
-            </a>
+            </a>-->
+            <a href="#" role="button" @click.prevent="cropImageCancel">Cancel</a>
           </div>
 
           <!-- <base-input v-model="coverFileName" :custom-classes="['border border-b border-gray-300']" name="cover_file_name" placeholder="Cover Name" data-vv-as="cover name" class="w-8/12" /> -->
@@ -250,87 +596,154 @@
                     />
                     <div v-else class="crop-placeholder" />
                 </div>
-                </section> -->
+        </section>-->
       </div>
     </modal>
-    <modal class="flex flex-col items-center" :width="250" :height="250" name="modal_document_options">
+    <modal
+      class="flex flex-col items-center"
+      :width="250"
+      :height="250"
+      name="modal_document_options"
+    >
       <div class="flex flex-col items-center text-purple text-lg mt-5 mb-2">
         <h1>Select Document</h1>
       </div>
       <div class="flex flex-col items-center">
-        <input ref="inputFile" accept="audio/*,video/*,image/*, .pdf" type="file" multiple hidden @change="handleFile" />
-        <button class="w-2/3 py-3 px-4 border-4 border-purple text-purple rounded-full focus:outline-none mb-4" type="button" :class="{ 'mt-4': !form.media.length }" @click="$refs.inputFile.click()">Add Files
-        </button>
-        <button class="w-2/3 py-3 px-4 border-4 border-purple text-purple rounded-full focus:outline-none mb-4" type="button" :class="{ 'mt-4': !form.media.length }" @click="showLinkManageModal">Add Links
-        </button>
+        <input
+          ref="inputFile"
+          accept="audio/*, video/*, image/*, .pdf"
+          type="file"
+          multiple
+          hidden
+          @change="handleFile"
+        />
+        <button
+          class="w-2/3 py-3 px-4 border-4 border-purple text-purple rounded-full focus:outline-none mb-4"
+          type="button"
+          :class="{ 'mt-4': !form.media.length }"
+          @click="$refs.inputFile.click()"
+        >Add Files</button>
+        <button
+          class="w-2/3 py-3 px-4 border-4 border-purple text-purple rounded-full focus:outline-none mb-4"
+          type="button"
+          :class="{ 'mt-4': !form.media.length }"
+          @click="showLinkManageModal"
+        >Add Links</button>
       </div>
     </modal>
-    <modal class="flex w-full items-center link-modal" :width="500" :height="650" name="modal_document_file_manage" :clickToClose="false">
+    <modal
+      class="flex w-full items-center link-modal"
+      :width="500"
+      :height="650"
+      name="modal_document_file_manage"
+      :clickToClose="false"
+    >
       <div class="flex flex-col items-center text-purple text-lg mt-5 mb-2">
         <h1>Manage Documents Name</h1>
       </div>
       <div class="max-link-screen" id="link_container">
         <div class="mt-5">
-          <div class="flex flex-col w-10/13 px-2 mb-5" v-for="(media, index) in form.media" :key="index">
-            <span class="relative px-2 text-purple"> Document {{(index+1)}} :</span>
+          <div
+            class="flex flex-col w-10/13 px-2 mb-5"
+            v-for="(media, index) in form.media"
+            :key="index"
+          >
+            <span class="relative px-2 text-purple">Document {{(index+1)}} :</span>
             <div class="relative h-12 w-9/12 my-2">
-              <base-input v-model="media.name" name="media_name[]" class="w-full px-2" placeholder="Name" :custom-classes="['border', 'border-purple']" />
+              <base-input
+                v-model="media.name"
+                name="media_name[]"
+                class="w-full px-2"
+                placeholder="Name"
+                :custom-classes="['border', 'border-purple']"
+              />
             </div>
           </div>
         </div>
       </div>
       <div class="actions cus-action-btn">
-        <a href="#" role="button" @click.prevent="documentFileManageDone">
-          Done
-        </a>
+        <a href="#" role="button" @click.prevent="documentFileManageDone">Done</a>
       </div>
     </modal>
-    <modal class="flex w-full items-center link-modal" :width="500" :height="650" name="modal_document_link_manage" :clickToClose="false">
+    <modal
+      class="flex w-full items-center link-modal"
+      :width="500"
+      :height="650"
+      name="modal_document_link_manage"
+      :clickToClose="false"
+    >
       <div class="d-flex justify-end text-right top-add-btn">
-        <a href="#" role="button" @click.prevent="addNewLink" class="text-purple text-mg">
-          Add New
-        </a>
+        <a href="#" role="button" @click.prevent="addNewLink" class="text-purple text-mg">Add New</a>
       </div>
       <div class="max-link-screen" id="link_container">
         <div>
-          <div class="flex flex-col w-10/13 px-2 mb-5" v-for="(dlink, index) in document_links" :key="index">
+          <div
+            class="flex flex-col w-10/13 px-2 mb-5"
+            v-for="(dlink, index) in document_links"
+            :key="index"
+          >
             <div class="relative h-12 w-9/12 my-2">
-              <base-input v-model="dlink.name" name="link_name[]" class="w-full px-2" placeholder="Name" :custom-classes="['border', 'border-purple']" />
+              <base-input
+                v-model="dlink.name"
+                name="link_name[]"
+                class="w-full px-2"
+                placeholder="Name"
+                :custom-classes="['border', 'border-purple']"
+              />
             </div>
             <div class="relative h-12 w-10/13 my-2">
               <div class="input-delete-link">
-                <base-input v-model="dlink.url" name="link_url[]" class="w-full px-2 w-9/12 cus-input" placeholder="URL" :custom-classes="['border', 'border-purple']" />
-                <img src="/images/icons/icon3.png" alt="Icon" class="h-8" @click="removeLink(index)" v-if="index>0" />
+                <base-input
+                  v-model="dlink.url"
+                  name="link_url[]"
+                  class="w-full px-2 w-9/12 cus-input"
+                  placeholder="URL"
+                  :custom-classes="['border', 'border-purple']"
+                />
+                <img
+                  src="/images/icons/icon3.png"
+                  alt="Icon"
+                  class="h-8"
+                  @click="removeLink(index)"
+                  v-if="index>0"
+                />
               </div>
             </div>
           </div>
         </div>
       </div>
       <div class="actions cus-action-btn">
-        <a href="#" role="button" @click.prevent="linkManageCancel">
-          Cancel
-        </a>
-        <a href="#" role="button" @click.prevent="linkManageDone">
-          Done
-        </a>
+        <a href="#" role="button" @click.prevent="linkManageCancel">Cancel</a>
+        <a href="#" role="button" @click.prevent="linkManageDone">Done</a>
       </div>
     </modal>
-    <modal class="flex flex-col w-full items-center" :width="450" :height="200" name="rename_file_name" :clickToClose="false">
+    <modal
+      class="flex flex-col w-full items-center"
+      :width="450"
+      :height="200"
+      name="rename_file_name"
+      :clickToClose="false"
+    >
       <div class="flex flex-col items-center text-purple text-lg mt-5 mb-2">
         <h1>Document Rename</h1>
       </div>
       <div class="content my-info-content">
         <section class="image-preview-area">
           <div class="flex justify-center mb-4 items-center px-3 w-full">
-            <div class="w-full  ml-4 text-purple px-2">
-              <base-input v-if="currentDoc && currentDoc.index != null" v-model="form.media[currentDoc.index].name" :custom-classes="['border border-b border-gray-300']" name="file_name" placeholder="File Name" data-vv-as="file name" />
+            <div class="w-full ml-4 text-purple px-2">
+              <base-input
+                v-if="currentDoc && currentDoc.index != null"
+                v-model="form.media[currentDoc.index].name"
+                :custom-classes="['border border-b border-gray-300']"
+                name="file_name"
+                placeholder="File Name"
+                data-vv-as="file name"
+              />
             </div>
           </div>
           <div class="container flex w-full mt-3 cursor-pointer">
             <div class="flex w-full text-center justify-center flex-wrap actions">
-              <a href="#" role="button" @click.prevent="fileRenameDone">
-                Done
-              </a>
+              <a href="#" role="button" @click.prevent="fileRenameDone">Done</a>
             </div>
           </div>
         </section>
@@ -366,8 +779,8 @@ import DEFINE from "../../utils/const.js";
 Vue.use(VueGoogleMaps, {
   load: {
     key: DEFINE.google.key,
-    libraries: DEFINE.google.libraries
-  }
+    libraries: DEFINE.google.libraries,
+  },
 });
 
 import VueCropper from "vue-cropperjs";
@@ -376,12 +789,12 @@ import "cropperjs/dist/cropper.css";
 import moment from "moment";
 
 import customTimePicker from "../custom/custom-clock-picker/components/customTimePicker.vue";
-import ThumbService from '@/services/ThumbService';
+import ThumbService from "@/services/ThumbService";
 
 import _ from "lodash";
 
-import OutsideClick from '@/utils/outSideClickDirective';
-Vue.directive('outside-click', OutsideClick)
+import OutsideClick from "@/utils/outSideClickDirective";
+Vue.directive("outside-click", OutsideClick);
 
 export default {
   name: "AuditionForm",
@@ -392,7 +805,7 @@ export default {
     DocumentItem,
     Loading,
     customTimePicker,
-    VueCropper
+    VueCropper,
   },
   data() {
     return {
@@ -409,35 +822,36 @@ export default {
       isLoading: false,
       fullPage: true,
       changeLocationBtnTxt: false,
-      cover_image_size : DEFINE.cover_image,
+      cover_image_size: DEFINE.cover_image,
       invitation: {
         adding: false,
-        email: ""
+        email: "",
       },
+      end_time: null,
       form: {
         dates: [
           {
-            type: 1
+            type: 1,
           },
           {
-            type: 2
-          }
+            type: 2,
+          },
         ],
         roles: [],
         appointment: undefined,
         contributors: [],
-        media: []
+        media: [],
       },
-      group_size_array : DEFINE.group_size_array,
-      min_end_date : new Date(),
-      isOnlineAudition : false,
+      group_size_array: DEFINE.group_size_array,
+      min_end_date: new Date(),
+      isOnlineAudition: false,
       document_links: [
         {
           name: "",
           url: "",
           type: 5,
-          share: "yes"
-        }
+          share: "yes",
+        },
       ],
       union_status: [
         // {
@@ -448,13 +862,13 @@ export default {
         {
           value: "UNION",
           name: "Union",
-          selected: true
+          selected: true,
         },
         {
           value: "NONUNION",
           name: "Non Union",
-          selected: false
-        }
+          selected: false,
+        },
       ],
       contract_types: [
         // {
@@ -465,55 +879,55 @@ export default {
         {
           key: "PAID",
           name: "Paid",
-          selected: true
+          selected: true,
         },
         {
           key: "UNPAID",
           name: "Unpaid",
-          selected: false
+          selected: false,
         },
         {
           key: "ACADEMIC",
           name: "Academic",
-          selected: false
-        }
+          selected: false,
+        },
       ],
       production_types: [
         {
           key: "THEATER",
           name: "Theater",
-          selected: true
+          selected: true,
         },
         {
           key: "FILM",
           name: "Film",
-          selected: false
+          selected: false,
         },
         {
           key: "VOICEOVER",
           name: "VoiceOver",
-          selected: false
+          selected: false,
         },
         {
           key: "COMMERCIALS",
           name: "Commercials",
-          selected: false
+          selected: false,
         },
         {
           key: "PERFORMING ARTS",
           name: "Performing Arts",
-          selected: false
+          selected: false,
         },
         {
           key: "MODELING",
           name: "Modeling",
-          selected: false
+          selected: false,
         },
         {
           key: "TV & VIDEO",
           name: "TV & Video",
-          selected: false
-        }
+          selected: false,
+        },
       ],
       center: { lat: 45.508, lng: -73.587 },
       markers: [],
@@ -537,25 +951,25 @@ export default {
           defaultHour: 0,
           defaultMinute: 0,
           selectedLocation: null,
-          isSelected: false
-        }
+          isSelected: false,
+        },
       ],
       selected_round: {
         name: "Round 1",
         round: 1,
-        index: 0
+        index: 0,
       },
-      set_selected_round : {
+      set_selected_round: {
         name: "Round 1",
         round: 1,
-        index: 0
+        index: 0,
       },
-      selected_group_size : '',
-      set_group_size : '',
-      coverThumbnail : {},
-      coverFileName :  null,
-      coveNameObject : {},
-      currentDoc : {},
+      selected_group_size: "",
+      set_group_size: "",
+      coverThumbnail: {},
+      coverFileName: null,
+      coveNameObject: {},
+      currentDoc: {},
     };
   },
   watch: {
@@ -563,27 +977,27 @@ export default {
       if (!value) {
         this.selectedRole = null;
       }
-    }
+    },
   },
   created() {
     this.min_end_date.setDate(new Date().getDate() + 1);
     window.addEventListener("resize", this.onResize);
   },
   methods: {
-    changeAuditionType(){
-      if (this.form.online){
+    changeAuditionType() {
+      if (this.form.online) {
         this.isOnlineAudition = true;
       } else {
         this.isOnlineAudition = false;
       }
     },
-    handleRenameDoc(media){      
+    handleRenameDoc(media) {
       const index = this.form.media.indexOf(media);
-      Vue.set(this.currentDoc, 'index', index);
-      this.$modal.show('rename_file_name');
+      Vue.set(this.currentDoc, "index", index);
+      this.$modal.show("rename_file_name");
     },
-    fileRenameDone(){
-      this.$modal.hide('rename_file_name');
+    fileRenameDone() {
+      this.$modal.hide("rename_file_name");
     },
     onResize() {
       this.innerWidth = window.innerWidth;
@@ -612,7 +1026,7 @@ export default {
         this.rounds[
           this.selected_round.index
         ].selectedLocation = this.selectedLocation;
-        
+
         this.rounds[this.selected_round.index].isSelected = true;
         this.$modal.hide("location_model");
       } else {
@@ -627,15 +1041,15 @@ export default {
       if (
         !this.invitation.email ||
         this.form.contributors.find(
-          x => x.email === this.invitation.email.toLowerCase()
+          (x) => x.email === this.invitation.email.toLowerCase()
         ) ||
-        !await this.$validator.validateAll("invitation")
+        !(await this.$validator.validateAll("invitation"))
       ) {
         return;
       }
 
       this.form.contributors.push({
-        email: this.invitation.email.toLowerCase()
+        email: this.invitation.email.toLowerCase(),
       });
 
       this.invitation.adding = false;
@@ -653,17 +1067,17 @@ export default {
     },
 
     handleSaveRole(role) {
-      const index = this.form.roles.findIndex(x => x.id === role.id);
+      const index = this.form.roles.findIndex((x) => x.id === role.id);
 
       if (index !== -1) {
         this.$set(this.form.roles, index, role);
       } else {
-        this.form.roles.push(role);        
+        this.form.roles.push(role);
       }
     },
 
     handleDeleteRole(role) {
-      const index = this.form.roles.findIndex(x => x.id === role.id);
+      const index = this.form.roles.findIndex((x) => x.id === role.id);
       this.form.roles.splice(index, 1);
     },
     openDocumentOptionModal() {
@@ -691,7 +1105,7 @@ export default {
         name: "",
         url: "",
         type: 5,
-        share: "yes"
+        share: "yes",
       };
     },
     async addNewLink() {
@@ -717,25 +1131,35 @@ export default {
     documentFileManageDone() {
       this.$toasted.clear();
       let documentHasError = false;
-      let documentHasErrorMsg = 'Any documents should not be without a filename!';      
+      let documentHasErrorMsg =
+        "Any documents should not be without a filename!";
       for (var di = 0; di < this.form.media.length; di++) {
-        if(!this.form.media[di].name || this.form.media[di].name == '' || this.form.media[di].name == ''){
-          documentHasErrorMsg = 'Any documents should not be without a filename!';
+        if (
+          !this.form.media[di].name ||
+          this.form.media[di].name == "" ||
+          this.form.media[di].name == ""
+        ) {
+          documentHasErrorMsg =
+            "Any documents should not be without a filename!";
           documentHasError = true;
           break;
-        } else if(this.form.media[di].name && this.form.media[di].name.length > 150){
-          documentHasErrorMsg = 'Any document filename is too long, it should not be more than 150 characters!';
+        } else if (
+          this.form.media[di].name &&
+          this.form.media[di].name.length > 150
+        ) {
+          documentHasErrorMsg =
+            "Any document filename is too long, it should not be more than 150 characters!";
           documentHasError = true;
           break;
         }
       }
-      if(documentHasError){
-          this.$toasted.error(documentHasErrorMsg);
-          return;
+      if (documentHasError) {
+        this.$toasted.error(documentHasErrorMsg);
+        return;
       }
-      
+
       this.closeDocFileManageModal();
-    },    
+    },
     linkManageDone() {
       this.$toasted.clear();
       let lastRecord = this.document_links[this.document_links.length - 1]
@@ -748,13 +1172,13 @@ export default {
       } else {
         this.document_links
           // .filter(file => !this.form.media.some(x => x.name === file.name))
-          .forEach(link => {
+          .forEach((link) => {
             this.form.media.push({
               name: link.name,
               type: link.type,
               url: link.url,
               file: null,
-              share: "yes"
+              share: "yes",
             });
           });
         this.closeLinkManageModal();
@@ -765,7 +1189,7 @@ export default {
       const files = Array.from(e.target.files);
 
       await files
-        .filter((file) => !this.form.media.some(x => x.name === file.name))
+        .filter((file) => !this.form.media.some((x) => x.name === file.name))
         .forEach(async (file) => {
           const extension = file.name.split(".").pop();
 
@@ -778,16 +1202,22 @@ export default {
               type: file_type,
               url: file,
               file: file,
-              share: "yes"
+              share: "yes",
             };
 
-            if (file.type.match('image')) {
-              await ThumbService.imageThumbnail(file, DEFINE.thumbSize.docImageThumbWidth).then((thumb_data) => {              
+            if (file.type.match("image")) {
+              await ThumbService.imageThumbnail(
+                file,
+                DEFINE.thumbSize.docImageThumbWidth
+              ).then((thumb_data) => {
                 currentMedia.thumb_file = thumb_data.file;
                 currentMedia.preview = thumb_data.preview;
               });
-            } else if(file.type.match('video')) {
-              await ThumbService.videoThumbnail(file, DEFINE.thumbSize.videoThumbWidth).then((thumb_data) => {
+            } else if (file.type.match("video")) {
+              await ThumbService.videoThumbnail(
+                file,
+                DEFINE.thumbSize.videoThumbWidth
+              ).then((thumb_data) => {
                 currentMedia.thumb_file = thumb_data.file;
                 currentMedia.preview = thumb_data.preview;
               });
@@ -795,8 +1225,8 @@ export default {
             await this.form.media.push(currentMedia);
           }
         });
-      this.$refs.inputFile.value = "";    
-      this.showDocFileManageModal();  
+      this.$refs.inputFile.value = "";
+      this.showDocFileManageModal();
     },
     getFileType(file) {
       if (file.type.match("audio.*")) return 1;
@@ -818,7 +1248,9 @@ export default {
         this.updatedImageFile = file;
         this.coveNameObject.name = file.name;
         this.coveNameObject.org_name = file.name;
-        this.coverFileName = JSON.parse(JSON.stringify(this.updatedImageFile.name));
+        this.coverFileName = JSON.parse(
+          JSON.stringify(this.updatedImageFile.name)
+        );
         const reader = new FileReader();
         reader.onload = (event) => {
           this.imgSrc = event.target.result;
@@ -876,8 +1308,12 @@ export default {
           return;
         }
 
-        if(this.form.online && !this.form.end_date) {
+        if (this.form.online && !this.form.end_date) {
           this.$toasted.error("The end date field is required.");
+          return;
+        }
+        if (!this.end_time) {
+          this.$toasted.error("The cut off time is required.");
           return;
         }
         if (
@@ -934,7 +1370,7 @@ export default {
 
         let data = Object.assign({}, this.form);
         if (data.online) {
-          data.end_date = moment(this.form.end_date).format('YYYY-MM-DD');
+          data.end_date = moment(this.form.end_date).format("YYYY-MM-DD") + " " + this.end_time;
           data.rounds = [
             {
               location: null,
@@ -944,65 +1380,83 @@ export default {
                 length: "20",
                 start: "10:00",
                 end: "18:00",
-                slots: null
-              }
-            }
+                slots: null,
+              },
+            },
           ];
         } else {
-            if(data.grouping_enabled && (!data.grouping_capacity || data.grouping_capacity < 1)){
-              this.$toasted.error("Please select group size.");
-              return;
-            }
-            data.online = false;
-            let roundHasError = false;
-            let rounErrorMsg = "Please enter valid details of rounds."
-            data.rounds = this.rounds;            
-            if(!data.rounds || data.rounds.length == 0){
-                this.$toasted.error(rounErrorMsg);
-                return;
-            }
-            
-            for (var i = 0; i < data.rounds.length; i++) {
+          if (
+            data.grouping_enabled &&
+            (!data.grouping_capacity || data.grouping_capacity < 1)
+          ) {
+            this.$toasted.error("Please select group size.");
+            return;
+          }
+          data.online = false;
+          let roundHasError = false;
+          let rounErrorMsg = "Please enter valid details of rounds.";
+          data.rounds = this.rounds;
+          if (!data.rounds || data.rounds.length == 0) {
+            this.$toasted.error(rounErrorMsg);
+            return;
+          }
 
-                if(!data.rounds[i].date || data.rounds[i].date == ''){
-                    roundHasError = true;
-                    rounErrorMsg = `Please enter date of round ${(i+1)}.`;
-                    break;
-                } else if(!data.rounds[i].time || data.rounds[i].time == ''){
-                    roundHasError = true;
-                    rounErrorMsg = `Please enter time of round ${(i+1)}.`;
-                    break;
-                } else if(!data.rounds[i].appointment || data.rounds[i].appointment == '' || _.isEmpty(data.rounds[i].appointment)){
-                    roundHasError = true;
-                    rounErrorMsg = `Please enter appointments of round ${(i+1)}.`;
-                    break;
-                } else if(!data.rounds[i].selectedLocation || data.rounds[i].selectedLocation == '' || _.isEmpty(data.rounds[i].selectedLocation)){
-                    roundHasError = true;
-                    rounErrorMsg = `Please enter location of round ${(i+1)}.`;
-                    break;
-                } else {
-                    data.rounds[i].location = {
-                        latitude: data.rounds[i].selectedLocation.geometry.location.lat(),
-                        longitude: data.rounds[i].selectedLocation.geometry.location.lng(),
-                        latitudeDelta: 0.0043,
-                        longitudeDelta: 0.0043
-                    };
-                    
-                    data.rounds[i].grouping_enabled = data.grouping_enabled ? data.grouping_enabled  : false;
-                    data.rounds[i].grouping_capacity = data.grouping_capacity ? data.grouping_capacity : 0;
-                    delete data.rounds[i].selectedLocation;
-                }
-            }
+          for (var i = 0; i < data.rounds.length; i++) {
+            if (!data.rounds[i].date || data.rounds[i].date == "") {
+              roundHasError = true;
+              rounErrorMsg = `Please enter date of round ${i + 1}.`;
+              break;
+            } else if (!data.rounds[i].time || data.rounds[i].time == "") {
+              roundHasError = true;
+              rounErrorMsg = `Please enter time of round ${i + 1}.`;
+              break;
+            } else if (
+              !data.rounds[i].appointment ||
+              data.rounds[i].appointment == "" ||
+              _.isEmpty(data.rounds[i].appointment)
+            ) {
+              roundHasError = true;
+              rounErrorMsg = `Please enter appointments of round ${i + 1}.`;
+              break;
+            } else if (
+              !data.rounds[i].selectedLocation ||
+              data.rounds[i].selectedLocation == "" ||
+              _.isEmpty(data.rounds[i].selectedLocation)
+            ) {
+              roundHasError = true;
+              rounErrorMsg = `Please enter location of round ${i + 1}.`;
+              break;
+            } else {
+              data.rounds[i].location = {
+                latitude: data.rounds[
+                  i
+                ].selectedLocation.geometry.location.lat(),
+                longitude: data.rounds[
+                  i
+                ].selectedLocation.geometry.location.lng(),
+                latitudeDelta: 0.0043,
+                longitudeDelta: 0.0043,
+              };
 
-            if(roundHasError){
-                this.$toasted.error(rounErrorMsg);
-                return;    
+              data.rounds[i].grouping_enabled = data.grouping_enabled
+                ? data.grouping_enabled
+                : false;
+              data.rounds[i].grouping_capacity = data.grouping_capacity
+                ? data.grouping_capacity
+                : 0;
+              delete data.rounds[i].selectedLocation;
             }
+          }
+
+          if (roundHasError) {
+            this.$toasted.error(rounErrorMsg);
+            return;
+          }
         }
 
         this.isLoading = true;
-        data.union = this.union_status.find(x => x.selected).value;
-        data.contract = this.contract_types.find(x => x.selected).key;
+        data.union = this.union_status.find((x) => x.selected).value;
+        data.contract = this.contract_types.find((x) => x.selected).key;
         data.production = this.production_types
           .filter((x) => x.selected)
           .map((x) => x.key)
@@ -1010,15 +1464,20 @@ export default {
 
         // upload cover thumbnail file
         let coverThumbnailUrl;
-        if(this.coverThumbnail.file){
-          const thumbnailFileSnapshot = await firebase.storage()
-          .ref(`audition_cover/thumbnail/${uuid()}.png`)
-          .put(this.coverThumbnail.file);        
-          coverThumbnailUrl = await thumbnailFileSnapshot.ref.getDownloadURL();          
+        if (this.coverThumbnail.file) {
+          const thumbnailFileSnapshot = await firebase
+            .storage()
+            .ref(`audition_cover/thumbnail/${uuid()}.png`)
+            .put(this.coverThumbnail.file);
+          coverThumbnailUrl = await thumbnailFileSnapshot.ref.getDownloadURL();
         }
         // Upload cover
-        const coverRxtension = this.form.cover_org_name.substring(this.form.cover_org_name.lastIndexOf('.')+1);
-        const coverFilePath = data.cover_name.includes(`${coverRxtension}`) ? `audition_cover/${uuid()}_${data.cover_name}` : `audition_cover/${uuid()}_${data.cover_name}.${coverRxtension}`;
+        const coverRxtension = this.form.cover_org_name.substring(
+          this.form.cover_org_name.lastIndexOf(".") + 1
+        );
+        const coverFilePath = data.cover_name.includes(`${coverRxtension}`)
+          ? `audition_cover/${uuid()}_${data.cover_name}`
+          : `audition_cover/${uuid()}_${data.cover_name}.${coverRxtension}`;
         coverSnapshot = await firebase
           .storage()
           .ref(coverFilePath)
@@ -1034,17 +1493,26 @@ export default {
               delete role.preview;
               // Upload role cover thumbnail
               let roleThumbnailUrl = null;
-              if(role.thumb_file && role.thumb_file != undefined){
-                const thumbnailFileSnapshot = await firebase.storage()
-                .ref(`audition_role_cover/thumbnail/${uuid()}.png`)
-                .put(role.thumb_file);        
-                roleThumbnailUrl = await thumbnailFileSnapshot.ref.getDownloadURL();                
+              if (role.thumb_file && role.thumb_file != undefined) {
+                const thumbnailFileSnapshot = await firebase
+                  .storage()
+                  .ref(`audition_role_cover/thumbnail/${uuid()}.png`)
+                  .put(role.thumb_file);
+                roleThumbnailUrl = await thumbnailFileSnapshot.ref.getDownloadURL();
                 rolesThumbailSnapshots.push(thumbnailFileSnapshot);
               }
 
               // Upload role cover
-              const roleCoverExtension = role.cover_file.name.substring(role.cover_file.name.lastIndexOf('.')+1);
-              const roleCoverFilePath = role.name_cover.includes(`${roleCoverExtension}`) ? `audition_role_cover/${uuid()}_${role.name_cover}` : `audition_role_cover/${uuid()}_${role.name_cover}.${roleCoverExtension}`;
+              const roleCoverExtension = role.cover_file.name.substring(
+                role.cover_file.name.lastIndexOf(".") + 1
+              );
+              const roleCoverFilePath = role.name_cover.includes(
+                `${roleCoverExtension}`
+              )
+                ? `audition_role_cover/${uuid()}_${role.name_cover}`
+                : `audition_role_cover/${uuid()}_${
+                    role.name_cover
+                  }.${roleCoverExtension}`;
               const snapshot = await firebase
                 .storage()
                 .ref(roleCoverFilePath)
@@ -1061,22 +1529,27 @@ export default {
         await Promise.all(
           data.media.map(async (Media) => {
             if (Media.type != 5) {
-              if(Media.preview){
+              if (Media.preview) {
                 delete Media.preview;
               }
               // Upload doc thumbnail if image or video file
-              let fileThumbnailUrl = null;              
-              if(Media.thumb_file && Media.thumb_file != undefined){
-                const thumbnailFileSnapshot = await firebase.storage()
-                .ref(`audition_doc/thumbnail/${uuid()}.png`)
-                .put(Media.thumb_file);        
+              let fileThumbnailUrl = null;
+              if (Media.thumb_file && Media.thumb_file != undefined) {
+                const thumbnailFileSnapshot = await firebase
+                  .storage()
+                  .ref(`audition_doc/thumbnail/${uuid()}.png`)
+                  .put(Media.thumb_file);
                 fileThumbnailUrl = await thumbnailFileSnapshot.ref.getDownloadURL();
                 filesThumbailSnaphosts.push(thumbnailFileSnapshot);
               }
 
               // uplaod doc file
-              const docExtension = Media.file.name.substring(Media.file.name.lastIndexOf('.')+1);
-              const docFilePath = Media.name.includes(`${docExtension}`) ? `audition_doc/${uuid()}_${Media.name}` : `audition_doc/${uuid()}_${Media.name}.${docExtension}`;
+              const docExtension = Media.file.name.substring(
+                Media.file.name.lastIndexOf(".") + 1
+              );
+              const docFilePath = Media.name.includes(`${docExtension}`)
+                ? `audition_doc/${uuid()}_${Media.name}`
+                : `audition_doc/${uuid()}_${Media.name}.${docExtension}`;
               const snapshot = await firebase
                 .storage()
                 .ref(docFilePath)
@@ -1088,14 +1561,14 @@ export default {
             }
           })
         );
-        
+
         let action = await axios.post("/t/auditions/create", data);
-        
+
         this.isLoading = false;
         this.$toasted.success("The audition has created successfully.");
         this.$router.push({
           name: "auditions/detail",
-          params: { id: action.data.data.data.id }
+          params: { id: action.data.data.data.id },
         });
       } catch (e) {
         console.log(e);
@@ -1108,19 +1581,23 @@ export default {
           errorMsg ? errorMsg : "Audition not created, try later."
         );
         coverSnapshot && coverSnapshot.ref.delete();
-        if(thumbnailFileSnapshot){
+        if (thumbnailFileSnapshot) {
           thumbnailFileSnapshot.ref.delete();
         }
-        await Promise.all(rolesSnapshots.map(role => role.ref.delete()));
-        await Promise.all(rolesThumbailSnapshots.map(role => role.ref.delete()));        
-        await Promise.all(filesSnaphosts.map(file => file.ref.delete()));
-        await Promise.all(filesThumbailSnaphosts.map(role => role.ref.delete()));        
+        await Promise.all(rolesSnapshots.map((role) => role.ref.delete()));
+        await Promise.all(
+          rolesThumbailSnapshots.map((role) => role.ref.delete())
+        );
+        await Promise.all(filesSnaphosts.map((file) => file.ref.delete()));
+        await Promise.all(
+          filesThumbailSnaphosts.map((role) => role.ref.delete())
+        );
       }
     },
 
     setTags({ target }, type, multiple = false) {
       const text = target.textContent.trim();
-      const itemSelected = this[type].find(item => item.name === text);
+      const itemSelected = this[type].find((item) => item.name === text);
       if (multiple) {
         if (itemSelected.selected) {
           itemSelected.selected = false;
@@ -1130,7 +1607,7 @@ export default {
         return;
       }
 
-      this[type].forEach(item => (item.selected = false));
+      this[type].forEach((item) => (item.selected = false));
       itemSelected.selected = true;
     },
 
@@ -1144,7 +1621,7 @@ export default {
       if (this.currentPlace) {
         const marker = {
           lat: this.currentPlace.geometry.location.lat(),
-          lng: this.currentPlace.geometry.location.lng()
+          lng: this.currentPlace.geometry.location.lng(),
         };
         this.markers.push({ position: marker });
         this.places.push(this.currentPlace);
@@ -1152,21 +1629,34 @@ export default {
         this.currentPlace = null;
       }
     },
-    geolocate: function() {
-      navigator.geolocation.getCurrentPosition(position => {
+    geolocate: function () {
+      navigator.geolocation.getCurrentPosition((position) => {
         this.center = {
           lat: position.coords.latitude,
-          lng: position.coords.longitude
+          lng: position.coords.longitude,
         };
       });
     },
-    timeChangeHandler: function(event) {      
+    timeChangeHandler: function (event) {
       this.selected_round.defaultHour = event.hour ? event.hour : 0;
       this.selected_round.defaultMinute = event.minute ? event.minute : 0;
-      this.selected_round.time = event.hour > 0 || event.minute > 0 ? `${event.hour}:${event.minute}` : "";
+      this.selected_round.time =
+        event.hour > 0 || event.minute > 0
+          ? `${event.hour}:${event.minute}`
+          : "";
       this.rounds[this.selected_round.index].time = this.selected_round.time;
-      this.rounds[this.selected_round.index].defaultHour = this.selected_round.defaultHour;
-      this.rounds[this.selected_round.index].defaultMinute = this.selected_round.defaultMinute;
+      this.rounds[
+        this.selected_round.index
+      ].defaultHour = this.selected_round.defaultHour;
+      this.rounds[
+        this.selected_round.index
+      ].defaultMinute = this.selected_round.defaultMinute;
+    },
+    endTimeChangeHandler: function (event) {
+      this.end_time =
+        event.hour > 0 || event.minute > 0
+          ? `${event.hour}:${event.minute}:00`
+          : "";
     },
     imgUrlAlt(event) {
       event.target.src = DEFINE.role_placeholder;
@@ -1176,16 +1666,24 @@ export default {
      */
     async coverImageSizeValidate(imageSrc) {
       const imageSize = new Image();
-      imageSize.src = imageSrc;      
+      imageSize.src = imageSrc;
       const that = this;
       return new Promise((resolve, reject) => {
         imageSize.onload = function () {
-          console.log("width :: ", imageSize.width+", height :: "+imageSize.height);
-          if(imageSize.width < DEFINE.cover_image.min_width || imageSize.height < DEFINE.cover_image.min_height){
-            that.$toasted.error(`Please upload an image, which has a size of more than width ${DEFINE.cover_image.min_width} X height ${DEFINE.cover_image.min_height}!`);        
+          console.log(
+            "width :: ",
+            imageSize.width + ", height :: " + imageSize.height
+          );
+          if (
+            imageSize.width < DEFINE.cover_image.min_width ||
+            imageSize.height < DEFINE.cover_image.min_height
+          ) {
+            that.$toasted.error(
+              `Please upload an image, which has a size of more than width ${DEFINE.cover_image.min_width} X height ${DEFINE.cover_image.min_height}!`
+            );
             reject();
           } else {
-            resolve(true)
+            resolve(true);
           }
         };
       });
@@ -1199,31 +1697,38 @@ export default {
       //   this.$toasted.error('Cover filename is too long, it should not be more than 150 characters!');
       //   return;
       // }
-      
+
       this.coverThumbnail = {};
       const croppedImg = this.$refs.cropper.getCroppedCanvas().toDataURL();
-      
+
       //start : check minimum image width and height
-      await this.coverImageSizeValidate(croppedImg).then((validImage) => {        
-        if(validImage) {
-          this.cropImg = croppedImg;
-        } else {
-          that.$toasted.error(`Please upload an image, which has a size of more than width ${DEFINE.cover_image.min_width} X height ${DEFINE.cover_image.min_height}!`);        
+      await this.coverImageSizeValidate(croppedImg)
+        .then((validImage) => {
+          if (validImage) {
+            this.cropImg = croppedImg;
+          } else {
+            that.$toasted.error(
+              `Please upload an image, which has a size of more than width ${DEFINE.cover_image.min_width} X height ${DEFINE.cover_image.min_height}!`
+            );
+            return;
+          }
+        })
+        .catch((error) => {
           return;
-        }
-      }).catch(error=>{
-        return;
-      });
-      if(!this.cropImg){
+        });
+      if (!this.cropImg) {
         return;
       }
       //end : check minimum image width and height
 
       await this.$refs.cropper.getCroppedCanvas().toBlob(async (blob) => {
         this.updatedImageBlob = blob;
-        await ThumbService.imageThumbnail(this.updatedImageBlob, DEFINE.thumbSize.coverImageThumbWidth).then((thumb_data) => {
-          Vue.set(this.coverThumbnail, 'preview', thumb_data.preview);
-          Vue.set(this.coverThumbnail, 'file', thumb_data.file);
+        await ThumbService.imageThumbnail(
+          this.updatedImageBlob,
+          DEFINE.thumbSize.coverImageThumbWidth
+        ).then((thumb_data) => {
+          Vue.set(this.coverThumbnail, "preview", thumb_data.preview);
+          Vue.set(this.coverThumbnail, "file", thumb_data.file);
         });
       });
 
@@ -1241,9 +1746,12 @@ export default {
       this.cropImg = this.$refs.cropper.getCroppedCanvas().toDataURL();
       this.$refs.cropper.getCroppedCanvas().toBlob(async (blob) => {
         this.updatedImageBlob = blob;
-        await ThumbService.imageThumbnail(this.updatedImageBlob, DEFINE.thumbSize.imageThumbWidth).then((thumb_data) => {
-          Vue.set(this.coverThumbnail, 'preview', thumb_data.preview);
-          Vue.set(this.coverThumbnail, 'file', thumb_data.file);
+        await ThumbService.imageThumbnail(
+          this.updatedImageBlob,
+          DEFINE.thumbSize.imageThumbWidth
+        ).then((thumb_data) => {
+          Vue.set(this.coverThumbnail, "preview", thumb_data.preview);
+          Vue.set(this.coverThumbnail, "file", thumb_data.file);
         });
       });
     },
@@ -1296,7 +1804,7 @@ export default {
       this.set_group_size = value;
       this.form.grouping_capacity = this.set_group_size;
     },
-    async methodToRunOnSelect(payload) {      
+    async methodToRunOnSelect(payload) {
       if (payload == "create") {
         // if select create new round then add new one in option list
         let newRound = {
@@ -1307,7 +1815,7 @@ export default {
           defaultHour: 0,
           defaultMinute: 0,
           selectedLocation: null,
-          isSelected: false
+          isSelected: false,
         };
         this.rounds.push(newRound);
         this.selected_round = newRound;
@@ -1315,16 +1823,16 @@ export default {
       } else {
         //manage selected round details
         this.selected_round = payload;
-      }            
+      }
     },
     closeInviteForm() {
       this.manageInvitations = false;
-    }
-  }
+    },
+  },
 };
 </script>
 <style scoped>
-  .bubble {
+.bubble {
   background: #fff;
   border-radius: 0.4em;
   box-shadow: 0px 0px 6px #b2b2b2;
@@ -1473,18 +1981,18 @@ textarea {
   top: 5vh !important;
 }
 .mrtop-minus-crop {
- margin-top: -8px !important;
+  margin-top: -8px !important;
 }
 .switch {
-    position: relative;
-    display: inline-block;
-    width: 75px;
-    height: 34px;
+  position: relative;
+  display: inline-block;
+  width: 75px;
+  height: 34px;
 }
 .switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
+  opacity: 0;
+  width: 0;
+  height: 0;
 }
 .slider {
   position: absolute;
@@ -1532,7 +2040,6 @@ input:checked + .slider:before {
 .slider.round:before {
   border-radius: 50%;
 }
-
 </style>
 
 
