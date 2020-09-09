@@ -921,23 +921,36 @@ export default {
     },
     async getexportAnalyticsData(analyticsData ){
       let exportData = [];            
-    _.each(analyticsData, value => {           
-          let newExprtObj = {
-            'Round': value[0],
-            'Total Auditioners': value[1],
-            'Gender breakdown':	value[2],
-            'Starred Performers': value[3],
-            };
+      let newExprtObj = {}
+      _.each(analyticsData, value => {           
+          newExprtObj = {}
+          _.each(value, (element, key) => {
+            newExprtObj[key] = element;
+          });
+          
           exportData.push(newExprtObj);
       });
       if(exportData.length == 0){
         let newExprtObj = {
           'Round': '',
           'Total Auditioners': '',
-          'Gender breakdown':	'',
           'Starred Performers': '',
+          'Male':	'',
+          'Female':	'',
+          'Agender':	'',
+          'Gender Diverse':	'',
+          'Gender Expansive':	'',
+          'Gender Fluid':	'',
+          'Genderqueer':	'',
+          'Intersex':	'',
+          'Non-Binary':	'',
+          'Transfemale/Transfeminine':	'',
+          'Transmale/Transmasculine':	'',
+          'Two-Spirit':	'',
+          'Prefer not to answer':	'',
+          'Self Describe':	''
         };
-          exportData.push(newExprtObj);
+        exportData.push(newExprtObj);
       }
       return exportData;
     },
