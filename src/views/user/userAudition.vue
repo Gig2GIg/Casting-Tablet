@@ -204,7 +204,15 @@
                       class="text-center w-full flex flex-col justify-center"
                     >
                       <div class="w-full mb-5 mx-auto flex justify-center items-end">
-                        <div class="flex flex-col w-1/6 px-2">
+                        <div class="flex flex-col px-2" style="">
+                          <div
+                            v-if="data.evaluator_name != null"
+                            class="text-purple text-xs font-bold mb-1"
+                          >{{ data.evaluator_name}}</div>
+                        </div>
+                        <div 
+                          v-if="data.round != 1"
+                          class="flex flex-col w-1/6 px-2">
                           <figure
                             v-if="data.evaluation != null"
                             class="flex justify-center items-center w-8 h-8 border-2 border-purple rounded-sm text-purple text-xs font-bold mx-1"
@@ -216,7 +224,9 @@
                             />
                           </figure>
                         </div>
-                        <div class="flex flex-col px-2 w-1/3">
+                        <div 
+                          v-if="data.round != 1"
+                          class="flex flex-col px-2 w-1/3">
                           <p
                             v-if="data.callback != null"
                             class="text-purple text-xs font-bold mb-1"
@@ -227,7 +237,9 @@
                             class="bg-white border border-purple rounded-full py-0 px-4 text-sm font-bold text-center flex items-center justify-center button-detail text-white w-full"
                           >{{ data.callback == 1? 'Yes' : 'No' }}</div>
                         </div>
-                        <div class="flex flex-col px-2 w-1/3">
+                        <div 
+                          v-if="data.round != 1"
+                          class="flex flex-col px-2 w-1/3">
                           <p
                             v-if="data.work && data.work != ''"
                             class="text-purple text-xs font-bold mb-1"
@@ -237,6 +249,15 @@
                             v-if="data.work && data.work != ''"
                             class="bg-white border border-purple rounded-full py-0 px-4 text-sm font-bold text-center flex items-center justify-center button-detail text-white w-full capitalize"
                           >{{ data.work }}</div>
+                        </div>
+                        <div class="flex flex-col px-2 w-full" v-if="data.round == 1">
+                          <p
+                            class="text-purple text-xs font-bold mb-1"
+                          >Call Back</p>
+
+                          <div
+                            class="bg-white border border-purple rounded-full py-0 px-2 text-sm font-bold text-center flex items-center justify-center button-detail text-white w-full capitalize"
+                          >{{ data.simple_feedback?data.simple_feedback:"N/A" }}</div>
                         </div>
                         <div class="flex flex-col px-2 w-1/3">
                           <p
@@ -342,8 +363,8 @@
                   class="flex flex-wrap justify-center flex-col content-center w-full mb-5"
                   v-if="audition.contract != 'ACADEMIC'"
                 >
-                  <p class="text-center text-2xl text-purple font-semibold mb-2">Feedback</p>
-                  <div class="flex flex-wrap justify-center w-full mt-2">
+                  <p class="text-center text-2xl text-purple font-semibold mb-2" v-if="audition.apointment.general.round != 1">Feedback</p>
+                  <div class="flex flex-wrap justify-center w-full mt-2" v-if="audition.apointment.general.round != 1">
                     <figure
                       :class="{'border-2 border-purple': emoji==1}"
                       class="flex justify-center flex-wrap content-center w-12 h-12 rounded-lg"
@@ -384,7 +405,7 @@
                     </figure>
                   </div>
                 </div>
-                <div class="flex flex-wrap justify-center flex-col content-center w-full mb-5">
+                <div class="flex flex-wrap justify-center flex-col content-center w-full mb-5" v-if="audition.apointment.general.round != 1">
                   <p class="text-center text-2xl text-purple font-semibold mb-2">Call Back</p>
                   <div class="flex justify-center w-full">
                     <div
@@ -399,7 +420,7 @@
                     >No</div>
                   </div>
                 </div>
-                <div class="flex flex-wrap justify-center flex-col content-center w-full mb-5">
+                <div class="flex flex-wrap justify-center flex-col content-center w-full mb-5" v-if="audition.apointment.general.round != 1">
                   <p class="text-center text-2xl text-purple font-semibold mb-2">Work On</p>
                   <div class="flex justify-center w-full">
                     <div
@@ -419,6 +440,26 @@
                     >Dancing</div>
                   </div>
                 </div>
+                <div class="flex flex-wrap justify-center flex-col content-center w-full mb-5" v-if="audition.apointment.general.round == 1">
+                  <p class="text-center text-2xl text-purple font-semibold mb-2" v-if="audition.apointment.general.round == 1">Call Back</p>
+                  <div class="flex justify-center w-full">
+                    <div
+                      @click="setSimpleFeedback('Called Back')"
+                      :class="{'button-detail text-white': simpleFeedback == 'Called Back', 'text-purple': simpleFeedback != 'Called Back'}"
+                      class="bg-white border border-purple rounded-full w-24 h-10 text-sm font-bold text-center flex items-center justify-center mx-2"
+                    >Called Back</div>
+                    <div
+                      @click="setSimpleFeedback('On File')"
+                      :class="{'button-detail text-white': simpleFeedback == 'On File', 'text-purple': simpleFeedback != 'On File'}"
+                      class="bg-white border border-purple rounded-full w-24 h-10 text-sm font-bold text-center flex items-center justify-center mx-2"
+                    >On File</div>
+                    <div
+                      @click="setSimpleFeedback('Not Today')"
+                      :class="{'button-detail text-white': simpleFeedback == 'Not Today', 'text-purple': simpleFeedback != 'Not Today'}"
+                      class="bg-white border border-purple rounded-full w-24 h-10 text-sm font-bold text-center flex items-center justify-center mx-2"
+                    >Not Today</div>
+                  </div>
+                </div>
                 <div class="flex flex-wrap justify-center flex-col content-center w-full mb-5">
                   <p class="text-center text-2xl text-purple font-semibold mb-2">Rate</p>
                   <vue-slider
@@ -433,7 +474,7 @@
                   <base-input
                     v-model="form.comment"
                     name="tag"
-                    class="w-3/4 mb-3"
+                    class="mb-3"
                     type="textarea"
                     placeholder="Add Comment"
                     :custom-classes="['border-2', 'border-purple']"
@@ -1460,6 +1501,7 @@ export default {
       tag: "",
       recommendation: "",
       workon: null,
+      simpleFeedback: "",
       currentMarketplace: "",
       marketplaceSearch: "",
       currentUser: [],
@@ -1603,6 +1645,15 @@ export default {
       clearInterval(this.refreshFBIntrval);
       this.refreshFBIntrval = undefined;
     },
+    setSimpleFeedback(val){
+      this.simpleFeedback = val;
+      if(val == "Called Back")
+        this.form.comment = "Thank you for auditioning today. We would like to see more. Please be on the lookout for Callback information.";
+      else if(val == "On File")
+        this.form.comment = "Thank you for attending today's audition. We will keep your information on file for possible future projects.";
+      else
+        this.form.comment = "Thank you for attending today's audition. That is all we need from you for today. Please feel free to attend our future auditions.";
+    },
     goToday() {
       this.$refs.calendar.goToday();
     },
@@ -1648,6 +1699,7 @@ export default {
           this.rating = this.feedback.rating != null ? this.feedback.rating : 0;
           this.form.comment = this.feedback.comment;
           this.form.recommendation = this.feedback.recommendation;
+          this.simpleFeedback = this.feedback.simple_feedback;
         }
       } else {
         this.isUpdateFeeback = false;
@@ -1658,6 +1710,7 @@ export default {
         this.rating = 0;
         this.form.comment = "";
         this.form.recommendation = "";
+        this.simpleFeedback = "";
       }
       // Get Assigend Number
       let getPerformerDetails = await axios.get(
@@ -2008,6 +2061,7 @@ export default {
       this.form.favorite = this.favorite;
       this.form.evaluation = this.emoji ? this.emoji : null;
       this.form.slot_id = this.slot;
+      this.form.simple_feedback = this.simpleFeedback;
       // this.form.evaluator = this.profile.details.id;
       this.form.evaluator = TokenService.getUserId();
       let data = {

@@ -17,11 +17,7 @@
           transform="translate(-39.142 -21.113)"
           fill="none"
         />
-        <g
-          id="Group_20"
-          data-name="Group 20"
-          transform="translate(0 0)"
-        >
+        <g id="Group_20" data-name="Group 20" transform="translate(0 0)">
           <path
             id="Path_13"
             data-name="Path 13"
@@ -58,41 +54,44 @@
         alt="Icon"
         :class="[(isImageIcon ? 'h-full w-full' : 'h-8')]"
       />
-     
+
       <span class="mt-1" v-if="!isImageIcon">{{mediaType}}</span>
     </div>
     <span class="file-name text-purple truncate text-sm mx-4 flex-1 w-16">
-      
       <li
         class="cursor-pointer py-2 px-4 hover:bg-gray-200"
+        View
         @click="$emit('renamedoc', media)"
         title="Rename Ducument"
-      >
-        {{ media.name }}
-      </li>
+      >{{ media.name }}</li>
     </span>
 
     <i
       class="material-icons absolute right-0 bottom-0 mr-1 text-purple cursor-pointer"
+      View
       @click="menuActive = !menuActive"
-    >
-      more_horiz
-    </i>
+    >more_horiz</i>
 
     <ul
       v-if="menuActive"
       ref="menu"
       class="absolute right-0 bottom-0 mr-1 mb-5 shadow rounded-lg border bg-gray-100"
     >
+      <!-- <li
+        v-if="icon_src != ''"
+        class="cursor-pointer py-2 px-4 hover:bg-gray-200"
+        @click="openPreviewOfMedia(media)"
+      >
+        View
+      </li> -->
       <li
         class="cursor-pointer py-2 px-4 hover:bg-gray-200"
+        View
         @click="$emit('destroy', media)"
       >
         Delete
       </li>
     </ul>
-    
-
   </div>
 </template>
 
@@ -101,15 +100,32 @@ export default {
   props: {
     media: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
       icon_src: "",
       menuActive: false,
-      isImageIcon : false,
+      isImageIcon: false,
     };
+  },
+  methods: {
+    openPreviewOfMedia(media) {
+      if (
+        media.type == 4 ||
+        media.type === "image" ||
+        media.type === "jpeg" ||
+        media.type === "jpg" ||
+        media.type === "png" ||
+        media.type === "gif"
+      ) {
+        var image = new Image();
+        image.src = media.preview;
+        var w = window.open("", "_blank");
+        w.document.write(image.outerHTML);
+      }
+    },
   },
   computed: {
     mediaType() {
@@ -125,8 +141,13 @@ export default {
         this.media.type === "mp4" ||
         this.media.type === "video"
       ) {
-        this.icon_src = this.media.preview ? this.media.preview : (this.media.thumbnail ? this.media.thumbnail :  "/images/icons/video@2x.png") ;
-        this.isImageIcon = (this.media.preview || this.media.thumbnail) ? true : false;
+        this.icon_src = this.media.preview
+          ? this.media.preview
+          : this.media.thumbnail
+          ? this.media.thumbnail
+          : "/images/icons/video@2x.png";
+        this.isImageIcon =
+          this.media.preview || this.media.thumbnail ? true : false;
         return "MP4";
       } else if (
         this.media.type == 3 ||
@@ -143,8 +164,13 @@ export default {
         this.media.type === "png" ||
         this.media.type === "gif"
       ) {
-        this.icon_src = this.media.preview ? this.media.preview : (this.media.thumbnail ? this.media.thumbnail :  "/images/icons/pic-icon@2x.png") ;
-        this.isImageIcon = (this.media.preview || this.media.thumbnail) ? true : false;
+        this.icon_src = this.media.preview
+          ? this.media.preview
+          : this.media.thumbnail
+          ? this.media.thumbnail
+          : "/images/icons/pic-icon@2x.png";
+        this.isImageIcon =
+          this.media.preview || this.media.thumbnail ? true : false;
         return "IMAGE";
       } else if (this.media.type == 5 || this.media.type === "sheet") {
         this.icon_src = "/images/icons/link@2x.png";
@@ -152,8 +178,8 @@ export default {
       } else {
         return this.media.type;
       }
-    }
-  }
+    },
+  },
 };
 </script>
 

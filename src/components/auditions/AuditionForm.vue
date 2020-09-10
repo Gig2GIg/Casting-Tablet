@@ -506,7 +506,7 @@
           type="button"
           :class="{ 'mt-4': !form.media.length }"
           @click="openDocumentOptionModal"
-        >Manage Documents</button>
+        >Manage Audition Materials</button>
         <base-button class="mt-auto w-2/3 mb-12" type="submit">Create Audition</base-button>
       </div>
     </div>
@@ -639,7 +639,7 @@
       :clickToClose="false"
     >
       <div class="flex flex-col items-center text-purple text-lg mt-5 mb-2">
-        <h1>Manage Documents Name</h1>
+        <h1>Manage Audition Materials' Name</h1>
       </div>
       <div class="max-link-screen" id="link_container">
         <div class="mt-5">
@@ -727,8 +727,8 @@
       <div class="flex flex-col items-center text-purple text-lg mt-5 mb-2">
         <h1>Document Rename</h1>
       </div>
-      <div class="content my-info-content">
-        <section class="image-preview-area">
+      <div class="content items-center">
+        <section class="" style="margin-left: 65px;">
           <div class="flex justify-center mb-4 items-center px-3 w-full">
             <div class="w-full ml-4 text-purple px-2">
               <base-input
@@ -1913,7 +1913,7 @@ export default {
   color: white;
   text-decoration: none;
   border-radius: 3px;
-  margin-right: 1rem;
+  /* margin-right: 1rem; */
   margin-bottom: 0.5rem;
 }
 textarea {
