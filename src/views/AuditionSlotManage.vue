@@ -441,7 +441,7 @@ export default {
     width: 35px;
     border-radius: 6px !important;
     cursor: pointer;
-    margin-right: 30px !important;
+    margin-right: 10px !important;
 }
 .custom-btn-grp .content-center:last-child {
     margin-right: 0 !important;
