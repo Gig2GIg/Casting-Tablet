@@ -134,7 +134,7 @@
                 >
                   <div
                           @click="approveBtn(data.user_id, data.is_feedback_sent, $event)"
-                    class="m-1 content-center rounded-full grren-back h-10 flex items-center"
+                    class="mt-1 content-center rounded-full grren-back h-10 flex items-center"
                   >
                     <button
                       class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide"
@@ -156,7 +156,7 @@
                   </div>
                   <div
                           @click="rejectBtn(data.user_id, data.is_feedback_sent, $event)"
-                    class="m-1 content-center rounded-full red-back h-10 flex items-center"
+                    class="mt-1 content-center rounded-full red-back h-10 flex items-center"
                   >
                     <button
                       class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide"
@@ -266,7 +266,7 @@
                     >
                       <div
                         @click="approveBtn(data.user_id, data.is_feedback_sent, $event)"
-                        class="m-1 content-center rounded-full grren-back h-10 flex items-center"
+                        class="mt-1 content-center rounded-full grren-back h-10 flex items-center"
                       >
                         <button
                           class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide"
@@ -288,7 +288,7 @@
                       </div>
                       <div
                         @click="rejectBtn(data.user_id, data.is_feedback_sent, $event)"
-                        class="m-1 content-center rounded-full red-back h-10 flex items-center"
+                        class="mt-1 content-center rounded-full red-back h-10 flex items-center"
                       >
                         <button
                           class="text-white text-xs font-bold content-center tracking-tighter flex-1 tracking-wide"
@@ -1926,7 +1926,7 @@ export default {
   width: 35px;
   border-radius: 6px !important;
   cursor: pointer;
-  margin-right: 30px !important;
+  margin-right: 10px !important;
 }
 .custom-btn-grp .content-center:last-child {
   margin-right: 0 !important;
@@ -2201,8 +2201,8 @@ export default {
 }
 .comment-box-view .btn-card-wrap .custom-btn-grp {
   position: absolute;
-  left: 170px;
-  top: 80px;
+  left: 160px;
+  top: 90px;
 }
 .comment-box-view .btn-card-wrap .card-grid-view .card-img .user-image {
   width: 152px !important;

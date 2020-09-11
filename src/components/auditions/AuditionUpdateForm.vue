@@ -97,8 +97,8 @@
       />
       <template>
         <custom-time-picker v-if="isSetCutOff"
-          style="margin-top: 8px; width: 100% !important;"
-          class="timepicker-custom cus-des-timepicker text-left px-2"
+          style="margin-top: 8px;"
+          class="timepicker-custom cus-des-timepicker text-left w-1/3 px-2"
           :default-hour="timeDefaultTimeHour"
           :default-minute="timeDefaultTimeMinute"
           :onTimeChange="endTimeChangeHandler"

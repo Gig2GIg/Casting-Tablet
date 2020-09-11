@@ -203,8 +203,8 @@
                       :key="data.id"
                       class="text-center w-full flex flex-col justify-center"
                     >
-                      <div class="w-full mb-5 mx-auto flex justify-center items-end">
-                        <div class="flex flex-col px-2" style="">
+                      <div class="w-full mb-5 mx-auto flex justify-start items-end">
+                        <div class="flex flex-col px-1/2" style="">
                           <div
                             v-if="data.evaluator_name != null"
                             class="text-purple text-xs font-bold mb-1"
