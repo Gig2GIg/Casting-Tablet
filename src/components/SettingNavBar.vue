@@ -10,7 +10,7 @@
     </div>
     <div v-else class="cursor-pointer flex content-around w-1/2 items-center relative cmb-10"></div>
 
-    <div class="text-center">{{hideMenuInfo ? 'Subscription' : 'Settings'}}</div>
+    <div class="text-center">{{ upperLabel }}</div>
 
     <div class="flex items-center border-l border-white text-white ml-auto cursor-pointer" v-if="hideMenuInfo" @click="backToSetting" title="Settings">
       <span
@@ -53,8 +53,10 @@ export default {
       isLoading: true,
       userId: "",
       hideMenuInfo: false,
+      showSelectAdminLabel: false,
       user_placeholder : DEFINE.role_placeholder,
-      loading_placeholder : DEFINE.loading_placeholder
+      loading_placeholder : DEFINE.loading_placeholder,
+      upperLabel : 'Settings'
     };
   },
   computed: {
@@ -62,7 +64,17 @@ export default {
   },
   async created() {
     eventBus.$on("settingNavViewChange", value => {
-      this.hideMenuInfo = value;
+      this.hideMenuInfo = value.hideMenuInfo;
+      this.showSelectAdminLabel = value.showSelectAdminLabel;
+      if(this.hideMenuInfo) {
+        if(this.showSelectAdminLabel){
+          this.upperLabel = 'Select Team Admin'
+        }else{
+          this.upperLabel = 'Subscription'
+        }
+      } else {
+        this.upperLabel = 'Settings'
+      }
     });
     let isLogin = store.getters["auth/isAuthenticated"];
     if (isLogin) {
@@ -76,7 +88,8 @@ export default {
     ...mapActions("profile", ["fetch"]),
     backToSetting() {
       this.hideMenuInfo = false;
-      eventBus.$emit("settingNavViewChange", this.hideMenuInfo);
+      let emitData = {'hideMenuInfo' : false, 'showSelectAdminLabel': false}
+      eventBus.$emit("settingNavViewChange", emitData);
     }
   }
 };

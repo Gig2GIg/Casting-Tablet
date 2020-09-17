@@ -9,16 +9,15 @@
       <div v-if="!hideMenuInfo" class="tags w-2/5 mx-auto px-3 py-3 mt-6">
         <div class="py-4">
           <div class="flex items-center px-3">
-
             <div v-lazy-container="{ selector: 'img' }" class="mr-6">
-                <img                    
-                    :data-loading="loading_placeholder" :data-error="user_placeholder"
-                    :data-src="user.image && user.image.thumbnail ? user.image.thumbnail : (user.image && user.image.url ? user.image.url : '' )"
-                    class="h-24 w-24 rounded object-cover"
-                    alt="Avatar"
-                />
+              <img
+                :data-loading="loading_placeholder"
+                :data-error="user_placeholder"
+                :data-src="user.image && user.image.thumbnail ? user.image.thumbnail : (user.image && user.image.url ? user.image.url : '' )"
+                class="h-24 w-24 rounded object-cover"
+                alt="Avatar"
+              />
             </div>
-
 
             <div class="w-6/12 py-8">
               <p
@@ -119,6 +118,28 @@
         >
           <div class="w-10/12">
             <p class="font-bold">QR Code</p>
+          </div>
+          <div class="w-2/12">
+            <svg xmlns="http://www.w3.org/2000/svg" width="10.926" height="19.213">
+              <g data-name="Grupo 1912">
+                <g data-name="Grupo 38">
+                  <path
+                    data-name="Trazado 24"
+                    d="M7.804 9.606L.373 17.037a1.275 1.275 0 101.8 1.8l8.053-8.05a1.26 1.26 0 00.328-.231 1.267 1.267 0 00.372-.95 1.267 1.267 0 00-.369-.95 1.259 1.259 0 00-.328-.231L2.175.373a1.275 1.275 0 00-1.8 1.8z"
+                    fill="#4d2545"
+                  />
+                </g>
+              </g>
+            </svg>
+          </div>
+        </div>
+        <div
+          v-if="user.is_invited"
+          class="flex flex-wrap py-2 px-4 border-b-2 border-gray-300 mr-2 cursor-pointer font-bold"
+          @click="manageSelectedTab('teamAdmins')"
+        >
+          <div class="w-10/12">
+            <p class="font-bold">Select Team Admin</p>
           </div>
           <div class="w-2/12">
             <svg xmlns="http://www.w3.org/2000/svg" width="10.926" height="19.213">
@@ -358,7 +379,11 @@
         </div>
       </div>
       <div v-show="tabSelected === 'myinfo'" class="tags w-9/12 shadow-md mx-auto px-3 py-3 mt-6">
-        <div class="cursor-pointer" v-if="user.details && user.details.agency_name" @click="cancelUpdateProfile">
+        <div
+          class="cursor-pointer"
+          v-if="user.details && user.details.agency_name"
+          @click="cancelUpdateProfile"
+        >
           <svg xmlns="http://www.w3.org/2000/svg" width="30.049" height="39.187">
             <defs>
               <filter
@@ -407,13 +432,14 @@
                   >
                     <img src="/images/icons/upload.png" class="rounded" />
                   </div>
-                  <div v-else v-lazy-container="{ selector: 'img' }" >
-                      <img
-                          :data-loading="loading_placeholder" :data-error="user_placeholder"
-                          :data-src="previewProfile"
-                          class="h-24 w-24 rounded object-cover"
-                          alt="Avatar"
-                      />
+                  <div v-else v-lazy-container="{ selector: 'img' }">
+                    <img
+                      :data-loading="loading_placeholder"
+                      :data-error="user_placeholder"
+                      :data-src="previewProfile"
+                      class="h-24 w-24 rounded object-cover"
+                      alt="Avatar"
+                    />
                   </div>
                 </div>
 
@@ -592,7 +618,7 @@
                   placeholder="Birth Date"
                   :message="errors.first('birth')"
                   data-vv-as="birth date"
-                /> -->
+                />-->
               </div>
             </div>
           </div>
@@ -602,7 +628,9 @@
             <div
               class="m-3 content-center rounded-full red-light w-40 h-10 flex items-center button-detail"
             >
-              <p class="py-2 px-4 bg-purple-gradient rounded-full text-white text-sm font-bold content-center tracking-tighter flex-1">Save</p>
+              <p
+                class="py-2 px-4 bg-purple-gradient rounded-full text-white text-sm font-bold content-center tracking-tighter flex-1"
+              >Save</p>
             </div>
           </div>
         </div>
@@ -618,7 +646,7 @@
         class="tags w-9/12 shadow-md mx-auto px-3 py-3 mt-6"
       >
         <div class="cursor-pointer" @click="hideMenuInfo = false; tabSelected = ''">
-          <svg xmlns="http://www.w3.org/2000/svg"  width="30.049" height="39.187">
+          <svg xmlns="http://www.w3.org/2000/svg" width="30.049" height="39.187">
             <defs>
               <filter
                 id="notifications_svg"
@@ -667,6 +695,46 @@
                 />
                 <span class="slider round" />
               </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div v-if="tabSelected === 'teamAdmins'" class="tags w-9/12 shadow-md mx-auto px-3 py-3 mt-6">
+        <div
+          class="py-4 mr-2 font-bold"
+          style="padding-left: 17rem !important; padding-right: 1rem !important;"
+        >
+          <div v-for="listAdmins in listAdmins" :key="listAdmins.id" class="flex flex-wrap py-6">
+            <div class="overflow-auto w-1/12">
+              <label>
+                <input
+                  id="listAdmins"
+                  name="listAdmins"
+                  type="radio"
+                  class="radio-button"
+                  :value="listAdmins.admins.id"
+                  :checked="listAdmins.is_selected === 1 ? true : false"
+                  @change="changeAdminValue(listAdmins.admins.id)"
+                />
+                <!-- <span class="slider round" /> -->
+              </label>
+            </div>
+            <div class="w-10/12">
+              <span
+                class="text-purple text-lg capitalize"
+              >{{ listAdmins.admins.details ? listAdmins.admins.details.first_name + ' ' + listAdmins.admins.details.last_name : 'Gig2Gig Caster User' }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="container flex w-full mt-3 cursor-pointer" @click="selectAdmin()">
+          <div class="flex w-full text-center justify-center flex-wrap">
+            <div
+              class="m-3 content-center rounded-full red-light w-40 h-10 flex items-center button-detail"
+            >
+              <p
+                class="py-2 px-4 bg-purple-gradient rounded-full text-white text-sm font-bold content-center tracking-tighter flex-1"
+              >Update</p>
             </div>
           </div>
         </div>
@@ -1050,7 +1118,7 @@ import { eventBus } from "../main";
 
 export default {
   components: {
-    VueCropper
+    VueCropper,
   },
   data() {
     return {
@@ -1062,10 +1130,12 @@ export default {
       tabSelected: "",
       contact_us_email: DEFINE.contact_us,
       listNotificacions: [],
+      listAdmins: [],
       listAuditionFeedback: [],
       feedbackText: "",
       feedbackStdText: "",
       cmsContentDetails: {},
+      selectedAdmin: null,
       // states,
       countries,
       previewProfile: null,
@@ -1080,8 +1150,8 @@ export default {
       profileFileName: null,
       profileNameObject: {},
       profileThumbnail: {},
-      user_placeholder : DEFINE.role_placeholder,
-      loading_placeholder : DEFINE.loading_placeholder
+      user_placeholder: DEFINE.role_placeholder,
+      loading_placeholder: DEFINE.loading_placeholder,
     };
   },
   async mounted() {
@@ -1092,11 +1162,15 @@ export default {
     this.getUserData();
   },
   async created() {
-    eventBus.$on("settingNavViewChange", value => {
-      this.hideMenuInfo = value;
-      if(!this.hideMenuInfo) {
-        this.$router.push(this.$route.path);      
-      }      
+    eventBus.$on("settingNavViewChange", (value) => {
+      this.hideMenuInfo = value.hideMenuInfo;
+      this.showSelectAdminLabel = value.showSelectAdminLabel;
+      if (!this.hideMenuInfo) {
+        this.$router.push(this.$route.path);
+      }
+      if (!this.hideMenuInfo && !this.showSelectAdminLabel) {
+        this.tabSelected = "";
+      }
     });
   },
   watch: {
@@ -1119,23 +1193,26 @@ export default {
           case "notifications":
             this.notificationsList();
             break;
+          case "teamAdmins":
+            this.getTeamAdmins();
+            break;
           // case "contact_us":
           //   this.getCMSContent();
           //   break;
           default:
             break;
         }
+      },
+    },
+    "$route.query"() {
+      const tab = this.$route.query.tab;
+      if (tab && tab != "") {
+        this.manageSelectedTab(tab);
       }
     },
-    '$route.query'() {
-        const tab = this.$route.query.tab;
-        if (tab && tab != "") {
-          this.manageSelectedTab(tab);
-        }
-    }
   },
   computed: {
-    ...mapState("profile", ["user"])
+    ...mapState("profile", ["user"]),
   },
   methods: {
     ...mapActions("profile", ["fetch"]),
@@ -1148,16 +1225,19 @@ export default {
           tab == "marketplace" ||
           tab == "notifications")
       ) {
-        if(this.user.is_invited){
+        if (this.user.is_invited) {
           this.$toasted.info(DEFINE.no_plan_sub_user_subscirbed_error);
         } else {
           this.$toasted.info(DEFINE.no_plan_subscirbed_error, {
             action: {
-              text: 'Subscribe',
+              text: "Subscribe",
               onClick: (e, toastObject) => {
-                this.$router.push({ name: 'my.settings', query: { tab: "subscription" } });
-              }
-            }
+                this.$router.push({
+                  name: "my.settings",
+                  query: { tab: "subscription" },
+                });
+              },
+            },
           });
         }
       } else {
@@ -1166,8 +1246,28 @@ export default {
         if (this.tabSelected == "instantFeedback") {
           this.showFeedBackOptionMenu = true;
         } else if (this.tabSelected == "subscription") {
-          eventBus.$emit("settingNavViewChange", this.hideMenuInfo);
+          let emitData = { hideMenuInfo: true, showSelectAdminLabel: false };
+          eventBus.$emit("settingNavViewChange", emitData);
+        } else if (this.tabSelected == "teamAdmins") {
+          let emitData = { hideMenuInfo: true, showSelectAdminLabel: true };
+          eventBus.$emit("settingNavViewChange", emitData);
         }
+      }
+    },
+    changeAdminValue(id){
+      this.selectedAdmin = id;
+    },
+    async selectAdmin() {
+      this.isLoading = true;
+      try {
+        let res = await axios.put(`/t/selectAdmin/`+ this.selectedAdmin);
+        this.isLoading = false;
+        this.getUserData();
+        this.$toasted.success(res.data  .message);
+      } catch (e) {
+        this.isLoading = false;
+        console.log(e);
+        this.$toasted.error(e.response.data.data);
       }
     },
     async updateFeedBackTxt(type) {
@@ -1175,12 +1275,12 @@ export default {
         let res = await axios.post(`/t/instantfeedbacks/changeDefault`, {
           feedback:
             type == "positive" ? this.feedbackStdText : this.feedbackText,
-          type: type
+          type: type,
         });
         this.$toasted.success("Feedback updated successfully.");
       } catch (e) {
         console.log(e);
-        this.$toasted.success(e.response.data.data);
+        this.$toasted.error(e.response.data.data);
       }
     },
     async getUserData() {
@@ -1260,10 +1360,7 @@ export default {
           param.birth = moment(param.birth).format("YYYY-MM-DD");
         }
 
-        let action = await axios.put(
-          `/t/users/update/${this.user.id}`,
-          param
-        );
+        let action = await axios.put(`/t/users/update/${this.user.id}`, param);
         this.isLoading = false;
         this.$toasted.success("The user data has updated successfully.");
         this.cropImg = null;
@@ -1279,7 +1376,7 @@ export default {
     async getInstantFeedback() {
       try {
         let {
-          data: { data }
+          data: { data },
         } = await axios.get(
           `t/instantfeedbacks/defaultFeedback/${this.user.id}`
         );
@@ -1296,7 +1393,7 @@ export default {
     async getCMSContent() {
       try {
         let {
-          data: { data }
+          data: { data },
         } = await axios.get(`/t/content-settings`);
         this.cmsContentDetails = data[0] ? data[0] : {};
       } catch (e) {
@@ -1305,33 +1402,40 @@ export default {
     },
     async notificationsList() {
       try {
-        const url = 'users/settings';
+        const url = "users/settings";
         const {
-          data: {
-            data,
-          },
+          data: { data },
         } = await axios.get(url);
-        this.listNotificacions = data;        
+        this.listNotificacions = data;
         // console.log(data);
       } catch (ex) {
         console.log(ex);
       }
     },
-    async disableNotification(obj) {      
-      let message = 'Notification Disabled';
+    async getTeamAdmins() {
+      try {
+        const url = "t/listTeamAdmins";
+        const {
+          data: { data },
+        } = await axios.get(url);
+        this.listAdmins = data;
+      } catch (ex) {
+        console.log(ex);
+      }
+    },
+    async disableNotification(obj) {
+      let message = "Notification Disabled";
       const url = `users/settings/${obj.id}`;
       try {
-        this.$toasted.clear()
+        this.$toasted.clear();
         if (!obj.value) {
-          message = 'Notification Enabled';
+          message = "Notification Enabled";
         }
         const paramData = {
-          "value": obj.value ? false : true
+          value: obj.value ? false : true,
         };
         const {
-          data: {
-            data,
-          },
+          data: { data },
         } = await axios.put(url, paramData);
         this.$toasted.show(message);
       } catch (ex) {
@@ -1357,7 +1461,7 @@ export default {
           JSON.stringify(this.updatedImageFile.name)
         );
         const reader = new FileReader();
-        reader.onload = event => {
+        reader.onload = (event) => {
           this.imgSrc = event.target.result;
           // rebuild cropperjs with the updated source
           if (this.$refs.cropper) {
@@ -1389,12 +1493,12 @@ export default {
       this.profileThumbnail = {};
       // get image data for post processing, e.g. upload or setting image src
       this.cropImg = this.$refs.cropper.getCroppedCanvas().toDataURL();
-      await this.$refs.cropper.getCroppedCanvas().toBlob(async blob => {
+      await this.$refs.cropper.getCroppedCanvas().toBlob(async (blob) => {
         this.updatedImageBlob = blob;
         await ThumbService.imageThumbnail(
           this.updatedImageBlob,
           DEFINE.thumbSize.imageThumbWidth
-        ).then(thumb_data => {
+        ).then((thumb_data) => {
           Vue.set(this.profileThumbnail, "preview", thumb_data.preview);
           Vue.set(this.profileThumbnail, "file", thumb_data.file);
         });
@@ -1411,12 +1515,12 @@ export default {
       this.profileThumbnail = {};
       // get image data for post processing, e.g. upload or setting image src
       this.cropImg = this.$refs.cropper.getCroppedCanvas().toDataURL();
-      this.$refs.cropper.getCroppedCanvas().toBlob(async blob => {
+      this.$refs.cropper.getCroppedCanvas().toBlob(async (blob) => {
         this.updatedImageBlob = blob;
         await ThumbService.imageThumbnail(
           this.updatedImageBlob,
           DEFINE.thumbSize.imageThumbWidth
-        ).then(thumb_data => {
+        ).then((thumb_data) => {
           Vue.set(this.profileThumbnail, "preview", thumb_data.preview);
           Vue.set(this.profileThumbnail, "file", thumb_data.file);
         });
@@ -1475,8 +1579,8 @@ export default {
       this.updatedImageFile = null;
       this.$refs.profileFile.value = "";
       this.setUserData();
-    }
-  }
+    },
+  },
 };
 </script>
 

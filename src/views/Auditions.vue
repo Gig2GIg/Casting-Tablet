@@ -53,8 +53,16 @@ export default {
     ...mapState('profile', ['user']),
   },
   async created() {
-    this.fetchUpcoming();
-    this.fetch();
+    await this.fetch();
+    if(this.user.is_invited && !this.user.selected_admin && (this.user.selected_admin == "" && this.user.selected_admin == null)) {
+      // If no admin is selected user will be refirected to select admin page
+      this.$router.push({
+        name: "my.settings",
+        query: { tab: "teamAdmins" },
+      }); 
+    } else {
+        this.fetchUpcoming();
+    }
   },
   async mounted(){
     this.userId = TokenService.getUserId()

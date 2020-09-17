@@ -99,17 +99,17 @@
               <div class="w-2/5 ml-4 text-purple active-btn">
                   <div
                     v-if="user.is_profile_completed == 0"
-                    class="cursor-pointer m-3 content-center rounded-full red-light w-full h-8 flex items-center button-detail accept-decline-btn"
+                    class="cursor-pointer m-3 content-center bg-purple-gradient rounded-full red-light w-full h-8 flex items-center button-detail accept-decline-btn"
                     @click="resendInviteUser(user)"
                   >
-                  <p class="text-white text-sm text-center content-center flex-1">Resend Email</p>
+                  <p class="text-white text-center content-center flex-1" style="font-size: 0.75rem !important;">Resend Email</p>
                 </div>
               </div>
               <div class="w-2/20 ml-4 text-purple px-2 active-btn">
                 
                 <div
                   v-if="user.is_active == 1"
-                  class="cursor-pointer m-3 content-center rounded-full red-light w-full h-8 flex items-center button-detail accept-decline-btn"
+                  class="cursor-pointer m-3 content-center bg-purple-gradient rounded-full red-light w-full h-8 flex items-center button-detail accept-decline-btn"
                   @click="deactivateUser(user)"
                 >
                   <p class="text-white text-sm text-center content-center flex-1">Deactivate</p>
@@ -261,7 +261,8 @@ export default {
     if (currentUser.is_invited) {
       // invited user can not access right of invite user or invite user list
       this.hideMenuInfo = false;
-      eventBus.$emit("settingNavViewChange", this.hideMenuInfo);
+      let emitData = {'hideMenuInfo' : false, 'showSelectAdminLabel': false}
+      eventBus.$emit("settingNavViewChange", emitData);
     }
   },
   methods: {
@@ -321,7 +322,7 @@ export default {
     deactivateUser(user) {
       this.statusConfirmUser = user;
       this.newStatus = 0;
-      this.statusConfirmMsg = "Do you want deactivate this user?";
+      this.statusConfirmMsg = "Do you want to deactivate this user?";
       this.$modal.show("modal_confirm_status_change");
     },
     /**
@@ -330,7 +331,7 @@ export default {
     activateUser(user) {
       this.statusConfirmUser = user;
       this.newStatus = 1;
-      this.statusConfirmMsg = "Do you want activate this user?";
+      this.statusConfirmMsg = "Do you want to activate this user?";
       this.$modal.show("modal_confirm_status_change");
     },
     /**
@@ -397,7 +398,7 @@ export default {
      */
     cancelSubscription() {
       if(this.subscriptionDetails && this.subscriptionDetails.grace_period == 1) {
-        this.$toasted.error("You have already request for cancel subscription.");
+        this.$toasted.error("You have already requested for cancel subscription.");
       } else {
         this.$modal.show("modal_confirm_cancel_subscribe");
       }

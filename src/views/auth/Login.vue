@@ -56,7 +56,7 @@ Vue.use(Loading);
 
 export default {
   components: {
-    Loading
+    Loading,
   },
   data() {
     return {
@@ -64,7 +64,7 @@ export default {
       password: "",
       isLoading: false,
       fullPage: true,
-      logingResult: null
+      logingResult: null,
     };
   },
   methods: {
@@ -81,7 +81,7 @@ export default {
         this.logingResult = await this.login({
           email: this.email,
           password: this.password,
-          type: DEFINE.caster_type
+          type: DEFINE.caster_type,
         });
         if (firebase.messaging.isSupported()) {
           await this.askForPermissionToReceiveNotifications();
@@ -137,39 +137,56 @@ export default {
       const currentUser =
         this.logingResult && this.logingResult.user
           ? this.logingResult.user
-          : null;      
-      if (!currentUser ||
-          !currentUser.is_premium ||
-          currentUser.is_premium === 0
+          : null;
+      if (
+        !currentUser ||
+        !currentUser.is_premium ||
+        currentUser.is_premium === 0
       ) {
         // Vue.toasted.info(DEFINE.no_plan_subscirbed_error);
         // no prime user redirect on subscribe settings screen
-        if(currentUser.is_invited){
-            this.$router.push({
-              name: "my.settings"
-            });
+        if (currentUser.is_invited) {
+          this.$router.push({
+            name: "my.settings",
+          });
         } else {
           this.$router.push({
             name: "my.settings",
-            query: { tab: "subscription" }
+            query: { tab: "subscription" },
           });
         }
-        
       } else {
         if (
           currentUser.is_premium === 1 &&
-          currentUser.is_invited &&
-          (!currentUser.details || !currentUser.details.agency_name)
+          currentUser.is_invited
         ) {
-          // prime invited user redirect on settings with profile update page          
-          this.$router.push({
-            name: "my.settings",
-            query: { tab: "myinfo" }
-          });
+          if(!currentUser.details || !currentUser.details.agency_name){
+            // prime invited user redirect on settings with profile update page
+            this.$router.push({
+              name: "my.settings",
+              query: { tab: "myinfo" },
+            });
+          } else if (
+            currentUser.selected_admin &&
+            currentUser.selected_admin != "" &&
+            currentUser.selected_admin != null
+          ) {
+            this.$router.replace(
+              this.$route.query.redirect || {
+                name: "auditions",
+              }
+            );
+          } else {
+            // If no admin is selected user will be refirected to select admin page
+            this.$router.push({
+              name: "my.settings",
+              query: { tab: "teamAdmins" },
+            });
+          }
         } else {
           this.$router.replace(
             this.$route.query.redirect || {
-              name: "auditions"
+              name: "auditions",
             }
           );
         }
@@ -177,7 +194,7 @@ export default {
     },
     onCancel() {
       console.log("User cancelled the loader.");
-    }
-  }
+    },
+  },
 };
 </script>
