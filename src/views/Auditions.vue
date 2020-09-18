@@ -54,7 +54,7 @@ export default {
   },
   async created() {
     await this.fetch();
-    if(this.user.is_invited && !this.user.selected_admin && (this.user.selected_admin == "" && this.user.selected_admin == null)) {
+    if(this.user.is_invited && (this.user.selected_admin == "" && this.user.selected_admin == null)) {
       // If no admin is selected user will be refirected to select admin page
       this.$router.push({
         name: "my.settings",
