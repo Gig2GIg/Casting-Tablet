@@ -1312,8 +1312,8 @@ export default {
           this.$toasted.error("The end date field is required.");
           return;
         }
-        if (!this.end_time) {
-          this.$toasted.error("The cut off time is required.");
+        if (this.form.online && !this.end_time) {
+          this.$toasted.error("The cut off time field is required.");
           return;
         }
         if (
